@@ -1,0 +1,6 @@
+http://localhost/restful/public/api/country
+http://localhost/restful/public/api/country/1
+
+
+duplicate entry issue to validate
+
