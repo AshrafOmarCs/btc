@@ -13,9 +13,13 @@
     // DA-Portal
     // dd($locale); 
 
-Route::group(['prefix' => 'New-Portal'], function() {   
+Route::group(['prefix' => 'New-Portal'], function() {
     Route::get("/",'DashoardController@index');
     Route::get("/Drivers",'DashoardController@index_drivers');
+
+
+    // Muhammed Code 
+    
 
 });
 Route::get("landmarkHandlller",'AshrafController@landmarkHandlller'); 
