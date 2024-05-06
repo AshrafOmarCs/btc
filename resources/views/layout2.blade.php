@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+		<!-- Meta -->
+		<meta name="description" content="Best Bootstrap Admin Dashboards">
+		<meta name="author" content="Bootstrap Gallery" />
+		<link rel="canonical" href="https://www.bootstrap.gallery/">
+		<meta property="og:url" content="https://www.bootstrap.gallery">
+		<meta property="og:title" content="Admin Templates - Dashboard Templates | Bootstrap Gallery">
+		<meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
+		<meta property="og:type" content="Website">
+		<meta property="og:site_name" content="Bootstrap Gallery">
+		<link rel="shortcut icon" href="{{asset('assets/images/logo.png')}}">
+
+		<!-- Title -->
+		<title>BTC  Dashboard</title>
+
+
+		<!-- *************
+			************ Common Css Files *************
+		************ -->
+
+		<!-- Animated css -->
+		<link rel="stylesheet" href="{{asset('assets/css/animate.css')}}">
+
+		<!-- Bootstrap font icons css -->
+		<link rel="stylesheet" href="{{asset('assets/fonts/bootstrap/bootstrap-icons.css')}}">
+
+		<!-- Main css -->
+		<link rel="stylesheet" href="{{asset('assets/css/main.min.css')}}">
+
+
+		<!-- *************
+			************ Vendor Css Files *************
+		************ -->
+
+		<!-- Scrollbar CSS -->
+		<link rel="stylesheet" href="{{asset('assets/vendor/overlay-scroll/OverlayScrollbars.min.css')}}">
+		@yield('css')
+
+	</head>
+
+	<body>
+		<!-- Loading wrapper start -->
+		<div id="loading-wrapper">
+			<div class="spinner">
+				<div class="line1"></div>
+				<div class="line2"></div>
+				<div class="line3"></div>
+				<div class="line4"></div>
+				<div class="line5"></div>
+				<div class="line6"></div>
+			</div>
+		</div>
+		<!-- Loading wrapper end -->
+
+		<!-- Page wrapper start -->
+		<div class="page-wrapper">
+
+			<!-- Sidebar wrapper start -->
+			<nav class="sidebar-wrapper">
+
+				<!-- Sidebar brand starts -->
+				<div class="sidebar-brand">
+					<a href="index.html" class="logo">
+						<img src="{{asset('assets/images/logo.png')}}" alt="Admin Dashboards" />
+					</a>
+				</div>
+				<!-- Sidebar brand starts -->
+
+				<!-- Sidebar menu starts -->
+				<div class="sidebar-menu">
+					<div class="sidebarMenuScroll">
+						<ul> 
+							<li class="sidebar-dropdown active">
+								<a href="#">
+									<i class="bi bi-house"></i>
+									<span class="menu-text">Dashboards</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="{{url('/New-Portal')}}" class="current-page">Analytics</a>
+										</li>
+										<li>
+											<a href="reports.html">Reports</a>
+										</li>
+										<li>
+											<a href="reports.html">System timeline</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li>
+								<a href="starter-page.html">
+									<i class="bi bi-align-top" style="color: #FF5722;"></i>
+									<span class="menu-text">Requires action <span class="badge rounded-pill shade-red" style="margin-left: 6px;">3+</span></span>
+								</a>
+							</li>
+							<li class="menu-title">
+								<i class=""> &nbsp;&nbsp;</i>
+								<span data-key="t-components">Operation</span>
+							</li>
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-credit-card-2-front"></i>
+									<span class="menu-text">Accounts</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="widgets.html">Administrator</a>
+										</li>
+										<li>
+											<a href="graph-widgets.html">Supervisors </a>
+										</li>
+										<li>
+											<a href="widgets.html">Employee</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-credit-card-2-front"></i>
+									<span class="menu-text">Co & Warehouses</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="widgets.html">Companies </a>
+										</li>
+										<li>
+											<a href="graph-widgets.html">Warehouses/Projects </a>
+										</li> 
+									</ul>
+								</div>
+							</li> 
+							<li>
+								<a href="{{url('New-Portal/Drivers')}}">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Drivers</span>
+								</a>
+							</li> 
+							<li>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Jahiz's Drivers</span>
+								</a>
+							</li>
+							<li>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Jahiz Clearance</span>
+								</a>
+							</li> 
+							<li class="menu-title">
+								<i class=""> &nbsp;&nbsp;</i>
+								<span data-key="t-components">Finance</span>
+							</li>
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-bank"></i>
+									<span class="menu-text">Money Transfer</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="orders.html">Salaries</a>
+										</li>
+										<li>
+											<a href="products.html">Loans</a>
+										</li>
+										<li>
+											<a href="view-cart.html">Jahiz</a>
+										</li>  
+									</ul>
+								</div>
+							</li> 
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-check2-circle"></i>
+									<span class="menu-text">Confirm transfer  </span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="orders.html">Salaries</a>
+										</li>
+										<li>
+											<a href="products.html">Loans</a>
+										</li>
+										<li>
+											<a href="view-cart.html">Jahiz</a>
+										</li> 
+								</div>
+							</li>
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-check2-circle"></i>
+									<span class="menu-text">Sett & Deduction  </span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="orders.html">Settlement</a>
+										</li>
+										<li>
+											<a href="products.html">Creditnote</a>
+										</li>  
+								</div>
+							</li>
+							<li>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Generate Sales.R </span>
+								</a>
+							</li> 
+							<li>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Transactions History </span>
+								</a>
+							</li> 
+							<li class="menu-title">
+								<i class=""> &nbsp;&nbsp;</i>
+								<span data-key="t-components">HR</span>
+							</li>
+							<li>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Custody</span>
+								</a>
+							</li> 
+							<li>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Contracts</span>
+								</a>
+							</li> 
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-collection"></i>
+									<span class="menu-text">Docs & Tutorials</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="accordions.html">New Docs/Tutorials</a>
+										</li>
+										<li>
+											<a href="alerts.html"> Docs/Tutorials </a>
+										</li> 
+									</ul>
+								</div>
+							</li>
+							<li class="menu-title">
+								<i class=""> &nbsp;&nbsp;</i>
+								<span data-key="t-components">Marketing </span>
+							</li>
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-stickies"></i>
+									<span class="menu-text">CMS</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="profile.html">Companies</a>
+										</li>
+										<li>
+											<a href="account-settings.html">Individuals </a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Quotations</span>
+								</a>
+							</li> 
+							<li class="menu-title">
+								<i class=""> &nbsp;&nbsp;</i>
+								<span data-key="t-components">Tickets </span>
+							</li>
+							<li>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Opened Tickets</span>
+								</a>
+								<a href="calendar.html">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">Closed Tickets</span>
+								</a>
+							</li>
+
+							<li class="menu-title">
+								<i class=""> &nbsp;&nbsp;</i>
+								<span data-key="t-components">Settings</span>
+							</li>
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-credit-card-2-front"></i>
+									<span class="menu-text">Finance Period </span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="widgets.html">Jahiz Months</a>
+										</li>
+										<li>
+											<a href="graph-widgets.html">Supervisors </a>
+										</li>
+										<li>
+											<a href="widgets.html">Employee</a>
+										</li>
+									</ul>
+								</div>
+							</li> 
+						</ul>
+					</div>
+				</div>
+				<!-- Sidebar menu ends -->
+
+			</nav>
+			<!-- Sidebar wrapper end -->
+
+			<!-- *************
+				************ Main container start *************
+			************* -->
+			<div class="main-container">
+
+				<!-- Page header starts -->
+				<div class="page-header">
+
+					<div class="toggle-sidebar" id="toggle-sidebar"><i class="bi bi-list"></i></div>
+					<!-- Welcome start -->
+					<div class="welcome-note ms-2">
+						Welcome, <span>Ashraf </span>
+					</div>
+					<!-- Welcome end -->
+
+					<!-- Breadcrumb start -->
+					{{-- <ol class="breadcrumb d-md-flex d-none">
+						<li class="breadcrumb-item">
+							<i class="bi bi-house"></i>
+							<a href="index.html">Home</a>
+						</li>
+						<li class="breadcrumb-item breadcrumb-active" aria-current="page">Sales</li>
+					</ol> --}}
+					<!-- Breadcrumb end -->
+
+					<!-- Header actions ccontainer start -->
+					<div class="header-actions-container">
+
+						<!-- Search container start -->
+						<div class="search-container">
+
+							<!-- Search input group start -->
+							<!-- <div class="input-group">
+								<input type="text" class="form-control" placeholder="Search anything">
+								<button class="btn" type="button">
+									<i class="bi bi-search"></i>
+								</button>
+							</div> -->
+							<!-- Search input group end -->
+
+						</div>
+						<!-- Search container end -->
+
+						<!-- Leads start -->
+						<a href="orders.html" class="leads d-none d-xl-flex">
+							<div class="lead-details">You have <span class="count"> 21 </span> new Notification </div>
+							<span class="lead-icon"><i
+									class="bi bi-bell-fill animate__animated animate__swing animate__infinite infinite"></i><b
+									class="dot animate__animated animate__heartBeat animate__infinite"></b></span>
+						</a>
+						<!-- Leads end -->
+
+						<!-- Header actions start -->
+						<ul class="header-actions">
+							<li class="dropdown d-none d-md-block">
+								<a href="#" id="countries" data-toggle="dropdown" aria-haspopup="true">
+									<img src="{{asset('assets/images/flags/1x1/ca.svg')}}" class="flag-img" alt="Admin Panels" />
+								</a>
+								<div class="dropdown-menu dropdown-menu-end mini" aria-labelledby="countries">
+									<div class="country-container">
+										<a href="index.html">
+											<img src="{{asset('assets/images/flags/1x1/saudi-arabia.svg')}}" alt="Clean Admin Dashboards" />
+										</a> 
+									</div>
+								</div>
+							</li>
+							<li class="dropdown">
+								<a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
+									<span class="user-name d-none d-md-block">Abigale Heaney</span>
+									<span class="avatar">
+										<img src="{{asset('assets/images/user.png')}}" alt="Admin Templates">
+										<span class="status online"></span>
+									</span>
+								</a>
+								<div class="dropdown-menu dropdown-menu-end" aria-labelledby="userSettings">
+									<div class="header-profile-actions">
+										<a href="profile.html">Profile</a>
+										<a href="profile.html">Applications</a>
+										<a href="account-settings.html">Settings</a>
+										<a href="login.html">Logout</a>
+									</div>
+								</div>
+							</li>
+						</ul>
+						<!-- Header actions end -->
+
+					</div>
+					<!-- Header actions ccontainer end -->
+
+				</div>
+				<!-- Page header ends -->
+
+				<!-- Content wrapper scroll start -->
+				<div class="content-wrapper-scroll">
+
+					<!-- Content wrapper start -->
+					<div class="content-wrapper">  
+						@yield('content')
+					</div>
+					<!-- Content wrapper end -->
+
+					<!-- App Footer start -->
+					<div class="app-footer">
+						<span>© bander logistic company 2023</span>
+					</div>
+					<!-- App footer end -->
+
+				</div>
+				<!-- Content wrapper scroll end -->
+
+			</div>
+			<!-- *************
+				************ Main container end *************
+			************* -->
+
+		</div>
+		<!-- Page wrapper end -->
+
+		<!-- *************
+			************ Required JavaScript Files *************
+		************* -->
+		<!-- Required jQuery first, then Bootstrap Bundle JS -->
+		<script src="{{asset('assets/js/jquery.min.js')}}"></script>
+		<script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
+		<script src="{{asset('assets/js/modernizr.js')}}"></script>
+		<script src="{{asset('assets/js/moment.js')}}"></script>
+
+		<!-- *************
+			************ Vendor Js Files *************
+		************* -->
+
+		<!-- Overlay Scroll JS -->
+		<script src="{{asset('assets/vendor/overlay-scroll/jquery.overlayScrollbars.min.js')}}"></script>
+		<script src="{{asset('assets/vendor/overlay-scroll/custom-scrollbar.js')}}"></script>
+
+		<!-- Date Range JS -->
+		<script src="{{asset('assets/vendor/daterange/daterange.js')}}"></script>
+		<script src="{{asset('assets/vendor/daterange/custom-daterange.js')}}"></script>
+		
+		@yield('javascript')
+	</body>
+
+</html>

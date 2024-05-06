@@ -105,8 +105,9 @@ class LoansController extends Controller
         group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
         group by driverId,per_priod,cur_priod,next_priod
         )balance"),
-                'balance.driverId', '=', 'drivers.id');
-
+                'balance.driverId', '=', 'drivers.id'); 
+                
+                // dd($Select_db);
         $Select_sum = DB::table('loan')
             ->select(DB::raw("sum(amount) as amount"))
             ->leftJoin('drivers', 'loan.driverId', '=', 'drivers.id')
@@ -182,6 +183,26 @@ class LoansController extends Controller
                 $Select_db->whereRaw('loan.status_id=' . $request->filter_status_id);
                 $Select_sum->whereRaw('loan.status_id=' . $request->filter_status_id);
             }
+            // ashraf condition for fuel loans
+            // dd($request->filter_Loan_type);
+            // dd($request->all());
+            if (!empty($request->filter_Loan_type)) {
+                if($request->filter_Loan_type == 'FL'){
+                    $whereIn_array = array();
+                    $whereIn_array = ['fuel_loan'];
+                    // $Select_db->where('loan_type', 'fuel_loan'); 
+                    $Select_db->whereRaw('loan.loan_type=' . '"fuel_loan"');
+                    $Select_sum->whereRaw('loan.loan_type=' . '"fuel_loan"');
+
+                }elseif($request->filter_Loan_type == 'PL'){
+                    $whereIn_array = array();
+                    $whereIn_array = ['personal_loan'];
+                    $Select_db->whereRaw('loan.loan_type=' . '"personal_loan"');
+                    $Select_sum->whereRaw('loan.loan_type=' . '"personal_loan"');
+                    // $Select_db->whereIn('loan_type', $whereIn_array); 
+                }
+            }
+            // ashraf condition for fuel loans
             if (!empty($request->filter_note)) {
                 $Select_db->whereRaw("UPPER(note) LIKE '%" . strtoupper($request->filter_note) . "%'");
                 $Select_sum->whereRaw("UPPER(note) LIKE '%" . strtoupper($request->filter_note) . "%'");
@@ -207,51 +228,54 @@ class LoansController extends Controller
             if (isset($_REQUEST['search']['value']) && $_REQUEST['search']['value'] <> '') {
                 $options = strtolower($_REQUEST['search']['value']);
                 $Select_sum->whereRaw("(
-            LOWER(`loan`.`created_at`) LIKE '%" . $options . "%'
-            OR LOWER(
-                `lkp_company`.`companyName`
-            ) LIKE '%" . $options . "%'
-            OR LOWER(
-                `warehouse`.`warehouseName`
-            ) LIKE '%" . $options . "%'
-            OR LOWER(`drivers`.`job_id`) LIKE '%" . $options . "%'
-            OR LOWER(`drivers`.`fullName`) LIKE '%" . $options . "%'
-            OR LOWER(`balance`.`per_priod`) LIKE '%" . $options . "%'
-            OR LOWER(`balance`.`cur_priod`) LIKE '%" . $options . "%'
-            OR LOWER(`loan`.`journal_date`) LIKE '%" . $options . "%'
-            OR LOWER(`loan`.`amount`) LIKE '%" . $options . "%'
-            OR LOWER(`loan`.`note`) LIKE '%" . $options . "%'
-            OR LOWER(
-                `lkp_loan_status`.`loan_status`
-            ) LIKE '%" . $options . "%'
-            OR LOWER(`lkp_bank`.`bank_name_en`) LIKE '%" . $options . "%'
-            OR LOWER(`drivers`.`accountNumber`) LIKE '%" . $options . "%'
-            OR LOWER(`users`.`name`) LIKE '%" . $options . "%'
-            OR LOWER(`loan`.`updated_at`) LIKE '%" . $options . "%'
-            OR LOWER(`loan`.`id`) LIKE '%" . $options . "%'
-     )");
-            }
-
+                LOWER(`loan`.`created_at`) LIKE '%" . $options . "%'
+                OR LOWER(
+                    `lkp_company`.`companyName`
+                ) LIKE '%" . $options . "%'
+                OR LOWER(
+                    `warehouse`.`warehouseName`
+                ) LIKE '%" . $options . "%'
+                OR LOWER(`drivers`.`job_id`) LIKE '%" . $options . "%'
+                OR LOWER(`drivers`.`fullName`) LIKE '%" . $options . "%'
+                OR LOWER(`balance`.`per_priod`) LIKE '%" . $options . "%'
+                OR LOWER(`balance`.`cur_priod`) LIKE '%" . $options . "%'
+                OR LOWER(`loan`.`journal_date`) LIKE '%" . $options . "%'
+                OR LOWER(`loan`.`amount`) LIKE '%" . $options . "%'
+                OR LOWER(`loan`.`note`) LIKE '%" . $options . "%'
+                OR LOWER(
+                    `lkp_loan_status`.`loan_status`
+                ) LIKE '%" . $options . "%'
+                OR LOWER(`lkp_bank`.`bank_name_en`) LIKE '%" . $options . "%'
+                OR LOWER(`drivers`.`accountNumber`) LIKE '%" . $options . "%'
+                OR LOWER(`users`.`name`) LIKE '%" . $options . "%'
+                OR LOWER(`loan`.`updated_at`) LIKE '%" . $options . "%'
+                OR LOWER(`loan`.`id`) LIKE '%" . $options . "%'
+                )");
+            } 
             $Select_sum = $Select_sum->first();
-            //return $Select_db->toSql();
-            return datatables()->of($Select_db)
+            // dd($Select_db->toSql());
+            // return $Select_db->toSql();
+             
+             return  datatables()->of($Select_db)
                 ->with('amount', '<b>' . $Select_sum->amount . '</b>')
                 ->with('SQL', $Select_db->toSql())
                 ->make(true);
+            // dd($rea);
         }
 
         $data = $Select_db->get();
+        
         $selected = []; 
         foreach($data as $k=>$item){
             if($item->loan_type == 'personal_loan'){
-                // $data[$k] = null;
-                // dd($data[$k]); 
+                // $data[$k] = null; 
+                // dd($data[$k]);  
             }else{
                 $selected[] = $data[$k];
             }
         }
         $data = $selected;
-        
+        // dd($data);
         
         return view('Loans.index')->with(compact('lkp_loan_status'))
             ->with(compact('users'))->with(compact('lkp_user_type'))->with(compact('lkp_company'))->with(compact('warehouse'));
@@ -483,15 +507,20 @@ class LoansController extends Controller
         $Loans->status_id = 4;
         //$Loans->paid_image = $fileNameStore;
         $Loans->save();
+        $journal_type_id = '';
 
         $loan = DB::select('SELECT * from loan where loan.id=' . $request->input('loan_id'))[0];
-
+        if($loan->loan_type == 'fuel_loan'){
+            $journal_type_id = 9;
+        }else{
+            $journal_type_id = 1;
+        }
 
         try {
             DB::insert("insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,
         createdby_id,updatedby_id,created_at,updated_at)
         values
-        (" . $loan->driverId . ",'" . $loan->journal_date . "'," . $loan->amount . ",null,'" . $loan->note . "',1," . $loan->id . ",
+        (" . $loan->driverId . ",'" . $loan->journal_date . "'," . $loan->amount . ",null,'" . $loan->note . "',".$journal_type_id."," . $loan->id . ",
         " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
         )");
         } catch (\Illuminate\Database\QueryException $e) {
@@ -563,7 +592,7 @@ class LoansController extends Controller
             'select_file' => 'required|mimes:xls,xlsx'
         ]);
 
-
+        
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $tmpfname = $request->file('select_file');
 
@@ -593,7 +622,7 @@ class LoansController extends Controller
                                     ) as sub"))
                 ->first();
 
-
+                
             $loan_IDs = explode("*", $worksheet->getCell('L' . $row)->getValue());
             $AMP_IDs = explode("*", $worksheet->getCell('I' . $row)->getValue());
             $bank_paid = explode("*", $worksheet->getCell('K' . $row)->getValue());
@@ -615,18 +644,24 @@ class LoansController extends Controller
                     try {
 
                         $loan = DB::select('SELECT * from loan where loan.id=' . $loan_IDs[$i])[0];
+                        $journal_type_id = '';
+                        if($loan->loan_type == 'fuel_loan'){
+                            $journal_type_id = 9;
+                        }else{
+                            $journal_type_id = 1;
+                        }
                         if ($loan->status_id <> 4) {
                             DB::update(" UPDATE loan SET status_id=4 where id = " . $loan_IDs[$i]);
 
                             DB::insert("insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,
                              createdby_id,updatedby_id,created_at,updated_at)
                             values
-                            (" . $loan->driverId . ",'" . $loan->journal_date . "'," . $loan->amount . ",null,'" . $loan->note . "',1," . $loan->id . ",
+                            (" . $loan->driverId . ",'" . $loan->journal_date . "'," . $loan->amount . ",null,'" . $loan->note . "',".$journal_type_id."," . $loan->id . ",
                             " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
                             )");
 
                             DB::update("UPDATE loan
-                            JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1)
+                            JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1 or journal.journal_type_id = 9)
                             SET loan.journal_id = journal.id
                             where loan.id =" . $loan_IDs[$i]);
                         }

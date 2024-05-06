@@ -1,0 +1,8 @@
+[21-Jul-2020 13:31:20 UTC] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[15-Aug-2020 11:05:35 UTC] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[22-Sep-2020 12:48:32 Asia/Riyadh] PHP Fatal error:  Allowed memory size of 402653184 bytes exhausted (tried to allocate 4096 bytes) in /home/mashauer/public_html/malco/vendor/laravel/framework/src/Illuminate/Support/helpers.php on line 251
+[22-Sep-2020 12:48:32 Asia/Riyadh] PHP Fatal error:  Allowed memory size of 402653184 bytes exhausted (tried to allocate 32768 bytes) in /home/mashauer/public_html/malco/vendor/symfony/debug/Exception/FatalErrorException.php on line 1
+[01-Oct-2020 10:27:07 UTC] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0
+[06-Oct-2020 14:58:18 Asia/Riyadh] PHP Fatal error:  Allowed memory size of 402653184 bytes exhausted (tried to allocate 20480 bytes) in /home/mashauer/public_html/malco/vendor/yajra/laravel-datatables-oracle/src/Processors/DataProcessor.php on line 262
+[06-Oct-2020 14:58:18 Asia/Riyadh] PHP Fatal error:  Allowed memory size of 402653184 bytes exhausted (tried to allocate 32768 bytes) in /home/mashauer/public_html/malco/vendor/symfony/debug/Exception/FatalErrorException.php on line 1
+[27-Sep-2021 06:00:15 America/Boise] PHP Warning:  Unknown: Input variables exceeded 1000. To increase the limit change max_input_vars in php.ini. in Unknown on line 0

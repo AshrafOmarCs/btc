@@ -1,0 +1,87 @@
+.disable-select {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+body{
+    font-family: 'Cairo', sans-serif;
+}
+
+.brand-logo img{
+    height: 100%;
+    width: 100%;
+}
+
+.wizard-label{
+    padding-right: 10px;
+}
+
+.header-mobile a img{
+    height: 30px; 
+    width: 100px;
+}
+/* Boxes styles -- start */
+#boxesContainer{
+    text-align: center;
+}
+
+.game-box {
+    padding: 15px;
+    display: inline-block;
+    margin: 5px;
+    border-radius: 2px;
+    background-color: azure;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 1px 1px 10px #ccc;
+    transition: all ease-in-out .2s;
+    z-index: 10;
+}
+
+#orderPreview{
+    font-size: 2em;
+    text-align: center;
+    color: #c3c33c;
+    font-weight: bold;
+    padding: 10px; 
+    margin: 10px;
+}
+
+.game-box:hover, .selected{
+    background-color: #8950FC;
+    color: #fff;
+}
+
+.my-input-image{
+    box-shadow: -1px -1px 10px #a0a0a0;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all ease-in-out .2s;
+}
+.my-input-image:hover{
+    box-shadow: 1px 1px 20px #c3c3c3;
+    border-radius: 20px;
+}
+/* Boxes styles -- end */
+
+.table th, .table td{
+    vertical-align: middle !important;
+}
+
+
+.btn-outline-main{
+    border-color: #6319DB !important;
+    color: #6319DB !important;
+}
+
+.btn-outline-main:hover{
+    background-color: #6319DB !important;
+    color: #fff !important;
+}
