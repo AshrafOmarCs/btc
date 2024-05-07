@@ -49,7 +49,7 @@ class HomeController extends Controller
 
         $delegatedAttendanceVehicles = DB::select("SELECT vehicles.id FROM vehicles INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON drivers.vehicle_id=drivers_attendance.vehicle_id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id WHERE vehicles.maintenance_status IS NULL AND drivers_attendance.date='$today' $AND");
         $delegatedAttendanceVehicles = count($delegatedAttendanceVehicles);
-        
+
         $delegatedNoAttendanceVehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id WHERE vehicles.maintenance_status is null $AND AND vehicles.id NOT IN (SELECT vehicle_id FROM drivers_attendance WHERE date = '$today')");
         $delegatedNoAttendanceVehicles = count($delegatedNoAttendanceVehicles);
 
@@ -57,7 +57,7 @@ class HomeController extends Controller
         $delegatedAttendanceExcuseVehicles = count($delegatedAttendanceExcuseVehicles);
         $delegatedAttendanceNoExcuseVehicles = DB::select("SELECT vehicles.id FROM vehicles INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON drivers.vehicle_id=drivers_attendance.vehicle_id WHERE drivers_attendance.`status`='absent with no excuse' AND drivers_attendance.date = '$today' $AND");
         $delegatedAttendanceNoExcuseVehicles = count($delegatedAttendanceNoExcuseVehicles);
-        
+
         $maintenanceVehicles = DB::select("SELECT vehicles.id FROM vehicles INNER JOIN drivers ON vehicles.id=drivers.vehicle_id WHERE vehicles.maintenance_status IS NOT NULL $AND");
         $maintenanceVehicles = count($maintenanceVehicles);
         $totalUsers = DB::select("SELECT (SELECT COUNT(*) FROM drivers $wher ) as totalDrivers,
@@ -96,7 +96,7 @@ class HomeController extends Controller
         //dd($totalUsers[0]->totalDrivers);
         return view('home', compact('totalUsers', 'drivers', 'lkp_company', 'app_version', 'delegatedAttendanceVehicles', 'delegatedNoAttendanceVehicles', 'delegatedAttendanceExcuseVehicles', 'delegatedAttendanceNoExcuseVehicles', 'maintenanceVehicles'));
     }
-    
+
     public function vehicles_info(Request $request){
         $today = date("Y-m-d");
         $type = $request->type;
@@ -123,39 +123,39 @@ class HomeController extends Controller
         } else if ($type == 'available') {
             $small = "The following vehicles are available/idol vehicles with respect to city.";
             $information = DB::select("SELECT vehicles.current_status, lkp_city.id, lkp_city.name_en AS city_name,COUNT(vehicles.id) AS vehicle_count FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id WHERE vehicles.current_status = 'availabe' $AND GROUP BY lkp_city.name_en");
-            
+
         } else if ($type == 'done_attendance') {
             $small = "The following vehicles are done with attendance vehicles with respect to warehouse.";
             $information = DB::select("SELECT vehicles.current_status,lkp_city.id,lkp_city.name_en AS city_name,COUNT(DISTINCT vehicles.id) AS vehicle_count,warehouse.warehouseName,lkp_company.companyName,GROUP_CONCAT(DISTINCT users.`name`) AS user_names FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON vehicles.id=drivers_attendance.vehicle_id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id INNER JOIN users INNER JOIN users_privilege ON users.id=users_privilege.user_id AND warehouse.id=users_privilege.warehouseId WHERE drivers_attendance.date='$today' $AND AND users_privilege.user_id NOT IN (69,70,8) AND users.active_id=1 GROUP BY vehicles.current_status,lkp_city.id,lkp_city.name_en,warehouse.warehouseName,lkp_company.companyName");
-            
+
         } else if ($type == 'pending_attendance') {
             $small = "The following vehicles are pending with attendance vehicles with respect to warehouse.";
             $information = DB::select("SELECT vehicles.current_status,lkp_city.id,lkp_city.name_en AS city_name,COUNT(DISTINCT vehicles.id) AS vehicle_count,warehouse.warehouseName,lkp_company.companyName, GROUP_CONCAT(DISTINCT users.`name`) AS user_names FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id INNER JOIN users INNER JOIN users_privilege ON users.id=users_privilege.user_id AND warehouse.id=users_privilege.warehouseId WHERE vehicles.maintenance_status is null $AND AND vehicles.id NOT IN (SELECT vehicle_id FROM drivers_attendance WHERE date = '$today') AND users_privilege.user_id NOT IN (69,70,8) AND users.active_id=1 GROUP BY vehicles.current_status,lkp_city.id,lkp_city.name_en,warehouse.warehouseName,lkp_company.companyName");
-            
+
         } else if ($type == 'present') {
             $small = "The following vehicles are present vehicles with respect to warehouse.";
             $information = DB::select("SELECT vehicles.current_status,lkp_city.id,lkp_city.name_en AS city_name,COUNT(DISTINCT vehicles.id) AS vehicle_count,warehouse.warehouseName,lkp_company.companyName, GROUP_CONCAT(DISTINCT users.`name`) AS user_names FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON vehicles.id=drivers_attendance.vehicle_id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id INNER JOIN users INNER JOIN users_privilege ON users.id=users_privilege.user_id AND warehouse.id=users_privilege.warehouseId WHERE drivers_attendance.date='$today' and drivers_attendance.`status` = 'present' $AND AND users_privilege.user_id NOT IN (69,70,8) AND users.active_id=1 GROUP BY vehicles.current_status,lkp_city.id,lkp_city.name_en,warehouse.warehouseName,lkp_company.companyName");
-            
+
         } else if ($type == 'absent_ex') {
             $small = "The following vehicles are absent with excuse vehicles with respect to warehouse.";
             $information = DB::select("SELECT vehicles.current_status,lkp_city.id,lkp_city.name_en AS city_name,COUNT(DISTINCT vehicles.id) AS vehicle_count,warehouse.warehouseName,lkp_company.companyName, GROUP_CONCAT(DISTINCT users.`name`) AS user_names FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON vehicles.id=drivers_attendance.vehicle_id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id INNER JOIN users INNER JOIN users_privilege ON users.id=users_privilege.user_id AND warehouse.id=users_privilege.warehouseId WHERE drivers_attendance.date='$today' and drivers_attendance.`status` = 'absent with excuse' $AND AND users_privilege.user_id NOT IN (69,70,8) AND users.active_id=1 GROUP BY vehicles.current_status,lkp_city.id,lkp_city.name_en,warehouse.warehouseName,lkp_company.companyName");
-            
+
         } else if ($type == 'absent_no_ex') {
             $small = "The following vehicles are absent with no any excuse vehicles with respect to warehouse.";
             $information = DB::select("SELECT vehicles.current_status,lkp_city.id,lkp_city.name_en AS city_name,COUNT(DISTINCT vehicles.id) AS vehicle_count,lkp_company.companyName, GROUP_CONCAT(DISTINCT users.`name`) AS user_names, warehouse.warehouseName FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON vehicles.id=drivers_attendance.vehicle_id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id INNER JOIN users INNER JOIN users_privilege ON users.id=users_privilege.user_id AND warehouse.id=users_privilege.warehouseId WHERE drivers_attendance.date='$today' and drivers_attendance.`status` = 'absent with no excuse' $AND AND users_privilege.user_id NOT IN (69,70,8) AND users.active_id=1 GROUP BY vehicles.current_status,lkp_city.id,lkp_city.name_en,warehouse.warehouseName,lkp_company.companyName");
-            
+
         } else if ($type == 'maintenance') {
             $small = "The following vehicles are in maintenance and delegated - maintenance vehicles with respect to city.";
             $information = DB::select("SELECT vehicles.current_status, lkp_city.id, lkp_city.name_en AS city_name,COUNT(vehicles.id) AS vehicle_count FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id WHERE vehicles.current_status = 'maintenance' OR vehicles.maintenance_status is not null GROUP BY lkp_city.name_en");
-            
+
         } else if ($type == 'maintenance_') {
             $small = "The following vehicles are in maintenance and delegated - maintenance vehicles with respect to city.";
             $information = DB::select("SELECT vehicles.current_status, lkp_city.id, lkp_city.name_en AS city_name,COUNT(vehicles.id) AS vehicle_count FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id JOIN drivers ON vehicles.id=drivers.vehicle_id WHERE vehicles.maintenance_status is not null $AND GROUP BY lkp_city.name_en");
-            
+
         } else if ($type == 'damaged') {
             $small = "The following vehicles are damaged vehicles with respect to city.";
             $information = DB::select("SELECT vehicles.current_status, lkp_city.id, lkp_city.name_en AS city_name,COUNT(vehicles.id) AS vehicle_count FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id WHERE vehicles.current_status = 'damaged' $AND GROUP BY lkp_city.name_en");
-            
+
         }
         // dd($information);
         return view('Home.vehicle_info', compact('information', 'type', 'title', 'small'));

@@ -29,11 +29,11 @@ Route::get('Transaction-History','Transaction_historyController@index');
 Route::post('Vehicles/CheckUp-Accessories-Handler','VehiclesController@accessoriesHandler');
 Route::post('Vehicles/CheckUpImageHandler','VehiclesController@checkUpImageHandler');
 Route::get('Vehicles/Check-up/{checkUp_id}','VehiclesController@getCheckUp');
-Route::get('Vehicles','VehiclesController@index'); 
-Route::get('Vehicles/create-delegation','VehiclesController@create_delegation'); 
+Route::get('Vehicles','VehiclesController@index');
+Route::get('Vehicles/create-delegation','VehiclesController@create_delegation');
 
 
-// Vehicles 
+// Vehicles
 Route::get('Drivers/approval-review/{driver_id}','VehiclesController@approval_review');
 
 Route::get('Vehicles/Vehicles-Requests','VehiclesController@vehicle_requests');
@@ -50,16 +50,16 @@ Route::post('Import_DA_Dailyload/bulk-drivers','Import_DA_DailyloadController@bu
 Route::post('Import_DA_Dailyload/storewarehouse','Import_DA_DailyloadController@storewarehouse');
 
 Route::post('Import_DA_Dailyload/Check-DA/storeDriver','Import_DA_DailyloadController@storeDriver');
-Route::get('Import_DA_Dailyload/Check-DA/preview-file/{file_id}','Import_DA_DailyloadController@preview_file'); 
+Route::get('Import_DA_Dailyload/Check-DA/preview-file/{file_id}','Import_DA_DailyloadController@preview_file');
 Route::post('Import_DA_Dailyload/Check-DA/updateWarehouse','Import_DA_DailyloadController@updateWarehouse');
 
 Route::get('Import_DA_Dailyload/Check-DA/{file_id}','Import_DA_DailyloadController@Check_DA');
 
 Route::get('I-Mile/Manthly-report','ImileController@imileManthly');
 Route::get('Import_DA_Dailyload/step/{stepNumber}','Import_DA_DailyloadController@guideSteps');
-Route::post('Import_DA_Dailyload/validate','Import_DA_DailyloadController@validte'); 
-Route::post('/Import_DA_Dailyload/StoreWarehose','Import_DA_DailyloadController@StoreWarehose'); 
-Route::post('/Import_DA_Dailyload/Check-Drivers','Import_DA_DailyloadController@check_drivers_jquery'); 
+Route::post('Import_DA_Dailyload/validate','Import_DA_DailyloadController@validte');
+Route::post('/Import_DA_Dailyload/StoreWarehose','Import_DA_DailyloadController@StoreWarehose');
+Route::post('/Import_DA_Dailyload/Check-Drivers','Import_DA_DailyloadController@check_drivers_jquery');
 // Ashraf Code
 
 Route::post('/DriversJahiz/storeDocument','GeneralController@storeDocument');
@@ -70,7 +70,7 @@ Route::get('debug/ApiRequest','DebugController@ApiRequest');
 
 
 // Fuel Routes
-// fuel request 
+// fuel request
 Route::get('Fuel-Loans','fuelLoanController@index');
 Route::post('Fuel-Loans/Filter','fuelLoanController@index');
 Route::post('Fuel-Loans/store','fuelLoanController@store');
@@ -86,34 +86,34 @@ Route::post('Approval-Pages/create','ApprovalController@create');
 
 // end of Approval-Pages
 
-// Ashraf Apis 
+// Ashraf Apis
 
 Route::post('CheckPermisions','SalaryController@CheckPermisions')->name('CheckPermisions');
 Route::get('Approve-invoice/{company_id}/{period}/{user_id}','ApprovalController@approveMethod');
 
-//  end of ashraf apis 
+//  end of ashraf apis
 
 
 // ASIM Routes
 Route::get('Export-jahiz-clearing-report','supervisorController@exprt_clearance_to_excel');
 
-// end ASIM 
+// end ASIM
 //reCall route with more clear names
 Route::get('destroy-unpaidTransaction/{recored_id}','UnpaidSalaryController@destroy_unpaidTransaction');
 Route::post('destroy-unpaidTransactions','UnpaidSalaryController@destroy_unpaidTransactions');
 
-// unpaid Salary 
+// unpaid Salary
 
 Route::get('Unpaid-Salary','UnpaidSalaryController@index');
 // UNPaid Salary
 
-// imile routes 
+// imile routes
 
 // Route::get('I-Mile/Manthly-report','ImileController@imileManthly');
 // Route::post('i-mile/preview','ImileController@imileManthlyPreview');
 // Route::post('storeImileDriver','ImileController@storeImileDriver');
 // Route::post('I-mile/Confirm-invoice','ImileController@confirmeInvoice');
-// imile routes 
+// imile routes
 
 Route::get('I-Mile/Manthly-report','ImileController@imileManthly');
 Route::post('i-mile/preview','ImileController@validateFile');
@@ -163,7 +163,7 @@ Route::post('import_excel/i-mile/preview','ImileController@preview');
 Route::post('import_excel/i-mile/confirme','ImileController@confirme');
 Route::post('import_excel/store-user','ImileController@storeDriver');
 
-// end i-mile Routes 
+// end i-mile Routes
 
 
 Route::post('/Syinc-drivers-sanad/store','supervisorController@store');
@@ -179,7 +179,7 @@ Route::get('/DriversJahiz/import','GeneralController@sanadImport');
 Route::post('/DriversJahiz/store','GeneralController@sanadStore');
 // ashraf code
 
-Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');  
+Route::get('/logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
 
     Route::get('/', function () {
@@ -200,7 +200,7 @@ Route::get('/UsersRolePrivilage/{role_id}', 'UsersRoleController@UsersRolePrivil
 Route::POST('/UsersRolePrivilageSave', 'UsersRoleController@UsersRolePrivilageSave');
 
 Route::resource('/Users', 'UsersController');
-Route::get('/Users/create/{type_id}', 'UsersController@create')->name('Users.create'); 
+Route::get('/Users/create/{type_id}', 'UsersController@create')->name('Users.create');
 Route::get('/Users/{id}/edit/{type_id}', 'UsersController@edit')->name('Users.edit');
 
 // its Muhammad start
@@ -259,9 +259,9 @@ Route::post('vehicles/utilities/update','VehiclesController@utilitiesUpdate');
 
 Route::post('Vehicles/Search','VehiclesController@search');
 Route::post('Vehicles/VehicleInfo','HomeController@vehicles_info');
-Route::get('Vehicles/{city_name}','VehiclesController@index'); 
-Route::get('Vehicles/{city_name}/{type}','VehiclesController@index'); 
-Route::get('Vehicles/{city_name}/{type}/{companyName}/{warehouseName}','VehiclesController@index'); 
+Route::get('Vehicles/{city_name}','VehiclesController@index');
+Route::get('Vehicles/{city_name}/{type}','VehiclesController@index');
+Route::get('Vehicles/{city_name}/{type}/{companyName}/{warehouseName}','VehiclesController@index');
 
 Route::get('/DriversAttendance', 'DriversController@attendance');
 Route::post('DriversAttendance/Search','DriversController@attendance_search');
