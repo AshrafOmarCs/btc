@@ -446,61 +446,7 @@
 
                                                 </thead>
                                                 <tbody>
-                                                        {{-- <tr>
-                                                            <td><input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></td>
-                                                            <td><img src="" class="flag-img-lg" alt="Best Admin Dashboards">
-                                                                I-Mile/Jeddah</td>
-                                                            <td>Riyadh Station</td>
-                                                            <td><a href="">BTC Ahmed ali </a></td>
-                                                            <td>D210669855</td>
-                                                            <td>
-                                                                <ul>
-                                                                    <li>  Identity/Iqama: <a href="#"><i style="color: green" class="bi bi-check2-square"></i></a></li>
-                                                                    <li> Promissory Note: <a href="#"><i style="color: green" class="bi bi-check2-square"></i></a></li>
-                                                                    <li> Contract: <a href="#"><i style="color: green" class="bi bi-check2-square"></i></a></li>
-                                                                </ul>
-                                                            </td>
-                                                            <td><span style="color: green">Active</span></td>
-                                                            <td>966539529559 </td>
-                                                            <td>2143345649</td>
-                                                            <td>P-61</td>
-                                                            <td>C-61</td>
-                                                            <td>2011/04/25</td>
-                                                            <td>
-                                                                <button type="button" class="btn btn-light"><i class="bi bi-list text-green"></i> </button>
 
-                                                                <div class="btn-group">
-                                                                    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
-                                                                      aria-expanded="false">
-                                                                      Options
-                                                                    </button>
-                                                                    <ul class="dropdown-menu">
-
-                                                                      <li><a class="dropdown-item" href="#">Edit</a></li>
-                                                                      <li>
-                                                                        <hr class="dropdown-divider">
-                                                                      </li>
-                                                                      <li><a class="dropdown-item" href="#">Reset-password</a></li>
-                                                                      <li>
-                                                                        <hr class="dropdown-divider">
-                                                                      </li>
-                                                                      <li><a class="dropdown-item" href="#">Attachment</a></li>
-                                                                      <li>
-                                                                        <hr class="dropdown-divider">
-                                                                      </li>
-
-                                                                      <li><a class="dropdown-item" href="#">Report Driver</a></li>
-                                                                      <li>
-                                                                        <hr class="dropdown-divider">
-                                                                      </li>
-
-
-                                                                      <li><a class="dropdown-item" href="#"><span style="color:red">Delete</span></a></li>
-
-                                                                    </ul>
-                                                                  </div>
-                                                            </td>
-                                                        </tr> --}}
                                                 </tbody>
 											</table>
 										</div>
