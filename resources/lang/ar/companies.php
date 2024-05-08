@@ -1,0 +1,33 @@
+<?php
+// ar
+return [
+    'companies' => 'شركات',
+    'company' => 'شركة',
+    'add_company' => 'إضافة شركة جديدة',
+    'companyName' => 'اسم الشركة',
+    'calculation_method' => 'طريقة حساب',
+    'period_start' => 'بداية الفترة',
+    'period_end' => 'انتهت الحصة',
+    'companyFullName_en' => 'الاسم الكامل للشركة الانجليزية',
+    'companyFullName_ar' => 'الاسم الكامل للشركة عربي',
+    'TaxNumber' => 'الرقم الضريبي',
+    'CreditNote_Letter' => 'خطاب مذكرة الائتمان',
+    'Created_At' => 'أنشئت في',
+    'Created_by' => 'انشأ من قبل',
+    'Updated_At' => 'تم التحديث في',
+    'CompanyName' => 'اسم الشركة',
+    'add_new_company' => 'إضافة شركة جديدة',
+    'filter' => 'منقي',
+    'reset' => 'إعادة ضبط',
+    'action' => 'فعل',
+    'updated_by' => 'تم التحديث بواسطة',
+    'updated_at' => 'تم التحديث في',
+    'cancel' => 'يلغي',
+    'add' => 'يضيف',
+    'rental_company' => 'شركة تأجير',
+    'delete' => 'يمسح',
+    'delete_msg' => 'هل أنت متأكد أنك تريد حذف',
+    'update' => 'تحديث',
+    'status' => 'حالة',
+
+];

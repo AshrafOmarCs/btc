@@ -3,6 +3,7 @@
 <!-- Data Tables -->
 <link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5.css')}}" />
 <link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5-custom.css')}}" />
+<link rel="stylesheet" href="https://btcdmins.com/AdminLTE/plugins/iCheck/all.css">
 
 
 <!-- Modal ExportExcel 3 -->
@@ -342,6 +343,25 @@
     </div>
 </div>
 
+<div class="modal fade" id="edit_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Driver </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="response">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success"
+                    data-bs-dismiss="modal" >Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--End Modal ExportExcel 3 -->
 
  <!-- Row start -->
@@ -427,8 +447,8 @@
                                                     <TH>{{__('drivers.fullName')}}</TH>
                                                     <TH>{{__('drivers.Mobile')}}</TH>
                                                     <TH>{{__('drivers.Iqama')}}</TH>
-
                                                     <TH>{{__('drivers.JobId')}}</TH>
+                                                    <th>Driver's Docs</th>
                                                     <TH>{{__('drivers.Status')}}</TH>
                                                     @if(Auth::user()->user_type_id==1)
                                                         <TH>{{__('drivers.OnHold')}}</TH>
@@ -534,9 +554,11 @@
 
                     columns: [
                         {
-                            data: 'companyName',
                             name: 'lkp_company.companyName',
-                            //visible:false
+                            render: function (data, type, row, meta) {
+                                return `<img src="data:image/jpeg;base64,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" class="flag-img-lg" alt="Best Admin Dashboards">
+                                        ` + row.companyName;
+                            }
                         },
                         {
                             visible: false,
@@ -574,6 +596,16 @@
                         {
                             data: 'job_id',
                             name: 'job_id'
+                        },
+                        {
+                            "orderable": false,
+                            name: 'driver_docs',
+                            render: function (data, type, row, meta) {
+                                return `<table>
+                                    <thead style="background-color: #9e9e9e;"><tr><th style="border: 1px solid black;">Identity/Iqama</th><th style="border: 1px solid black;">Promissory Note</th><th style="border: 1px solid black;">Contract</th></tr></thead>
+                                    <tbody><tr><td class="text-center" style="border: 1px solid black;">view</td><td class="text-center" style="border: 1px solid black;">view</td><td class="text-center" style="border: 1px solid black;">view</td></tr></tbody>
+                                    </table>`;
+                            }
                         },
                         {
                             //data: 'driver_status_en',
@@ -641,22 +673,52 @@
                             "targets": -1,
                             //"data": 'id',
                             "render": function (data, type, row, meta) {
-                                return '<input type="hidden" id="IDs_all_' + meta.row + '" name="IDs_all_' + meta.row + '" value="' + row.id + '">' +
-                                    '<a id=' + row.id + ' data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"> <i class="fa fa-pencil"></i> </a>' +
-                                    @if(Auth::user()->user_type_id==1)
-                                        '&nbsp;<a id=' + row.id + ' data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete"> <i class="fa fa-times"></i> </a>' +
-                                    @endif
-                                        '&nbsp;<a id=' + row.id + ' data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>' +
-                                    '&nbsp;<a id=' + row.id + ' data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement"> <i class="fa fa-bars"></i> </a>' +
-                                    '&nbsp;<a id=' + row.id + ' data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment"> <i class="fa fa-paperclip"></i> </a>' +
-                                    @if(Auth::user()->user_type_id==1)
-                                        '&nbsp;<a id=' + row.id + ' data-original-title="Clearance" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-black vd_black Clearance"> C </a>' +
-                                    @endif
-                                        '&nbsp;<button id=' + row.id + ' type="button" class="btn btn-primary btn-xs resetpass">Reset Pass</button>'
+                                let html = `<button type="button" class="btn btn-light"><i class="bi bi-list text-green"></i> </button>
 
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Options
+                                    </button>
+                                    <ul class="dropdown-menu">
 
+                                        <li>
+                                            <input type="hidden" id="IDs_all_` + meta.row + `" name="IDs_all_` + meta.row + `" value="` + row.id + `">` + `
+                                            <a id=` + row.id + ` data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit dropdown-item" href="#">Edit</a>
+
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li>
+                                            <a id=` + row.id + ` class="dropdown-item" href="#">Reset-password</a>
+                                        </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment dropdown-item" href="#">Attachment</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li><a class="dropdown-item" href="#">Report Driver</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>`;
+                                    @if(Auth::user()->user_type_id==1)
+                                        html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">Delete</span></a></li>`;
+                                    @endif
+                                    html += `</ul>
+                                    </div`;
+
+                                    return html;
                             }
                         },
+                        //         '&nbsp;<a id=' + row.id + ' data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>' +
+                                //     '&nbsp;<a id=' + row.id + ' data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement"> <i class="fa fa-bars"></i> </a>' +
+                                //     if(Auth::user()->user_type_id==1)
+                                //         '&nbsp;<a id=' + row.id + ' data-original-title="Clearance" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-black vd_black Clearance"> C </a>' +
+                                //     endif
                         {
                             visible: false,
                             data: 'accountNumber',
@@ -677,8 +739,9 @@
 
             $('#customer_data tbody').on('click', '.view', function (e) {
                 e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                document.getElementById('response').innerHTML = "loading";
+                // document.getElementById('edit_modal').style.display = 'block';
+                $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
@@ -694,8 +757,9 @@
             });
             $('#customer_data tbody').on('click', '.edit', function (e) {
                 //e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                $('#edit_modal').modal('toggle');
+                document.getElementById('response').innerHTML = "loading";
+
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
@@ -704,9 +768,9 @@
                     dataType: 'html',
                     success: function (data) {
                         document.getElementById('response').innerHTML = data;
-                        $('#vehicle_id').select2({
-                            dropdownParent: $('#edit_modal')
-                        });
+                        // $('#vehicle_id').select2({
+                        //     dropdownParent: $('#edit_modal')
+                        // });
                     }
                 });
             });
@@ -718,8 +782,8 @@
 
             $('#customer_data tbody').on('click', '.resetpass', function (e) {
                 e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                document.getElementById('response').innerHTML = "loading";
+                $('#myModal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
@@ -738,8 +802,8 @@
 
             $('#customer_data tbody').on('click', '.statement', function (e) {
                 e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                document.getElementById('response').innerHTML = "loading";
+                $('#myModal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
@@ -881,6 +945,7 @@
 
     <!-- Main Js Required -->
     <script src="{{asset('assets/js/main.js')}}"></script>
+    <script src="https://btcdmins.com/AdminLTE/plugins/iCheck/icheck.min.js"></script>
 
 @stop
 @endsection

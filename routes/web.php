@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,18 +12,19 @@
 |
 */
     // DA-Portal
-    // dd($locale); 
+    // dd($locale);
 
 Route::group(['prefix' => 'New-Portal'], function() {
+
     Route::get("/",'DashoardController@index');
     Route::get("/Drivers",'DashoardController@index_drivers');
 
 
-    // Muhammed Code 
-    
+    // Muhammed Code
+
 
 });
-Route::get("landmarkHandlller",'AshrafController@landmarkHandlller'); 
+Route::get("landmarkHandlller",'AshrafController@landmarkHandlller');
 
 
 Route::get("other_recored",'AshrafController@other_recored');
@@ -45,25 +47,25 @@ Route::get('claims',function(){
     return view('claims');
 });
 
-Route::group(['prefix' => 'DA-Portal'], function() {   
-    Route::get('login','DriverLoginController@index'); 
+Route::group(['prefix' => 'DA-Portal'], function() {
+    Route::get('login','DriverLoginController@index');
     Route::get('Fill-Data','DriverLoginController@fillfulment');
 });
 
-// QR Code 
+// QR Code
 Route::get('qrcode',function(){
     return view('qrcode');
 });
-Route::get('send-sms','SmsController@index'); 
-Route::post('otp_compare','SmsController@otp_compare'); 
+Route::get('send-sms','SmsController@index');
+Route::post('otp_compare','SmsController@otp_compare');
 
-// Vehicles 
+// Vehicles
 
 Route::get('Vehicles/Vehicles-Requests','VehiclesController@vehicle_requests');
 
 Route::get('mainpulate-utlities','VehiclesController@mainpulate_utlities');
 
-// 
+//
 Route::get('Vehicles','VehiclesController@index');
 Route::get('Vehicles/vehicle-checkup-utilities/{vehicle_id}','VehiclesController@vehicle_checkup_utilities');
 Route::post('vehicles/utilities','VehiclesController@utilities');
@@ -87,26 +89,26 @@ Route::post('Import_DA_Dailyload/bulk-drivers','Import_DA_DailyloadController@bu
 Route::post('Import_DA_Dailyload/storewarehouse','Import_DA_DailyloadController@storewarehouse');
 
 Route::post('Import_DA_Dailyload/Check-DA/storeDriver','Import_DA_DailyloadController@storeDriver');
-Route::get('Import_DA_Dailyload/Check-DA/preview-file/{file_id}','Import_DA_DailyloadController@preview_file'); 
+Route::get('Import_DA_Dailyload/Check-DA/preview-file/{file_id}','Import_DA_DailyloadController@preview_file');
 Route::post('Import_DA_Dailyload/Check-DA/updateWarehouse','Import_DA_DailyloadController@updateWarehouse');
 
 Route::get('Import_DA_Dailyload/Check-DA/{file_id}','Import_DA_DailyloadController@Check_DA');
 
 Route::get('I-Mile/Manthly-report','ImileController@imileManthly');
 Route::get('Import_DA_Dailyload/step/{stepNumber}','Import_DA_DailyloadController@guideSteps');
-Route::post('Import_DA_Dailyload/validate','Import_DA_DailyloadController@validte'); 
-Route::post('/Import_DA_Dailyload/StoreWarehose','Import_DA_DailyloadController@StoreWarehose'); 
-Route::post('/Import_DA_Dailyload/Check-Drivers','Import_DA_DailyloadController@check_drivers_jquery'); 
+Route::post('Import_DA_Dailyload/validate','Import_DA_DailyloadController@validte');
+Route::post('/Import_DA_Dailyload/StoreWarehose','Import_DA_DailyloadController@StoreWarehose');
+Route::post('/Import_DA_Dailyload/Check-Drivers','Import_DA_DailyloadController@check_drivers_jquery');
 
-// fuel request 
+// fuel request
 Route::get('Fuel-Loans','fuelLoanController@index');
 
 Route::post('Fuel-Loans/store','fuelLoanController@store');
 Route::post('/Send-fuel-requests','fuelLoanController@test');
 
 
-// 
-// Expenses Catogery 
+//
+// Expenses Catogery
 Route::get('Expenses-Type','ExpenseController@expenses_types');
 Route::get('Expenses-Sub-Categories','ExpenseController@index_sub');
 
@@ -117,7 +119,7 @@ Route::get('Expenses-Drivers','ExpenseController@index');
 Route::post('filter_expenses','ExpenseController@filter_expenses');
 Route::post('getExpenses','ExpenseController@getExpenses');
 
-// end of Expense catogery 
+// end of Expense catogery
 
 
 // Approval-Pages
@@ -128,18 +130,18 @@ Route::post('Approval-Pages/create','ApprovalController@create');
 
 // end of Approval-Pages
 
-// Ashraf Apis 
+// Ashraf Apis
 
 Route::post('CheckPermisions','SalaryController@CheckPermisions')->name('CheckPermisions');
 Route::get('Approve-invoice/{company_id}/{period}/{user_id}','ApprovalController@approveMethod');
 
-//  end of ashraf apis 
+//  end of ashraf apis
 
 //reCall route with more clear names
 Route::get('destroy-unpaidTransaction/{recored_id}','UnpaidSalaryController@destroy_unpaidTransaction');
 Route::post('destroy-unpaidTransactions','UnpaidSalaryController@destroy_unpaidTransactions');
 
-// unpaid Salary 
+// unpaid Salary
 Route::get('supervisors_missed_attendance',function(){
     $sql = "SELECT supervisors_missed_attendance.id,supervisors_missed_attendance.date,supervisors_missed_attendance.warehouses,users.name FROM `supervisors_missed_attendance` JOIN users ON users.id = supervisors_missed_attendance.super_id WHERE supervisors_missed_attendance.date BETWEEN '2023-09-01' and '2023-09-31' ;";
     $res = DB::select($sql);
@@ -148,14 +150,14 @@ Route::get('supervisors_missed_attendance',function(){
        $warehouses_ids =  json_decode($item->warehouses);
        foreach($warehouses_ids as $key11=>$warehouse_id){
         // dd($warehouse_id);
-        
+
             $ware = DB::select("SELECT * FROM `warehouse` where id =".$warehouse_id." ");
             if($key11 == 0 ){
-                $warehouses_names = $ware[0]->warehouseName; 
+                $warehouses_names = $ware[0]->warehouseName;
             }else{
-                $warehouses_names = $warehouses_names.', '.$ware[0]->warehouseName; 
+                $warehouses_names = $warehouses_names.', '.$ware[0]->warehouseName;
             }
-            
+
        }
     //    dd($warehouses_names);
        $item->warehouses_names = $warehouses_names;
@@ -167,7 +169,7 @@ Route::get('supervisors_missed_attendance',function(){
 Route::get('Unpaid-Salary','UnpaidSalaryController@index');
 
 // end of
-// imile routes 
+// imile routes
 
 Route::get('I-Mile/Manthly-report','ImileController@imileManthly');
 Route::post('i-mile/preview','ImileController@validateFile');
@@ -183,7 +185,7 @@ Route::post('editor-post','GeneralController@text_post');
 Route::get('Out-Source-Payments','outSourcePaymentController@index');
 Route::get('Out-source-payment/create','outSourcePaymentController@create');
 
-// end of 
+// end of
 
 // noon Routes
 Route::get('driver/check-if-exsist','ImileController@check');
@@ -198,9 +200,9 @@ Route::post('import_excel/i-mile/preview','ImileController@preview');
 Route::post('import_excel/i-mile/confirme','ImileController@confirme');
 Route::post('import_excel/store-user','ImileController@storeDriver');
 
-// end i-mile Routes 
+// end i-mile Routes
 
-// following route is for testing purposes 
+// following route is for testing purposes
 Route::get('import_excel/agility','agilityController@index');
 
 // Agility Routes

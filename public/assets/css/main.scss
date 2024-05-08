@@ -4671,7 +4671,7 @@ select:-webkit-autofill:focus {
 		padding: 1rem 1.2rem;
 		@include roundedCornersAll(10px, 10px, 0, 0);
 		.btn-close {
-			background: url(../img/cancel.svg) center/1em auto no-repeat;
+			// background: url(../img/cancel.svg) center/1em auto no-repeat;
 		}
 	}
 	.modal-body {

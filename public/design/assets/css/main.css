@@ -16488,7 +16488,7 @@ select:-webkit-autofill:focus {
   border-radius: 10px 10px 0 0;
 }
 .modal .modal-header .btn-close {
-  background: url("{{asset('../img/cancel.svg')}}") center/1em auto no-repeat;
+  /* background: url("{{asset('../img/cancel.svg')}}") center/1em auto no-repeat; */
 }
 .modal .modal-body {
   padding: 1.2rem;

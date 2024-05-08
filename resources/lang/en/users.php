@@ -1,0 +1,38 @@
+<?php
+// ar
+return [
+    'bander_users' => 'Bander Users',
+    'users' => 'Users',
+    'supervisors' => 'Supervisors',
+    'users_des' => 'By using this module, you can perform CRUD operations for Bander users.',
+    'super_des' => 'By using this module, you can perform CRUD operations for Supervisors/AreaManagers.',
+    'add_user_role' => 'Add New Users Role',
+    'add_user' => 'Add New User',
+    'name' => 'Name',
+    'phone' => 'Phone',
+    'email' => 'Email',
+    'identityNo' => 'IdentityNo',
+    'user_type' => 'User Type',
+    'role_name' => 'Role Name',
+    'active' => 'Active',
+    'created_at' => 'Created_at',
+    'action' => 'Action',
+    'delete' => 'Delete',
+    'delete_msg' => 'Are you sure, you want to delete',
+    'cancel' => 'Cancel',
+    'add' => 'Add',
+    'confirm_password' => 'Confirm Password',
+    'password' => 'Password',
+    'account_number' => 'Account Number',
+    'bank_name' => 'Bank Name',
+    'status' => 'Status',
+    'edit_user' => 'Edit User',
+    'update' => 'Update',
+    'warehouses' => 'Warehouses',
+    'usersRole' => 'Users Role',
+    'usersRole_des' => 'Using this module, you can assign privileges to each role or revoke them as needed.',
+    'updated_at' => 'Updated At',
+    'privilage' => 'privilage',
+    
+    
+];
