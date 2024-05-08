@@ -27,19 +27,19 @@ var options = {
 		width: 3
 	},
 	series: [{
-		name: 'iPhone',
+		name: 'Land-mark',
 		data: generateDayWiseTimeSeries(new Date('11 Feb 2019 GMT').getTime(), 20, {
 			min: 10,
 			max: 60
 		})
 	},{
-		name: 'Samsung',
+		name: 'iMile',
 		data: generateDayWiseTimeSeries(new Date('11 Feb 2019 GMT').getTime(), 20, {
 			min: 10,
 			max: 20
 		})
 	},{
-		name: 'Pixel',
+		name: 'Ninja',
 		data: generateDayWiseTimeSeries(new Date('11 Feb 2019 GMT').getTime(), 20, {
 			min: 10,
 			max: 15
