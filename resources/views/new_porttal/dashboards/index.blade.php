@@ -47,12 +47,12 @@
         </div>
     </div>
 </div>
-<!-- Row start -->
+ <!-- Row start -->
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">Stacked Area</div>
+                <div class="card-title">Sales By Projects</div>
             </div>
             <div class="card-body">
                 <div id="basic-area-stack-graph"></div>
@@ -137,5 +137,14 @@
     <!-- Apex Charts -->
     <script src="{{asset('assets/vendor/apex/apexcharts.min.js')}}"></script> 
     <script src="{{asset('assets/vendor/apex/examples/area/basic-area-graph-stacked.js')}}"></script> 
+
+    <script src="{{asset('assets/vendor/datatables/dataTables.min.js')}}"></script>
+    <script src="{{asset('assets/vendor/datatables/dataTables.bootstrap.min.js')}}"></script>
+
+    <!-- Custom Data tables -->
+    <script src="{{asset('assets/vendor/datatables/custom/custom-datatables.js')}}"></script>
+
+    <!-- Main Js Required -->
+    <script src="{{asset('assets/js/main.js')}}"></script> 
 @stop	 
 @endsection
