@@ -31,9 +31,20 @@ class AjaxController extends Controller
 
     public function getWarehouse($cityId)
     {
-
         $Select_db = DB::select("SELECT id,warehouseName as name from warehouse
         where cityId=" . $cityId . " order by warehouseName");
+        return response()->json($Select_db, 200);
+    }
+    public function getWarehouseByCompany($companyId)
+    {
+        $Select_db = DB::select("SELECT id,warehouseName as name from warehouse
+        where companyId=" . $companyId . " order by warehouseName");
+        return response()->json($Select_db, 200);
+    }
+    public function getWarehouseByCityCompany($cityId, $companyId)
+    {
+        $Select_db = DB::select("SELECT id,warehouseName as name from warehouse
+        where cityId=" . $cityId . " AND companyId=" . $companyId . " order by warehouseName");
         return response()->json($Select_db, 200);
     }
 
@@ -57,10 +68,30 @@ class AjaxController extends Controller
         where companyId=" . $companyId . " $AND order by warehouseName");
         return response()->json($Select_db, 200);
     }
+    public function getMultipleWarehouseName($companyId)
+    {
+        if (Auth::user()->user_type_id <> 1) {
+            $users_privilege = \Illuminate\Support\Facades\DB::select('SELECT user_id,warehouseId from users_privilege where user_id=' . Auth::user()->id);
+            foreach ($users_privilege as $users_privilegee) {
+                //echo $users_privilegee->warehouseId;
+                $whereIn_array[] = $users_privilegee->warehouseId;
+            }
+            if (count($whereIn_array) == 0) $whereIn_array[] = 0;
+            $wher = " where warehouse.id in(" . implode(",", $whereIn_array) . ")";
+            $AND = " AND warehouse.id in(" . implode(",", $whereIn_array) . ")";
+        } else {
+            $wher = "";
+            $AND = "";
+        }
+
+        $Select_db = DB::select("SELECT id,warehouseName as name from warehouse
+        where companyId in (" . $companyId . ") $AND order by warehouseName");
+        return response()->json($Select_db, 200);
+    }
 
     public function getPeriod($companyId)
     {
-         
+
         $Select_db = DB::select("select journal_period as id,journal_period as name from(
 
             select journal_period FROM
@@ -79,7 +110,6 @@ class AjaxController extends Controller
             GROUP BY journal_period
             order by journal_period desc)n
             ");
-            // dd($Select_db);
         //where SUBSTRING(journal_period, 14, 10)<'" . date('Y-m-d') . "'
         return response()->json($Select_db, 200);
     }

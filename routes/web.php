@@ -131,6 +131,15 @@ Route::post('Approval-Pages/create','ApprovalController@create');
 // end of Approval-Pages
 
 // Ashraf Apis
+Route::post('/Salary-revert', 'SalaryControllerShe@salaryRevert');
+Route::resource('Salary_she', 'SalaryControllerShe');
+Route::post('CheckPermisionsShe','SalaryControllerShe@CheckPermisions')->name('CheckPermisionsShe');
+Route::post('/GoToReady', 'SalaryControllerShe@goToReady');
+Route::POST('/SalaryPaidSaveShe', 'SalaryControllerShe@SalaryPaidSave');
+Route::get('/SalaryPaidShe', 'SalaryControllerShe@SalaryPaid');
+Route::resource('Salary', 'SalaryControllerShe');
+Route::get('/SalaryPaid', 'SalaryControllerShe@SalaryPaid');
+Route::POST('/SalaryPaidSave', 'SalaryControllerShe@SalaryPaidSave');
 
 Route::post('CheckPermisions','SalaryController@CheckPermisions')->name('CheckPermisions');
 Route::get('Approve-invoice/{company_id}/{period}/{user_id}','ApprovalController@approveMethod');
@@ -336,7 +345,9 @@ Route::resource('/Gaps', 'GapsController');
 Route::POST('/GapsPost', 'GapsController@GapsPost');
 Route::resource('/Settlements', 'SettlementsController');
 Route::POST('/SettlementsPost', 'SettlementsController@SettlementsPost');
-Route::resource('Salary', 'SalaryController');
+// Route::resource('Salary', 'SalaryController');
+Route::get('/getCityName/{companyId}', 'AjaxController@getCityName');
+
 Route::get('SalaryShow/{id}/{Period}', 'SalaryController@SalaryShow');
 
 Route::get('/getCityName/{companyId}', 'AjaxController@getCityName');

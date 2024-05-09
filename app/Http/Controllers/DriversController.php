@@ -249,7 +249,7 @@ class DriversController extends Controller
         elseif (request()->ajax()) {
 
             $Select_db = DB::table('drivers')
-                ->select('drivers.id as id', 'companyName', 'warehouseId', 'warehouseName', 'lkp_city.name_en', 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else','car_plateNumber' ,'nationality_id', 'lkp_country.country_ar',
+                ->select('drivers_attachments.Image_Identity', 'drivers_attachments.Image_PromissoryNote', 'drivers_attachments.Image_JobContract', 'drivers.id as id', 'companyName', 'warehouseId', 'warehouseName', 'lkp_city.name_en', 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else','car_plateNumber' ,'nationality_id', 'lkp_country.country_ar',
                     'iqama', 'iqamaExpireyDate', 'email_id', 'job_id', 'dob', 'status_id', 'lkp_driver_status.driver_status_en', 'termination_reason_id', 'reason_en',
                     'interview_date', 'start_date', 'licenseExpireyDate', 'passportNo', 'passportExpireyDate', 'bank_id', 'bank_name_en', 'accountNumber', 'account_owner_iqama',
                     'a.yes_no AS under_sopnsorship', 'b.yes_no AS ajeer','bander_car.yes_no AS bander_car', 'collectionAmount', 'openBalance',
@@ -273,12 +273,13 @@ class DriversController extends Controller
                 ->leftJoin('lkp_yes_no as a', 'drivers.under_sopnsorship_id', '=', 'a.id')
                 ->leftJoin('lkp_yes_no as b', 'drivers.ajeer_id', '=', 'b.id')
                 ->leftJoin('lkp_yes_no as bander_car', 'drivers.bander_car_id', '=', 'bander_car.id')
-                ->leftJoin('lkp_driver_type', 'drivers.driver_type_id', '=', 'lkp_driver_type.id')
+                ->leftJoin('lkp_driver_type', 'drivers.driver_type_id', '=', 'lkp_driver_type.id');
+                $Select_db->leftJoin('drivers_attachments', 'drivers.id', '=', 'drivers_attachments.driverId');
                 // this
                 // ->leftJoin('vehicles as v', 'drivers.vehicle_id', '=', 'v.id')
-                ;
-            if ($request->filter_Image_Identity <> "" || $request->filter_Image_Passport <> "" || $request->filter_Image_DrivingLicence <> "" || $request->filter_Image_VehiclesRegistration <> "" || $request->filter_Image_JobContract <> "" || $request->filter_Image_PromissoryNote <> "")
-                $Select_db->leftJoin('drivers_attachments', 'drivers.id', '=', 'drivers_attachments.driverId');
+
+            // if ($request->filter_Image_Identity <> "" || $request->filter_Image_Passport <> "" || $request->filter_Image_DrivingLicence <> "" || $request->filter_Image_VehiclesRegistration <> "" || $request->filter_Image_JobContract <> "" || $request->filter_Image_PromissoryNote <> "")
+
             if ($request->filter_screenId == 'Jahiz') {
                 //return  Route::getFacadeRoot()->current()->uri();
                 $Select_db->leftJoin('drivers_jahiz_claim', 'drivers_jahiz_claim.driverId', '=', 'drivers.id');
