@@ -235,7 +235,7 @@
 
 <!-- Modal ExportExcel 3 -->
 <div class="modal fade" id="ExportExcel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">Export Excel File </h5>
@@ -251,90 +251,107 @@
                             </div>
                         </div>
 						<div class="row">
-                            <div class="col-xl-12 col-sm-6 col-6">
+                            <div class="col-xl-5 col-sm-5 col-5">
 								<div class="card">
 									<div class="card-body">
-                                        <div >
+                                        <div>
 											{{-- <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"> --}}
-											<h6>Driver:</h6>
+											<h6>Select Fields:</h6>
                                             <hr style="margin: 8px 0;">
 										</div>
                                         <div class="form-check">
-											<input class="form-check-input" type="checkbox" checked value="" id="flexCheckDefault">
+											<input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck(this)" id="flexCheckDefault">
 											<label class="form-check-label" for="flexCheckDefault">Select All</label>
 										</div>
-
-										<div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Company</label>
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Warehouse</label>
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">City</label>
-										</div>
-										<div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Driver name</label>
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Driver's job ID</label>
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Driver's Identity/Iqama</label>
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Driver's Contact number</label>
-										</div>
+                                        <form id="columnSelectionForm">
+                                            <div class="form-check">
+                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="0">
+                                                <label class="form-check-label" for="flexCheckDefault">City</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="1">
+                                                <label class="form-check-label" for="flexCheckDefault">Type</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="2">
+                                                <label class="form-check-label" for="flexCheckDefault">FullName</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="3">
+                                                <label class="form-check-label" for="flexCheckDefault">Actual Name</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="4">
+                                                <label class="form-check-label" for="flexCheckDefault">Mobile</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="5">
+                                                <label class="form-check-label" for="flexCheckDefault">STC Pay</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="6">
+                                                <label class="form-check-label" for="flexCheckDefault">Job ID</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="7">
+                                                <label class="form-check-label" for="flexCheckDefault">Status</label>
+                                            </div>
+                                        </form>
 
                                         {{-- <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+											<input class="form-check-input" type="checkbox" checked value="" id="flexCheckDefault">
 											<label class="form-check-label" for="flexCheckDefault">STCPAY Owner Identity/Iqama</label>
 										</div> --}}
 									</div>
 								</div>
 							</div>
-							<div class="col-xl-12 col-sm-6 col-6">
-								<div class="card">
+							<div class="col-xl-2 col-sm-2 col-2">
+                                <div class="card">
 									<div class="card-body">
-
-                                        <div >
-											{{-- <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"> --}}
-											<h6>Finance:</h6>
+                                        <button class="btn btn-primary" onclick="show_selected()">Done</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-5 col-sm-5 col-5">
+                                <div class="card">
+                                    <div class="card-body" id="selected_fields" style="display: none">
+                                        <div>
+                                            <h6>Selected Fields:</h6>
                                             <hr style="margin: 8px 0;">
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">STCPAY Owner Identity/Iqama</label>
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">STCPAY Number</label>
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Total number of <strong>Days</strong></label>
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Total number of <strong>TP</strong></label>
-										</div>
-									</div>
-								</div>
-							</div>
+                                        </div>
+                                        <div class="form-check first_hide" id="no_0">
+                                            <label class="form-check-label" for="flexCheckDefault">City</label>
+                                        </div>
+                                        <div class="form-check first_hide" id="no_1">
+                                            <label class="form-check-label" for="flexCheckDefault">Type</label>
+                                        </div>
+                                        <div class="form-check first_hide" id="no_2">
+                                            <label class="form-check-label" for="flexCheckDefault">FullName</label>
+                                        </div>
+                                        <div class="form-check first_hide" id="no_3">
+                                            <label class="form-check-label" for="flexCheckDefault">Actual Name</label>
+                                        </div>
+                                        <div class="form-check first_hide" id="no_4">
+                                            <label class="form-check-label" for="flexCheckDefault">Mobile</label>
+                                        </div>
+                                        <div class="form-check first_hide" id="no_5">
+                                            <label class="form-check-label" for="flexCheckDefault">STC Pay</label>
+                                        </div>
+                                        <div class="form-check first_hide" id="no_6">
+                                            <label class="form-check-label" for="flexCheckDefault">Job ID</label>
+                                        </div>
+                                        <div class="form-check first_hide" id="no_7">
+                                            <label class="form-check-label" for="flexCheckDefault">Status</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 						</div>
 						<!-- Row end -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success"
-                    data-bs-dismiss="modal" >Export</button>
+                <button type="button" class="btn btn-success" id="exportExcelBtn">Export</button>
             </div>
         </div>
     </div>
@@ -452,7 +469,7 @@
                         <div class="col-12">
                             <div class="custom-btn-group">
                                 <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>Fillter</button>
-                                <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#ExportExcel"></i>Export Excel</button>
+                                <button type="button" class="btn btn-success" class="btn btn-info" type="button" onclick="export_excel()"></i>Export Excel</button>
                                 <button type="button" class="btn btn-info" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#addNewDriver" onclick="addNewDriver()"></i>Add new driver</button>
                                 @if(Auth::user()->user_type_id==1)
                                     <button type="submit" class="btn btn-info" class="btn btn-info" type="submit"></i>On Hold</button>
@@ -507,7 +524,67 @@
     </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
+
 <script>
+        function export_excel() {
+            $('#exportExcelBtn').prop('disabled', true);
+            $('#selected_fields').hide();
+            $('#ExportExcel').modal('toggle');
+        }
+        function check_uncheck(the) {
+            if (the.checked) {
+                $('.export_checks').prop('checked', true);
+            } else {
+                $('.export_checks').prop('checked', false);
+            }
+        }
+        function show_selected() {
+            $('#exportExcelBtn').prop('disabled', false);
+            $('#selected_fields').show();
+            $('.first_hide').hide();
+            $('#columnSelectionForm input[type="checkbox"]').each(function() {
+                if ($(this).is(':checked')) {
+                    $('#no_'+$(this).attr('id')).show();
+                }
+            });
+        }
+        // Export Excel button click event
+        $('#exportExcelBtn').click(function() {
+            var table = $('#customer_data').DataTable();
+            $('#ExportExcel').modal('hide');
+            var selectedColumns = [];
+            $('#columnSelectionForm input[type="checkbox"]').each(function() {
+                if ($(this).is(':checked')) {
+                    selectedColumns.push($(this).attr('id'));
+                }
+            });
+            var rowCount = table.rows().count();
+            var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
+            var rowCount = table.rows().count();
+            for (var i = 0; i < rowCount; i++) {
+                var rowData = [];
+                selectedColumns.forEach(function(columnId) {
+
+                    var cellData = table.cell(i, columnId).data();
+                    if (cellData == null) {
+                        rowData.push('');
+                    } else {
+                        rowData.push(cellData); // Or provide a placeholder value
+                    }
+                });
+                console.log(rowData);
+                exportData.push(rowData);
+            }
+            if (exportData.length === 0) {
+                alert('No columns selected for export!');
+                return;
+            }
+            var ws = XLSX.utils.aoa_to_sheet(exportData);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            XLSX.writeFile(wb, 'Jahiz Drivers.xlsx');
+        });
         function update_total(new_val, the = '') {
             var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
             var sum = 0;
@@ -700,7 +777,7 @@
                             name: 'job_id'
                         },
                         {
-                            //data: 'driver_status_en',
+                            data: 'driver_status_en',
                             name: 'lkp_driver_status.driver_status_en',
                             render: function (data, type, row, meta) {
                                 if (row.status_id == "1") {
@@ -845,10 +922,10 @@
                                         </li>`;
                                         @if (Auth::user()->user_type_id == 1)
                                         if (row.warehouseId == '201' || row.warehouseId == '220' || row.warehouseId == '221') {
-                                            a += '<li><a id=' + row.id + ' type="button" class="btn btn-primary btn-xs DriversSettlementList">تصفية</a><li>';
+                                            html += '<li><a id=' + row.id + ' type="button" class="btn btn-primary btn-xs DriversSettlementList">تصفية</a><li>';
                                         }
                                         @else
-                                            a += '<li><a id=' + row.id + ' type="button" class="btn btn-primary btn-xs DriversSettlementList">تصفية</a><li>';
+                                            html += '<li><a id=' + row.id + ' type="button" class="btn btn-primary btn-xs DriversSettlementList">تصفية</a><li>';
                                         @endif
                                         html += `<li>
                                             <hr class="dropdown-divider">
@@ -860,6 +937,7 @@
                         },
                     ]
                 });
+
             }
 
             $('#customer_data tbody').on('click', '.view', function (e) {
@@ -917,8 +995,6 @@
 
             });
 
-
-
             $('#customer_data tbody').on('click', '.Attachment', function (e) {
                 e.preventDefault();
                 var id = $(this).attr('id');
@@ -929,7 +1005,6 @@
 
             });
 
-                        // ashraf code, documents
             $('#customer_data tbody').on('click', '.documents', function (e) {
                 e.preventDefault();
                 $('.bandar').hide();
@@ -957,7 +1032,6 @@
 
             });
 
-            // ashraf code
             $('#customer_data tbody').on('click', '.DriversSettlementList', function (e) {
                 e.preventDefault();
                 document.getElementById('response').innerHTML = loader;
@@ -1062,6 +1136,7 @@
 
 
         });
+
         function setDocumentType(){
             $('.claims').hide();
             $('.bandar').hide();

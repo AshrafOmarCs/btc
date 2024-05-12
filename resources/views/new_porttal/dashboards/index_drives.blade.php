@@ -439,8 +439,20 @@
         </div>
     </div>
 </div>
-<!-- Row end -->
-
+<style>
+    .inner-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .inner-table th {
+        padding: 5px;
+        background-color: #4CAF50;
+    }
+    .inner-table td {
+        padding: 8px;
+        border-bottom: 1px solid #dddddd;
+    }
+</style>
 
 <div class="row">
     <div class="col-sm-12 col-12">
@@ -640,8 +652,8 @@
                             "orderable": false,
                             name: 'job_id',
                             render: function (data, type, row, meta) {
-                                return `<table>
-                                    <thead style="background-color: #9e9e9e;"><tr><th style="border: 1px solid black;">Identity/Iqama</th><th style="border: 1px solid black;">Promissory Note</th><th style="border: 1px solid black;">Contract</th></tr></thead>
+                                return `<table class="inner-table">
+                                    <thead><tr><th style="border: 1px solid black;">Identity/Iqama</th><th style="border: 1px solid black;">Promissory Note</th><th style="border: 1px solid black;">Contract</th></tr></thead>
                                     <tbody><tr><td class="text-center" style="border: 1px solid black;"><a target="_blank" href="/Attachment/Image_Identity/`+row.id+`.jpg">view</a></td><td class="text-center" style="border: 1px solid black;"><a target="_blank" href="/Attachment/Image_PromissoryNote/`+row.id+`.jpg">view</a></td><td class="text-center" style="border: 1px solid black;"><a target="_blank" href="/Attachment/Image_JobContract/`+row.id+`.jpg">view</a></td></tr></tbody>
                                     </table>`;
                             }

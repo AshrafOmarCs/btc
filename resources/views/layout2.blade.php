@@ -89,7 +89,7 @@
 								<div class="sidebar-submenu">
 									<ul>
 										<li>
-											<a href="{{url('/New-Portal')}}" class="current-page">Analytics</a>
+											<a href="{{url('/New-Portal')}}" class="{{ request()->is('New-Portal') ? 'current-page' : '' }}">Analytics</a>
 										</li>
 										<li>
 											<a href="reports.html">Reports</a>
@@ -148,13 +148,13 @@
 							<li>
 								<a href="{{url('New-Portal/Drivers')}}">
 									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">Drivers</span>
+									<span class="menu-text {{ request()->is('New-Portal/Drivers') ? 'current-page' : '' }}">Drivers</span>
 								</a>
 							</li>
 							<li>
-								<a href="calendar.html">
+								<a href="{{url('New-Portal/DriversJahiz')}}">
 									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">Jahiz's Drivers</span>
+									<span class="menu-text" class="{{ request()->is('New-Portal/DriversJahiz') ? 'current-page' : '' }}">Jahiz's Drivers</span>
 								</a>
 							</li>
 							<li>
