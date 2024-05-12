@@ -25,7 +25,7 @@ class SettlementsController extends Controller
     public function index(Request $request)
     {
 
-        $lkp_company = DB::select('SELECT * from lkp_company ');
+        $lkp_company = DB::select('SELECT * from lkp_company where id <> 6 AND lkp_company.status = "active"');
         $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
         $users = DB::select('SELECT id,name from users order by name');
 
@@ -214,6 +214,12 @@ class SettlementsController extends Controller
             //'amount' => ['required'],
             'journal_date' => ['required'],
         ]);
+        
+        $driver_id = $request->input('driverId');
+        $date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $check_settelement = DB::select("SELECT * from settlements where driverId = '$driver_id' AND journal_date = '$date'");
+        if (count($check_settelement) > 0)
+            return redirect('/Settlements')->with('error', 'You have already added Settlement for selected date and driver');
 
 
         DB::table('settlements')->insert(

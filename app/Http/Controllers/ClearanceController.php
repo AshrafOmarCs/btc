@@ -21,7 +21,7 @@ class ClearanceController extends Controller
      */
     public function index(Request $request)
     {
-        $lkp_company = DB::select('SELECT * from lkp_company ');
+        $lkp_company = DB::select("SELECT * from lkp_company WHERE status = 'active'");
         $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
 
         $Select_db = DB::table('clearance')

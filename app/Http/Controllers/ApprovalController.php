@@ -32,12 +32,10 @@ class ApprovalController extends Controller
             // foreach companies and get ITS privilages 
             
             foreach($groupByCompanies as $groupByCompany){
-                
                 $conpanyPrivils = Page_privilege::where([
                     ['user_id',$groupByCompany->user_id],
                     ['company_id',$groupByCompany->company_id]
                 ])->get();
-
                 $privilegs = array();
                 foreach($conpanyPrivils as $conpanyPrivil){
                     $privilegs[] = [
@@ -56,8 +54,9 @@ class ApprovalController extends Controller
             }
             // dd($companies);
         }
+        $lkp_company = lkp_company::where('status', 'active')->get();
 
-        $lkp_company  = lkp_company::all();
+        // $lkp_company  = lkp_company::all()->where('status' = 'active');
         // dd($companies);
         return view('approval.index',compact('companies','lkp_company','users','allusers'));
     }
@@ -222,7 +221,7 @@ class ApprovalController extends Controller
                 $insertQuery = "INSERT INTO `approved_records`(`user_id`, `company_id`, `periodFrom`, `periodTo`, `status`) VALUES (".Auth::user()->id.",".$company_id.",'".$from."','".$to."', 'approved')";
  
                 $result = DB::select($insertQuery);
-                return redirect()->back();
+                return redirect()->back()->with('success', 'Approved successfully');
             }
         }
 

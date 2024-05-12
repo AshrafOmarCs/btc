@@ -291,7 +291,7 @@ class Import_DA_DailyloadController extends Controller
 
             if(count($check_driver_if_exsist)>0){
                 $check_driver_if_exsist = $check_driver_if_exsist->first();
-                // dd($check_driver_if_exsist->id);
+                // dd($check_driver_if_exsist->driver_type->driver_type);
                 $item['driver_type'] = $check_driver_if_exsist->driver_type->driver_type;
                 $item['driver_id'] = $check_driver_if_exsist->id;
                 $item['basic_salary'] = $check_driver_if_exsist->basic_salary;

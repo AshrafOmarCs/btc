@@ -178,7 +178,6 @@ class ChefzController extends Controller
     public function ChefzImportInvoiceSave(Request $request)
     {
 
-        //return $request->file('select_file');
         $this->validate($request, [
             'select_file' => 'required|mimes:xls,xlsx'
         ]);

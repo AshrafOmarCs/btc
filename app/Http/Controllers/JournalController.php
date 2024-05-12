@@ -20,15 +20,11 @@ class JournalController extends Controller
      */
     public function index(Request $request)
     {
-        $sqlStatment = "SELECT journal.id, drivers.fullName, warehouse.warehouseName FROM journal join drivers ON drivers.id = journal.driverId join warehouse ON warehouse.id = drivers.warehouseId";
-        $payload = DB::select($sqlStatment);
-        // dd($payload);
-
-        $lkp_company = DB::select('SELECT * from lkp_company ');
+        $lkp_company = DB::select('SELECT * from lkp_company WHERE lkp_company.status = "active"');
         $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
         $lkp_journal_type = DB::select('SELECT * from lkp_journal_type ');
         $users = DB::select('SELECT id,name from users order by name');
-        
+
           $Select_db = DB::table('journal')
             ->select(DB::raw("journal.id as id, driverId,companyName,warehouseName,job_id, drivers.fullName as fullName, fullName_ar, journal_date,
              TRIM(debit)+0 as debit,TRIM(credit)+0 as credit,note, journal.journal_type_id as journal_type_id,journal_type,post_id,

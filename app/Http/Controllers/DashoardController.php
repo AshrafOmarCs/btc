@@ -28,7 +28,7 @@ class DashoardController extends Controller
     }
     public function index_drivers()  {
             $users = Drivers::all();
-            
+
             // dd($users[0]);
             if (!request()->ajax()) {
                 $whereIn_array = array();
@@ -37,17 +37,17 @@ class DashoardController extends Controller
                 else
                     $companyId = " lkp_company.id<>6 ";
                 if (Auth::user()->user_type_id <> 1) {
-                    
+
                     $users_privilege = DB::select('SELECT DISTINCT companyId from users_privilege
                 INNER JOIN warehouse on warehouse.id=users_privilege.warehouseId
                 INNER JOIN lkp_company on lkp_company.id=warehouse.companyId
                     where ' . $companyId . ' AND user_id=' . Auth::user()->id);
-                    
+
                     foreach ($users_privilege as $users_privilegee) {
                         //echo $users_privilegee->warehouseId;
                         $whereIn_array[] = $users_privilegee->companyId;
                     }
-                    
+
                     if (count($whereIn_array) == 0) $whereIn_array[] = 0;
                     $wher = " where lkp_company.id in(" . implode(",", $whereIn_array) . ")";
                     $AND = " AND lkp_company.id in(" . implode(",", $whereIn_array) . ")";
@@ -55,9 +55,9 @@ class DashoardController extends Controller
                     $wher = ' where ' . $companyId;
                     $AND = "";
                 }
-    
+
                 $lkp_company = DB::select("SELECT * from lkp_company $wher");
-               
+
                 $whereIn_array = array();
                 if (Auth::user()->user_type_id <> 1) {
                     $users_privilege = DB::select('SELECT user_id,warehouseId from users_privilege
@@ -71,9 +71,9 @@ class DashoardController extends Controller
                     $wher = 'where warehouse.id in(' . implode(",", $whereIn_array) . ')';
                     //
                 } else
-                
+
                 $wher = ' where ' . $companyId;
-    
+
                 $warehouse = DB::select('SELECT warehouse.id,warehouse.warehouseName from warehouse
                     INNER JOIN lkp_company on lkp_company.id=warehouse.companyId
                     ' . $wher . ' order by warehouseName ');
@@ -85,14 +85,14 @@ class DashoardController extends Controller
                 if (Route::getFacadeRoot()->current()->uri() == 'DriversJahiz')
                     $lkp_driver_type = DB::select('SELECT * from lkp_driver_type where id in(2,3) order by id');
                 else
-                    $lkp_driver_type = DB::select('SELECT * from lkp_driver_type order by id'); 
+                    $lkp_driver_type = DB::select('SELECT * from lkp_driver_type order by id');
                     // dd($lkp_driver_type);
             }
-            
+
             //***********************************************************************************************************************
             //***********************************************************************************************************************
             elseif (request()->ajax()) {
-               
+
                 $Select_db = DB::table('drivers')
                     ->select('drivers.id as id', 'companyName', 'warehouseId', 'warehouseName', 'lkp_city.name_en', 'fullName', 'fullName_ar', 'mobileNumber', 'mobileNumber_someone_else', 'nationality_id', 'lkp_country.country_ar',
                         'iqama', 'iqamaExpireyDate', 'email_id', 'job_id', 'dob', 'status_id', 'lkp_driver_status.driver_status_en', 'termination_reason_id', 'reason_en',
@@ -131,7 +131,7 @@ class DashoardController extends Controller
                 sum(CASE
                     WHEN CONCAT(year,'-',month)= DATE_FORMAT(NOW() , '%Y-%m') THEN IFNULL(week1,0)+IFNULL(week2,0)+IFNULL(week3,0)+IFNULL(week4,0)+IFNULL(weekAll,0)+IFNULL(amount_by_days,0)
                 END) c_month
-    
+
                 from drivers_jahiz_montly
                 LEFT JOIN lkp_jahiz_period on lkp_jahiz_period.id=drivers_jahiz_montly.jahiz_period_id
                 LEFT JOIN lkp_month on lkp_month.id=lkp_jahiz_period.month_id
@@ -157,7 +157,7 @@ class DashoardController extends Controller
                         CASE
                             WHEN Jahiz_Amount_Sign = 1 THEN a.Jahiz_Amount
                             WHEN Jahiz_Amount_Sign = 2 THEN a.Jahiz_Amount*-1
-    
+
                         END
                         as Jahiz_Amount,
                         a.updated_at as jahiz_clearing_updated_at
@@ -178,7 +178,7 @@ class DashoardController extends Controller
                             ) b ON a.AMP_ID = b.AMP_ID AND a.SettledDate = b.SettledDate
                     )drivers_saned_settlement"),
                         'drivers_saned_settlement.AMP_ID', '=', 'drivers.job_id');
-    
+
                 } else
                     $Select_db->leftJoin(DB::raw("(SELECT
                 driverId,
@@ -198,7 +198,7 @@ class DashoardController extends Controller
                 group by driverId,per_priod,cur_priod,next_priod
                 )balance"),
                         'balance.driverId', '=', 'drivers.id');
-    
+
                 $whereIn_array = array();
                 // dd($lkp_company);
                 if (Auth::user()->user_type_id <> 1) {
@@ -210,20 +210,20 @@ class DashoardController extends Controller
                     if (count($whereIn_array) == 0) $whereIn_array[] = 0;
                     $Select_db->whereIn('warehouseId', $whereIn_array);
                 }
-    
+
                 if ($request->filter_screenId == 'Drivers') {
                     $Select_db->whereRaw("companyId<>6");
                 }
                 if ($request->filter_screenId == 'Jahiz') {
                     $Select_db->whereRaw("companyId=6");
                 }
-    
+
                 if (!empty($request->filter_companyId)) {
                     $Select_db->whereRaw('companyId=' . $request->filter_companyId);
                 }
                 if (!empty($request->filter_warehouseId)) {
                     $Select_db->whereRaw('warehouseId=' . $request->filter_warehouseId);
-    
+
                 }
                 if (!empty($request->filter_driver_type_id)) {
                     $Select_db->where('driver_type_id', $request->filter_driver_type_id);
@@ -368,41 +368,41 @@ class DashoardController extends Controller
                 $view = "DriverWindow";
             if (Route::getFacadeRoot()->current()->uri() == 'DriverJahizWindow')
                 $view = "DriverJahizWindow";
-            elseif (Route::getFacadeRoot()->current()->uri() == 'Drivers')
-                $view = "index";
-            elseif (Route::getFacadeRoot()->current()->uri() == 'DriversJahiz')
+            elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/Drivers')
+                $view = "index_drives";
+            elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/DriversJahiz')
                 $view = "index_Jahiz";
             // return view('Drivers.' . $view)->with(compact('warehouse'))->with(compact('lkp_country'))
             //     ->with(compact('lkp_driver_status'))->with(compact('lkp_termination_reasons'))
             //     ->with(compact('lkp_bank'))->with(compact('lkp_yes_no'))->with(compact('lkp_company'))
-            //     ->with(compact('lkp_driver_type')); 
+            //     ->with(compact('lkp_driver_type'));
             $analatics = array('active'=>0,'Onhold'=>0,'Terminated'=>0,'wrongWarehouse'=>0);
             foreach ($users as $key => $value) {
                 # code...
                 switch ($value->status_id ) {
                     case 1:
                         # code...
-                        $analatics['active'] = $analatics['active'] + 1; 
+                        $analatics['active'] = $analatics['active'] + 1;
                         break;
                     case 2:
                         # code...
-                        $analatics['Onhold'] = $analatics['Onhold'] + 1; 
+                        $analatics['Onhold'] = $analatics['Onhold'] + 1;
                         break;
                     case 5:
                         # code...
-                        $analatics['Onhold'] = $analatics['Onhold'] + 1; 
+                        $analatics['Onhold'] = $analatics['Onhold'] + 1;
                         break;
                     case 3:
                         # code...
-                        $analatics['Terminated'] = $analatics['Terminated'] + 1; 
+                        $analatics['Terminated'] = $analatics['Terminated'] + 1;
                         break;
                     case 4:
                     # code...
-                        $analatics['Terminated'] = $analatics['Terminated'] + 1; 
+                        $analatics['Terminated'] = $analatics['Terminated'] + 1;
                         break;
                     case 6:
                         # code...
-                        $analatics['wrongWarehouse'] = $analatics['wrongWarehouse'] + 1; 
+                        $analatics['wrongWarehouse'] = $analatics['wrongWarehouse'] + 1;
                         break;
                     default:
                         # code...
@@ -410,9 +410,9 @@ class DashoardController extends Controller
                         dd("Error While fetching Data, Contact your Supervisor");
                         break;
                 }
-                
+
             }
-             
-        return view("new_porttal.dashboards.index_drives",compact('warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics'));
+
+        return view("new_porttal.dashboards.".$view,compact('warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics'));
     }
 }

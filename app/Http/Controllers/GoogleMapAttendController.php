@@ -31,7 +31,7 @@ class GoogleMapAttendController extends Controller
         //$tracking_date='2020-02-26';
         //$tracking_date=date('Y-m-d');
         //$tracking_date='2020-03-11';
-        $lkp_company = DB::select('SELECT * from lkp_company ');
+        $lkp_company = DB::select('SELECT * from lkp_company WHERE lkp_company.status = "active"');
         $warehouses = DB::select("SELECT companyId,warehouseName,latitude,longitude from warehouse
         where  latitude is not null and longitude is not null order by  companyId");
         $polygons = DB::select("select userId,name,latitude,longitude,HM,min(ROUND(distance_in_km,2)) as distance_in_km

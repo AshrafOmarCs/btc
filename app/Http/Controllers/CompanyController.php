@@ -29,7 +29,7 @@ class CompanyController extends Controller
         $lkp_calculation_method = DB::select('SELECT * from lkp_calculation_method ');
 
         $Select_db = DB::table('lkp_company')
-            ->select('lkp_company.id as id', 'companyName', 'calculation_method_id', 'calculation_method',
+            ->select('lkp_company.status', 'lkp_company.id as id', 'companyName', 'calculation_method_id', 'calculation_method',
                 'period_start', 'period_end', 'companyFullName_en', 'companyFullName_ar', 'TaxNumber', 'CreditNote_Letter',
                 'created_users.name as created_users', 'updated_users.name as updated_users', 'lkp_company.created_at', 'lkp_company.updated_at'
             )
@@ -103,6 +103,8 @@ class CompanyController extends Controller
 
         DB::table('lkp_company')->insert(
             [
+                'status' => $request->input('status'),
+                'rent_check' => $request->input('rent_check'),
                 'companyName' => $request->input('companyName'),
                 'calculation_method_id' => $request->input('calculation_method_id'),
                 'period_start' => $request->input('period_start'),
@@ -132,7 +134,7 @@ class CompanyController extends Controller
     {
 
         $Company = DB::table('lkp_company')
-            ->select('lkp_company.id as id', 'companyName', 'calculation_method_id', 'calculation_method',
+            ->select('lkp_company.status', 'lkp_company.id as id', 'rent_check', 'companyName', 'calculation_method_id', 'calculation_method',
                 'period_start', 'period_end', 'companyFullName_en', 'companyFullName_ar', 'TaxNumber', 'CreditNote_Letter',
                 'created_users.name as created_users', 'updated_users.name as updated_users', 'lkp_company.created_at', 'lkp_company.updated_at'
             )
@@ -157,7 +159,7 @@ class CompanyController extends Controller
         $lkp_calculation_method = DB::select('SELECT * from lkp_calculation_method ');
 
         $Company = DB::table('lkp_company')
-            ->select('lkp_company.id as id', 'companyName', 'calculation_method_id', 'calculation_method',
+            ->select('lkp_company.status', 'lkp_company.id as id', 'rent_check', 'companyName', 'calculation_method_id', 'calculation_method',
                 'period_start', 'period_end', 'companyFullName_en', 'companyFullName_ar', 'TaxNumber', 'CreditNote_Letter',
                 'created_users.name as created_users', 'updated_users.name as updated_users', 'lkp_company.created_at', 'lkp_company.updated_at'
             )
@@ -181,6 +183,8 @@ class CompanyController extends Controller
         DB::table('lkp_company')
             ->where('id', $id)
             ->update([
+                'status' => $request->input('status'),
+                'rent_check' => $request->input('rent_check'),
                 'companyName' => $request->input('companyName'),
                 'calculation_method_id' => $request->input('calculation_method_id'),
                 'period_start' => $request->input('period_start'),

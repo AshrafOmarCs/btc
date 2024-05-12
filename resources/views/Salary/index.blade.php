@@ -10,30 +10,84 @@
             color: red;
             font-weight: bold;
         }
-        td,th{
-            text-align: center;
-        }
     </style>
     <!-- Content Header (Page header) -->
     <div style="width:100%;margin: 0px; ">
         <div style="float:left;margin-top: 2px;"><h2 style="width:100%;font-size: 14px;font-weight: bold;">Salary</h2>
-        
-        
         </div>
-        @if(session()->has('message'))
-        <br>
-        
-            <div class="alert alert-warning" style="margin-top: 14px;">
-                {{ session()->get('message') }} <a href="{{url('Unpaid-Salary')}}">click here </a>.
-            </div>
-        @endif
     </div>
+    
+    <!--Approval Modal -->
+    <!-- Modal -->
+        <div class="modal fade" id="ApprovalModal" tabindex="-1" role="dialog" aria-labelledby="ApprovalModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">E-Signtures</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body"> 
+                    
+                   <div id="e_signature" style="display:none;">
+                        <table class="table" id="tblEntAttributes" style="width: 97%%;border: 1px solid #d3a45924;    margin-bottom: 15px; margin-top: 15px;  box-shadow: rgb(100 100 111 / 20%) 0px 7px 29px 0px;">
+                            <thead>
+                             
+                            <tr style="background-color: #d3a459; text-align: center !important;"> 
+                                <th scope="col">EMP </th> 
+                                <th scope="col">Department </th> 
+                                <th scope="col">Signature </th>
+                            </tr>
+                            </thead>
+                            <tbody > 
+                            </tbody>
+                        </table>
+                    </div>
+              </div>
+              <div class="modal-footer">
+                
+                <!--<button type="button" class="btn btn-primary">Export StcPay File</button>-->
+                
+                 <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSalarySTC")}}">
+                    @csrf
+                    <input type="hidden" name="SQL" id="SQL">
+                    <input type="hidden" name="company_Id" id="company_Id">
+                    <input type="hidden" name="companyName" id="companyName">
+                    <input type="hidden" name="PeriodName" id="PeriodName">
+                    <table style="width: 100%">
+                        <tr>
+                            <td style="width: 40%">
+                                <button type="submit" name="STC_Report" id="STC_Report" disabled class="btn btn-sm btn-info">STC pay
+                                    Excel
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </td>
+                        </tr>
  
+                    </table>
+                </form>
+        
+        
+              </div>
+            </div>
+          </div>
+        </div>
+    <!-- End of Approval Modal -->
+    
+    
+    @if(session()->has('message'))
+    <br>
+    
+        <div class="alert alert-warning" style="margin-top: 14px;">
+            {{ session()->get('message') }} <a href="{{url('Unpaid-Salary')}}">Click Here </a>.
+        </div>
+    @endif
     <div class="card card-default" style="width:100%;clear:both;"></div>
 
     <!--w3-table-all w3-card-4-->
     <!-- table table-bordered table-striped  -->
-    
+
     <!-- SELECT2 EXAMPLE -->
     <form method="POST" action="{{ route('Salary.store')}}">
         @csrf
@@ -54,9 +108,9 @@
                 <div id="box-body" class="box-body table-responsive">
 
                     <table class="table m-0 search_table" style="width:10px!important;">
-                        
+
                         <tr>
-                            <TH>Company Name</TH>
+                            <TH>CompanyName</TH>
                             <td>
                                 <select name="filter_companyId" id="filter_companyId" onchange="CityName()"
                                         class="form-control" style="width:200px;" required>
@@ -83,7 +137,8 @@
                             </td>
                             <TH>Paid</TH>
                             <td>
-                                <select name="filter_paid_id" id="filter_paid_id" class="form-control" style="width:180px;">
+                                <select name="filter_paid_id" id="filter_paid_id" class="form-control"
+                                        style="width:180px;">
                                     <option value=""></option>
                                     <option value="1">Yes</option>
                                     <option value="2">No</option>
@@ -92,29 +147,17 @@
                         </tr>
                         <tr>
                             <TH>Warehouse</TH>
-                            <td >
+                            <td>
                                 <select name="filter_warehouseId" id="filter_warehouseId" class="form-control">
                                 </select>
 
                             </td>
-                            <td colspan="2">
-                                <div id="e_signature" style="display:none;">
-                                    <table class="table" id="tblEntAttributes" style="width: 97%%;margin-left: 64px !important;border: 1px solid #d3a45924;    margin-bottom: 15px; margin-top: 15px;  box-shadow: rgb(100 100 111 / 20%) 0px 7px 29px 0px;">
-                                        <thead>
-                                        <tr>
-                                            <td colspan="4" style="text-align: left;padding: 8px !important;"><h6>E-Signatures</h6> </td>
-                                        </tr>
-                                            <tr style="background-color: #d3a459;"> 
-                                            <th scope="col">EMP </th>
-                                            <th scope="col">Department </th>
-                                            <th scope="col">Signature </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody > 
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <TH>E-Signtures</TH>
+                            <td>
+                                <a href="#"  id="ApprovalModalBtn" class="btn btn-info btn-md" style=" background-color: #1c6577; border-color: #00acd6; width: 180px;" data-toggle="modal" data-target="#ApprovalModal">Approval List</a>
                             </td>
+                            
+                             
                         </tr>
                     </table>
 
@@ -141,12 +184,13 @@
                 </td>
             </tr>
         </table>
-        
+
         <div class="table-responsive" style="width: 100%;">
             <table id="customer_data" class="table table-bordered table-striped">
                 <thead>
                 <tr>
-                    <TH style="">Lock Status</TH>
+
+                    <TH style="display:none;">City</TH>
                     <TH>Whouse</TH>
                     <TH>Driver</TH>
                     <TH>ID</TH>
@@ -156,6 +200,7 @@
                     <TH>GAP</TH>
                     <TH>Days</TH>
                     <TH>Carried Down</TH>
+                    <!--<TH>Day Loaded</TH>-->
                     <TH>Credit</TH>
                     <TH>Debit</TH>
                     <TH>Loan</TH>
@@ -165,12 +210,11 @@
                     <TH>Paid Salary</TH>
                     <TH>T</TH>
                     <TH>Brought Down</TH>
-                    <TH>Account Owner Iqama</TH>
                     <TH>Action</TH>
                     <TH style="display:none;">Bank Name</TH>
                     <TH style="display:none;">AccountNumber</TH>
                     <TH style="display:none;">DriverId</TH>
-                    
+                    <TH style="display:none;">Account Owner Iqama</TH>
                 </tr>
                 </thead>
                 <tbody></tbody>
@@ -178,7 +222,7 @@
                 <tr>
                     <TH colspan='4'>Total</TH>
                     <TH></TH>
-                    <TH></TH>
+                    <!--<TH></TH>-->
                     <TH></TH>
                     <TH></TH>
                     <TH></TH>
@@ -196,34 +240,32 @@
                     <TH></TH>
                 </tr>
                 </tfoot>
-
             </table>
         </div>
         <center>
             <button type="submit" name="filter" class="btn btn-sm btn-info" id="filter">Post To Journal</button>
         </center>
     </form>
-    <div id="stcpayBtn" >
-        
+   <div>
         <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSalarySTC")}}">
             @csrf
             <input type="hidden" name="SQL" id="SQL">
             <input type="hidden" name="company_Id" id="company_Id">
             <input type="hidden" name="companyName" id="companyName">
             <input type="hidden" name="PeriodName" id="PeriodName">
-            <table style="width: 50%">
+            <table style="width: 100%">
                 <tr>
                     <td style="width: 40%">
-                        <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">STCPAY
-                            Excel
-                        </button>
-
-                </tr> 
-                
+                        <!--<button type="submit" name="STC_Report" id="STC_Report" disabled class="btn btn-sm btn-info">STC pay-->
+                        <!--    Excel-->
+                        <!--</button>-->
+                </tr>
+                <tr>
+                <button value="Migrate/Move to journal "  id="migrate" style="float:right; " class="btn btn-sm btn-warning">Migrate Selected to Journal</button>
+                </tr>
             </table>
-    </form>
-    
-    </div>
+        </form>
+     </div>
     <!---------------------------------------------------------------------------------------------------------------------->
     <!---------------------------------------------------------------------------------------------------------------------->
     <div id="edit_modal" class="w3-modal" style="padding-top: 10px !important;">
@@ -267,13 +309,13 @@
             </div>
         </div>
     </div>
-
     <!---------------------------------------------------------------------------------------------------------------------->
     <!---------------------------------------------------------------------------------------------------------------------->
 
 
     <script>
         $(document).ready(function () {
+
             fill_datatable();
 
             function fill_datatable(filter_companyId = '', filter_cityId = '', filter_warehouseId = '', filter_Period = '', filter_paid_id = '') {
@@ -286,6 +328,7 @@
                             extend: 'excel',
                             text: 'Export to Excel',
                             exportOptions: {
+
                                 modifier: {
                                     search: 'applied',
                                     order: 'applied'
@@ -293,13 +336,15 @@
                             }
                         }
                     ],
+
+
                     //searching: false,
                     responsive: true,
                     processing: true,
                     serverSide: true,
                     "order": [[10, "desc"]],
                     "pagingType": "full_numbers",
-                    "autoWidth": true,
+                    "autoWidth": false,
 
                     "fnDrawCallback": function () {
                         $('[data-toggle="tooltip"]').tooltip();
@@ -308,8 +353,11 @@
                                 checkboxClass: 'icheckbox_flat-green',
                                 radioClass: 'iradio_flat-green'
                             });
+
+
                             $('#select-all').on('ifChecked ifUnchecked', function (event) {
                                 if (document.getElementById('select-all').checked) {
+
                                     $('.flat-red').iCheck('check')
                                 } else
                                     $('.flat-red').iCheck('uncheck');
@@ -319,8 +367,6 @@
                         //------------------------------------------------------------------------------------
                         var api = this.api()
                         var json = api.ajax.json();
-                        // console.log($(api.column(4).footer()));
-                        // alert(json);
                         $('#salary_range').html(json.salary_range);
                         $('#Period').val(json.Period);
                         $('#companyId').val(json.companyId);
@@ -360,7 +406,7 @@
                     columns: [
 
                         {
-                            visible: true,
+                            visible: false,
                             data: 'city_name',
                             name: 'city_name'
                         },
@@ -377,7 +423,6 @@
 
                         },
                         {
-                            visible: true,
                             data: 'job_id',
                             name: 'job_id'
                         },
@@ -418,6 +463,10 @@
                                 else return '';
                             }
                         },
+                        // {
+                        //     data: 'day_loaded',
+                        //     name: 'day_loaded',
+                        // },
                         {
                             className: "Font-Green",
                             data: 'credit_now',
@@ -448,6 +497,7 @@
                                 }
                             }
                         },
+
                         {
                             data: 'expected_salary',
                             name: 'expected_salary',
@@ -485,6 +535,20 @@
                                 else return '';
                             }
                         },
+                        {
+                            "orderable": false,
+                            "searchable": false,
+                            className: "dt-nowrap",
+                            "targets": -1,
+                            //"data": 'id',
+                            "render": function (data, type, row, meta) {
+                                return '<a id=' + row.driverId + ' data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>' +
+                                    '&nbsp;<a id=' + row.driverId + ' data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement"> <i class="fa fa-bars"></i> </a>';
+
+
+                            }
+                            //onclick=\"document.getElementById('row_id').value='"+data+"'\"
+                        },
 
                         {
                             visible: false,
@@ -506,23 +570,9 @@
                             data: 'iqama',
                             name: 'iqama',
                         },
-                        {
-                            "orderable": false,
-                            "searchable": false,
-                            className: "dt-nowrap",
-                            "targets": -1,
-                            //"data": 'id',
-                            "render": function (data, type, row, meta) {
-                                return '<a id=' + row.driverId + ' data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>' +
-                                    '&nbsp;<a id=' + row.driverId + ' data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement"> <i class="fa fa-bars"></i> </a>';
-                            }
-                            //onclick=\"document.getElementById('row_id').value='"+data+"'\"
-                        },
 
                     ]
                 });
-
-
             }
 
             $('#customer_data tbody').on('click', '.view', function (e) {
@@ -538,7 +588,6 @@
                     dataType: 'html',
                     success: function (data) {
                         document.getElementById('response').innerHTML = data;
-
                     }
                 });
             });
@@ -555,10 +604,9 @@
                     dataType: 'html',
                     success: function (data) {
                         document.getElementById('response').innerHTML = data;
-
-
                     }
                 });
+
             });
 
             $('#filter').click(function () {
@@ -566,19 +614,27 @@
                     
                     $('#customer_data').DataTable().destroy();
                     fill_datatable($('#filter_companyId').val(), $('#filter_cityId').val(), $('#filter_warehouseId').val(), $('#filter_Period').val(), $('#filter_paid_id').val());
+                    
                     $.ajax({
                         type:'POST',
                         url:"{{ route('CheckPermisions') }}",
                         data:{_token: "{{ csrf_token() }}",filter_companyId:$('#filter_companyId').val(), filter_Period:$('#filter_Period').val(), filter_paid_id:$('#filter_paid_id').val()},
                         success:function(data){
                             // btns behaiver goes here  
-                           
-                            var currentUser = data.data;
-                            if(currentUser.DidUserApproveThisInvoice == true && currentUser.IsHavePermissionToExport == true){
-                                // able Export button
-                                $("#stcpayBtn").show(); 
-                            }else{
-                                $("#stcpayBtn").hide(); 
+                            
+                            var currentUser = data.data; 
+                            
+                            if(data.itemsCount > 0){
+                                
+                                if(currentUser.DidUserApproveThisInvoice == true && currentUser.IsHavePermissionToExport == true ){
+                                    // able Export button
+                                    // check if all emp approved invoice Or Not 
+                                    if(currentUser.Does_all_approve == true){
+                                         $("#STC_Report").prop('disabled', false);
+                                    }
+                                }else{
+                                    $("#STC_Report").prop('disabled', true);
+                                }
                             }
                             if(data.itemsCount > 0){
                                 $("#e_signature").show(); 
@@ -587,8 +643,12 @@
                             }else{
                                 $("#e_signature").hide();
                             }
+                        },error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            $("#e_signature").hide();
+                            $("#tblEntAttributes tbody").empty();
                         }
                     });
+                    
                 } else {
                     if ($('#filter_companyId').val() == '')
                         alert('Select Company');
@@ -606,6 +666,7 @@
                 $('#filter_warehouseId').empty();
                 $('#filter_Period').empty();
                 $('#filter_paid_id').empty();
+
 
                 $('#customer_data').DataTable().destroy();
                 fill_datatable();

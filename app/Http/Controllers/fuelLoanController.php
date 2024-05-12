@@ -15,29 +15,65 @@ use Illuminate\Http\Request;
 class fuelLoanController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
         // Variabes decleartion
+        $method = $request->method();
 
         $weekly_amount = 0.00;
         $grandTotal = 0.00;
-        $DriversList = array();
-
+        $DriversList = array(); 
         $lkp_company ;
         $btns = '( ';
         # code...
         // check user privilage 
         if (Auth::user()->user_type_id == 1) {
-            $drivers = Drivers::where([
-                ['driver_type_id',2],
-                ['fuel_per_day','!=',''],
-                ['status_id',1], 
-            ])->get();
+             if ($request->isMethod('post')) {
+                //
+                //  dd($request->all());
+                if($request->filter_warehouseId2 != ''){
+                    
+                    $drivers = Drivers::where([
+                        ['driver_type_id',2],
+                        ['fuel_per_day','!=',''],
+                        ['status_id',1], 
+                        ['warehouseId',$request->filter_warehouseId2]
+                    ])->get(); 
+                }else{
+                    if($request->filter_companyId2 == 'all'){
+                        // company filtler 
+                        $drivers = Drivers::where([
+                            ['driver_type_id',2],
+                            ['fuel_per_day','!=',''],
+                            ['status_id',1], 
+                        ])->get();
+                    }else{
+                        // company filtler 
+                        $drivers = Drivers::join('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')->where([
+                            ['driver_type_id',2],
+                            ['fuel_per_day','!=',''],
+                            ['status_id',1],
+                            ['warehouse.companyId',$request->filter_companyId2]
+                        ])->get();
+                    } 
+                }
+                
+                
+                // dd($drivers);
+            }else{
+                 $drivers = Drivers::where([
+                    ['driver_type_id',2],
+                    ['fuel_per_day','!=',''],
+                    ['status_id',1], 
+                ])->get();
+            }
+           
             $lkp_company = Company::all();
             // dd($drivers);
+           
         }else{
-            // 
-            // dd('hghgh');
+            
+            
             $Users_privileges = Users_privilege::where('user_id',Auth::user()->id)->get();
             
             // $user_companies =
@@ -50,6 +86,13 @@ class fuelLoanController extends Controller
                 }
             }
             
+ 
+            // filter by warehouse and company 
+            
+             if (empty($request->filter_Year)) {
+                
+                 
+             }
             // $whereConditions = $whereConditions.']';
             
             $whereHouses = Warehouse::select('id','companyId')->whereIn('id',$whereConditions)->groupBy('companyId')->get();
@@ -61,11 +104,58 @@ class fuelLoanController extends Controller
                     $companiesArray[] = $whereHouse->companyId;
                 }
                 $lkp_company = Company::whereIn('id',$companiesArray)->get();
-                $drivers = Drivers::where([
+                
+                
+                
+                
+                
+                if ($request->isMethod('post')) {
+                //
+                //  dd($request->all());
+                if($request->filter_warehouseId2 != ''){
+                    
+                    // $drivers = Drivers::where([
+                    //     ['driver_type_id',2],
+                    //     ['fuel_per_day','!=',''],
+                    //     ['status_id',1] 
+                    // ])->get(); 
+                    
+                    $drivers = Drivers::where([
+                        ['driver_type_id',2],
+                        ['fuel_per_day','!=',''],
+                        ['status_id',1],
+                        ['warehouseId',$request->filter_warehouseId2]
+                    ])->get(); 
+                }else{
+                    if($request->filter_companyId2 == 'all'){
+                        // company filtler 
+                        $drivers = Drivers::where([
+                            ['driver_type_id',2],
+                            ['fuel_per_day','!=',''],
+                            ['status_id',1], 
+                        ])->get();
+                    }else{
+                        // company filtler 
+                        $drivers = Drivers::join('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')->where([
+                            ['driver_type_id',2],
+                            ['fuel_per_day','!=',''],
+                            ['status_id',1],
+                            ['warehouse.companyId',$request->filter_companyId2]
+                        ])->get();
+                    } 
+                }
+                
+                
+                // dd($drivers);
+            }else{
+                 $drivers = Drivers::where([
                     ['driver_type_id',2],
                     ['fuel_per_day','!=',''],
-                    ['status_id',1] 
-                ])->get(); 
+                    ['status_id',1], 
+                ])->get();
+            }
+            
+            
                 $drivers = $drivers->whereIn('warehouseId',$whereConditions);
             }else{
                 
@@ -97,7 +187,32 @@ class fuelLoanController extends Controller
         // check if the driver is not null 
         if(count($drivers)>0){
             foreach($drivers as $k=>$driver){
-               
+                // get driver supervisor
+                $superviors = Warehouse::getWarehouseSupervisor($driver->warehouseId);
+                $supervisors_cell = '<td style="color: #0b4279; font-weight: bold; padding: 10px; ">';
+                foreach($superviors as $k=>$supervior){
+                    // get driver supervisor
+                    // dd($supervior);
+                    if($k == 0){
+                        $supervisors_cell = $supervisors_cell.'  
+                        '.$supervior['name'].' <br>
+                        '.$supervior['number'].' 
+                    '; 
+                    }else{
+                        $supervisors_cell = $supervisors_cell.' <hr>
+                        '.$supervior['name'].' <br>
+                        '.$supervior['number'].' 
+                        '; 
+                    }
+                    
+                }
+                $supervisors_cell = $supervisors_cell.'</td>';
+                 
+                
+                // $superviors_tam;
+                 
+                
+                // end supervisor 
                 $weekly_amount = $driver->fuel_per_day*6;
                 
                 // dd($weekly_amount);
@@ -109,7 +224,7 @@ class fuelLoanController extends Controller
 
                     // desirve Fuel Expense
                     // dd($lastFuelExpenseDetails);
-                    $btns2 = "<a class='btn btn-sm btn-primary' onclick='confirmDilag(".$driver->id.")' >Confirm  </a>  ";
+                    $btns2 = "<a class='btn btn-sm btn-primary' id='btn".$driver->id."' onclick='confirmDilag(".$driver->id.")' >Confirm  </a>  ";
 
                     $btns = "
                     <span style='float: left; font-size: 9px;'>".$driver->fuel_per_day." Per Day</span>
@@ -135,6 +250,7 @@ class fuelLoanController extends Controller
                         "lastTransactionInDays"=>$lastFuelExpenseDetails['lastTransactionInDays'],
                         "lastTransactionDate"=>$lastFuelExpenseDetails['lastTransactionDate'],
                         "Amount_due"=>$weekly_amount,
+                        "supervisors"=>$supervisors_cell,
                         "requestButton"=>$btns,
                         'btns2'=>$btns2,
                         "RequestStatus"=>"",
@@ -161,9 +277,11 @@ class fuelLoanController extends Controller
         dd($$request->all());
         # code...
     }
+    public function storeAll(Request $request){
+        return $request->all();
+    }
     public function getLastTransactionDate($driver_id)
     {
-        
         $drivrejournalHistory = Loan::where([
             ['driverId',$driver_id],
             ['loan_type','fuel_loan']

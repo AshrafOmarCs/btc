@@ -42,90 +42,156 @@
               href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
         <link rel="stylesheet" href="{{asset("/AdminLTE/css/AdminLTE.css")}}">
         <link rel="stylesheet" href="{{asset("/AdminLTE/css/customize.css")}}">
-        </head>
-<style>
+</head>
+    <style>
+        .show_table_1 th {
+            padding: 0.0rem 0.3rem !important;
+            border:solid 1px !important;
+            margin:0!important;
+        }
+        .show_table_1 td {
+           padding: 0.0rem 0.3rem !important;
+           border:solid 1px !important;
+        }
+    </style>
+    <center>
+        <div style="float:left;margin-top: 5px;margin-left: 20px;width:100%;font-size: 14px;font-weight: bold;">
+            {{$company->companyName}}  -  {{$company->warehouseName}}   -   {{$company->fullName}}
+        </div>
+        <div>
+            <b>
+                <font color="red">
+                    {{$company->amount}}
+                </font>
+             </b>
+         </div>
+        <div>
+            <b>
+                <font color="red">
+                    {{$from}}  -  {{$to}}
+                </font>
+            </b>
+        </div>
 
-  .show_table th{
-    padding: 0.0rem 0.3rem !important;
-   border:solid 1px !important;
-  margin:0!important;
-  width:10px;
-  }
-  .show_table td{
-    white-space: nowrap;
-   padding: 0.0rem 0.3rem !important;
-   border:solid 1px !important;
-   vertical-align: middle !important;
-  }
-  </style>
- <center>
-<div style="float:left;margin-top: 5px;margin-left: 20px;width:100%;font-size: 14px;font-weight: bold;">
-{{$company->companyName}}  -  {{$company->warehouseName}}   -   {{$company->fullName}}
+        <table class="table m-0 show_table_1" style="">
+            <tr>
+                <TH>Date</TH>
+                <TH>DayName</TH>
+                <TH style="width: 100px !important">Journal_Type</TH>
+                <TH>Create By</TH>
+                @if ($company->calculation_method_id==2)
+                <TH>No_Of_Deliverd</TH>
+                 @endif
+                @if ($company->calculation_method_id==1)
+                <TH>No_Of_TP</TH>
+                @endif
+                <TH>Unit_Cost</TH>
+                <TH>Credit</TH>
+                <TH>Debit</TH>
+                <TH>Brought_Down</TH>
+            </tr>
+        
+            <?php $t_days = $t_credit = $t_debit = $carried_down = $no_of_touch_point = 0;?>
+        
+        
+            @foreach($qq as $q)
+                <?php $carried_down+=$q->Carried_Down;
+                    $no_of_touch_point+=$q->no_of_touch_point;
+                    $note = '';
+                    $t_credit += round($q->credit, 2);
+                    $t_debit += round($q->debit, 2);
+                    if($q->journal_type == 'Daily Load') {
+                        $t_days++;
+                    } else if($q->journal_type != '' AND $q->note != '') {
+                        $note = " (".$q->note.")
+                        <a onclick=\"show_record('".$q->post_id."', '".$q->journal_type."')\" id='".$q->post_id."' data-original-title='view' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green view'> <i class='fa fa-eye'></i> </a>
+                        ";
+                    }
+                ?>
+                <tr>
+                    <td>{{$q->date}}</td>
+                    <td>{{$q->dayname}}</td>
+                    <td style="width: 100px !important">
+                        @php echo $q->journal_type . $note;@endphp
+                    </td>
+                    <td>
+                        {{$q->created_by}}
+                    </td>
+                    @if ($company->calculation_method_id==2)
+                    <td>{{$q->no_of_deliverd}}</td>
+                     @endif
+                    @if ($company->calculation_method_id==1)
+                    <td>{{$q->no_of_touch_point}}</td>
+                    @endif
+                    <td><?php if (isset($q->unit_cost)) echo floatval($q->unit_cost);else echo ""; ?></td>
+                    <td><?php if (isset($q->credit)) echo floatval($q->credit);else echo ""; ?></td>
+                    <td><?php if (isset($q->debit)) echo floatval($q->debit);else echo ""; ?></td>
+                    <td>{{$carried_down +0}}</td>
+                </tr>
+            @endforeach
+            <tr>
+                <th colspan=4>Month Balance</th>
+                <th>{{$no_of_touch_point+0}}</th>
+                <th></th>
+                <th>{{$t_credit}}</th>
+                <th>{{$t_debit}}</th>
+                <th>{{$carried_down+0}}</th>
+            </tr>
+            <tr>
+                <th colspan=8>Carried Down</th>
+                <th>{{$Carried_Down->carried_down+0}}</th>
+            </tr>
+            <tr>
+                <th colspan=8>Brought Down</th>
+                <th>{{$Carried_Down->carried_down+$carried_down+0}}</th>
+            </tr>
+            <tr>
+                <th colspan=8>T.Days</th>
+                <th>{{$t_days}}</th>
+            </tr>
+        </table>
+
+    </center>
+<div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+  <button onclick="if (document.getElementById('edit_modal')){document.getElementById('response').innerHTML='';document.getElementById('edit_modal').style.display='none'}else window.close();" type="button" class="w3-btn w3-red">Close</button>
 </div>
-     <div><b><font color="red">
-     {{$company->amount}}
-             </font></b></div>
-<div><b><font color="red">
-{{$from}}  -  {{$to}}
-</font></b></div>
+<div class="clearfx"></div>
+<div id="view_modal" class="w3-modal" style="padding-top: 10px !important;">
+    <div class="w3-modal-content w3-card-8 w3-animate-zoom" style="max-width:850px">
+        <div class="w3-center"><br>
+            <span onclick="document.getElementById('view_modal').style.display='none'"
+                  class="w3-closebtn w3-hover-red w3-container w3-padding-8 w3-display-topright"
+                  title="Close Modal">&times;</span>
+        </div>
 
-<table class="table m-0 show_table" style="width:10px!important;">
-<tr>
-<TH>Date</TH>
-<TH>DayName</TH>
-<TH>Journal_Type</TH>
-@if ($company->calculation_method_id==2)
-<TH>No_Of_Deliverd</TH>
- @endif
-@if ($company->calculation_method_id==1)
-<TH>No_Of_TP</TH>
-@endif
-<TH>Unit_Cost</TH>
-<TH>Credit</TH>
-<TH>Debit</TH>
-<TH>Brought_Down</TH>
-</tr>
+        <div style="width:100%;clear:both;" id="responsee">
 
-<?php $carried_down= 0;$no_of_touch_point=0;?>
+        </div>
+        <br>
+        <br>
+    </div>
+</div>
+<script>
+    function show_record(id, type) {
+        document.getElementById('responsee').innerHTML = "Loading...";
+        document.getElementById('view_modal').style.display = 'block';
+        let urls = '';
+        if(type == 'Loan')
+         urls = "https://btcdmins.com/Loans" + "/" + id;
+        if(type == 'Credit Note')
+         urls = "https://btcdmins.com/CreditNotes" + "/" + id;
+        $.ajax({
+            type: 'GET',
+            url: urls,
+            contentType: "html",
+            dataType: 'html',
+            success: function (data) {
 
+                document.getElementById('responsee').innerHTML = data;
 
-@foreach($qq as $q)
-<?php $carried_down+=$q->Carried_Down;
-        $no_of_touch_point+=$q->no_of_touch_point
-?>
-<tr>
-<td>{{$q->date}}</td>
-<td>{{$q->dayname}}</td>
-<td>{{$q->journal_type}}</td>
-@if ($company->calculation_method_id==2)
-<td>{{$q->no_of_deliverd}}</td>
- @endif
-@if ($company->calculation_method_id==1)
-<td>{{$q->no_of_touch_point}}</td>
-@endif
-<td><?php if (isset($q->unit_cost)) echo floatval($q->unit_cost);else echo ""; ?></td>
-<td><?php if (isset($q->credit)) echo floatval($q->credit);else echo ""; ?></td>
-<td><?php if (isset($q->debit)) echo floatval($q->debit);else echo ""; ?></td>
-<td>{{$carried_down +0}}</td>
-</tr>
-@endforeach
-<tr>
-<th colspan=3>Month Balance</th>
-    <th>{{$no_of_touch_point+0}}</th>
-    <th colspan=3></th>
-    <th>{{$carried_down+0}}</th>
-</tr>
-<tr>
-<th colspan=7>Carried Down</th>
-<th>{{$Carried_Down->carried_down+0}}</th>
-</tr>
-<tr>
-<th colspan=7>Brought Down</th>
-<th>{{$Carried_Down->carried_down+$carried_down+0}}</th>
-</tr>
-</table>
- </center>
-           <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
-              <button onclick="if (document.getElementById('edit_modal')){document.getElementById('response').innerHTML='';document.getElementById('edit_modal').style.display='none'}else window.close();" type="button" class="w3-btn w3-red">Close</button>
-           </div>
+            }
+        });
+    }
+    
 
+</script>

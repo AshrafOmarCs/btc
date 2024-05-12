@@ -18,7 +18,7 @@
 		<link rel="shortcut icon" href="{{asset('assets/images/logo.png')}}">
 
 		<!-- Title -->
-		<title>BTC  Dashboard</title>
+        <title>@yield('title')</title>
 
 
 		<!-- *************
@@ -42,6 +42,10 @@
 		<!-- Scrollbar CSS -->
 		<link rel="stylesheet" href="{{asset('assets/vendor/overlay-scroll/OverlayScrollbars.min.css')}}">
 		@yield('css')
+        <!-- Data Tables -->
+        <link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5.css')}}" />
+        <link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5-custom.css')}}" />
+        <link rel="stylesheet" href="https://btcdmins.com/AdminLTE/plugins/iCheck/all.css">
 
 	</head>
 
@@ -76,7 +80,7 @@
 				<!-- Sidebar menu starts -->
 				<div class="sidebar-menu">
 					<div class="sidebarMenuScroll">
-						<ul> 
+						<ul>
 							<li class="sidebar-dropdown active">
 								<a href="#">
 									<i class="bi bi-house"></i>
@@ -137,16 +141,16 @@
 										</li>
 										<li>
 											<a href="graph-widgets.html">Warehouses/Projects </a>
-										</li> 
+										</li>
 									</ul>
 								</div>
-							</li> 
+							</li>
 							<li>
 								<a href="{{url('New-Portal/Drivers')}}">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Drivers</span>
 								</a>
-							</li> 
+							</li>
 							<li>
 								<a href="calendar.html">
 									<i class="bi bi-calendar4"></i>
@@ -158,7 +162,7 @@
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Jahiz Clearance</span>
 								</a>
-							</li> 
+							</li>
 							<li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">Finance</span>
@@ -178,10 +182,10 @@
 										</li>
 										<li>
 											<a href="view-cart.html">Jahiz</a>
-										</li>  
+										</li>
 									</ul>
 								</div>
-							</li> 
+							</li>
 							<li class="sidebar-dropdown">
 								<a href="#">
 									<i class="bi bi-check2-circle"></i>
@@ -197,7 +201,7 @@
 										</li>
 										<li>
 											<a href="view-cart.html">Jahiz</a>
-										</li> 
+										</li>
 								</div>
 							</li>
 							<li class="sidebar-dropdown">
@@ -212,7 +216,7 @@
 										</li>
 										<li>
 											<a href="products.html">Creditnote</a>
-										</li>  
+										</li>
 								</div>
 							</li>
 							<li>
@@ -220,13 +224,13 @@
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Generate Sales.R </span>
 								</a>
-							</li> 
+							</li>
 							<li>
 								<a href="calendar.html">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Transactions History </span>
 								</a>
-							</li> 
+							</li>
 							<li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">HR</span>
@@ -236,13 +240,13 @@
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Custody</span>
 								</a>
-							</li> 
+							</li>
 							<li>
 								<a href="calendar.html">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Contracts</span>
 								</a>
-							</li> 
+							</li>
 							<li class="sidebar-dropdown">
 								<a href="#">
 									<i class="bi bi-collection"></i>
@@ -255,7 +259,7 @@
 										</li>
 										<li>
 											<a href="alerts.html"> Docs/Tutorials </a>
-										</li> 
+										</li>
 									</ul>
 								</div>
 							</li>
@@ -284,7 +288,7 @@
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Quotations</span>
 								</a>
-							</li> 
+							</li>
 							<li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">Tickets </span>
@@ -322,7 +326,7 @@
 										</li>
 									</ul>
 								</div>
-							</li> 
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -393,7 +397,7 @@
 									<div class="country-container">
 										<a href="index.html">
 											<img src="{{asset('assets/images/flags/1x1/saudi-arabia.svg')}}" alt="Clean Admin Dashboards" />
-										</a> 
+										</a>
 									</div>
 								</div>
 							</li>
@@ -427,7 +431,7 @@
 				<div class="content-wrapper-scroll">
 
 					<!-- Content wrapper start -->
-					<div class="content-wrapper">  
+					<div class="content-wrapper">
 						@yield('content')
 					</div>
 					<!-- Content wrapper end -->
@@ -469,7 +473,12 @@
 		<!-- Date Range JS -->
 		<script src="{{asset('assets/vendor/daterange/daterange.js')}}"></script>
 		<script src="{{asset('assets/vendor/daterange/custom-daterange.js')}}"></script>
-		
+		<!-- Data Tables -->
+        <script src="{{asset('assets/vendor/datatables/dataTables.min.js')}}"></script>
+        <script src="{{asset('assets/vendor/datatables/dataTables.bootstrap.min.js')}}"></script>
+
+        <!-- Custom Data tables -->
+        <script src="{{asset('assets/vendor/datatables/custom/custom-datatables.js')}}"></script>
 		@yield('javascript')
 	</body>
 

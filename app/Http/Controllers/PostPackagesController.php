@@ -25,7 +25,7 @@ class PostPackagesController extends Controller
     public function index(Request $request)
     {
         
-        $lkp_company = DB::select('SELECT * from lkp_company');
+        $lkp_company = DB::select('SELECT * from lkp_company where lkp_company.status = "active"');
         
 
         if (empty($request->filter_pakage_date)&&empty($request->filter_companyId)){

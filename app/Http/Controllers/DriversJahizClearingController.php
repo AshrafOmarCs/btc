@@ -100,7 +100,6 @@ class DriversJahizClearingController extends Controller
             }
             //return  $where;
 
-//return  $request->filter_week1;
             $Select_sum = DB::table('drivers_jahiz_clearing')
                 ->select(DB::raw("
             sum(CASE WHEN Jahiz_Amount_Sign = 1 THEN IFNULL(Jahiz_Amount,0) END)+0 as Jahiz_Amount_plus,

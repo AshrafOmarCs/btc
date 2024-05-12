@@ -24,7 +24,7 @@ class GapsController extends Controller
     public function index(Request $request)
     {
         
-        $lkp_company = DB::select('SELECT * from lkp_company ');
+        $lkp_company = DB::select('SELECT * from lkp_company WHERE status = "active"');
         $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
         $users = DB::select('SELECT id,name from users order by name');
        

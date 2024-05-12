@@ -18,23 +18,23 @@ use App\Page_privilege;
 use DateTime;
 
 function get_daily_load($driverId, $from, $to) {
-    $daily_load = DB::select("SELECT SUM(credit) as daily_load FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '6' AND `journal_date` BETWEEN '$from' AND '$to'");
+    $daily_load = DB::select("SELECT SUM(credit) as daily_load FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '6' AND `journal_date` BETWEEN '$from' AND '$to'"); 
     return $daily_load[0]->daily_load;
 }
 function get_journal_status($driverId, $from, $to) {
     $response = array('', '');
-    $journal_status = DB::select("SELECT status, exported_by, export_attempt FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '6' AND `journal_date` BETWEEN '$from' AND '$to'");
+    $journal_status = DB::select("SELECT status, exported_by, export_attempt FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '6' AND `journal_date` BETWEEN '$from' AND '$to'"); 
     if(count($journal_status) > 0){
         $response[0] = $journal_status[0]->status;
         $response[1] = $journal_status[0]->exported_by;
         $response[2] = $journal_status[0]->export_attempt;
     }
     else {
-        $journal_status = DB::select("SELECT status, exported_by, export_attempt FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '7' AND `journal_date` BETWEEN '$from' AND '$to' LIMIT 0,1");
+        $journal_status = DB::select("SELECT status, exported_by, export_attempt FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '7' AND `journal_date` BETWEEN '$from' AND '$to' LIMIT 0,1"); 
         if(count($journal_status) > 0) {
             $response[0] = $journal_status[0]->status;
             $response[1] = $journal_status[0]->exported_by;
-            $response[2] = $journal_status[0]->export_attempt;
+            $response[2] = $journal_status[0]->export_attempt;        
         }
     }
     return $response;
@@ -53,7 +53,7 @@ function make_salary_table_body($records) {
         $exported_name = '';
         if ($exported_by > 0)
             $exported_name = '(' . get_user_name($exported_by) . ')';
-
+            
         $pack_total += $record->total_No_of_TP;
         if($record->No_of_TouchPoint > 0)
             $final_pack_total += $record->No_of_TouchPoint;
@@ -69,9 +69,9 @@ function make_salary_table_body($records) {
         if($record->IND != '')
             $ind_total += $record->IND;
         $exp_salary_total += $record->expected_salary;
-
+        
         $day_load_total += $record->day_loaded;
-
+        
         $response .= '<tr>';
         $response .= '<td>'.$record->warehouseName.'</td>';
         $response .= '<td><a href="javascript:driver(' . $record->driverId . ')">'.$record->fullName.'</a></td>';
@@ -122,7 +122,7 @@ function make_salary_table_body($records) {
             $response .= '<td style="color:'.$color.';"><input '.$disabled.' class="'.$class.'" name="ID_' . $i . '" type="checkbox" value="">&nbsp;'.$record->journal_status.'<span style="color: black !important">'.$exported_name.'</span></td>';
         else
             $response .= '<td style="color:'.$color.';"><input '.$disabled.' class="'.$class.'" name="ID_' . $i . '" type="checkbox" value="' . $record->driverId . '">&nbsp;'.$record->journal_status.'<span style="color: black !important">'.$exported_name.'</span></td>';
-
+        
         $response .= '<td><center><div class="circle">'.$record->export_attempt.'</div></center></td>';
         $response .= '<td>'.$record->Loan.'</td>';
         $response .= '<td>'.$record->CreditNote.'</td>';
@@ -175,15 +175,15 @@ function make_salary_table_body($records) {
     $responses['match_total'] = $match_total;
     $responses['gap_total'] = $gap_total;
     $responses['days_total'] = $days_total;
-    $responses['c_down_total'] = $c_down_total;
-    $responses['day_load_total'] = $day_load_total;
+    $responses['c_down_total'] = $c_down_total; 
+    $responses['day_load_total'] = $day_load_total; 
     $responses['credit_total'] = $credit_total;
     $responses['debit_total'] = $debit_total;
     $responses['loan_total'] = $loan_total;
     $responses['cn_total'] = $cn_total;
     $responses['ind_total'] = $ind_total;
-    $responses['exp_salary_total'] = $exp_salary_total;
-    $responses['paid_salary_total'] = $paid_salary_total;
+    $responses['exp_salary_total'] = $exp_salary_total; 
+    $responses['paid_salary_total'] = $paid_salary_total; 
     $responses['t_total'] = $t_total;
     $responses['brought_total'] = $brought_total;
     $responses['check'] = $check;
@@ -206,18 +206,18 @@ class SalaryControllerShe extends Controller
      * @return Application|RedirectResponse|Response|Redirector
      * @throws \Exception
      */
-
+     
      public function salaryRevert(Request $request) {
         $driverId = array();
         $driverId = $driverId[] = $request->driverId;
         $reason = $request->reason;
         $job_id = $request->job_id;
-
+        
         $from_to = $request->from_to;
         $date_parts = explode(" - ", $from_to);
         $start_date = $date_parts[0];
         $end_date = $date_parts[1];
-
+        
         $made_by = Auth::user()->name;
         $user_by = Auth::user()->id;
         $salary = DB::select("SELECT id, debit, journal_date FROM journal WHERE journal_type_id = '2' AND journal_date BETWEEN '$start_date' AND '$end_date' AND driverId = '$driverId'");
@@ -237,7 +237,7 @@ class SalaryControllerShe extends Controller
         } else {
             $msg = "<b>$made_by</b> Requested to revert the Salary from Paid to Ready with this Reason: " . $reason;
             HelperFunctionsController::add_log($msg, '', $salary_id);
-
+            
             $subject = "Salary Reverse Request";
             $result = DB::select("SELECT drivers.fullName,drivers.job_id,warehouse.warehouseName,lkp_company.companyName FROM drivers INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE drivers.id='$driverId'");
             $driverId .= "_".$start_date."_".$end_date;
@@ -315,7 +315,7 @@ class SalaryControllerShe extends Controller
                 $msg = "<b>$made_by</b> reversed the journal with driver amp_ids ('$amp_ids') fronm Onhold to Ready";
                 HelperFunctionsController::add_log($msg, '', $journal_ids);
             }
-
+            
             return redirect('/Salary_she')->with('success', "Status updated successfully");
         } else {
             // Password is incorrect
@@ -392,7 +392,7 @@ class SalaryControllerShe extends Controller
                 NULLIF(TRIM(CreditNote)+0,0) as CreditNote,
                 TRIM(IND)+0 as IND,
                 TRIM(if(IFNULL(IND,0)>0,IND,if(under_sopnsorship_id=1,0,0)))+0 as IND2,
-
+                
                 TRIM(ROUND(IFNULL(credit_now-debit_now+carried_down-paid_salary-IFNULL(IND,0),0),2))+0 as brought_down,
                 daycount,
                 TRIM(IFNULL(if(lkp_company.calculation_method_id=1,total_No_of_TP,total_No_of_D),0)+IFNULL(GAP/warehouse.Sunday,0))+0 as total_No_of_TP,
@@ -407,7 +407,7 @@ class SalaryControllerShe extends Controller
                 ELSE 'No'
                 END matching_transaction,
                 IFNULL(TRIM(bank_transaction.amount)+0,' ') as amount
-
+                
                  from drivers
                  inner join warehouse on drivers.warehouseId=warehouse.id
                  inner join lkp_city on warehouse.cityId=lkp_city.id
@@ -428,7 +428,7 @@ class SalaryControllerShe extends Controller
                         from journal
                         group by driverId
                            )journal_now on  journal_now.driverId=drivers.id
-
+                
                 LEFT JOIN
                      (
                         select driverId,sum(IFNULL(No_of_TP, 0))  as total_No_of_TP,sum(IFNULL(No_of_D, 0))  as total_No_of_D
@@ -453,7 +453,7 @@ class SalaryControllerShe extends Controller
                         and lkp_journal_period.period_from_dt='" . $from . "' and lkp_journal_period.period_to_dt='" . $to . "'
                         )bank_transaction on bank_transaction.driverId = drivers.id
                  " . $where2;
-
+                 
              $query1 = "select
                 drivers.id as driverId,companyName,name_en as city_name,warehouseName,fullName,drivers.job_id, iqama,TRIM(account_owner_iqama) as account_owner_iqama,under_sopnsorship_id,bank_id,bank_name_en,TRIM(accountNumber) AS accountNumber,
                 TRIM(ROUND(credit_now,2))+0 as credit_now,
@@ -466,7 +466,7 @@ class SalaryControllerShe extends Controller
                 NULLIF(TRIM(CreditNote)+0,0) as CreditNote,
                 TRIM(IND)+0 as IND,
                 TRIM(if(IFNULL(IND,0)>0,IND,if(under_sopnsorship_id=1,0,0)))+0 as IND2,
-
+                
                 TRIM(ROUND(IFNULL(credit_now-debit_now+carried_down-paid_salary-IFNULL(IND,0),0),2))+0 as brought_down,
                 daycount,
                 TRIM(IFNULL(if(lkp_company.calculation_method_id=1,total_No_of_TP,total_No_of_D),0)+IFNULL(GAP/warehouse.Sunday,0))+0 as total_No_of_TP,
@@ -481,7 +481,7 @@ class SalaryControllerShe extends Controller
                 ELSE 'No'
                 END matching_transaction,
                 IFNULL(TRIM(bank_transaction.amount)+0,' ') as amount
-
+                
                  from drivers
                  inner join warehouse on drivers.warehouseId=warehouse.id
                  inner join lkp_city on warehouse.cityId=lkp_city.id
@@ -502,7 +502,7 @@ class SalaryControllerShe extends Controller
                         from journal WHERE status = 'Ready' AND journal_date BETWEEN '" . $from . "' AND '" . $to . "'
                         group by driverId
                            )journal_now on  journal_now.driverId=drivers.id
-
+                
                 LEFT JOIN
                      (
                         select driverId,sum(IFNULL(No_of_TP, 0))  as total_No_of_TP,sum(IFNULL(No_of_D, 0))  as total_No_of_D
@@ -528,7 +528,7 @@ class SalaryControllerShe extends Controller
                         )bank_transaction on bank_transaction.driverId = drivers.id
                  " . $where2;
                 //  WHERE status = 'Ready'
-
+            
             // $Select_db = DB::table(DB::raw("(" . $query . ") as sub"));
 
         } catch (\Illuminate\Database\QueryException $e) {
@@ -580,9 +580,9 @@ class SalaryControllerShe extends Controller
             echo ':::';
             echo $responses['days_total'];
             echo ':::';
-            echo $responses['c_down_total'];
+            echo $responses['c_down_total']; 
             echo ':::';
-            echo $responses['day_load_total'];
+            echo $responses['day_load_total']; 
             echo ':::';
             echo $responses['credit_total'];
             echo ':::';
@@ -594,9 +594,9 @@ class SalaryControllerShe extends Controller
             echo ':::';
             echo $responses['ind_total'];
             echo ':::';
-            echo $responses['exp_salary_total'];
+            echo $responses['exp_salary_total']; 
             echo ':::';
-            echo $responses['paid_salary_total'];
+            echo $responses['paid_salary_total']; 
             echo ':::';
             echo $responses['t_total'];
             echo ':::';
@@ -717,7 +717,7 @@ class SalaryControllerShe extends Controller
         $from = $P[0];
         $to = $P[1];
         $to = explode("-",$to);
-
+        
         if($to[2] == 30 || $to[2] == 31) {
             $month = $to[1];
             $days = cal_days_in_month(CAL_GREGORIAN, $month, $to[0]);
@@ -836,7 +836,7 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
         ]);
 
         $user_id = Auth::user()->id;
-
+        
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $tmpfname = $request->file('select_file');
 
@@ -941,7 +941,7 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
                              " . $worksheet->getCell('H' . $row)->getValue() . ",
                              " . $bank_paid[$i] . ",
                               1),";
-
+                               
                         $journalId = $journal_id;
                     } else {
                         $values .= "(" . $id . ",
@@ -994,7 +994,7 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
         $current_user = [];
         $tem = $this->getPermsionsDetails($request->all(),Auth::user()->id);
         $period = $request->filter_Period;
-
+        
         $Period = explode(' - ', $period);
         $from = $Period[0];
         $to = $Period[1];
@@ -1011,42 +1011,42 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
             ['privilege_description','Approve']
         ])->get();
         $DidAllEmpApprovedInvoice = "
-                                    Select approved_records.*,users.name ,users.department from approved_records
-                                    join users on users.id = approved_records.user_id
-                                    where approved_records.user_id = '15' AND approved_records.company_id=".$request->filter_companyId." and approved_records.periodFrom LIKE '%".$from."%' and approved_records.periodTo LIKE '%".$to."%'
+                                    Select approved_records.*,users.name ,users.department from approved_records 
+                                    join users on users.id = approved_records.user_id 
+                                    where approved_records.user_id = '15' AND approved_records.company_id=".$request->filter_companyId." and approved_records.periodFrom LIKE '%".$from."%' and approved_records.periodTo LIKE '%".$to."%' 
                                     ";
         // dd(count($DidAllEmpApprovedInvoice));
-
+         
         // dd($sql);
         $DidAllEmpApprovedInvoice = DB::select($DidAllEmpApprovedInvoice);
         $var = $DidAllEmpApprovedInvoice;
-
+        
         // if(count($DidAllEmpApprovedInvoice) == count($WhosPrivilageToApprove)){
         if(count($DidAllEmpApprovedInvoice) > 0){
              $tem['Does_all_approve'] = true;
         }else{
             $tem['Does_all_approve'] = false;
         }
-
+        
         // dd($tem);
         if($tem != NULL){
             $E_Signatures[] = $tem;
         }
-
-
+        
+        
         $usersWhoHavePriveliges = Page_privilege::where([
             ['company_id',$request->filter_companyId],
             ['user_id','!=',Auth::user()->id]
         ])->get();
-
+       
         if(count($usersWhoHavePriveliges)>0){
             foreach($usersWhoHavePriveliges as $usersWhoHavePrivelige){
                 $E_Signatures[] = $this->getPermsionsDetails($request->all(),$usersWhoHavePrivelige->user->id);
                 // dd($E_Signatures);
             }
         }
-
-        $htmlCode = "";
+        
+        $htmlCode = ""; 
         $E_Signatures = array_map("unserialize", array_unique(array_map("serialize", $E_Signatures)));
         // dd($E_Signatures);
         foreach($E_Signatures as $k=>$E_Signature){
@@ -1056,8 +1056,8 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
                 // dd($E_Signature);
                 $current_user = $E_Signature;
                 // return $current_user;
-            }
-
+            } 
+            
             // dd('E_Signature');
             if($k%2 == 0){
                 $color = '#fff';
@@ -1066,30 +1066,30 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
             }
             // dd($E_Signature['ApprovalDate']);
             if($E_Signature['DidUserApproveThisInvoice'] == true){
-                // APPROVEED INVOICES
-                // Check who approved it current user
+                // APPROVEED INVOICES 
+                // Check who approved it current user 
                 if($E_Signature['IsHavePermissionToExport'] == true){
                     $htmlCode = $htmlCode. "
                     <tr style='max-height: 45px;'>
-                        <td> ".$E_Signature['user_name']." </td>
+                        <td> ".$E_Signature['user_name']." </td> 
                         <td > ".$E_Signature['department']." </td>
-                        <td> ". $E_Signature['ApprovalDate']."
+                        <td> ". $E_Signature['ApprovalDate']."  
                         </td>
                     </tr>
-                ";
-
+                "; 
+                    
                 }else{
                     $htmlCode = $htmlCode. "
                         <tr style='max-height: 45px;'>
                             <td> ".$E_Signature['user_name']." </td>
                              <td > ".$E_Signature['department']." </td>
-                            <td> ". $E_Signature['ApprovalDate']."
+                            <td> ". $E_Signature['ApprovalDate']."  
                             </td>
                         </tr>
-                    ";
+                    "; 
                 }
-            }else{
-
+            }else{ 
+                
                 if($E_Signature['user_id'] == Auth::user()->id){
                     // dd($htmlCode);
                     $htmlCode = $htmlCode."
@@ -1099,8 +1099,8 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
                             <td> <a href='".url('Approve-invoice/'.$request->filter_companyId.'/'.$from.' - '.$to.'/'.Auth::user()->id.' ')."' class='btn btn-sm btn-info' style='padding: 5px;
                             margin: 8px;'> Approve </a> </td>
                         </tr>
-                    ";
-
+                    "; 
+                   
                 }else{
                     // dd($E_Signature);
                     // dd($E_Signature);
@@ -1111,10 +1111,10 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
                         </tr>
                     ";
                     // dd($htmlCode);
-                }
+                } 
                 //  dd($htmlCode);
             }
-        }
+        } 
         // dd(['status'=>true,"payload"=>$htmlCode,"itemsCount"=>count($E_Signatures)]);
         // dd($current_user);
        if($current_user == []){
@@ -1122,7 +1122,7 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
        }else{
             return response()->json(['status'=>true,"payload"=>$htmlCode,"data"=>$current_user,"itemsCount"=>count($current_user)],200);
        }
-
+        
         // dd($E_Signatures);
     }
     public function getPermsionsDetails($args,$user_id){
@@ -1142,7 +1142,7 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
             ['user_id',$user_id]
         ])->get();
         // dd($current_user_privilaged_permisions);
-        // check if user has permition
+        // check if user has permition 
         foreach($current_user_privilaged_permisions as $item){
             // dd($item);
             switch ($item->privilege_description) {
@@ -1154,16 +1154,16 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
                     # code...
                     $export = true;
                     break;
-
+                
                 default:
                     # code...
                     break;
             }
         }
         // dd('20222222');
-        // check if user approve the invoice
+        // check if user approve the invoice 
        $var = '';
-
+     
         if(isset($args['filter_Period'])){
             $Period = explode(' - ',$period);
             $from = $Period[0];
@@ -1186,7 +1186,7 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
                 $approveDate = $checkIfApproved[0]->created_at;
             }
         }else{
-        }
+        } 
          if($approve == false && $approve == false){
 
          }else{
@@ -1204,8 +1204,8 @@ AND lkp_journal_period.period_to_dt = '" . $to . "'
         if(count($user)){
             return $user;
         }
-
-        //
+       
+        // 
     }
 //****************************************************************************************************************
 //****************************************************************************************************************

@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use Carbon\Carbon;
-use App\Transcation_history;
+
+use App\Http\Controllers\HelperFunctionsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PHPExcel_IOFactory;
+use Illuminate\Support\Facades\Storage;
 
 
 class SANEDController extends Controller
@@ -21,6 +22,7 @@ class SANEDController extends Controller
     //****************************************************************************************************************
     public function SANEDPaid(Request $request)
     {
+        
         DB::statement('SET SESSION group_concat_max_len = 5555555');
         $Paid_DB = DB::table(DB::raw("(SELECT
            drivers_saned_import_paid_details.account_owner_iqama,
@@ -54,6 +56,8 @@ class SANEDController extends Controller
            drivers_saned_import_paid_details.account_owner_iqama,
            drivers_saned_import_paid_details.accountNumber,
            drivers_saned_import_paid_details.bank_minus_plus) as sub"))->get();
+           
+           
         if (isset($success))
             return view('SANED.SANEDPaid')->with(compact('Paid_DB'))->with('success', $success);
         elseif (isset($error))
@@ -71,19 +75,25 @@ class SANEDController extends Controller
      */
     public function SANEDPaidSave(Request $request)
     {
-        
+
         $this->validate($request, [
             'select_file' => 'required|mimes:xls,xlsx'
         ]);
-        
 
+        
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $tmpfname = $request->file('select_file');
+        $fileSaved = \Storage::putFileAs('public/paid/saned', $tmpfname, $tmpfname->getClientOriginalName());
 
+        if($fileSaved != true){
+            return redirect()->back()->with('error', 'File is not saving properly');
+            exit();
+        }    
         $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
         $excelObj = $excelReader->load($tmpfname);
         $worksheet = $excelObj->getSheet(0);
         $lastRow = $worksheet->getHighestRow();
+
 
         $date = date("Y-m-d H:i:s");
 
@@ -93,41 +103,10 @@ class SANEDController extends Controller
                 'create_at' => $date]
 
         );
-
         $values = '';
-        
+        $settlement_ids = array();
         for ($row = 2; $row <= $lastRow; $row++) {
-            // return $worksheet->getCell('A' . $row)->getValue();
-            $amount = $worksheet->getCell('C' . $row)->getValue();
-            $stcpayIqama = $worksheet->getCell('A' . $row)->getValue();
-            $stcpayNumber = $worksheet->getCell('B' . $row)->getValue();
-            $job_id = $worksheet->getCell('I' . $row)->getValue();
-            $total = $worksheet->getCell('K' . $row)->getValue();
-            $dt = Carbon::now();
-
-            $checkIfTransactionInHistory = Transcation_history::where([
-                'AMP_ID'=>$job_id,
-                'stcpay_number'=>$stcpayNumber,
-                'stcpay_identity'=>$stcpayIqama,
-                'project_name'=>$request->file('select_file')->getClientOriginalName(),
-                'PeriodName'=>$request->PeriodName,
-                'amount'=>(int)$total,
-            ])->get();
-            
-            if(count($checkIfTransactionInHistory)>0){
-            }else{
-                $Transcation_history = Transcation_history::create([
-                    'AMP_ID'=>$job_id,
-                    'stcpay_number'=>$stcpayNumber,
-                    'stcpay_identity'=>$stcpayIqama,
-                    'project_name'=>$request->file('select_file')->getClientOriginalName(),
-                    'PeriodName'=>$request->PeriodName,
-                    'amount'=>(int)$total,
-                    'transaction_date'=>$dt->toDateString(),
-                    'created_by'=>Auth::user()->id,
-                    'status'=>'paid'
-                ]);
-            }
+            //return $worksheet->getCell('A' . $row)->getValue();
             $Select_db = DB::table(DB::raw("(select SUM(SANED_amount) as SANED_amount,SUM(Jahiz_Amount) as Jahiz_Amount,SUM(bank_balance)as bank_balance from
                                     (
                                     select drivers_saned_settlement.CollectionAmount - DeliveryPrice - DriverCredit + DriverDebit AS SANED_amount,0 AS Jahiz_Amount,0 AS bank_balance
@@ -150,13 +129,17 @@ class SANEDController extends Controller
                                     from drivers_jahiz_clearing
                                     where id in(" . str_replace('*', ',', $worksheet->getCell('L' . $row)->getValue()) . "))a) as sub"))
                 ->first();
-            
 
+            $user_id = Auth::user()->id;
             $drivers_saned_settlement_IDs = explode("*", $worksheet->getCell('K' . $row)->getValue());
             $drivers_jahiz_clearing_IDs = explode("*", $worksheet->getCell('L' . $row)->getValue());
             $AMP_IDs = explode("*", $worksheet->getCell('I' . $row)->getValue());
             $bank_paid = explode("*", $worksheet->getCell('M' . $row)->getValue());
-
+            
+            foreach($drivers_saned_settlement_IDs as $settlement_id) {
+                DB::update("Update drivers_saned_settlement set status = 'Paid', exported_by = '$user_id', updated_by = '$user_id', updated_at = NOW() where id = '$settlement_id'");
+                $settlement_ids[] = $settlement_id;
+            }
 
             if (floatval($Select_db->SANED_amount) == floatval($Select_db->Jahiz_Amount) && floatval($Select_db->bank_balance) == floatval($worksheet->getCell('C' . $row)->getValue())) {
                 for ($i = 0; $i < count($drivers_saned_settlement_IDs); $i++) {
@@ -174,18 +157,16 @@ class SANEDController extends Controller
 
                     try {
                         DB::update(" UPDATE drivers_saned_settlement
-                    SET drivers_jahiz_clearing_paid_id = " . $drivers_jahiz_clearing_IDs[$i] . ",
+                        SET drivers_jahiz_clearing_paid_id = " . $drivers_jahiz_clearing_IDs[$i] . ",
                         paid_dt = '" . $date . "',
                         paid_by_id = " . Auth::user()->id . "
-                    where id = " . $drivers_saned_settlement_IDs[$i]);
-
+                        where id = " . $drivers_saned_settlement_IDs[$i]);
 
                         DB::update(" UPDATE drivers_jahiz_clearing
-                    SET paid_id = " . $drivers_saned_settlement_IDs[$i] . ",
+                        SET paid_id = " . $drivers_saned_settlement_IDs[$i] . ",
                         paid_dt = '" . $date . "',
                         paid_by_id = " . Auth::user()->id . "
-                    where id = " . $drivers_jahiz_clearing_IDs[$i]);
-
+                        where id = " . $drivers_jahiz_clearing_IDs[$i]);
                     } catch (\Illuminate\Database\QueryException $e) {
                         return redirect('/SANEDPaid')->with('error', $e->getPrevious()->getMessage());
                     }
@@ -193,17 +174,23 @@ class SANEDController extends Controller
             } else {
                 for ($i = 0; $i < count($drivers_saned_settlement_IDs); $i++) {
                     $values .= "(" . $id . ",
-                                " . $drivers_saned_settlement_IDs[$i] . ",
-                                " . $drivers_jahiz_clearing_IDs[$i] . ",
-                                '" . $AMP_IDs[$i] . "',
-                                " . $worksheet->getCell('A' . $row)->getValue() . ",
-                                '" . $worksheet->getCell('B' . $row)->getValue() . "',
-                                " . $worksheet->getCell('C' . $row)->getValue() . ",
-                                " . $worksheet->getCell('H' . $row)->getValue() . ",
-                                " . $bank_paid[$i] . ",
-                                0),";
+                             " . $drivers_saned_settlement_IDs[$i] . ",
+                             " . $drivers_jahiz_clearing_IDs[$i] . ",
+                             '" . $AMP_IDs[$i] . "',
+                             " . $worksheet->getCell('A' . $row)->getValue() . ",
+                             '" . $worksheet->getCell('B' . $row)->getValue() . "',
+                             " . $worksheet->getCell('C' . $row)->getValue() . ",
+                             " . $worksheet->getCell('H' . $row)->getValue() . ",
+                             " . $bank_paid[$i] . ",
+                               0),";
                 }
             }
+
+        }
+        if(count($settlement_ids) > 0) {
+            $made_by = Auth::user()->name;
+            $msg = "<b>$made_by</b> Paid these settlements.";
+            HelperFunctionsController::add_log($msg, '', $settlement_ids);
         }
 
         $values = substr($values, 0, strlen($values) - 1);
@@ -211,6 +198,7 @@ class SANEDController extends Controller
         //return $values;
         if ($values <> '') {
             try {
+
                 DB::insert("insert  into drivers_saned_import_paid_details
                     (paid_master_id, drivers_saned_settlement_id, drivers_jahiz_clearing_id,
                         AMP_ID, account_owner_iqama, accountNumber, bank_minus_plus, CO,

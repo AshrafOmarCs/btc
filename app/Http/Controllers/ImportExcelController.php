@@ -129,10 +129,8 @@ left join packages_report on packages_report.driverId=drivers.id and packages_re
             //******************************************************************************************************************
             //******************************************************************************************************************
             DB::insert("insert into report_date (companyId,report_date,created_at)values(1,'" . $pakage_date . "','" . date("Y-m-d H:i:s") . "')");
-            
             //-----------------------------------------------------------------------------------------------------------
             try {
-                
                 DB::update("update packages_report
                 inner join
                     (

@@ -91,9 +91,9 @@ class DriversSANEDClearingController extends Controller
                     $join->on('b.driverId', '=', 'drivers.id')
                         ->whereNull('a.id')
                         ->whereNull('drivers_saned_settlement.drivers_jahiz_clearing_paid_id')
-                        ->on('b.updated_at', '=', DB::raw('
+                        ->on('b.id', '=', DB::raw('
                         (
-                            select min(updated_at)
+                            select min(id)
                             from drivers_jahiz_clearing
                             where drivers_jahiz_clearing.driverId=drivers.id
                             AND drivers_jahiz_clearing.updated_at >=drivers_saned_settlement.SettledDate
@@ -122,9 +122,9 @@ class DriversSANEDClearingController extends Controller
                         where drivers_saned_settlement.AMP_ID=drivers.job_id
                         AND c.updated_at >= drivers_saned_settlement.SettledDate
                         AND drivers_jahiz_clearing_paid_id is null)')
-                        ->on('c.updated_at', '=', DB::raw('
+                        ->on('c.id', '=', DB::raw('
                         (
-                            select min(updated_at)
+                            select min(id)
                             from drivers_jahiz_clearing
                             where drivers_jahiz_clearing.driverId=drivers.id
                             AND drivers_jahiz_clearing.updated_at >=drivers_saned_settlement.SettledDate
@@ -173,9 +173,9 @@ class DriversSANEDClearingController extends Controller
                     $join->on('b.driverId', '=', 'drivers.id')
                         ->whereNull('a.id')
                         ->whereNull('drivers_saned_settlement.drivers_jahiz_clearing_paid_id')
-                        ->on('b.updated_at', '=', DB::raw('
+                        ->on('b.id', '=', DB::raw('
                         (
-                            select min(updated_at)
+                            select min(id)
                             from drivers_jahiz_clearing
                             where drivers_jahiz_clearing.driverId=drivers.id
                             AND drivers_jahiz_clearing.updated_at >=drivers_saned_settlement.SettledDate
@@ -204,9 +204,9 @@ class DriversSANEDClearingController extends Controller
                         where drivers_saned_settlement.AMP_ID=drivers.job_id
                         AND c.updated_at >= drivers_saned_settlement.SettledDate
                         AND drivers_jahiz_clearing_paid_id is null)')
-                        ->on('c.updated_at', '=', DB::raw('
+                        ->on('c.id', '=', DB::raw('
                         (
-                            select min(updated_at)
+                            select min(id)
                             from drivers_jahiz_clearing
                             where drivers_jahiz_clearing.driverId=drivers.id
                             AND drivers_jahiz_clearing.updated_at >=drivers_saned_settlement.SettledDate

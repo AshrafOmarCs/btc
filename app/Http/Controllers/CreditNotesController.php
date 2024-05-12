@@ -32,10 +32,10 @@ class CreditNotesController extends Controller
                 $whereIn_array[] = $users_privilegee->companyId;
             }
             if (count($whereIn_array) == 0) $whereIn_array[] = 0;
-            $wher = " where lkp_company.id in(" . implode(",", $whereIn_array) . ")";
-            $AND = " AND lkp_company.id in(" . implode(",", $whereIn_array) . ")";
+            $wher = " where lkp_company.status = 'active' AND lkp_company.id in(" . implode(",", $whereIn_array) . ")";
+            $AND = " AND lkp_company.status = 'active' AND lkp_company.id in(" . implode(",", $whereIn_array) . ")";
         } else {
-            $wher = "";
+            $wher = "where id <> 6 AND lkp_company.status = 'active'";
             $AND = "";
         }
         $lkp_company = DB::select("SELECT * from lkp_company $wher");
@@ -239,6 +239,11 @@ class CreditNotesController extends Controller
             'amount' => ['required'],
             'journal_date' => ['required'],
         ]);
+        $driver_id = $request->input('driverId');
+        $date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $check_creditNote = DB::select("SELECT * from creditnotes where driverId = '$driver_id' AND journal_date = '$date'");
+        if (count($check_creditNote) > 0)
+            return redirect('/Settlements')->with('error', 'You have already added CreditNote for selected date and driver');
 
 
         /* $data = DB::select("select drivers.id,CreditNote_Letter,invoice_number from drivers
@@ -417,6 +422,15 @@ class CreditNotesController extends Controller
     from creditnotes
     where creditnotes.id in(" . $IDs . ")
      ");
+        if(count($IDs) > 0) {
+            $made_by = Auth::user()->name;
+            $user_by = Auth::user()->id;
+            DB::update("UPDATE journal set status = 'Paid', exported_by = '$user_by' WHERE post_id in(" . $IDs . ")");
+            $amp_ids = implode(',', $IDs);
+            $msg = "<b>$made_by</b> posted the CreditNotes ids ('$amp_ids') to Journal";
+            HelperFunctionsController::add_log($msg, '', $IDs);
+        }
+
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect('/CreditNotes')->with('error', $e->getPrevious()->getMessage());
         }

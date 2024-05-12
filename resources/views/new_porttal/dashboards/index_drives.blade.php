@@ -1,9 +1,6 @@
 @extends('layout2')
 @section('content')
-<!-- Data Tables -->
-<link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5.css')}}" />
-<link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5-custom.css')}}" />
-<link rel="stylesheet" href="https://btcdmins.com/AdminLTE/plugins/iCheck/all.css">
+@section('title', __('drivers.drivers'))
 
 
 <!-- Modal ExportExcel 3 -->
@@ -355,6 +352,23 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="statement_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Driver Statement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <span id="statement_response">
+                </span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="delete_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog ">
         <div class="modal-content">
@@ -698,8 +712,7 @@
                             "targets": -1,
                             //"data": 'id',
                             "render": function (data, type, row, meta) {
-                                let html = `<button type="button" class="btn btn-light"><i class="bi bi-list text-green"></i> </button>
-
+                                let html = `
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
                                     aria-expanded="false">
@@ -733,17 +746,24 @@
                                     <li><a class="dropdown-item" href="#">Report Driver</a></li>
                                     <li>
                                         <hr class="dropdown-divider">
-                                    </li>`;
+                                    </li>
+                                    <li><a id=` + row.id + ` data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement">Statement </a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    `;
                                     @if(Auth::user()->user_type_id==1)
-                                        html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">Delete</span></a></li>`;
+                                        html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">Delete</span></a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>`;
                                     @endif
                                     html += `</ul>
-                                    </div`;
+                                    </div>`;
 
                                     return html;
                             }
                         },
-                                //     '&nbsp;<a id=' + row.id + ' data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement"> <i class="fa fa-bars"></i> </a>' +
                                 //     if(Auth::user()->user_type_id==1)
                                 //         '&nbsp;<a id=' + row.id + ' data-original-title="Clearance" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-black vd_black Clearance"> C </a>' +
                                 //     endif
@@ -761,10 +781,7 @@
 
                     ]
                 });
-
-
             }
-
             $('#customer_data tbody').on('click', '.view', function (e) {
                 e.preventDefault();
                 document.getElementById('response').innerHTML = "loading";
@@ -802,11 +819,6 @@
                     }
                 });
             });
-            $('#customer_data tbody').on('click', '.privilage', function (e) {
-                e.preventDefault();
-                var id = $(this).attr('id');
-                alert(id);
-            });
 
             $('#customer_data tbody').on('click', '.resetpass', function (e) {
                 e.preventDefault();
@@ -827,8 +839,8 @@
 
             $('#customer_data tbody').on('click', '.statement', function (e) {
                 e.preventDefault();
-                document.getElementById('response').innerHTML = "loading";
-                $('#myModal').modal('toggle');
+                document.getElementById('statement_response').innerHTML = "loading";
+                $('#statement_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
@@ -837,7 +849,7 @@
                     dataType: 'html',
                     success: function (data) {
 
-                        document.getElementById('response').innerHTML = data;
+                        document.getElementById('statement_response').innerHTML = data;
 
 
                     }
@@ -1034,13 +1046,6 @@
 
 
 @section('javascript')
-    <!-- Data Tables -->
-    <script src="{{asset('assets/vendor/datatables/dataTables.min.js')}}"></script>
-    <script src="{{asset('assets/vendor/datatables/dataTables.bootstrap.min.js')}}"></script>
-
-    <!-- Custom Data tables -->
-    <script src="{{asset('assets/vendor/datatables/custom/custom-datatables.js')}}"></script>
-
     <!-- Main Js Required -->
     <script src="{{asset('assets/js/main.js')}}"></script>
     <script src="https://btcdmins.com/AdminLTE/plugins/iCheck/icheck.min.js"></script>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\HelperFunctionsController;
 use App\Loans;
 use DB;
 use Exception;
@@ -24,7 +25,7 @@ class LoansController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {   
+    {
         if (Auth::user()->user_type_id <> 1) {
             $users_privilege = DB::select('SELECT DISTINCT companyId from users_privilege
             INNER JOIN warehouse on warehouse.id=users_privilege.warehouseId where companyId<>6 AND user_id=' . Auth::user()->id);
@@ -38,12 +39,12 @@ class LoansController extends Controller
         } else {
             $wher = "";
             $AND = "";
-        } 
+        }
         $lkp_company = DB::select("SELECT * from lkp_company $wher");
         $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
         $lkp_loan_status = DB::select('SELECT * from lkp_loan_status ');
         $users = DB::select('SELECT id,name from users order by name');
-        $lkp_user_type = DB::select('SELECT * from lkp_user_type'); 
+        $lkp_user_type = DB::select('SELECT * from lkp_user_type');
 
         $Select_db = DB::table('loan')
             ->select('loan.id as id','loan.loan_type as loan_type', 'companyName', 'loan.driverId', 'fullName', 'warehouseName', 'job_id',
@@ -105,8 +106,8 @@ class LoansController extends Controller
         group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
         group by driverId,per_priod,cur_priod,next_priod
         )balance"),
-                'balance.driverId', '=', 'drivers.id'); 
-                
+                'balance.driverId', '=', 'drivers.id');
+
                 // dd($Select_db);
         $Select_sum = DB::table('loan')
             ->select(DB::raw("sum(amount) as amount"))
@@ -140,7 +141,7 @@ class LoansController extends Controller
                 'balance.driverId', '=', 'drivers.id');
 
         $whereIn_array = array();
-       
+
         if (Auth::user()->user_type_id <> 1) {
             $users_privilege = DB::select('SELECT user_id,warehouseId from users_privilege where user_id=' . Auth::user()->id);
             foreach ($users_privilege as $users_privilegee) {
@@ -151,7 +152,7 @@ class LoansController extends Controller
             $Select_db->whereIn('warehouseId', $whereIn_array);
             $Select_sum->whereIn('warehouseId', $whereIn_array);
         }
-        
+
         if (request()->ajax()) {
 
             if (!empty($request->filter_companyId)) {
@@ -190,7 +191,7 @@ class LoansController extends Controller
                 if($request->filter_Loan_type == 'FL'){
                     $whereIn_array = array();
                     $whereIn_array = ['fuel_loan'];
-                    // $Select_db->where('loan_type', 'fuel_loan'); 
+                    // $Select_db->where('loan_type', 'fuel_loan');
                     $Select_db->whereRaw('loan.loan_type=' . '"fuel_loan"');
                     $Select_sum->whereRaw('loan.loan_type=' . '"fuel_loan"');
 
@@ -199,7 +200,7 @@ class LoansController extends Controller
                     $whereIn_array = ['personal_loan'];
                     $Select_db->whereRaw('loan.loan_type=' . '"personal_loan"');
                     $Select_sum->whereRaw('loan.loan_type=' . '"personal_loan"');
-                    // $Select_db->whereIn('loan_type', $whereIn_array); 
+                    // $Select_db->whereIn('loan_type', $whereIn_array);
                 }
             }
             // ashraf condition for fuel loans
@@ -224,7 +225,7 @@ class LoansController extends Controller
                 $filter_updated_at = explode(" - ", $request->filter_updated_at);
                 $Select_db->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
                 $Select_sum->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
-            } 
+            }
             if (isset($_REQUEST['search']['value']) && $_REQUEST['search']['value'] <> '') {
                 $options = strtolower($_REQUEST['search']['value']);
                 $Select_sum->whereRaw("(
@@ -251,11 +252,11 @@ class LoansController extends Controller
                 OR LOWER(`loan`.`updated_at`) LIKE '%" . $options . "%'
                 OR LOWER(`loan`.`id`) LIKE '%" . $options . "%'
                 )");
-            } 
+            }
             $Select_sum = $Select_sum->first();
             // dd($Select_db->toSql());
             // return $Select_db->toSql();
-             
+
              return  datatables()->of($Select_db)
                 ->with('amount', '<b>' . $Select_sum->amount . '</b>')
                 ->with('SQL', $Select_db->toSql())
@@ -264,19 +265,19 @@ class LoansController extends Controller
         }
 
         $data = $Select_db->get();
-        
-        $selected = []; 
+
+        $selected = [];
         foreach($data as $k=>$item){
             if($item->loan_type == 'personal_loan'){
-                // $data[$k] = null; 
-                // dd($data[$k]);  
+                // $data[$k] = null;
+                // dd($data[$k]);
             }else{
                 $selected[] = $data[$k];
             }
         }
         $data = $selected;
         // dd($data);
-        
+
         return view('Loans.index')->with(compact('lkp_loan_status'))
             ->with(compact('users'))->with(compact('lkp_user_type'))->with(compact('lkp_company'))->with(compact('warehouse'));
     }
@@ -296,7 +297,7 @@ class LoansController extends Controller
         }
         $lkp_loan_status = DB::select("SELECT * from lkp_loan_status where id<>4" . $AND);
 
-        
+
         return view('Loans.create')->with(compact('lkp_loan_status'));
     }
 
@@ -315,7 +316,11 @@ class LoansController extends Controller
             'amount' => ['required'],
             'journal_date' => ['required'],
         ]);
-
+        $driver_id = $request->input('driverId');
+        $date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $check_loan = DB::select("SELECT * from loan where driverId = '$driver_id' AND journal_date = '$date'");
+        if (count($check_loan) > 0)
+            return redirect('/Loans')->with('error', 'You have already added loan for selected date and driver');
 
         $Loans = new Loans;
         $Loans->driverId = $request->input('driverId');
@@ -328,7 +333,6 @@ class LoansController extends Controller
         $Loans->created_usertypeid = Auth::user()->user_type_id;
         $Loans->updatedby_id = Auth::user()->id;
         $Loans->updated_usertypeid = Auth::user()->user_type_id;
-
         $Loans->save();
 
         return redirect('/Loans')->with('success', 'Done successfully');
@@ -429,6 +433,52 @@ class LoansController extends Controller
             'journal_date' => ['required'],
         ]);
 
+        $action = '';
+        $Loans = Loans::find($id);
+        // $Loans->warehouseId = $request->input('warehouseId');
+        if($Loans->driverId != $request->input('driverId') AND $request->input('driverId') != '') {
+            $action .= "driverId: " . $Loans->driverId . " to " . $request->input('driverId') . ", ";
+        }
+        $Loans->driverId = $request->input('driverId');
+        if($Loans->journal_date != $request->input('journal_date') AND $request->input('journal_date') != '') {
+            $action .= "journal_date: " . $Loans->journal_date . " to " . $request->input('journal_date') . ", ";
+        }
+        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        if($Loans->amount != $request->input('amount') AND $request->input('amount') != '') {
+            $action .= "amount: " . $Loans->amount . " to " . $request->input('amount') . ", ";
+        }
+        $Loans->amount = $request->input('amount');
+        if($Loans->status_id != $request->input('status_id') AND $request->input('status_id') != '') {
+            $action .= "status_id: " . $Loans->status_id . " to " . $request->input('status_id') . ", ";
+        }
+        $Loans->status_id = $request->input('status_id');
+        if($Loans->note != $request->input('note') AND $request->input('note') != '') {
+            $action .= "note: " . $Loans->note . " to " . $request->input('note') . ", ";
+        }
+        $Loans->note = $request->input('note');
+        $Loans->updatedby_id = Auth::user()->id;
+        $Loans->updated_usertypeid = Auth::user()->user_type_id;
+
+        $success = $Loans->save();
+        if($success) {
+            if ($action != '') {
+                $loan_id = $Loans->id;
+                $made_by = Auth::user()->name;
+                $msg = "<b>$made_by</b> updated the loan with id ($loan_id) with these changes: $action";
+                HelperFunctionsController::add_log($msg);
+            }
+        }
+
+        return redirect('/Loans/' . $id . '/edit')->with('success', 'Done successfully');
+    }
+
+    public function update_bk(Request $request, $id)
+    {
+        $this->validate($request, [
+            'amount' => ['required'],
+            'journal_date' => ['required'],
+        ]);
+
 
         $Loans = Loans::find($id);
         // $Loans->warehouseId = $request->input('warehouseId');
@@ -439,9 +489,7 @@ class LoansController extends Controller
         $Loans->note = $request->input('note');
         $Loans->updatedby_id = Auth::user()->id;
         $Loans->updated_usertypeid = Auth::user()->user_type_id;
-
         $Loans->save();
-
         return redirect('/Loans/' . $id . '/edit')->with('success', 'Done successfully');
     }
 
@@ -465,6 +513,7 @@ class LoansController extends Controller
             }
 
             $Loans->delete();
+            HelperFunctionsController::add_log("DELETE FROM Loans WHERE id = '$id'");
         }
         return redirect('/Loans')->with('success', 'Done successfully');
     }
@@ -479,7 +528,85 @@ class LoansController extends Controller
         return view('Loans.updatePaid')->with(compact('id'))->with(compact('loan'));
     }
 
+
     public function updatePaidSave(Request $request)
+    {
+
+
+        //$this->validate($request, [
+        //
+        //   'paid_image' => 'required|image|mimes:jpeg,png,jpg,',
+        //]);
+
+        //if ($request->hasFile('paid_image')) {
+
+        //    $filenameWithExtention = $request->file('paid_image')->getClientOriginalName();
+        //$fileName = pathinfo($filenameWithExtention,PATHINFO_FILENAME);
+        //    $extension = $request->file('paid_image')->getClientOriginalExtension();
+        //   $fileNameStore = $request->input('loan_id') . '.' . $extension;
+        //    try {
+        //        $path = $request->file('paid_image')->move(base_path() . '/public/doc/paid_image/', $fileNameStore);
+        //   } catch (Exception $e) {
+        //       return redirect('/Loans')->with('error', $e->getMessage());
+        //   }
+
+        //}
+
+
+        $Loans = Loans::find($request->input('loan_id'));
+        $Loans->status_id = 4;
+        $Loans->status = 'Paid';
+        $Loans->updated_by = Auth::user()->id;
+        $Loans->updated_at = now();
+        $Loans->exported_by = Auth::user()->id;
+        //$Loans->paid_image = $fileNameStore;
+        $loan_id = $request->input('loan_id');
+        $made_by = Auth::user()->name;
+        $msg = "<b>$made_by</b> Updated the loan ($loan_id) status_id to Paid.";
+        HelperFunctionsController::add_log($msg);
+        $Loans->save();
+        $journal_type_id = '';
+
+        $loan = DB::select('SELECT * from loan where loan.id=' . $request->input('loan_id'))[0];
+        if($loan->loan_type == 'fuel_loan'){
+            $journal_type_id = 9;
+        }else{
+            $journal_type_id = 1;
+        }
+
+        try {
+            DB::table('journal')->insert([
+                'status' => 'Paid',
+                'driverId' => $loan->driverId,
+                'journal_date' => $loan->journal_date,
+                'debit' => $loan->amount,
+                'note' => $loan->note,
+                'journal_type_id' => $journal_type_id,
+                'post_id' => $loan->id,
+                'createdby_id' => Auth::user()->id,
+                'updatedby_id' => Auth::user()->id,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect('/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
+        }
+
+        try {
+            DB::update("UPDATE loan
+        JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1)
+        SET loan.status = 'Paid', loan.journal_id = journal.id
+        where loan.id =" . $request->input('loan_id')
+            );
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect('/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
+        }
+
+
+        return redirect('/LoanPaid/' . $request->input('loan_id'))->with('success', 'Done successfully');
+    }
+
+    public function updatePaidSave_old(Request $request)
     {
 
 
@@ -506,6 +633,10 @@ class LoansController extends Controller
         $Loans = Loans::find($request->input('loan_id'));
         $Loans->status_id = 4;
         //$Loans->paid_image = $fileNameStore;
+        $loan_id = $request->input('loan_id');
+        $made_by = Auth::user()->name;
+        $msg = "<b>$made_by</b> Updated the loan ($loan_id) status_id from " .$Loans->status_id . " to Paid.";
+        HelperFunctionsController::add_log($msg);
         $Loans->save();
         $journal_type_id = '';
 
@@ -518,20 +649,20 @@ class LoansController extends Controller
 
         try {
             DB::insert("insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,
-        createdby_id,updatedby_id,created_at,updated_at)
-        values
-        (" . $loan->driverId . ",'" . $loan->journal_date . "'," . $loan->amount . ",null,'" . $loan->note . "',".$journal_type_id."," . $loan->id . ",
-        " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
-        )");
+            createdby_id,updatedby_id,created_at,updated_at)
+            values
+            (" . $loan->driverId . ",'" . $loan->journal_date . "'," . $loan->amount . ",null,'" . $loan->note . "',".$journal_type_id."," . $loan->id . ",
+            " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
+            )");
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect('/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
         }
 
         try {
             DB::update("UPDATE loan
-    JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1)
-    SET loan.journal_id = journal.id
-    where loan.id =" . $request->input('loan_id')
+            JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1)
+            SET loan.journal_id = journal.id
+            where loan.id =" . $request->input('loan_id')
             );
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect('/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
@@ -585,14 +716,16 @@ class LoansController extends Controller
      * @throws \PHPExcel_Reader_Exception
      * @throws \Illuminate\Validation\ValidationException
      */
+
     public function LoansPaidSave(Request $request)
     {
 
         $this->validate($request, [
             'select_file' => 'required|mimes:xls,xlsx'
         ]);
+        $amps_arr = $loans_arr = array();
+        $user_id = Auth::user()->id;
 
-        
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $tmpfname = $request->file('select_file');
 
@@ -622,7 +755,7 @@ class LoansController extends Controller
                                     ) as sub"))
                 ->first();
 
-                
+
             $loan_IDs = explode("*", $worksheet->getCell('L' . $row)->getValue());
             $AMP_IDs = explode("*", $worksheet->getCell('I' . $row)->getValue());
             $bank_paid = explode("*", $worksheet->getCell('K' . $row)->getValue());
@@ -651,7 +784,9 @@ class LoansController extends Controller
                             $journal_type_id = 1;
                         }
                         if ($loan->status_id <> 4) {
-                            DB::update(" UPDATE loan SET status_id=4 where id = " . $loan_IDs[$i]);
+                            $loans_arr[] = $loan_IDs[$i];
+                            $amps_arr[] = $AMP_IDs[$i];
+                            DB::update("UPDATE loan SET status_id=4, exported_by = '$user_id', status = 'Paid', updated_at = NOW() where id = " . $loan_IDs[$i]);
 
                             DB::insert("insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,
                              createdby_id,updatedby_id,created_at,updated_at)
@@ -660,6 +795,129 @@ class LoansController extends Controller
                             " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
                             )");
 
+                            DB::update("UPDATE loan
+                            JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1 or journal.journal_type_id = 9)
+                            SET loan.journal_id = journal.id
+                            where loan.id =" . $loan_IDs[$i]);
+                        }
+
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        return redirect('/LoansPaid')->with('error', $e->getPrevious()->getMessage());
+                    }
+                }
+            } else {
+                for ($i = 0; $i < count($loan_IDs); $i++) {
+                    $values .= "(" . $id . ",
+                             " . $loan_IDs[$i] . ",
+                             '" . $AMP_IDs[$i] . "',
+                             " . $worksheet->getCell('A' . $row)->getValue() . ",
+                             '" . $worksheet->getCell('B' . $row)->getValue() . "',
+                             " . $worksheet->getCell('C' . $row)->getValue() . ",
+                             " . $worksheet->getCell('H' . $row)->getValue() . ",
+                             " . $bank_paid[$i] . ",
+                               0),";
+                }
+            }
+
+        }
+
+        $values = substr($values, 0, strlen($values) - 1);
+
+        //return $values;
+        if ($values <> '') {
+            try {
+
+                DB::insert("insert  into loan_import_paid_details
+                    (paid_master_id, loan_id,
+                        AMP_ID, account_owner_iqama, accountNumber, bank_sum, CO,
+                        bank_paid,paid)
+                  VALUES
+                  " . $values);
+            } catch (\Illuminate\Database\QueryException $e) {
+                return view('Loans.LoansPaid')->with('error', $e->getPrevious()->getMessage());
+            }
+        }
+        if(count($loans_arr) > 0) {
+            $made_by = Auth::user()->name;
+            $amp_ids = implode(',', $amps_arr);
+            $msg = "<b>$made_by</b> updated the loan with driver amp_ids ('$amp_ids') to Paid";
+            HelperFunctionsController::add_log($msg, '', $loans_arr);
+        }
+        return $this->LoansPaid($request)->with('success', 'Done successfully');
+    }
+    public function LoansPaidSave_bk(Request $request)
+    {
+
+        $this->validate($request, [
+            'select_file' => 'required|mimes:xls,xlsx'
+        ]);
+
+        $user_id = Auth::user()->id;
+
+        require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
+        $tmpfname = $request->file('select_file');
+
+        $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
+        $excelObj = $excelReader->load($tmpfname);
+        $worksheet = $excelObj->getSheet(0);
+        $lastRow = $worksheet->getHighestRow();
+
+
+        $date = date("Y-m-d H:i:s");
+
+        $id = DB::table('loan_import_paid_master')->insertGetId(
+            ['user_id' => Auth::user()->id,
+                'fileName' => $request->file('select_file')->getClientOriginalName(),
+                'create_at' => $date]
+
+        );
+        $values = '';
+
+        for ($row = 2; $row <= $lastRow; $row++) {
+            //return $worksheet->getCell('A' . $row)->getValue();
+            $Select_db = DB::table(DB::raw("(select SUM(amount) as Loan_amount
+
+                                    from loan
+                                    where id in(" . str_replace('*', ',', $worksheet->getCell('L' . $row)->getValue()) . ")
+                                    ) as sub"))
+                ->first();
+
+
+            $loan_IDs = explode("*", $worksheet->getCell('L' . $row)->getValue());
+            $AMP_IDs = explode("*", $worksheet->getCell('I' . $row)->getValue());
+            $bank_paid = explode("*", $worksheet->getCell('K' . $row)->getValue());
+
+
+            if (floatval($Select_db->Loan_amount) == floatval($worksheet->getCell('C' . $row)->getValue())) {
+                for ($i = 0; $i < count($loan_IDs); $i++) {
+
+                    $values .= "(" . $id . ",
+                             " . $loan_IDs[$i] . ",
+                             '" . $AMP_IDs[$i] . "',
+                             " . $worksheet->getCell('A' . $row)->getValue() . ",
+                             '" . $worksheet->getCell('B' . $row)->getValue() . "',
+                             " . $worksheet->getCell('C' . $row)->getValue() . ",
+                             " . $worksheet->getCell('H' . $row)->getValue() . ",
+                             " . $bank_paid[$i] . ",
+                               1),";
+
+                    try {
+
+                        $loan = DB::select('SELECT * from loan where loan.id=' . $loan_IDs[$i])[0];
+                        $journal_type_id = '';
+                        if($loan->loan_type == 'fuel_loan'){
+                            $journal_type_id = 9;
+                        }else{
+                            $journal_type_id = 1;
+                        }
+                        if ($loan->status_id <> 4) {
+                            DB::update(" UPDATE loan SET status_id=4, exported_by = '$user_id', status = 'Paid' where id = " . $loan_IDs[$i]);
+                            DB::insert("insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,
+                             createdby_id,updatedby_id,created_at,updated_at)
+                            values
+                            (" . $loan->driverId . ",'" . $loan->journal_date . "'," . $loan->amount . ",null,'" . $loan->note . "',".$journal_type_id."," . $loan->id . ",
+                            " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
+                            )");
                             DB::update("UPDATE loan
                             JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1 or journal.journal_type_id = 9)
                             SET loan.journal_id = journal.id

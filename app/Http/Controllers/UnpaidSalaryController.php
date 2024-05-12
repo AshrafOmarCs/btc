@@ -11,7 +11,7 @@ class UnpaidSalaryController extends Controller
     public function index()
     {
         # code...
-        $lkp_company = DB::select("select * from lkp_company");
+        $lkp_company = DB::select("select * from lkp_company where lkp_company.status = 'active'");
         $Exported_records = DB::select("SELECT exported_records.*,lkp_company.companyName FROM `exported_records` 
         JOIN lkp_company ON lkp_company.id = exported_records.company_Id
         ");

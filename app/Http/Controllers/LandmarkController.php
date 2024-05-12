@@ -40,6 +40,7 @@ class LandmarkController extends Controller
         # code...
         
         if($request->hasfile('myFile')){
+         
             // read file before storing 
             $file = $request->myFile; 
             $safeName = 'uploaded_Dailload_File_at_by_EmpID_'.Auth::user()->id.'_'.date("Y-m-d").'.csv';
@@ -64,7 +65,8 @@ class LandmarkController extends Controller
                 $tep->save(); 
                 $res = $this->convertCsvToArray($tep->path,$tep->id); 
                 // dd($request->all());
-                $extra = array(''=>'',''=>'');
+                // dd($res);
+                // $extra = array(''=>'',''=>'');
                 return Excel::download(new LMMultiSheetExport($res,$request->all()), 'PRODUCTIVITY REPORT '.$tep->journal_date.'.xlsx');
                 return (new LandmarkExport(2018))->download('invoices.xlsx');
                 // return (new LandmarkExport(2022))->download('invoices.xlsx');
@@ -93,38 +95,34 @@ class LandmarkController extends Controller
         $count = 0;
         $recoreds = array();
         if($CSVfp !== FALSE) {
-            // setlocale( 'utf8');
-        // skip first row in csv
-        fgetcsv($CSVfp);
-        //   fgetcsv($CSVfp); 
+        fgetcsv($CSVfp); 
         while (($data = fgetcsv($CSVfp, 1000, ",")) !== FALSE) {
                 // dd($data);
                 if($data[0] == '' || $data[1] == '' || $data[2] == '' || $data[3] == '' || $data[4] == '' || $data[5] == ''){
                     continue; 
                 }
-                
                 $recoreds[] =[
                     'Date'=>$data[0],
                     'Hub'=>$data[1], 
                     'Field_Executive'=>$data[2],
                     'Vehicle_type'=>$data[4],
                     'Vehicle_Model'=>$data[5],
-                    'Driver_Type'=>$data[6],                    
-                    'CID'=>$data[7],
-                    'OFD'=>$data[8],
-                    'Dlvd'=>$data[9],
-                    'percentage'=>$data[10],
-                    'NA'=>$data[11],
-                    'FD'=>$data[12],
-                    'CL'=>$data[13],
-                    'WN'=>$data[14], 
-                    'IA'=>$data[15],
-                    'NSS'=>$data[16],
-                    'Others'=>$data[17],
-                    'RVP_OFP'=>$data[18],
-                    'RVP_Picked'=>$data[19],
+                    'Driver_Type'=>$data[5],                    
+                    'CID'=>$data[6],
+                    'OFD'=>$data[7],
+                    'Dlvd'=>$data[8],
+                    'percentage'=>$data[9],
+                    'NA'=>$data[10],
+                    'FD'=>$data[11],
+                    'CL'=>$data[12],
+                    'WN'=>$data[13], 
+                    'IA'=>$data[14],
+                    'NSS'=>$data[15],
+                    'Others'=>$data[16],
+                    'RVP_OFP'=>$data[17],
+                    'RVP_Picked'=>$data[18],
                     'bounce'=>null,
-                    'Total'=>$data[20],
+                    'Total'=>$data[19],
                 ]; 
             }
             // $unique = array_unique($recoreds); .
@@ -224,7 +222,6 @@ class LandmarkController extends Controller
             //     $results = array_merge($results, search($subarray, $key, $value));
             // }  
         }
-        $monthly['days'] = $days;
         $monthly['days'] = $days;
         $monthly['percentage'] = round(($monthly['percentage']/$days),2); 
         $summary = array('Days'=>$results,'monthly'=>$monthly);

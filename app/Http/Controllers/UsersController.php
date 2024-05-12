@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Controllers\HelperFunctionsController;
 
 use App\Drivers;
 use DB;
@@ -25,9 +26,34 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function get_warehouses($id, $name)
+    {
+        $results = DB::select("SELECT lkp_company.companyName,warehouse.warehouseName,lkp_city.name_en,warehouse.id,users.allowed_warehouse_attendance FROM users_privilege JOIN warehouse ON warehouse.id=users_privilege.warehouseId JOIN lkp_company ON lkp_company.id=warehouse.companyId INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id INNER JOIN users ON users_privilege.user_id=users.id WHERE users_privilege.user_id='$id' AND lkp_company.id<> 6");
+        return view('Users.assign_warehouses')->with(compact('results'))->with(compact('id'))->with(compact('name'));
+        
+    }
+    public function updateUserWarehouses(Request $request)
+    {
+        $id = $request->id;
+        $name = $request->name;
+        if(isset($request->warehouses)) {
+            $warehouses = implode(", ",$request->warehouses);
+            $warehouses = '[' .  $warehouses . ']'; 
+            DB::update("UPDATE users SET `allowed_warehouse_attendance` = '$warehouses' WHERE `id` = '$id'");
+        } else {
+            DB::update("UPDATE users SET `allowed_warehouse_attendance` = NULL WHERE `id` = '$id'");
+        }
+        $results = DB::select("SELECT lkp_company.companyName,warehouse.warehouseName,lkp_city.name_en,warehouse.id,users.allowed_warehouse_attendance FROM users_privilege JOIN warehouse ON warehouse.id=users_privilege.warehouseId JOIN lkp_company ON lkp_company.id=warehouse.companyId INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id INNER JOIN users ON users_privilege.user_id=users.id WHERE users_privilege.user_id='$id' AND lkp_company.id<> 6");
+        return view('Users.assign_warehouses')->with(compact('results'))->with(compact('id'))->with(compact('name'))->with('success', 'Warehouses assignment updated successfully');
+        
+    }
+    
+     
+     
     public function index(Request $request)
-    { 
-        // dd($request->all());
+    {
+
+
         if (request()->ajax()) {
             $Select_db = DB::table('users')
                 ->select('users.id as id', 'users.name as name', 'IdentityNo', 'phone', 'email', 'users.created_at',
@@ -186,22 +212,47 @@ class UsersController extends Controller
 
         ]);
         try {
+            $action = "";
             $Users = User::find($id);
+            if($Users->name != $request->input('name'))
+                $action .= "name: " . $Users->name . " to " . $request->input('name') . ", ";
             $Users->name = $request->input('name');
+            if($Users->email != $request->input('email'))
+                $action .= "email: " . $Users->email . " to " . $request->input('email') . ", ";
             $Users->email = $request->input('email');
+            if($Users->IdentityNo != $request->input('IdentityNo'))
+                $action .= "IdentityNo: " . $Users->IdentityNo . " to " . $request->input('IdentityNo') . ", ";
             $Users->IdentityNo = $request->input('IdentityNo');
+            if($Users->phone != $request->input('phone'))
+                $action .= "phone: " . $Users->phone . " to " . $request->input('phone') . ", ";
             $Users->phone = $request->input('phone');
+            if($Users->user_type_id != $request->input('user_type_id'))
+                $action .= "user_type_id: " . $Users->user_type_id . " to " . $request->input('user_type_id') . ", ";
             $Users->user_type_id = $request->input('user_type_id');
+            if($Users->active_id != $request->input('active_id'))
+                $action .= "active_id: " . $Users->active_id . " to " . $request->input('active_id') . ", ";
             $Users->active_id = $request->input('active_id');
+            if($Users->role_id != $request->input('role_id'))
+                $action .= "role_id: " . $Users->role_id . " to " . $request->input('role_id') . ", ";
             $Users->role_id = $request->input('role_id');
+            
 
-            if (!empty($request->input('bank_id')))
+            if (!empty($request->input('bank_id'))) {
+                if($Users->bank_id != $request->input('bank_id'))
+                    $action .= "bank_id: " . $Users->bank_id . " to " . $request->input('bank_id') . ", ";
                 $Users->bank_id = $request->input('bank_id');
-            if (!empty($request->input('account_Number')))
+            }
+            if (!empty($request->input('account_Number'))) {
+                if($Users->account_Number != $request->input('account_Number'))
+                    $action .= "account_Number: " . $Users->account_Number . " to " . $request->input('account_Number') . ", ";
                 $Users->account_Number = $request->input('account_Number');
-
+            }
             $Users->save();
-
+            if ($action != '') {
+                $made_by = Auth::user()->name;
+                $msg = "<b>$made_by</b> updated the user ($id) with these changes : $action";
+                HelperFunctionsController::add_log($msg, '', $id);
+            }
         } catch (\Illuminate\Database\QueryException $e) {
             return $this->edit($id, $request->input('type_id'))->with('error', $e->getPrevious()->getMessage());
         }
@@ -226,7 +277,9 @@ class UsersController extends Controller
             Storage::delete('public/app/storage' . $Users->logo);
         }
         $Users->delete();
-
+        $made_by = Auth::user()->name;
+        $msg = "<b>$made_by</b> deleted the user ($id)";
+        HelperFunctionsController::add_log($msg, '', $id);
         return redirect('/Users')->with('success', 'Done successfully');
     }
 
@@ -240,35 +293,61 @@ class UsersController extends Controller
     public function SaveResetPass(Request $request)
     {
         try {
+            $id = $request->input('id');
             $Users = User::find($request->input('id'));
             $Users->password = bcrypt($request->input('password'));
             $Users->save();
+            $made_by = Auth::user()->name;
+            $msg = "<b>$made_by</b> updated the password of user ($id)";
+            HelperFunctionsController::add_log($msg, '', $id);
+
         } catch (\Illuminate\Database\QueryException $e) {
             return $this->ResetPass($request->input('id'))->with('error', $e->getPrevious()->getMessage());
         }
         return $this->ResetPass($request->input('id'))->with('success', 'Done successfully');
-
-
     }
 
     public function ChangePassword()
     {
-
         $User = DB::select('SELECT id,name from users where id=' . Auth::user()->id)[0];
         return view('Users.ChangePassword')->with(compact('User'));
     }
 
     public function ChangePasswordSave(Request $request)
     {
-        try {
-            $Users = User::find(Auth::user()->id);
-            $Users->password = bcrypt($request->input('password'));
-            $Users->save();
-        } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/ChangePassword')->with('error', $e->getPrevious()->getMessage());
+        $password = $request->input('password');
+        $password_confirmation = $request->input('password_confirmation');
+        $check = password_validation_rule($password, $password_confirmation);
+        if ($check == true) {
+            try {
+                $Users = User::find(Auth::user()->id);
+                $Users->password = bcrypt($request->input('password'));
+                $Users->save();
+            } catch (\Illuminate\Database\QueryException $e) {
+                return redirect('/ChangePassword')->with('error', $e->getPrevious()->getMessage());
+            }
+            return redirect('/ChangePassword')->with('success', 'Done successfully');
+        } else {
+            return redirect('/ChangePassword')->with('error', 'Your Password does not matching the password criteria, ');
         }
-        return redirect('/ChangePassword')->with('success', 'Done successfully');
-
 
     }
+}
+
+function password_validation_rule($password, $password_confirmation) {
+    $minLength = 8;
+    // password validations
+    if (
+        $password == $password_confirmation &&
+        strlen($password) >= $minLength &&
+        preg_match('/[a-z]/', $password) &&
+        preg_match('/[A-Z]/', $password) &&
+        preg_match('/\d/', $password) &&
+        preg_match('/[!@#$%^&*()_+{}\[\]:;<>,.?\/~\\-]/', $password) &&
+        !preg_match('/(.)\1\1/', $password) &&
+        !preg_match('/(123|234|345|456|567|678|789|890|abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)/', $password)
+    ) {
+        return true;
+    }
+    return false;
 }

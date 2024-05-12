@@ -63,7 +63,9 @@
                         <td>
                             <select id="filter_warehouseId" name="filter_warehouseId" class="form-control"
                                     style="width:180px;">
-                                <option value=""></option> 
+                                <option value=""></option>
+
+
                             </select>
                         </td>
                         <TH>EMP ID</TH>
@@ -670,21 +672,13 @@
                 $('#customer_data').DataTable().destroy();
                 fill_datatable();
             });
-            var resooo = document.getElementsByName("customer_data_length")[0].value; 
-            document.getElementsByName("customer_data_length")[0].id = "sorting_dropdown" 
-
-
-            $("#sorting_dropdown").onchange(myFunction);
-
         });
-        
-        $("#sorting_dropdown").on('change', function() {
-            alert("dd");
+        $("form#form_submit").submit(function(e) {
+            $('#add_button').html('Adding...');
+            $(':button[type="submit"]').prop('disabled', true);
         });
-        function myFunction(){
-            console.log("MyFunc");
-        }
-        
+
+
         function add() {
             document.getElementById('response').innerHTML = loader;
             document.getElementById('edit_modal').style.display = 'block';

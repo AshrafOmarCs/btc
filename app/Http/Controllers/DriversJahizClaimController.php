@@ -590,7 +590,9 @@ class DriversJahizClaimController extends Controller
             ->setCellValue('F1', 'العمولة')
             ->setCellValue('G1', 'رسوم الشنطة')
             ->setCellValue('H1', 'اتعاب المحامي ورسوم النشر')
-            ->setCellValue('I1', 'المجموع');
+            ->setCellValue('I1', 'المجموع')
+            ->setCellValue('J1', 'اخر حالة')
+             ->setCellValue('K1',' اخر تاريخ تفاعل');
 
         $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
         $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
@@ -601,18 +603,18 @@ class DriversJahizClaimController extends Controller
         $objPHPExcel->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
         $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
         $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
-
-
+        $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setAutoSize(true);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setAutoSize(true); 
         $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(24);
 
 
 
         $objPHPExcel->getActiveSheet()->getStyle("A1:D1")
             ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-        $objPHPExcel->getActiveSheet()->getStyle("E1:I1")
+        $objPHPExcel->getActiveSheet()->getStyle("E1:K1")
             ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
 
-        $objPHPExcel->getActiveSheet()->getStyle('A1:I1')->applyFromArray(
+        $objPHPExcel->getActiveSheet()->getStyle('A1:K1')->applyFromArray(
             array(
                 'fill' => array(
                     'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -640,46 +642,99 @@ class DriversJahizClaimController extends Controller
 //return $request->SQL;
         $Select_db = DB::select($request->SQL);
         $rowCount = 2;
-        foreach ($Select_db as $Select_dbdb) {
-            $total=floatval($Select_dbdb->amount)+floatval($Select_dbdb->Bander_Commission)+ floatval($Select_dbdb->bag_fee)+900;
-            $objPHPExcel->setActiveSheetIndex(0)
-                ->setCellValueExplicit('A' . $rowCount, $Select_dbdb->warehouseName, PHPExcel_Cell_DataType::TYPE_STRING)
-                ->setCellValueExplicit('B' . $rowCount, $Select_dbdb->fullName, PHPExcel_Cell_DataType::TYPE_STRING)
-                ->setCellValueExplicit('C' . $rowCount, '', PHPExcel_Cell_DataType::TYPE_STRING)
-                ->SetCellValue('D' . $rowCount, $Select_dbdb->job_id)
-                ->SetCellValue('E' . $rowCount, $Select_dbdb->amount)
-                ->SetCellValue('F' . $rowCount, $Select_dbdb->Bander_Commission)
-                ->SetCellValue('G' . $rowCount, $Select_dbdb->bag_fee)
-                ->SetCellValue('H' . $rowCount, '900')
-                ->SetCellValue('I' . $rowCount, $total);
-
+        $lastReplyText;
+        $lastReplyDate;
+        foreach ($Select_db as $index=>$Select_dbdb) {
+            $lastReplyText = null;
+            $lastReplyDate = null;
+             
+            // dd($Select_db);
+            // $sql = "SELECT * FROM `drivers_jahiz_claim_reply` where drivers_jahiz_claim_id = ".$Select_dbdb->id."  ORDER BY `drivers_jahiz_claim_reply`.`created_at` DESC";
+            $sql = "SELECT * FROM `drivers_jahiz_claim_reply` WHERE `claim_status_id` IN (11,12) and drivers_jahiz_claim_id = ".$Select_dbdb->id." ORDER BY `drivers_jahiz_claim_reply`.`created_at` DESC";
+            $drivers_jahiz_claim_reply = DB::select($sql);
+            // skip if (12,11,)
+               if(count($drivers_jahiz_claim_reply)>0){
+                    unset($Select_db[$index]);
+               }else{
+                   $sql = "SELECT * FROM `drivers_jahiz_claim_reply` WHERE drivers_jahiz_claim_id = ".$Select_dbdb->id." ORDER BY `drivers_jahiz_claim_reply`.`created_at` DESC";
+                   $drivers_jahiz_claim_reply = DB::select($sql);
+                   if($Select_dbdb->drivers_jahiz_claim_reply == null){
+                        $lastReplyText = 'مطالبة جديدة';
+                        if($Select_dbdb->updated_at != null){
+                            $lastReplyDate = $Select_dbdb->updated_at;
+                        }else{
+                            $lastReplyDate = $Select_dbdb->created_at;
+                        }
+                         
+                    //   dd('$drivers_jahiz_claim_reply equal null');
+                   }else{
+                       if($drivers_jahiz_claim_reply[0]->reply_txt != null){
+                           $lastReplyText = $drivers_jahiz_claim_reply[0]->reply_txt; 
+                           $lastReplyDate = $drivers_jahiz_claim_reply[0]->created_at;
+                       }else{
+                            //   reply_txt is empty 
+                           $sql1 = "SELECT drivers_jahiz_claim_reply.*,lkp_claim_status.status_txt FROM `drivers_jahiz_claim_reply` JOIN lkp_claim_status on lkp_claim_status.id = drivers_jahiz_claim_reply.claim_status_id where drivers_jahiz_claim_reply.drivers_jahiz_claim_id =  ".$Select_dbdb->id."  ORDER BY `drivers_jahiz_claim_reply`.`created_at` DESC";
+                            $sql1 = DB::select($sql1); 
+                            if(count($sql1)>0){
+                                $lastReplyText = $sql1[0]->status_txt; 
+                                $lastReplyDate = $sql1[0]->created_at;
+                            } 
+                       }
+                       
+                    //   dd('$drivers_jahiz_claim_reply NOT equal null');
+                   }
+                    
+               }
+            
+            
+            if(isset($Select_db[$index])){
+                // dd($Select_db[$index]);
+                $total=floatval($Select_dbdb->amount)+floatval($Select_dbdb->Bander_Commission)+ floatval($Select_dbdb->bag_fee)+900;
+                $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValueExplicit('A' . $rowCount, $Select_dbdb->warehouseName, PHPExcel_Cell_DataType::TYPE_STRING)
+                    ->setCellValueExplicit('B' . $rowCount, $Select_dbdb->fullName, PHPExcel_Cell_DataType::TYPE_STRING)
+                    ->setCellValueExplicit('C' . $rowCount, '', PHPExcel_Cell_DataType::TYPE_STRING)
+                    ->SetCellValue('D' . $rowCount, $Select_dbdb->job_id)
+                    ->SetCellValue('E' . $rowCount, $Select_dbdb->amount)
+                    ->SetCellValue('F' . $rowCount, $Select_dbdb->Bander_Commission)
+                    ->SetCellValue('G' . $rowCount, $Select_dbdb->bag_fee)
+                    ->SetCellValue('H' . $rowCount, '900')
+                    ->SetCellValue('I' . $rowCount, $total)
+                    ->SetCellValue('J' . $rowCount, $lastReplyText)
+                    ->SetCellValue('K' . $rowCount, $lastReplyDate);
+                     
+                
+                
+                     $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:D$rowCount")
+                                    ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+                                $objPHPExcel->getActiveSheet()->getStyle("E$rowCount:I$rowCount")
+                                    ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+                    
+                                $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:I$rowCount")->applyFromArray(
+                                    array(
+                                        'borders' => array(
+                                            'allborders' => array(
+                                                'style' => PHPExcel_Style_Border::BORDER_THIN,
+                                                'color' => array('rgb' => '000000')
+                                            )
+                                        ),
+                                        'alignment' => array(
+                                            'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                                            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
+                                        )
+                                    )
+                                );
+                                //$objPHPExcel->getActiveSheet()->getRowDimension($rowCount)->setRowHeight(24);
+                                $rowCount++;
+            }else{
+                // $selecction_condtion equal Flase 
+            }
+            
             //$objPHPExcel->getActiveSheet()->getStyle("A$rowCount:H$rowCount")->getFont()->setSize(14);
-
-
-            $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:D$rowCount")
-                ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-            $objPHPExcel->getActiveSheet()->getStyle("E$rowCount:I$rowCount")
-                ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-
-            $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:I$rowCount")->applyFromArray(
-                array(
-                    'borders' => array(
-                        'allborders' => array(
-                            'style' => PHPExcel_Style_Border::BORDER_THIN,
-                            'color' => array('rgb' => '000000')
-                        )
-                    ),
-                    'alignment' => array(
-                        'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-                        'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_RIGHT,
-                    )
-                )
-            );
-            //$objPHPExcel->getActiveSheet()->getRowDimension($rowCount)->setRowHeight(24);
-            $rowCount++;
+ 
 
         }
-
+        // dd($Select_db);
 
         $objPHPExcel->setActiveSheetIndex(0);
         $date = date("Y-m-d H-i-s");

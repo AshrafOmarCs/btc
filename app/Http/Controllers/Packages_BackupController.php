@@ -31,7 +31,7 @@ class Packages_BackupController extends Controller
      */
     public function index(Request $request)
     {
-        $lkp_company = DB::select('SELECT * from lkp_company ');
+        $lkp_company = DB::select('SELECT * from lkp_company where lkp_company.status = "active"');
         $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
         $lkp_package_status = DB::select('SELECT * from lkp_package_status ');
         $lkp_packageapprovestatus = DB::select('SELECT * from lkp_packageapprovestatus ');

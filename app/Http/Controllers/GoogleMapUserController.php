@@ -56,7 +56,7 @@ class GoogleMapUserController extends Controller
         $filter_userId=$request->input('filter_userId');
 
 
-        $lkp_company = DB::select('SELECT * from lkp_company ');
+        $lkp_company = DB::select('SELECT * from lkp_company WHERE lkp_company.status = "active"');
 
         $warehouses = DB::select("SELECT companyId,warehouseName,latitude,longitude from warehouse
         where  latitude is not null and longitude is not null order by  companyId");

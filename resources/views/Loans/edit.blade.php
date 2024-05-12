@@ -118,8 +118,8 @@
                                    required></td>
                     </tr>
                     <tr>
-                        <TH>Note</TH>
-                        <td><textarea name="note" class="form-control" rows=5>{{$Loans->note}}</textarea>
+                        <TH>Note <font color="red">*</font></TH>
+                        <td><textarea name="note" class="form-control" rows=5 required>{{$Loans->note}} </textarea>
                         </td>
                     </tr>
                     </td>

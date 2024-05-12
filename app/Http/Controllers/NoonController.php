@@ -17,12 +17,14 @@ class NoonController extends Controller
 {
     //
     public function store_method($array){
-        
+        //  dd($array);
         $CSVfp = fopen($array['file'], "r");
         $count = 0;
+       
         if($CSVfp !== FALSE) {
             // setlocale( 'utf8');
             fgetcsv($CSVfp);
+            
           while (($data = fgetcsv($CSVfp, 1000, ",")) !== FALSE) { // Check opening the file is OK!
            
              // Loop over the data using $i as index pointer
@@ -44,12 +46,16 @@ class NoonController extends Controller
                     $journal_type_id = 6;
                     $sql = "SELECT SUM(No_of_TP) as 'No_of_TP'  FROM `packages_report` WHERE `driverId` = ".$driver_id." AND pakage_date BETWEEN '2022-05-21' and '2022-06-20' ORDER BY `packages_report`.`total_out_for_deliver` ASC";
                     $response = DB::select($sql);
-                    $response =$response[0]; 
-                    
-                    // dd($data);
+                    $response =$response[0];
+
+                    if($data[0] == 'JED9368'){
+                        dd('the driver JED9368');
+                    }
+
+                    // dd($data[9]);
                     // dd($response->No_of_TP);
                     $noon_pack = new NoonPack();
-                    $noon_pack->period_id =  13;//intval( $array['journal_period'] );
+                    $noon_pack->period_id =  11;//intval( $array['journal_period'] );
                     $noon_pack->Location = $data[0];
                     $noon_pack->driverId = $driver_id;
                     $noon_pack->UserName = $data[1];
@@ -67,7 +73,7 @@ class NoonController extends Controller
                         $sum = $data[9] - $response->No_of_TP;
                         $recored = new Journal();
                         $recored->driverId = $driver_id;
-                        $recored->journal_date = '2022-07-20'; //date 
+                        $recored->journal_date = '2022-05-23'; //date 
                         $recored->debit = '0';
                         $recored->credit = $sum*8;
                         $recored->journal_type_id = 4;
@@ -151,7 +157,7 @@ class NoonController extends Controller
         {
             # code...
             // dd($path);
-            $CSVfp = fopen($path, "r");
+            $CSVfp = fopen('public/'.$path, "r");
             $count = 0;
             $recoreds = array();
             if($CSVfp !== FALSE) {
@@ -159,7 +165,7 @@ class NoonController extends Controller
             // skip first row in csv
               fgetcsv($CSVfp);
               while (($data = fgetcsv($CSVfp, 1000, ",")) !== FALSE) {
-
+                    // dd($data);
                    // Check opening the file is OK!
                    $checkIfRecoredIsExsist = Drivers::where('job_id',$data[2])->get();
                    if(count($checkIfRecoredIsExsist)>0){

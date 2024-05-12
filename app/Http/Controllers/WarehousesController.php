@@ -38,7 +38,7 @@ class WarehousesController extends Controller
         if (!empty($request->pakage_date)) $pakage_date = \DateTime::createFromFormat('d/m/Y', $request->pakage_date)->format('Y-m-d');
         else $pakage_date = date('Y-m-d');
 
-        $lkp_company = DB::select('SELECT * from lkp_company');
+        $lkp_company = DB::select('SELECT * from lkp_company WHERE status = "active"');
         $lkp_yes_no = DB::select('SELECT * from lkp_yes_no');
 
         $Select_db = DB::table('warehouse')
@@ -185,7 +185,7 @@ class WarehousesController extends Controller
     public function create()
     {
         //
-        $lkp_company = DB::select('SELECT * from lkp_company');
+        $lkp_company = DB::select('SELECT * from lkp_company WHERE status = "active"');
         $lkp_active = DB::select('SELECT * from lkp_active');
         $lkp_city = DB::select('SELECT * from lkp_city');
         $lkp_yes_no = DB::select('SELECT * from lkp_yes_no');
@@ -262,7 +262,7 @@ class WarehousesController extends Controller
      */
     public function edit($id)
     {
-        $lkp_company = DB::select('SELECT * from lkp_company');
+        $lkp_company = DB::select('SELECT * from lkp_company WHERE status = "active"');
         $lkp_city = DB::select('SELECT * from lkp_city');
         $lkp_active = DB::select('SELECT * from lkp_active');
         $Warehouses = DB::select(DB::raw('SELECT * from warehouse where id=' . $id))[0];

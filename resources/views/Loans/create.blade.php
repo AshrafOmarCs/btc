@@ -17,7 +17,7 @@
         style="width:100%;font-size: 14px;font-weight: bold;">Loans</h2>
 </div>
 
-<form method="POST" action="{{ route('Loans.store')}}">
+<form method="POST" action="{{ route('Loans.store')}}" id="form_submit">
     @csrf
 
     <table>
@@ -63,8 +63,8 @@
                         <td><input type="text" class="form-control" name="amount" value="" required></td>
                     </tr>
                     <tr>
-                        <TH>Note</TH>
-                        <td><textarea name="note" class="form-control" rows=5></textarea></td>
+                        <TH>Note <font color="red">*</font></TH>
+                        <td><textarea name="note" class="form-control" rows=5 required></textarea></td>
                     </tr>
                     </td>
                     </tr>
@@ -84,7 +84,7 @@
         </tr>
     </table>
     <div class="w3-row">
-        <button class="w3-btn-block w3-indigo w3-section w3-padding" type="submit">Add</button>
+        <button class="w3-btn-block w3-indigo w3-section w3-padding" type="submit" id="add_button">Add</button>
     </div>
 </form>
 <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
@@ -93,3 +93,5 @@
         type="button" class="w3-btn w3-red">Cancel
     </button>
 </div>
+
+

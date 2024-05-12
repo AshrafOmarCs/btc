@@ -25,11 +25,11 @@
     <div style="width:100%;margin: 0px; ">
         <div style="float:left;margin-top: 2px;"><h2 style="width:100%;font-size: 14px;font-weight: bold;">Salary</h2>
         </div>
-
-
-
+        
+        
+        
     </div>
-
+    
     <!--Approval Modal -->
     <!-- Modal -->
         <div class="modal fade" id="ApprovalModal" tabindex="-1" role="dialog" aria-labelledby="ApprovalModalLabel" aria-hidden="true">
@@ -41,27 +41,27 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
-
+              <div class="modal-body"> 
+                    
                    <div id="e_signature" style="display:none;">
                         <table class="table" id="tblEntAttributes" style="width: 97%%;border: 1px solid #d3a45924;    margin-bottom: 15px; margin-top: 15px;  box-shadow: rgb(100 100 111 / 20%) 0px 7px 29px 0px;">
                             <thead>
-
-                            <tr style="background-color: #d3a459; text-align: center !important;">
-                                <th scope="col">EMP </th>
-                                <th scope="col">Department </th>
+                             
+                            <tr style="background-color: #d3a459; text-align: center !important;"> 
+                                <th scope="col">EMP </th> 
+                                <th scope="col">Department </th> 
                                 <th scope="col">Signature </th>
                             </tr>
                             </thead>
-                            <tbody >
+                            <tbody > 
                             </tbody>
                         </table>
                     </div>
               </div>
               <div class="modal-footer">
-
+                
                 <!--<button type="button" class="btn btn-primary">Export StcPay File</button>-->
-
+                
                  <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSalarySTCShe")}}">
                     @csrf
                     <input type="hidden" name="SQL" id="SQL_stc" value="">
@@ -78,21 +78,21 @@
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             </td>
                         </tr>
-
+ 
                     </table>
                 </form>
-
-
+        
+        
               </div>
             </div>
           </div>
         </div>
     <!-- End of Approval Modal -->
-
-
+    
+    
     @if(session()->has('message'))
     <br>
-
+    
         <div class="alert alert-warning" style="margin-top: 14px;">
             {{ session()->get('message') }} <a href="{{url('Unpaid-Salary')}}">Click Here </a>.
         </div>
@@ -171,8 +171,8 @@
                             <td>
                                 <a href="#"  id="ApprovalModalBtn" class="btn btn-info btn-md" style=" background-color: #1c6577; border-color: #00acd6; width: 180px;" data-toggle="modal" data-target="#ApprovalModal">Approval List</a>
                             </td>
-
-
+                            
+                             
                         </tr>
                     </table>
 
@@ -190,19 +190,19 @@
         <center>
             <div id="salary_range"></div>
         </center>
-
+        
         <input type="hidden" name="companyId" id="companyId" value="">
         <input type="hidden" name="Period" id="Period" value="">
 
         <div class="table-responsive" style="width: 100%;">
-
+            
             <div class="row form-group" id="pre_loader_build" style="display: none;">
                 <div class="col-md-12  text-center">
-                    <img src="https://btcdmins.com/storage/images/preloader.gif" loading="lazy">
+                    <img src="https://btcdmins.com/storage/images/preloader.gif" loading="lazy"> 
                 </div>
             </div>
 
-
+            
             <table id="customer_data" class="table table-bordered table-striped">
                 <thead>
                 <tr>
@@ -334,7 +334,7 @@
             </div>
         </div>
     </div>
-
+    
     <div id="password_modal" class="w3-modal" style="padding-top: 10px !important;">
         <div class="w3-modal-content w3-card-8 w3-animate-zoom" style="max-width:350px">
             <div class="w3-center"><br>
@@ -347,10 +347,10 @@
                 @csrf
                 <input type="hidden" name="ready_statuss" id="ready_statuss">
                 <input type="hidden" name="from_to" id="from_to_ready">
-
+                
                 <div class="row">
                     <div class="col-lg-12">
-                        <b>Please Enter Your Password</b>
+                        <b>Please Enter Your Password</b> 
                         <input type="password" class="form-control" style="width:200px;" name="password" id="password" required
                                    value="" >
                    </div>
@@ -401,14 +401,14 @@
         var array = [];
         var checkboxes = document.querySelectorAll('.check-status:checked');
         if(checkboxes.length > 0) {
-
+            
             for (var i = 0; i < checkboxes.length; i++) {
                array.push(checkboxes[i].value)
             }
             $('#ready_statuss').val(array);
             $('#from_to_ready').val($('#filter_Period').val());
             document.getElementById('password_modal').style.display = 'block';
-
+            
             // $.ajax({
             //     type: 'POST',
             //     url: "{{URL("/ExportSalarySTC")}}",
@@ -428,11 +428,11 @@
         }
     }
     $(document).ready(function() {
-
+        
 	    $('#customer_data').DataTable({
 	    	lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             dom: 'lBfrtip',
-            bAutoWidth: false,
+            bAutoWidth: false, 
             aoColumnDefs: [
               {
                  bSortable: false,
@@ -470,7 +470,7 @@
                         }
                         $.fn.DataTable.ext.buttons.excelHtml5.action.call(this, e, dt, button, config);
                     },
-
+                    
                 }
             ],
             //searching: false,
@@ -515,7 +515,7 @@
         });
 
         $('#filter').click(function () {
-
+            
             if ($('#filter_companyId').val() != '' && $('#filter_Period').val() != '') {
                 $('#pre_loader_build').show();
                 // $('#customer_data').DataTable().destroy();
@@ -565,25 +565,25 @@
                         }
                         $('#pre_loader_build').hide();
                     }
-
+                    
                 });
-
+                
                 $.ajax({
                     type:'POST',
                     url:"{{ route('CheckPermisionsShe') }}",
                     data:{_token: "{{ csrf_token() }}",filter_companyId:$('#filter_companyId').val(), filter_Period:$('#filter_Period').val(), filter_paid_id:$('#filter_paid_id').val()},
                     success:function(data){
-                        // btns behaiver goes here
-
-                        var currentUser = data.data;
-
+                        // btns behaiver goes here  
+                        
+                        var currentUser = data.data; 
+                        
                         if(data.itemsCount > 0){
-                            $("#e_signature").show();
-                            $("#tblEntAttributes tbody").empty();
+                            $("#e_signature").show(); 
+                            $("#tblEntAttributes tbody").empty(); 
                             $("#tblEntAttributes tbody").append(data.payload);
                             if(currentUser.DidUserApproveThisInvoice == true && currentUser.IsHavePermissionToExport == true ){
                                 // able Export button
-                                // check if all emp approved invoice Or Not
+                                // check if all emp approved invoice Or Not 
                                 $("#STC_Report").prop('disabled', true);
                                 if(currentUser.Does_all_approve == true){
                                      $("#STC_Report").prop('disabled', false);
@@ -599,7 +599,7 @@
                         $("#tblEntAttributes tbody").empty();
                     }
                 });
-
+                
             } else {
                 if ($('#filter_companyId').val() == '')
                     alert('Select Company');
@@ -717,7 +717,7 @@
         }
     </script>
     <script>
-
+    
 //     $("#stc_form").submit(function(event) {
 // 		event.preventDefault();
 // 		if ($('#filter_companyId').val() == '') {
@@ -751,9 +751,9 @@
 //             }
 //         });
 //     });
-
-
-
+    
+            
+            
         function validateForm() {
             if ($('#filter_companyId').val() == '') {
                 alert('Select Company');
@@ -784,3 +784,7 @@
 
     </script>
 @endsection
+
+
+
+
