@@ -530,6 +530,9 @@
     </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
         $(document).ready(function () {
             fill_datatable();
@@ -956,7 +959,20 @@
         if(args == 'Form'){
             $('#create_da_bulk').hide();
             $('#statment').hide();
-            $('#create_da_from').show();
+            $.ajax({
+                type: 'GET',
+                url: "{{URL("/Drivers/create/1")}}",
+                contentType: "html",
+                dataType: 'html',
+                success: function (data) {
+                    $('#create_da_from').show();
+                    document.getElementById('create_da_from').innerHTML = data;
+                    $('#vehicle_id_create').select2({
+                        dropdownParent: $('#edit_modal')
+                    });
+                }
+            });
+
         }else{
             $('#create_da_bulk').show();
             $('#statment').hide();

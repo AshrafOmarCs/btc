@@ -208,7 +208,7 @@
 
                 <div id="create_da_from" style="display: none">
                     <h5>Please select a method from bellow options: </h5>
-                      <h6>Form Data</h6>
+                    <h6>Form Data</h6>
                 </div>
                 <div id="create_da_bulk" style="display: none">
                     <h5>Please select a method from bellow options: </h5>
@@ -243,111 +243,109 @@
             </div>
             <div class="modal-body">
                 <!-- Row start -->
-                        <div class="row">
-                            <div class="col-xl-12 col-sm-12 col-12">
-
-                                    <h6>Custom filter: </h6>
+                <div class="row">
+                    <div class="col-xl-12 col-sm-12 col-12">
+                        <h6>Custom filter: </h6>
+                        <hr style="margin: 8px 0;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-5 col-sm-5 col-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <div>
+                                    <h6>Select Fields:</h6>
                                     <hr style="margin: 8px 0;">
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck(this)" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">Select All</label>
+                                </div>
+                                <form id="columnSelectionForm">
+                                    <div class="form-check">
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="0">
+                                        <label class="form-check-label" for="flexCheckDefault">City</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="1">
+                                        <label class="form-check-label" for="flexCheckDefault">Type</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="2">
+                                        <label class="form-check-label" for="flexCheckDefault">FullName</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="3">
+                                        <label class="form-check-label" for="flexCheckDefault">Actual Name</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="4">
+                                        <label class="form-check-label" for="flexCheckDefault">Mobile</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="5">
+                                        <label class="form-check-label" for="flexCheckDefault">STC Pay</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="6">
+                                        <label class="form-check-label" for="flexCheckDefault">Job ID</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="7">
+                                        <label class="form-check-label" for="flexCheckDefault">Status</label>
+                                    </div>
+                                </form>
+
+                                {{-- <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" checked value="" id="flexCheckDefault">
+                                    <label class="form-check-label" for="flexCheckDefault">STCPAY Owner Identity/Iqama</label>
+                                </div> --}}
                             </div>
                         </div>
-						<div class="row">
-                            <div class="col-xl-5 col-sm-5 col-5">
-								<div class="card">
-									<div class="card-body">
-                                        <div>
-											{{-- <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"> --}}
-											<h6>Select Fields:</h6>
-                                            <hr style="margin: 8px 0;">
-										</div>
-                                        <div class="form-check">
-											<input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck(this)" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">Select All</label>
-										</div>
-                                        <form id="columnSelectionForm">
-                                            <div class="form-check">
-                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="0">
-                                                <label class="form-check-label" for="flexCheckDefault">City</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="1">
-                                                <label class="form-check-label" for="flexCheckDefault">Type</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="2">
-                                                <label class="form-check-label" for="flexCheckDefault">FullName</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="3">
-                                                <label class="form-check-label" for="flexCheckDefault">Actual Name</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="4">
-                                                <label class="form-check-label" for="flexCheckDefault">Mobile</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="5">
-                                                <label class="form-check-label" for="flexCheckDefault">STC Pay</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="6">
-                                                <label class="form-check-label" for="flexCheckDefault">Job ID</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input export_checks" type="checkbox" checked value="" id="7">
-                                                <label class="form-check-label" for="flexCheckDefault">Status</label>
-                                            </div>
-                                        </form>
-
-                                        {{-- <div class="form-check">
-											<input class="form-check-input" type="checkbox" checked value="" id="flexCheckDefault">
-											<label class="form-check-label" for="flexCheckDefault">STCPAY Owner Identity/Iqama</label>
-										</div> --}}
-									</div>
-								</div>
-							</div>
-							<div class="col-xl-2 col-sm-2 col-2">
-                                <div class="card">
-									<div class="card-body">
-                                        <button class="btn btn-primary" onclick="show_selected()">Done</button>
-                                    </div>
+                    </div>
+                    <div class="col-xl-2 col-sm-2 col-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="show_selected()">Done</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-5 col-sm-5 col-5">
+                        <div class="card">
+                            <div class="card-body" id="selected_fields" style="display: none">
+                                <div>
+                                    <h6>Selected Fields:</h6>
+                                    <hr style="margin: 8px 0;">
+                                </div>
+                                <div class="form-check first_hide" id="no_0">
+                                    <label class="form-check-label" for="flexCheckDefault">City</label>
+                                </div>
+                                <div class="form-check first_hide" id="no_1">
+                                    <label class="form-check-label" for="flexCheckDefault">Type</label>
+                                </div>
+                                <div class="form-check first_hide" id="no_2">
+                                    <label class="form-check-label" for="flexCheckDefault">FullName</label>
+                                </div>
+                                <div class="form-check first_hide" id="no_3">
+                                    <label class="form-check-label" for="flexCheckDefault">Actual Name</label>
+                                </div>
+                                <div class="form-check first_hide" id="no_4">
+                                    <label class="form-check-label" for="flexCheckDefault">Mobile</label>
+                                </div>
+                                <div class="form-check first_hide" id="no_5">
+                                    <label class="form-check-label" for="flexCheckDefault">STC Pay</label>
+                                </div>
+                                <div class="form-check first_hide" id="no_6">
+                                    <label class="form-check-label" for="flexCheckDefault">Job ID</label>
+                                </div>
+                                <div class="form-check first_hide" id="no_7">
+                                    <label class="form-check-label" for="flexCheckDefault">Status</label>
                                 </div>
                             </div>
-                            <div class="col-xl-5 col-sm-5 col-5">
-                                <div class="card">
-                                    <div class="card-body" id="selected_fields" style="display: none">
-                                        <div>
-                                            <h6>Selected Fields:</h6>
-                                            <hr style="margin: 8px 0;">
-                                        </div>
-                                        <div class="form-check first_hide" id="no_0">
-                                            <label class="form-check-label" for="flexCheckDefault">City</label>
-                                        </div>
-                                        <div class="form-check first_hide" id="no_1">
-                                            <label class="form-check-label" for="flexCheckDefault">Type</label>
-                                        </div>
-                                        <div class="form-check first_hide" id="no_2">
-                                            <label class="form-check-label" for="flexCheckDefault">FullName</label>
-                                        </div>
-                                        <div class="form-check first_hide" id="no_3">
-                                            <label class="form-check-label" for="flexCheckDefault">Actual Name</label>
-                                        </div>
-                                        <div class="form-check first_hide" id="no_4">
-                                            <label class="form-check-label" for="flexCheckDefault">Mobile</label>
-                                        </div>
-                                        <div class="form-check first_hide" id="no_5">
-                                            <label class="form-check-label" for="flexCheckDefault">STC Pay</label>
-                                        </div>
-                                        <div class="form-check first_hide" id="no_6">
-                                            <label class="form-check-label" for="flexCheckDefault">Job ID</label>
-                                        </div>
-                                        <div class="form-check first_hide" id="no_7">
-                                            <label class="form-check-label" for="flexCheckDefault">Status</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-						</div>
-						<!-- Row end -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Row end -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
@@ -573,10 +571,9 @@
                         rowData.push(cellData); // Or provide a placeholder value
                     }
                 });
-                console.log(rowData);
                 exportData.push(rowData);
             }
-            if (exportData.length === 0) {
+            if (exportData[0].length === 0) {
                 alert('No columns selected for export!');
                 return;
             }
