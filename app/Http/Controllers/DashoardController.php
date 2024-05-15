@@ -26,7 +26,7 @@ class DashoardController extends Controller
 
         return view("new_porttal.dashboards.index");
     }
-    public function index_drivers()  {
+    public function index_drivers(Request $request)  {
             $users = Drivers::all();
 
             // dd($users[0]);
@@ -414,5 +414,8 @@ class DashoardController extends Controller
             }
 
         return view("new_porttal.dashboards.".$view,compact('warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics'));
+    }
+    public function drivers_save(Request $request) {
+        dd($request);
     }
 }

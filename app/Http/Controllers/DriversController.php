@@ -176,12 +176,12 @@ class DriversController extends Controller
             }
 
             if ($driver) {
-                return redirect('DriversAttendance')->with('success', 'Record Updated Successfully');
+                return redirect()->back()->with('success', 'Record Updated Successfully');
             } else {
-                return redirect('DriversAttendance')->with('error', 'something bad!');
+                return redirect()->back()->with('error', 'something bad!');
             }
         } else {
-            return redirect('DriversAttendance')->with('error', 'You can not update the attendance on the selected date and time!');
+            return redirect()->back()->with('error', 'You can not update the attendance on the selected date and time!');
         }
     }
 
@@ -674,10 +674,7 @@ class DriversController extends Controller
             $city = DB::select("SELECT lkp_city.id as city_id FROM drivers INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id WHERE drivers.vehicle_id= = '$id'");
             DB::update("update vehicles set current_status = 'delegeted', city_id = '$city[0]->city_id' where id = '$id'");
         }
-        if ($request->input('type_id') == 1)
-            return redirect('/New-Portal/Drivers')->with('success', 'Done successfully');
-        if ($request->input('type_id') == 2)
-            return redirect('/DriversJahiz')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -927,7 +924,7 @@ class DriversController extends Controller
             }
             $Drivers->delete();
         }
-        return redirect('/New-Portal/Drivers')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     public function DriversPost(Request $request)
@@ -951,7 +948,7 @@ class DriversController extends Controller
         where status_id=5 and drivers.id in(" . $IDs_all . ") and not drivers.id in(0,$IDs)");
             }
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/New-Portal/Drivers')->with('error', $sql . $e->getPrevious()->getMessage());
+            return redirect()->back()->with('error', $sql . $e->getPrevious()->getMessage());
         }
         try {
             if ($IDs <> "")
@@ -959,9 +956,9 @@ class DriversController extends Controller
         where status_id<>5 and drivers.id in(" . $IDs . ")
          ");
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/New-Portal/Drivers')->with('error', $e->getPrevious()->getMessage());
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
         }
-        return redirect('/New-Portal/Drivers')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     public function ResetPass($id)
@@ -975,7 +972,7 @@ class DriversController extends Controller
         $Drivers = Drivers::find($request->input('id'));
         $Drivers->password = bcrypt($request->input('password'));
         $Drivers->save();
-        return redirect('/New-Portal/Drivers')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     public function Attachment($id)

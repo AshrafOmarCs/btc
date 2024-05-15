@@ -1,7 +1,12 @@
 @extends('layout2')
 @section('content')
 @section('title', __('drivers.JahizDrivers'))
-
+<style>
+    .bold, .bold_second {
+        font-weight: 800 !important;
+        cursor: pointer;
+    }
+</style>
 
 <!-- Modal ExportExcel 3 -->
 <div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -184,10 +189,9 @@
     </div>
 </div>
 
-
 <!-- Modal addNewDriver3 -->
 <div class="modal fade" id="addNewDriver" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="scrollableLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="scrollableLabel">Add New Driver</h5>
@@ -208,26 +212,38 @@
 
                 <div id="create_da_from" style="display: none">
                     <h5>Please select a method from bellow options: </h5>
-                    <h6>Form Data</h6>
+                      <h6>Form Data</h6>
                 </div>
                 <div id="create_da_bulk" style="display: none">
-                    <h5>Please select a method from bellow options: </h5>
-                      <h6>create_da_bulk</h6>
+                    <span onclick="go_back()" style="cursor: pointer; display: flex"><img src="https://static.thenounproject.com/png/1808051-200.png" style="width: 3%"> <h5>Back</h5></span>
+                    <div class="row">
+                        <div class="col-lg-6 mt-3">
+                            <small>
+                                You can download following format file and after filling it please upload it here to save the new drivers.
+                            </small>
+                            <br />
+                            <a href="{{ url('/storage/docsFormat/Drivers.csv') }}" class="btn btn-sm btn-info " style="padding: 10px"><i class="fa fa-download"></i>Clic {{__('automation.here')}}</a>
+                        </div>
+                        <div class="col-lg-6 mt-3">
+                            <form method="POST" action="{{ route('Drivers/upload')}}">
+                                @csrf
+                                <input type="file" name="drivers_file" id="drivers_file" required>
+                                <button type="submit" class="btn btn-success mt-4">Submit</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="selectBulkOrOne" style="display: none">
-                    <h5>You can add new drivers to system by two way, The first by filling a form, second is by downloading an excel file the upload it .......</h5>
-                    <div class="form-check">
-                        <input class="form-check-input"  type="checkbox" value="" id="flexCheckDefault">
-                        <label class="form-check-label" for="flexCheckDefault">I have read the above statmet and im responsable ....</label>
+                    <div class="row">
+
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" onclick="showSelectBulkOrOne('statment')">Understood</button>
+                {{-- <button type="button" class="btn btn-success" onclick="showSelectBulkOrOne('statment')">Understood</button> --}}
             </div>
-
         </div>
     </div>
 </div>
@@ -238,61 +254,56 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Export Excel File </h5>
+                <h5 class="modal-title" id="staticBackdropLabel">Export Driver Excel</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Row start -->
                 <div class="row">
                     <div class="col-xl-12 col-sm-12 col-12">
-                        <h6>Custom filter: </h6>
-                        <hr style="margin: 8px 0;">
+                        <p>Please select the required fields/criteria then click on Download button. </p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-5 col-sm-5 col-5">
-                        <div class="card">
+                        <div>
+                            <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck()" id="select_all" />
+                            <label class="form-check-label" for="flexCheckDefault">Select All</label>
+                        </div>
+                        <div class="card" style="background-color: lightgrey">
                             <div class="card-body">
-                                <div>
-                                    <h6>Select Fields:</h6>
-                                    <hr style="margin: 8px 0;">
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck(this)" id="flexCheckDefault">
-                                    <label class="form-check-label" for="flexCheckDefault">Select All</label>
-                                </div>
                                 <form id="columnSelectionForm">
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="0">
-                                        <label class="form-check-label" for="flexCheckDefault">City</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="0">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_0" onclick="add_remove_bold(0)">City</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="1">
-                                        <label class="form-check-label" for="flexCheckDefault">Type</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="1">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_1" onclick="add_remove_bold(1)">Type</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="2">
-                                        <label class="form-check-label" for="flexCheckDefault">FullName</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="2">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_2" onclick="add_remove_bold(2)">FullName</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="3">
-                                        <label class="form-check-label" for="flexCheckDefault">Actual Name</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="3">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_3" onclick="add_remove_bold(3)">Actual Name</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="4">
-                                        <label class="form-check-label" for="flexCheckDefault">Mobile</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="4">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_4" onclick="add_remove_bold(4)">Mobile</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="5">
-                                        <label class="form-check-label" for="flexCheckDefault">STC Pay</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="5">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_5" onclick="add_remove_bold(5)">STC Pay</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="6">
-                                        <label class="form-check-label" for="flexCheckDefault">Job ID</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="6">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_6" onclick="add_remove_bold(6)">Job ID</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" id="7">
-                                        <label class="form-check-label" for="flexCheckDefault">Status</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="7">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_7" onclick="add_remove_bold(7)">Status</label>
                                     </div>
                                 </form>
 
@@ -306,40 +317,42 @@
                     <div class="col-xl-2 col-sm-2 col-2">
                         <div class="card">
                             <div class="card-body">
-                                <button class="btn btn-primary" onclick="show_selected()">Done</button>
+                                <img onclick="show_selected()" style="width: 60%; cursor: pointer;" src="{{URL("dashboard/assets/logos/forward.png")}}" />
+                                <br><br><br><br><br>
+                                <img onclick="hide_selected()" style="width: 60%; cursor: pointer; display: none" id="backButton" src="{{URL("dashboard/assets/logos/backward.png")}}" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-5 col-sm-5 col-5">
-                        <div class="card">
-                            <div class="card-body" id="selected_fields" style="display: none">
-                                <div>
-                                    <h6>Selected Fields:</h6>
-                                    <hr style="margin: 8px 0;">
-                                </div>
+                    <div class="col-xl-5 col-sm-5 col-5" id="selected_fields" style="display: none">
+                        <div>
+                            {{-- <input class="form-check-input" type="checkbox" value="" onclick="uncheck(this)" id="flexCheckDefault"> --}}
+                            <label class="form-check-label" for="flexCheckDefault" id="selected_count"></label>
+                        </div>
+                        <div class="card" style="background-color: lightgrey">
+                            <div class="card-body">
                                 <div class="form-check first_hide" id="no_0">
-                                    <label class="form-check-label" for="flexCheckDefault">City</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(0)" id="lbl_sec_0">City</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_1">
-                                    <label class="form-check-label" for="flexCheckDefault">Type</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(1)" id="lbl_sec_1">Type</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_2">
-                                    <label class="form-check-label" for="flexCheckDefault">FullName</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(2)" id="lbl_sec_2">FullName</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_3">
-                                    <label class="form-check-label" for="flexCheckDefault">Actual Name</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(3)" id="lbl_sec_3">Actual Name</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_4">
-                                    <label class="form-check-label" for="flexCheckDefault">Mobile</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(4)" id="lbl_sec_4">Mobile</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_5">
-                                    <label class="form-check-label" for="flexCheckDefault">STC Pay</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(5)" id="lbl_sec_5">STC Pay</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_6">
-                                    <label class="form-check-label" for="flexCheckDefault">Job ID</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(6)" id="lbl_sec_6">Job ID</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_7">
-                                    <label class="form-check-label" for="flexCheckDefault">Status</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(7)" id="lbl_sec_7">Status</label>
                                 </div>
                             </div>
                         </div>
@@ -348,8 +361,8 @@
                 <!-- Row end -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" id="exportExcelBtn">Export</button>
+                <button type="button" class="btn btn-dark" style="background-color: red">Reset</button>
+                <button type="button" class="btn btn-success" id="exportExcelBtn">Download</button>
             </div>
         </div>
     </div>
@@ -523,30 +536,99 @@
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
-
+<input type="hidden" id="check" value="0">
 <script>
         function export_excel() {
             $('#exportExcelBtn').prop('disabled', true);
             $('#selected_fields').hide();
+            $('.export_checks').prop('checked', true);
+            $(".export_checks").addClass("bold");
             $('#ExportExcel').modal('toggle');
         }
-        function check_uncheck(the) {
-            if (the.checked) {
+        function check_uncheck() {
+            if ($('#select_all').prop('checked')) {
                 $('.export_checks').prop('checked', true);
+                $(".export_checks").addClass("bold");
             } else {
                 $('.export_checks').prop('checked', false);
+                $(".export_checks").removeClass("bold");
+            }
+        }
+        function uncheck(the) {
+            if (the.checked) {
+                $('#exportExcelBtn').prop('disabled', true);
+                $(".bold_unbold").removeClass("bold_second");
+            } else {
+                $('#exportExcelBtn').prop('disabled', false);
+                $(".bold_unbold").addClass("bold_second");
+            }
+        }
+        function add_remove_bold(id) {
+            if($('#check').val() == 0) {
+                $("#lbl_"+id).toggleClass("bold");
+                let checkbox = $("#"+id);
+                checkbox.prop("checked", !checkbox.prop("checked"));
+                $('#check').val(1);
+            } else {
+                alert("Please click on Add or Remove button!");
+            }
+        }
+        function add_remove_bold_second(id) {
+            if($('#check').val() == 0) {
+                $('#exportExcelBtn').prop('disabled', true);
+                $("#lbl_sec_"+id).toggleClass("bold_second");
+                $("#lbl_sec_"+id).hide();
+                let checkbox = $("#"+id);
+                $("#lbl_"+id).toggleClass("bold");
+                checkbox.prop("checked", !checkbox.prop("checked"));
+                $('#check').val(1);
+            } else {
+                alert("Please click on Add or Remove button!");
             }
         }
         function show_selected() {
-            $('#exportExcelBtn').prop('disabled', false);
-            $('#selected_fields').show();
+            $('#check').val(0);
+            $('#exportExcelBtn').prop('disabled', true);
+            $('#selected_fields').hide();
             $('.first_hide').hide();
+            let count = 0;
             $('#columnSelectionForm input[type="checkbox"]').each(function() {
                 if ($(this).is(':checked')) {
                     $('#no_'+$(this).attr('id')).show();
+                    $("#lbl_sec_"+$(this).attr('id')).addClass("bold_second");
+                    $("#lbl_sec_"+$(this).attr('id')).show();
+                    count++;
                 }
             });
+            $('#backButton').hide();
+            if (count > 0) {
+                $('#exportExcelBtn').prop('disabled', false);
+                $('#selected_fields').show();
+                $('#backButton').show();
+            }
+            $('#selected_count').html("UnSelect (<span style='color: red'>"+count+"</span>)");
         }
+        function hide_selected() {
+            $('#check').val(0);
+            $('#selected_fields').hide();
+            $('#exportExcelBtn').prop('disabled', true);
+            $('.first_hide').hide();
+            let count = 0;
+            $('#columnSelectionForm input[type="checkbox"]').each(function() {
+                if ($(this).is(':checked')) {
+                    $('#no_'+$(this).attr('id')).show();
+                    count++;
+                }
+            });
+            $('#backButton').hide();
+            if (count > 0) {
+                $('#exportExcelBtn').prop('disabled', false);
+                $('#backButton').show();
+                $('#selected_fields').show();
+            }
+            $('#selected_count').html("UnSelect (<span style='color: red'>"+count+"</span>)");
+        }
+
         // Export Excel button click event
         $('#exportExcelBtn').click(function() {
             var table = $('#customer_data').DataTable();
@@ -1369,9 +1451,53 @@
                     alert(status + ": " + error);
                 }
             });
-
-
             return false;
+        }
+
+        function go_back() {
+            $('#create_da_bulk').hide();
+            $('#create_da_from').hide();
+            $('#statment').show();
+        }
+        function addNewDriver(){
+            $('#create_da_bulk').hide();
+            $('#create_da_from').hide();
+            $('#statment').show();
+        }
+        function showSelectBulkOrOne(args){
+            var link = document.getElementById('statment');
+
+
+            link.style.display = 'none'; //or
+            var link = document.getElementById('selectBulkOrOne');
+            link.style.display = 'block'; //or
+            // link.style.visibility = 'hidden';
+        }
+        function handleContent(args){
+            if(args == 'Form'){
+                $('#create_da_bulk').hide();
+                $('#statment').hide();
+                $('#create_da_from').show();
+                document.getElementById('create_da_from').innerHTML = 'Loading';
+                $.ajax({
+                    type: 'GET',
+                    url: "{{URL("/Drivers/create/1")}}",
+                    contentType: "html",
+                    dataType: 'html',
+                    success: function (data) {
+                        document.getElementById('create_da_from').innerHTML = data;
+                        // $('#vehicle_id_create').select2({
+                        //     dropdownParent: $('#edit_modal')
+                        // });
+                    }
+                });
+
+            }else{
+                $('#create_da_bulk').show();
+                $('#statment').hide();
+                $('#create_da_from').hide();
+            }
+            console.log(args);
         }
 </script>
 
