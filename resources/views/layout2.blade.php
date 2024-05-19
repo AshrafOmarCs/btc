@@ -16,6 +16,7 @@
 		<meta property="og:type" content="Website">
 		<meta property="og:site_name" content="Bootstrap Gallery">
 		<link rel="shortcut icon" href="{{asset('assets/images/logo.png')}}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
 
 		<!-- Title -->
         <title>@yield('title')</title>
@@ -403,7 +404,7 @@
 							</li>
 							<li class="dropdown">
 								<a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
-									<span class="user-name d-none d-md-block">Abigale Heaney</span>
+									<span class="user-name d-none d-md-block">{{AUTH()->user()->name}}</span>
 									<span class="avatar">
 										<img src="{{asset('assets/images/user.png')}}" alt="Admin Templates">
 										<span class="status online"></span>
@@ -414,7 +415,7 @@
 										<a href="profile.html">Profile</a>
 										<a href="profile.html">Applications</a>
 										<a href="account-settings.html">Settings</a>
-										<a href="login.html">Logout</a>
+										<a href="{{url('logout')}}">Logout</a>
 									</div>
 								</div>
 							</li>
@@ -432,6 +433,8 @@
 
 					<!-- Content wrapper start -->
 					<div class="content-wrapper">
+                        @include('pages.messages')
+
 						@yield('content')
 					</div>
 					<!-- Content wrapper end -->
@@ -457,10 +460,15 @@
 			************ Required JavaScript Files *************
 		************* -->
 		<!-- Required jQuery first, then Bootstrap Bundle JS -->
+
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
 		<script src="{{asset('assets/js/jquery.min.js')}}"></script>
 		<script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
 		<script src="{{asset('assets/js/modernizr.js')}}"></script>
 		<script src="{{asset('assets/js/moment.js')}}"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 		<!-- *************
 			************ Vendor Js Files *************

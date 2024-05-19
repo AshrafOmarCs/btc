@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class DashoardController extends Controller
 {
@@ -416,6 +418,37 @@ class DashoardController extends Controller
         return view("new_porttal.dashboards.".$view,compact('warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics'));
     }
     public function drivers_save(Request $request) {
-        dd($request);
+        $validator = Validator::make($request->all(), [
+            'drivers_file' => 'required|file|max:2048', // max file size is 2MB
+        ]);
+
+        // Custom validation for file extension
+        $validator->after(function ($validator) use ($request) {
+            if ($request->hasFile('drivers_file')) {
+                $file = $request->file('drivers_file');
+                $extension = $file->getClientOriginalExtension();
+                $allowedExtensions = ['xlsx', 'xls', 'csv'];
+
+                if (!in_array($extension, $allowedExtensions)) {
+                    $validator->errors()->add('drivers_file', 'The file must be a file of type: xlsx, xls, csv.');
+                }
+            }
+        });
+
+        // Check if the validation fails
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $user_id = Auth::user()->id;
+        $path = $request->file('drivers_file')->getRealPath();
+        $data = Excel::toCollection(null, $path);
+        // Assuming the data is in the first sheet
+        $rows = $data->first();
+        $rows->shift();
+        foreach ($rows as $row) {
+            print_r($row);
+        }
+        return back()->withSuccess("Drivers added successfully");
     }
 }

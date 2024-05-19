@@ -12,10 +12,6 @@
     }
 </style>
 
-<div style="float:left;margin-top: 5px;margin-left: 20px;width:100%;">
-    <span onclick="go_back()" style="cursor: pointer; display: flex"><img src="https://static.thenounproject.com/png/1808051-200.png" style="width: 3%"> <h5>Back</h5></span>
-</div>
-
 
 <form method="POST" action="{{ route('Drivers.store')}}">
     @csrf

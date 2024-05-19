@@ -1,6 +1,6 @@
 <style>
 
-    .show_table th {
+    .design_table th {
         padding: 0.3rem 0.3rem !important;
         border: solid 1px !important;
         margin: 0 !important;
@@ -10,7 +10,7 @@
         white-space: nowrap;
     }
 
-    .show_table td {
+    .design_table td {
         white-space: nowrap;
         padding: 0.0rem 0.3rem !important;
         border: solid 1px !important;
@@ -26,7 +26,7 @@
         <tr>
             <td style="padding: 0.3rem 2.0rem !important;vertical-align: top;text-align: center;">
                 <span style="font-size: 16pt;font-weight: bold;color: red"> SANED</span>
-                <table class="show_table" style="width:10px!important;">
+                <table class="design_table" style="width:10px!important;">
                     <tr>
                         <TH>CollectionAmount</TH>
                         <TH>DeliveryPrice</TH>
@@ -50,7 +50,7 @@
             </td>
             <td style="padding: 0.3rem 2.0rem !important;vertical-align: top;text-align: center;">
                 <span style="font-size: 16pt;font-weight: bold;color: red"> Bander</span>
-                <table class="show_table" style="width:10px!important;">
+                <table class="design_table" style="width:10px!important;">
                     <tr>
 
                         <TH>Amount</TH>

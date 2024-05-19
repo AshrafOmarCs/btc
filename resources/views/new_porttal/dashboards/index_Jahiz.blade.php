@@ -2,9 +2,14 @@
 @section('content')
 @section('title', __('drivers.JahizDrivers'))
 <style>
-    .bold, .bold_second {
+    .bold {
         font-weight: 800 !important;
         cursor: pointer;
+    }
+    .bold_second {
+        font-weight: 800 !important;
+        cursor: pointer;
+        color: #B7A758 !important;
     }
 </style>
 
@@ -194,7 +199,7 @@
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="scrollableLabel">Add New Driver</h5>
+                <h5 class="modal-title" id="scrollableLabel"><span id="bck_btn" onclick="go_back()" style="cursor: pointer; display: none; color: #B7A758"><img src="{{URL("dashboard/assets/logos/backward.png")}}" style="width: 7%"> Back</span> Add New Driver(s)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -215,7 +220,6 @@
                       <h6>Form Data</h6>
                 </div>
                 <div id="create_da_bulk" style="display: none">
-                    <span onclick="go_back()" style="cursor: pointer; display: flex"><img src="https://static.thenounproject.com/png/1808051-200.png" style="width: 3%"> <h5>Back</h5></span>
                     <div class="row">
                         <div class="col-lg-6 mt-3">
                             <small>
@@ -225,9 +229,9 @@
                             <a href="{{ url('/storage/docsFormat/Drivers.csv') }}" class="btn btn-sm btn-info " style="padding: 10px"><i class="fa fa-download"></i>Clic {{__('automation.here')}}</a>
                         </div>
                         <div class="col-lg-6 mt-3">
-                            <form method="POST" action="{{ route('Drivers/upload')}}">
+                            <form method="POST" action="{{ route('Drivers/upload')}}" enctype="multipart/form-data">
                                 @csrf
-                                <input type="file" name="drivers_file" id="drivers_file" required>
+                                <input type="file" name="drivers_file" id="drivers_file" required accept=".xlsx,.xls,.csv">
                                 <button type="submit" class="btn btn-success mt-4">Submit</button>
                             </form>
                         </div>
@@ -265,8 +269,8 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-5 col-sm-5 col-5">
-                        <div>
+                    <div class="col-xl-4 col-sm-4 col-4">
+                        <div class="ml-4">
                             <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck()" id="select_all" />
                             <label class="form-check-label" for="flexCheckDefault">Select All</label>
                         </div>
@@ -314,16 +318,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-2 col-sm-2 col-2">
+                    <div class="col-xl-4 col-sm-4 col-4">
                         <div class="card">
-                            <div class="card-body">
-                                <img onclick="show_selected()" style="width: 60%; cursor: pointer;" src="{{URL("dashboard/assets/logos/forward.png")}}" />
+                            <div class="card-body text-center">
+                                <img onclick="show_selected()" style="width: 20%; cursor: pointer; margin-top: 30%" src="{{URL("dashboard/assets/logos/forward.png")}}" />
                                 <br><br><br><br><br>
-                                <img onclick="hide_selected()" style="width: 60%; cursor: pointer; display: none" id="backButton" src="{{URL("dashboard/assets/logos/backward.png")}}" />
+                                <img onclick="hide_selected()" style="width: 20%; cursor: pointer; display: none" id="backButton" src="{{URL("dashboard/assets/logos/backward.png")}}" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-5 col-sm-5 col-5" id="selected_fields" style="display: none">
+                    <div class="col-xl-4 col-sm-4 col-4" id="selected_fields" style="display: none">
                         <div>
                             {{-- <input class="form-check-input" type="checkbox" value="" onclick="uncheck(this)" id="flexCheckDefault"> --}}
                             <label class="form-check-label" for="flexCheckDefault" id="selected_count"></label>
@@ -362,7 +366,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-dark" style="background-color: red">Reset</button>
-                <button type="button" class="btn btn-success" id="exportExcelBtn">Download</button>
+                <button type="button" class="btn btn-success" style="background-color: #2661ba" id="exportExcelBtn">Download</button>
             </div>
         </div>
     </div>
@@ -539,6 +543,7 @@
 <input type="hidden" id="check" value="0">
 <script>
         function export_excel() {
+            $('#backButton').hide();
             $('#exportExcelBtn').prop('disabled', true);
             $('#selected_fields').hide();
             $('.export_checks').prop('checked', true);
@@ -565,6 +570,7 @@
         }
         function add_remove_bold(id) {
             if($('#check').val() == 0) {
+                $('#exportExcelBtn').prop('disabled', true);
                 $("#lbl_"+id).toggleClass("bold");
                 let checkbox = $("#"+id);
                 checkbox.prop("checked", !checkbox.prop("checked"));
@@ -1458,11 +1464,13 @@
             $('#create_da_bulk').hide();
             $('#create_da_from').hide();
             $('#statment').show();
+            $('#bck_btn').hide();
         }
         function addNewDriver(){
             $('#create_da_bulk').hide();
             $('#create_da_from').hide();
             $('#statment').show();
+            $('#bck_btn').hide();
         }
         function showSelectBulkOrOne(args){
             var link = document.getElementById('statment');
@@ -1471,9 +1479,9 @@
             link.style.display = 'none'; //or
             var link = document.getElementById('selectBulkOrOne');
             link.style.display = 'block'; //or
-            // link.style.visibility = 'hidden';
         }
         function handleContent(args){
+            $('#bck_btn').show();
             if(args == 'Form'){
                 $('#create_da_bulk').hide();
                 $('#statment').hide();
@@ -1497,7 +1505,6 @@
                 $('#statment').hide();
                 $('#create_da_from').hide();
             }
-            console.log(args);
         }
 </script>
 
