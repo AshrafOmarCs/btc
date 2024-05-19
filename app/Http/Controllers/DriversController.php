@@ -667,6 +667,7 @@ class DriversController extends Controller
             $action = "<b>$made_by</b> made a new driver with job_id ($driver_job_id)";
             $warehouse_id = $Drivers->warehouseId;
             HelperFunctionsController::add_log($action, $warehouse_id);
+            $lastId = $Drivers->id;
         }
 
         $id = $request->input('vehicle_id');
@@ -674,7 +675,9 @@ class DriversController extends Controller
             $city = DB::select("SELECT lkp_city.id as city_id FROM drivers INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id WHERE drivers.vehicle_id= = '$id'");
             DB::update("update vehicles set current_status = 'delegeted', city_id = '$city[0]->city_id' where id = '$id'");
         }
-        return redirect()->back()->with('success', 'Done successfully');
+        return $this->edit($lastId, $request->input('driver_type_id'))->with('success', 'Done successfully');
+
+        // return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**

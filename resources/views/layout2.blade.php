@@ -42,6 +42,8 @@
 
 		<!-- Scrollbar CSS -->
 		<link rel="stylesheet" href="{{asset('assets/vendor/overlay-scroll/OverlayScrollbars.min.css')}}">
+        <!-- Date Range CSS -->
+        <link rel="stylesheet" href="{{asset('assets/vendor/daterange/daterange.css')}}">
 		@yield('css')
         <!-- Data Tables -->
         <link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5.css')}}" />

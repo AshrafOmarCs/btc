@@ -503,7 +503,7 @@
                                     <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#ExportExcel"></i>Export Excel</button>
                                     <button type="button" class="btn btn-info" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#addNewDriver" onclick="addNewDriver()"></i>Add New Driver</button>
                                     @if(Auth::user()->user_type_id==1)
-                                        <button type="submit" class="btn btn-info" class="btn btn-info" type="submit"></i>On Hold</button>
+                                        {{-- <button type="submit" class="btn btn-info" class="btn btn-info" type="submit"></i>On Hold</button> --}}
                                     @endif
                                 </div>
                             </div>
@@ -525,15 +525,14 @@
                                     <th>Driver's Docs</th>
                                     <TH>{{__('drivers.Status')}}</TH>
                                     @if(Auth::user()->user_type_id==1)
-                                        <TH>{{__('drivers.OnHold')}}
-                                            @if(Auth::user()->user_type_id==1)
-                                            <input class="flat-red" type="checkbox" name="select-all" id="select-all"/>
-                                        </TH>
-                                        @endif
-                                        </TH>
+                                        {{-- <TH>{{__('drivers.OnHold')}} --}}
+                                            {{-- <input class="flat-red" type="checkbox" name="select-all" id="select-all"/>
+                                        </TH> --}}
+
                                         <TH>{{__('drivers.BanderCar')}}</TH>
-                                        <TH>{{__('drivers.PBalance')}}</TH>
-                                        <TH>{{__('drivers.CBalance')}}</TH>
+                                        <TH>Total Balance</TH>
+                                        {{-- <TH>{{__('drivers.PBalance')}}</TH>
+                                        <TH>{{__('drivers.CBalance')}}</TH> --}}
                                         <TH>{{__('drivers.Updated_At')}}</TH>
                                     @endif
                                     <TH>Action</TH>
@@ -734,6 +733,11 @@
                         {
                             name: 'lkp_company.companyName',
                             render: function (data, type, row, meta) {
+                                let image = `https://pbs.twimg.com/profile_images/1587335578152013824/y4wio-TE_400x400.jpg`;
+                                if (row.Company_Image == 1) {
+                                    image = `/Attachment/Company_Image/`+row.id+`.jpg`;
+                                }
+
                                 return `<img src="https://pbs.twimg.com/profile_images/1587335578152013824/y4wio-TE_400x400.jpg" class="flag-img-lg" alt="Best Admin Dashboards">
                                         ` + row.companyName;
                             }
@@ -779,9 +783,18 @@
                             "orderable": false,
                             name: 'job_id',
                             render: function (data, type, row, meta) {
+                                var identity = promise_note = contract = '<i style="cursor: not-allowed; color: red" class="bi bi-eye-slash"></i>';
+                                if(row.Image_Identity == 1) {
+                                    identity = '<a target="_blank" href="/Attachment/Image_Identity/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="view" style="color: green"></i></a>';
+                                }
+                                if(row.Image_PromissoryNote == 1) {
+                                    promise_note = '<a target="_blank" href="/Attachment/Image_PromissoryNote/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="view" style="color: green"></i></a>';
+                                }
+                                if(row.Image_JobContract == 1) {
+                                    contract = '<a target="_blank" href="/Attachment/Image_JobContract/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="view" style="color: green"></i></a>';
+                                }
                                 return `<table class="inner-table">
-                                    <thead><tr><th style="border: 1px solid black;">Identity/Iqama</th><th style="border: 1px solid black;">Promissory Note</th><th style="border: 1px solid black;">Contract</th></tr></thead>
-                                    <tbody><tr><td class="text-center" style="border: 1px solid black;"><a target="_blank" href="/Attachment/Image_Identity/`+row.id+`.jpg">view</a></td><td class="text-center" style="border: 1px solid black;"><a target="_blank" href="/Attachment/Image_PromissoryNote/`+row.id+`.jpg">view</a></td><td class="text-center" style="border: 1px solid black;"><a target="_blank" href="/Attachment/Image_JobContract/`+row.id+`.jpg">view</a></td></tr></tbody>
+                                    <thead><tr><th style="color: white">IDENTITY</th><td class="text-center" style="">`+identity+`</td></tr><tr><th style="color: white">PROMISSORY NOTE</th><td class="text-center" style="">`+promise_note+`</td></tr><tr><th style="color: white">CONTRACT</th><td class="text-center" style="">`+contract+`</td></tr></thead>
                                     </table>`;
                             }
                         },
@@ -790,56 +803,57 @@
                             name: 'lkp_driver_status.driver_status_en',
                             render: function (data, type, row, meta) {
                                 if (row.status_id == "1") {
-                                    return '<span class="label label-success">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-success">' + row.driver_status_en + '</span>';
                                 } else if (row.status_id == "2") {
-                                    return '<span class="label label-warning">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-warning">' + row.driver_status_en + '</span>';
                                 } else if (row.status_id == "3") {
-                                    return '<span class="label label-danger">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-danger">' + row.driver_status_en + '</span>';
                                 } else if (row.status_id == "4") {
-                                    return '<span class="label label-default">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-secondary">' + row.driver_status_en + '</span>';
                                 } else if (row.status_id == "5") {
-                                    return '<span class="label label-danger">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-danger">' + row.driver_status_en + '</span>';
                                 }
                             }
                         },
                             @if(Auth::user()->user_type_id==1)
-                        {
-                            "orderable": false,
-                            "className": "text-center",
-                            "render": function (data, type, row, meta) {
-                                var i = '';
-                                i = '<input class="flat-red" name="ID_' + meta.row + '" type="checkbox" value="' + row.id + '"';
-                                if (row.status_id == "5")
-                                    i = i + ' checked ';
-                                i = i + '>';
-                                if (row.status_id == "5")
-                                    i = i + '&nbsp;' + row.onhold_date;
-                                return i;
+                        // {
+                        //     "orderable": false,
+                        //     "className": "text-center",
+                        //     "render": function (data, type, row, meta) {
+                        //         var i = '';
+                        //         i = '<input class="flat-red" name="ID_' + meta.row + '" type="checkbox" value="' + row.id + '"';
+                        //         if (row.status_id == "5")
+                        //             i = i + ' checked ';
+                        //         i = i + '>';
+                        //         if (row.status_id == "5")
+                        //             i = i + '&nbsp;' + row.onhold_date;
+                        //         return i;
 
 
-                            }
-                        },
+                        //     }
+                        // },
                         {
                             //data: 'driver_status_en',
                             name: 'bander_car.yes_no',
                             render: function (data, type, row, meta) {
                                 if (row.bander_car == "Yes") {
-                                    return '<span class="label label-success">' + row.bander_car + '</span>';
+                                    return '<span class="badge badge-success">' + row.bander_car + '</span>';
 
                                 } else if (row.bander_car == "No") {
-                                    return '<span class="label label-danger">' + row.bander_car + '</span>';
+                                    return '<span class="badge badge-danger">' + row.bander_car + '</span>';
                                 }
                                 else return '';
                             }
                         },
+
                         {
                             data: 'per_priod',
                             name: 'balance.per_priod'
                         },
-                        {
-                            data: 'cur_priod',
-                            name: 'balance.cur_priod'
-                        },
+                        // {
+                        //     data: 'cur_priod',
+                        //     name: 'balance.cur_priod'
+                        // },
                         {
                             data: 'updated_at',
                             name: 'updated_at'
@@ -1205,7 +1219,6 @@
 @section('javascript')
     <!-- Main Js Required -->
     <script src="{{asset('assets/js/main.js')}}"></script>
-    <script src="https://btcdmins.com/AdminLTE/plugins/iCheck/icheck.min.js"></script>
 
 @stop
 @endsection
