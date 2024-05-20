@@ -58,7 +58,7 @@ return [
     'ops_name' => 'ops_name',
     'DrivinglicenseExpireyDate' => 'DrivinglicenseExpireyDate',
     'Update' => 'Update',
-    
+
     'vehicles_drivers_attendance' => 'Vehicles/Drivers Attendance',
     'attendance_des' => 'By this module you can Add/Update attendance of vehicles. Also you can see the attendance status of vehicles for past days.',
     'Date' => 'Date',
@@ -102,8 +102,10 @@ return [
     'BanderAmount' => 'Bander Amount',
     'EMPID' => 'EMP ID',
     'Select' => 'Select',
+    'FuelPerdays' => 'Fuel Per day',
+    'BasicSalary' => 'Basic Salary',
     'VehicleExpiryDate' => 'Vehicle Expiry Date'
-    
-    
-     
+
+
+
 ];

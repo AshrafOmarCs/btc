@@ -59,7 +59,7 @@ return [
     'ops_name' => 'اسم العمليات',
     'DrivinglicenseExpireyDate' => 'تاريخ انتهاء صلاحية رخصة القيادة',
     'Update' => 'تحديث',
-    
+
     'vehicles_drivers_attendance' => 'حضور المركبات/السائقين',
     'attendance_des' => 'من خلال هذه الوحدة يمكنك إضافة/تحديث حضور المركبات. كما يمكنك رؤية حالة حضور المركبات للأيام الماضية.',
     'Date' => 'تاريخ',
@@ -103,6 +103,8 @@ return [
     'BanderAmount' => 'مبلغ بندر',
     'EMPID' => 'EMP ID',
     'Select' => 'يختار',
+    'FuelPerdays' => 'الوقود يوميا',
+    'BasicSalary' => 'راتب اساسي',
     'VehicleExpiryDate' => 'تاريخ انتهاء المركبة'
 
 ];

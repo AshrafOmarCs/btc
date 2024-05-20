@@ -17,7 +17,6 @@
                         <!-- Card start -->
                         <div class="card">
                             <div class="card-body">
-
                                 <!-- Row start -->
                                 <div class="row">
                                     <div class="col-xl-4 col-sm-6 col-12">
@@ -44,128 +43,148 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Status</label>
-                                            <select class="form-control" id="country">
-                                                <option></option>
-                                                @foreach($lkp_driver_status as $status)
-                                                    <option>{{$status->driver_status_en}}</option>
+                                            <label for="country" class="form-label">Vehicle</label>
+                                            <select name="filter_vehicleId" id="filter_vehicleId" class="form-control"  required>
+                                                <option value=""></option>
+                                                @foreach($vehicles as $vehicle)
+                                                    <option value="{{$vehicle->id}}"> {{$vehicle->plate}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="FullName" class="form-label">Full Name</label>
-                                            <input type="text" class="form-control" id="filter_fullName" name="filter_fullName" placeholder="FullName">
+                                            <label for="country" class="form-label">{{__('drivers.fullName')}}</label>
+                                            <input type="text" class="form-control" id="filter_fullName" name="filter_fullName">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="Mobile" class="form-label">Mobile</label>
-                                            <input type="text" class="form-control" name="filter_mobileNumber" id="filter_mobileNumber" placeholder="Mobile">
+                                            <label for="country" class="form-label">{{__('drivers.Mobile')}}</label>
+                                            <input type="text" class="form-control" name="filter_mobileNumber" id="filter_mobileNumber">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="iqama" class="form-label">Identity or Iqama</label>
-                                            <input type="text" class="form-control" name="filter_iqama" id="filter_iqama" placeholder="Identity or Iqama">
+                                            <label for="country" class="form-label">{{__('drivers.Iqama')}}</label>
+                                            <input type="text" class="form-control" name="filter_iqama" id="filter_iqama">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="iqama" class="form-label">Driver Job ID</label>
-                                            <input type="text" class="form-control" name="filter_job_id" id="filter_job_id" placeholder="Driver Job ID">
+                                            <label for="country" class="form-label">{{__('drivers.EmailID')}}</label>
+                                            <input type="text" class="form-control" name="filter_email_id" id="filter_email_id">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Driver Type</label>
-                                            <select class="form-control"  name="filter_driver_type_id" id="filter_driver_type_id">
-                                                <option></option>
-                                                @foreach($lkp_driver_status as $status)
-                                                    <option>{{$status->driver_status_en}}</option>
-                                                @endforeach
-                                            </select>
+                                            <label for="country" class="form-label">{{__('drivers.JobId')}}</label>
+                                            <input type="text" class="form-control" name="filter_job_id" id="filter_job_id">
                                         </div>
                                     </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Status')}}</label>
+                                        <select name="filter_status_id" id="filter_status_id" onchange="status()" class="form-control">
+                                            <option value=""></option>
 
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="mb-3">
-                                            <label for="accountNumber" class="form-label">STCPAY Number  </label>
-                                            <input type="text" class="form-control" name="filter_accountNumber" id="filter_accountNumber"
-                                                placeholder="9665*****">
-                                        </div>
-                                    </div>
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="mb-3">
-                                            <label for="enterPassword" class="form-label">STCPAY Owner ID </label>
-                                            <input type="text" class="form-control" name="filter_account_owner_iqama" id="filter_account_owner_iqama"
-                                                placeholder="STCPAY Owner ID">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="mb-3">
-                                            <label for="enterPassword" class="form-label">Created at</label>
-                                            <input type="text" class="form-control" name="filter_created_at" id="filter_created_at"
-                                                placeholder="STCPAY Owner ID">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="m-0">
-                                            <div class="form-label">Updated at </div>
-                                            <div class="input-group">
-												<span class="input-group-text">
-													<i class="bi bi-calendar4"></i>
-												</span>
-												<input type="date" class="form-control datepicker-range" id="filter_updated_at" name="filter_updated_at">
-											</div>
-                                        </div>
-                                    </div>
-                                    {{--
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <label for="Created_by" class="form-label">Created by</label>
-                                        <select class="form-control" id="Created_by">
-                                            <option>Select account</option>
-                                            <option>Ashraf</option>
-                                            <option>Samir</option>
-                                            <option>Canada</option>
-                                            <option>Gremany</option>
-                                            <option>India</option>
-                                            <option>Japan</option>
-                                            <option>England</option>
-                                            <option>Brazil</option>
-                                        </select>
-                                    </div> --}}
-
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <label for="Updated_by" class="form-label">Updated by</label>
-                                        <select class="form-control" id="Updated_by">
-                                            <option>Select account</option>
-                                            <option>Ashraf</option>
-                                            <option>Samir</option>
-                                            <option>Canada</option>
-                                            <option>Gremany</option>
-                                            <option>India</option>
-                                            <option>Japan</option>
-                                            <option>England</option>
-                                            <option>Brazil</option>
+                                            @foreach($lkp_driver_status as $lkp_driver_statuss)
+                                                <option
+                                                    value="{{$lkp_driver_statuss->id}}">{{$lkp_driver_statuss->driver_status_en}}</option>
+                                            @endforeach
                                         </select>
                                     </div>
-
-
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Account_Owner_Iqama')}}</label>
+                                        <input type="text" class="form-control" name="filter_account_owner_iqama" id="filter_account_owner_iqama">
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.accountNumber')}}</label>
+                                        <input type="text" class="form-control" name="filter_accountNumber" id="filter_accountNumber">
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.DriverType')}}</label>
+                                        <select name="filter_driver_type_id" id="filter_driver_type_id" class="form-control">
+                                            <option value=""></option>
+                                            @foreach($lkp_driver_type as $lkp_driver_typee)
+                                                <option
+                                                    value="{{$lkp_driver_typee->id}}">{{$lkp_driver_typee->driver_type}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.BanderCar')}}</label>
+                                        <select name="filter_bander_car_id" id="filter_bander_car_id" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImageIdentity')}}</label>
+                                        <select name="filter_Image_Identity" id="filter_Image_Identity" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImagePassport')}}</label>
+                                        <select name="filter_Image_Passport" id="filter_Image_Passport" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImageDrivingLicence')}}</label>
+                                        <select name="filter_Image_DrivingLicence" id="filter_Image_DrivingLicence" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImageVehiclesRegistration')}}</label>
+                                        <select name="filter_Image_VehiclesRegistration" id="filter_Image_VehiclesRegistration" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImagePromissoryNote')}}</label>
+                                        <select name="filter_Image_PromissoryNote" id="filter_Image_PromissoryNote" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImageJobContract')}}</label>
+                                        <select name="filter_Image_JobContract" id="filter_Image_JobContract" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Created_At')}}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="date" class="form-control datepicker-range" id="filter_created_at" name="filter_created_at">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Updated_At')}}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="date" class="form-control datepicker-range" id="filter_updated_at" name="filter_updated_at">
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- Row end -->
 
@@ -178,7 +197,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-success"
-                    data-bs-dismiss="modal" >Search</button>
+                    data-bs-dismiss="modal" id="filter">Search</button>
             </div>
         </div>
     </div>
@@ -205,11 +224,13 @@
                         </div>
                      </div>
                 </div>
-
-                <div id="create_da_from" style="display: none">
-                    <h5>Please select a method from bellow options: </h5>
-                      <h6>Form Data</h6>
-                </div>
+                <form id="driverForm">
+                    @csrf
+                    <div id="create_da_from" style="display: none">
+                        <h5>Please select a method from bellow options: </h5>
+                        <h6>Form Data</h6>
+                    </div>
+                </form>
                 <div id="create_da_bulk" style="display: none">
                     <span onclick="go_back()" style="cursor: pointer; display: flex"><img src="https://static.thenounproject.com/png/1808051-200.png" style="width: 3%"> <h5>Back</h5></span>
                     <div class="row">
@@ -485,6 +506,7 @@
 
 <div class="row">
     <div class="col-sm-12 col-12">
+        <div id="message"></div>
         <!-- Card start -->
         <div class="card">
             <div class="card-header">
@@ -557,11 +579,14 @@
 
     </div>
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<script>
+
+
+
+@section('javascript')
+    <!-- Main Js Required -->
+    <script src="{{asset('assets/js/main.js')}}"></script>
+    <script>
         function export_excel() {
             $('#exportExcelBtn').prop('disabled', true);
             $('#selected_fields').hide();
@@ -658,6 +683,31 @@
             XLSX.writeFile(wb, 'Jahiz Drivers.xlsx');
         });
         $(document).ready(function () {
+            $('#driverForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route("Drivers.store") }}',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.status == 420) {
+                            var alert = 'danger';
+                        } else {
+                            var alert = 'success';
+                        }
+                        $('#message').html('<div class="alert alert-'+alert+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                        $('#driverForm')[0].reset();
+                        $('#addNewDriver').modal('hide');
+                    },
+                    error: function(xhr) {
+                        $('#message').html("");
+                        document.getElementById('create_da_from').innerHTML = response;
+                    }
+                });
+            });
             fill_datatable();
 
             function fill_datatable(filter_screenId = '', filter_companyId = '', filter_warehouseId = '', filter_driver_type_id = '', filter_fullName = '', filter_mobileNumber = '', filter_iqama = '', filter_email_id = '', filter_job_id = '', filter_status_id = '', filter_account_owner_iqama = '', filter_accountNumber = '', filter_created_at = '', filter_updated_at = '', filter_bander_car_id = '', filter_Image_Identity = '', filter_Image_Passport = '', filter_Image_DrivingLicence = '', filter_Image_VehiclesRegistration = '', filter_Image_JobContract = '', filter_Image_PromissoryNote = '', filter_vehicleId = '') {
@@ -685,21 +735,21 @@
                     "autoWidth": false,
                     "fnDrawCallback": function () {
                         $('[data-toggle="tooltip"]').tooltip();
-                        $(function () {
-                            $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
-                                checkboxClass: 'icheckbox_flat-red',
-                                radioClass: 'iradio_flat-red'
-                            });
+                        // $(function () {
+                        //     $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+                        //         checkboxClass: 'icheckbox_flat-red',
+                        //         radioClass: 'iradio_flat-red'
+                        //     });
 
 
-                            $('#select-all').on('ifChecked ifUnchecked', function (event) {
-                                if (document.getElementById('select-all').checked) {
+                        //     $('#select-all').on('ifChecked ifUnchecked', function (event) {
+                        //         if (document.getElementById('select-all').checked) {
 
-                                    $('.flat-red').iCheck('check')
-                                } else
-                                    $('.flat-red').iCheck('uncheck');
-                            });
-                        });
+                        //             $('.flat-red').iCheck('check')
+                        //         } else
+                        //             $('.flat-red').iCheck('uncheck');
+                        //     });
+                        // });
                     },
                     ajax: {
                         url: "{{ route('Drivers.index') }}",
@@ -1037,9 +1087,7 @@
             });
 
             $('#filter').click(function () {
-
                 if ($('#filter_vehicleId').val() != '' || $('#filter_companyId').val() != '' || $('#filter_warehouseId').val() != '' || $('#filter_driver_type_id').val() != '' || $('#filter_fullName').val() != '' || $('#filter_mobileNumber').val() != '' || $('#filter_iqama').val() != '' || $('#filter_email_id').val() != '' || $('#filter_job_id').val() != '' || $('#filter_status_id').val() != '' || $('#filter_account_owner_iqama').val() != '' || $('#filter_accountNumber').val() != '' || $('#filter_created_at').val() != '' || $('#filter_updated_at').val() != '' || $('#filter_bander_car_id').val() != ''|| $('#filter_Image_Identity').val() != '' || $('#filter_Image_Passport').val() != '' || $('#filter_Image_DrivingLicence').val() != '' || $('#filter_Image_VehiclesRegistration').val() != '' || $('#filter_Image_JobContract').val() != '' || $('#filter_Image_PromissoryNote').val() != '') {
-                    card_change();
                     $('#customer_data').DataTable().destroy();
                     fill_datatable('Drivers', $('#filter_companyId').val(), $('#filter_warehouseId').val(), $('#filter_driver_type_id').val(), $('#filter_fullName').val(), $('#filter_mobileNumber').val(), $('#filter_iqama').val(), $('#filter_email_id').val(), $('#filter_job_id').val(), $('#filter_status_id').val(), $('#filter_account_owner_iqama').val(), $('#filter_accountNumber').val(), $('#filter_created_at').val(), $('#filter_updated_at').val(), $('#filter_bander_car_id').val(), $('#filter_Image_Identity').val(), $('#filter_Image_Passport').val(), $('#filter_Image_DrivingLicence').val(), $('#filter_Image_VehiclesRegistration').val(), $('#filter_Image_JobContract').val(), $('#filter_Image_PromissoryNote').val(), $('#filter_vehicleId').val());
                 } else {
@@ -1214,11 +1262,6 @@
         }
     }
 </script>
-
-
-@section('javascript')
-    <!-- Main Js Required -->
-    <script src="{{asset('assets/js/main.js')}}"></script>
 
 @stop
 @endsection

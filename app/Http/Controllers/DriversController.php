@@ -602,82 +602,83 @@ class DriversController extends Controller
         //   'companyId' => ['required'],
         //   'cityId' => ['required'],
         //   ]);
-        $Drivers = new Drivers;
-        $Drivers->warehouseId = $request->input('warehouseId');
-        $Drivers->fullName = $request->input('fullName');
-        $Drivers->fullName_ar = $request->input('fullName_ar');
-        $Drivers->actualName = $request->input('actualName');
-        $Drivers->mobileNumber = $request->input('mobileNumber');
-        $Drivers->mobileNumber_someone_else = $request->input('mobileNumber_someone_else');
-        $Drivers->nationality_id = $request->input('nationality_id');
-        $Drivers->iqama = $request->input('iqama');
-        if ($request->input('iqamaExpireyDate_y') == "")
-            $Drivers->iqamaExpireyDate = null;
-        else
-            $Drivers->iqamaExpireyDate = $request->input('iqamaExpireyDate_y') . "-" . $request->input('iqamaExpireyDate_m') . "-" . $request->input('iqamaExpireyDate_d');
-        $Drivers->email_id = $request->input('email_id');
-        if (session('Session_DriversCarrefour') == 'yes') {
-            $d = DB::select("select max(CONVERT(SUBSTR(job_id, 11),UNSIGNED INTEGER))as MX from drivers where job_id like 'Carrefour_%'")[0];
-            $Carrefour_ = (int)$d->MX;
-            $Carrefour_++;
-            $Drivers->job_id = 'Carrefour_' . $Carrefour_;
-        } else $Drivers->job_id = $request->input('job_id');
+        try {
+            $Drivers = new Drivers;
+            $Drivers->warehouseId = $request->input('warehouseId');
+            $Drivers->fullName = $request->input('fullName');
+            $Drivers->fullName_ar = $request->input('fullName_ar');
+            $Drivers->actualName = $request->input('actualName');
+            $Drivers->mobileNumber = $request->input('mobileNumber');
+            $Drivers->mobileNumber_someone_else = $request->input('mobileNumber_someone_else');
+            $Drivers->nationality_id = $request->input('nationality_id');
+            $Drivers->iqama = $request->input('iqama');
+            if ($request->input('iqamaExpireyDate') == "")
+                $Drivers->iqamaExpireyDate = null;
+            else
+                $Drivers->iqamaExpireyDate = $request->input('iqamaExpireyDate');
+            $Drivers->email_id = $request->input('email_id');
+            if (session('Session_DriversCarrefour') == 'yes') {
+                $d = DB::select("select max(CONVERT(SUBSTR(job_id, 11),UNSIGNED INTEGER))as MX from drivers where job_id like 'Carrefour_%'")[0];
+                $Carrefour_ = (int)$d->MX;
+                $Carrefour_++;
+                $Drivers->job_id = 'Carrefour_' . $Carrefour_;
+            } else $Drivers->job_id = $request->input('job_id');
 
-        if ($request->input('dob_y') == "")
-            $Drivers->dob = null;
-        else
-            $Drivers->dob = $request->input('dob_y') . "-" . $request->input('dob_m') . "-" . $request->input('dob_d');
-        $Drivers->status_id = $request->input('status_id');
-        if ($request->input('status_id') != 3) {
-            $Drivers->termination_reason_id = null;
-        } else {
-            $Drivers->termination_reason_id = $request->input('termination_reason_id');
-        }
-        if ($request->input('interview_date_y') == "")
-            $Drivers->interview_date = null;
-        else
-            $Drivers->interview_date = $request->input('interview_date_y') . "-" . $request->input('interview_date_m') . "-" . $request->input('interview_date_d');
-        if ($request->input('start_date_y') == "")
-            $Drivers->start_date = null;
-        else
-            $Drivers->start_date = $request->input('start_date_y') . "-" . $request->input('start_date_m') . "-" . $request->input('start_date_d');
-        if ($request->input('licenseExpireyDate_y') == "")
-            $Drivers->licenseExpireyDate = null;
-        else
-            $Drivers->licenseExpireyDate = $request->input('licenseExpireyDate_y') . "-" . $request->input('licenseExpireyDate_m') . "-" . $request->input('licenseExpireyDate_d');
-        $Drivers->passportNo = $request->input('passportNo');
-        if ($request->input('passportExpireyDate_y') == "")
-            $Drivers->passportExpireyDate = null;
-        else
-            $Drivers->passportExpireyDate = $request->input('passportExpireyDate_y') . "-" . $request->input('passportExpireyDate_m') . "-" . $request->input('passportExpireyDate_d');
-        $Drivers->bank_id = $request->input('bank_id');
-        $Drivers->accountNumber = $request->input('accountNumber');
-        $Drivers->account_owner_iqama = $request->input('account_owner_iqama');
-        $Drivers->under_sopnsorship_id = $request->input('under_sopnsorship_id');
-        $Drivers->ajeer_id = $request->input('ajeer_id');
-        $Drivers->bander_car_id = $request->input('bander_car_id');
-        $Drivers->driver_type_id = $request->input('driver_type_id');
-        $Drivers->created_by_id = Auth::user()->id;
-        $Drivers->updated_by_id = Auth::user()->id;
-        $Drivers->vehicle_id = $request->input('vehicle_id');
-        $success = $Drivers->save();
-        if($success) {
-            $driver_job_id = $Drivers->job_id;
-            $made_by = Auth::user()->name;
-            $action = "<b>$made_by</b> made a new driver with job_id ($driver_job_id)";
-            $warehouse_id = $Drivers->warehouseId;
-            HelperFunctionsController::add_log($action, $warehouse_id);
-            $lastId = $Drivers->id;
+            if ($request->input('dob') == "")
+                $Drivers->dob = null;
+            else
+                $Drivers->dob = $request->input('dob');
+            $Drivers->status_id = $request->input('status_id');
+            if ($request->input('status_id') != 3) {
+                $Drivers->termination_reason_id = null;
+            } else {
+                $Drivers->termination_reason_id = $request->input('termination_reason_id');
+            }
+            if ($request->input('interview_date') == "")
+                $Drivers->interview_date = null;
+            else
+                $Drivers->interview_date = $request->input('interview_date');
+            if ($request->input('start_date') == "")
+                $Drivers->start_date = null;
+            else
+                $Drivers->start_date = $request->input('start_date');
+            if ($request->input('licenseExpireyDate') == "")
+                $Drivers->licenseExpireyDate = null;
+            else
+                $Drivers->licenseExpireyDate = $request->input('licenseExpireyDate');
+            $Drivers->passportNo = $request->input('passportNo');
+            if ($request->input('passportExpireyDate') == "")
+                $Drivers->passportExpireyDate = null;
+            else
+                $Drivers->passportExpireyDate = $request->input('passportExpireyDate');
+            $Drivers->bank_id = $request->input('bank_id');
+            $Drivers->accountNumber = $request->input('accountNumber');
+            $Drivers->account_owner_iqama = $request->input('account_owner_iqama');
+            $Drivers->under_sopnsorship_id = $request->input('under_sopnsorship_id');
+            $Drivers->ajeer_id = $request->input('ajeer_id');
+            $Drivers->bander_car_id = $request->input('bander_car_id');
+            $Drivers->driver_type_id = $request->input('driver_type_id');
+            $Drivers->created_by_id = Auth::user()->id;
+            $Drivers->updated_by_id = Auth::user()->id;
+            $Drivers->vehicle_id = $request->input('vehicle_id');
+            $success = $Drivers->save();
+            if($success) {
+                $driver_job_id = $Drivers->job_id;
+                $made_by = Auth::user()->name;
+                $action = "<b>$made_by</b> made a new driver with job_id ($driver_job_id)";
+                $warehouse_id = $Drivers->warehouseId;
+                HelperFunctionsController::add_log($action, $warehouse_id);
+                $id = $request->input('vehicle_id');
+                if(!empty($id)) {
+                    $city = DB::select("SELECT lkp_city.id as city_id FROM drivers INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id WHERE drivers.vehicle_id= = '$id'");
+                    DB::update("update vehicles set current_status = 'delegeted', city_id = '$city[0]->city_id' where id = '$id'");
+                }
+                return response()->json(['status' => 200, 'message' => 'Driver Added successfully. With AMPID: ' . $Drivers->job_id]);
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json(['status' => 420, 'message' => $e->errorInfo]);
         }
 
-        $id = $request->input('vehicle_id');
-        if(!empty($id)) {
-            $city = DB::select("SELECT lkp_city.id as city_id FROM drivers INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id WHERE drivers.vehicle_id= = '$id'");
-            DB::update("update vehicles set current_status = 'delegeted', city_id = '$city[0]->city_id' where id = '$id'");
-        }
-        return $this->edit($lastId, $request->input('driver_type_id'))->with('success', 'Done successfully');
-
-        // return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -814,10 +815,10 @@ class DriversController extends Controller
                  $Drivers->basic_salary = $request->input('basic_salary');
                  $Drivers->car_plateNumber = $request->input('car_plateNumber');
             //
-            if ($request->input('iqamaExpireyDate_y') == "")
+            if ($request->input('iqamaExpireyDate') == "")
                 $Drivers->iqamaExpireyDate = null;
             else
-                $Drivers->iqamaExpireyDate = $request->input('iqamaExpireyDate_y') . "-" . $request->input('iqamaExpireyDate_m') . "-" . $request->input('iqamaExpireyDate_d');
+                $Drivers->iqamaExpireyDate = $request->input('iqamaExpireyDate');
             $Drivers->email_id = $request->input('email_id');
             if (Auth::user()->user_type_id == 1) {
                 if($Drivers->job_id != $request->input('job_id') AND $request->input('job_id') != '') {
@@ -825,10 +826,10 @@ class DriversController extends Controller
                 }
                 $Drivers->job_id = $request->input('job_id');
             }
-            if ($request->input('dob_y') == "")
+            if ($request->input('dob') == "")
                 $Drivers->dob = null;
             else
-                $Drivers->dob = $request->input('dob_y') . "-" . $request->input('dob_m') . "-" . $request->input('dob_d');
+                $Drivers->dob = $request->input('dob');
             if (Auth::user()->user_type_id == 1 || session('Session_DriversJahiz') == 'yes'|| session('Session_DriversCarrefour') == 'yes'||session('Session_Drivers')=='yes') {
                 if($Drivers->status_id != $request->input('status_id') AND $request->input('status_id') != '') {
                     $action .= "status_id: " . $Drivers->status_id . " to " . $request->input('status_id') . ", ";
@@ -840,23 +841,23 @@ class DriversController extends Controller
             } else {
                 $Drivers->termination_reason_id = $request->input('termination_reason_id');
             }
-            if ($request->input('interview_date_y') == "")
+            if ($request->input('interview_date') == "")
                 $Drivers->interview_date = null;
             else
-                $Drivers->interview_date = $request->input('interview_date_y') . "-" . $request->input('interview_date_m') . "-" . $request->input('interview_date_d');
-            if ($request->input('start_date_y') == "")
+                $Drivers->interview_date = $request->input('interview_date');
+            if ($request->input('start_date') == "")
                 $Drivers->start_date = null;
             else
-                $Drivers->start_date = $request->input('start_date_y') . "-" . $request->input('start_date_m') . "-" . $request->input('start_date_d');
-            if ($request->input('licenseExpireyDate_y') == "")
+                $Drivers->start_date = $request->input('start_date');
+            if ($request->input('licenseExpireyDate') == "")
                 $Drivers->licenseExpireyDate = null;
             else
-                $Drivers->licenseExpireyDate = $request->input('licenseExpireyDate_y') . "-" . $request->input('licenseExpireyDate_m') . "-" . $request->input('licenseExpireyDate_d');
+                $Drivers->licenseExpireyDate = $request->input('licenseExpireyDate');
             $Drivers->passportNo = $request->input('passportNo');
-            if ($request->input('passportExpireyDate_y') == "")
+            if ($request->input('passportExpireyDate') == "")
                 $Drivers->passportExpireyDate = null;
             else
-                $Drivers->passportExpireyDate = $request->input('passportExpireyDate_y') . "-" . $request->input('passportExpireyDate_m') . "-" . $request->input('passportExpireyDate_d');
+                $Drivers->passportExpireyDate = $request->input('passportExpireyDate');
             $Drivers->bank_id = $request->input('bank_id');
             if($Drivers->accountNumber != $request->input('accountNumber') AND $request->input('accountNumber') != '') {
                 $action .= "accountNumber: " . $Drivers->accountNumber . " to " . $request->input('accountNumber') . ", ";

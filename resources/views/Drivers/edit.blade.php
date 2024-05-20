@@ -285,7 +285,7 @@
                                 <span class="input-group-text">
                                     <i class="bi bi-calendar4"></i>
                                 </span>
-                                <input type="date" value="{{$Drivers->Interview_Date}}" name="Interview_Date" class="form-control datepicker">
+                                <input type="date" value="{{$Drivers->interview_date}}" name="interview_date" class="form-control datepicker">
                             </div>
                         </div>
                     </div>
@@ -300,7 +300,7 @@
                                 <span class="input-group-text">
                                     <i class="bi bi-calendar4"></i>
                                 </span>
-                                <input type="date" value="{{$Drivers->Start_Date}}" name="Start_Date" class="form-control datepicker">
+                                <input type="date" value="{{$Drivers->start_date}}" name="start_date" class="form-control datepicker">
                             </div>
                         </div>
                     </div>
@@ -315,7 +315,190 @@
                                 <span class="input-group-text">
                                     <i class="bi bi-calendar4"></i>
                                 </span>
-                                <input type="date" value="{{$Drivers->DrivinglicenseExpireyDate}}" name="Start_Date" class="form-control datepicker">
+                                <input type="date" value="{{$Drivers->licenseExpireyDate}}" name="licenseExpireyDate" class="form-control datepicker">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.PassportNo')}}</label>
+                            <input type="text" class="form-control" name="passportNo"
+                                        value="{{$Drivers->passportNo}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.passportExpireyDate')}}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-calendar4"></i>
+                                </span>
+                                <input type="date" value="{{$Drivers->passportExpireyDate}}" name="passportExpireyDate" class="form-control datepicker">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.STCAccountNumber')}} <font color="red">*</font></label>
+                            <input type="text" class="form-control" style="width:200px;" name="accountNumber"
+                                        id="accountNumber" value="{{$Drivers->accountNumber}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.STCAccountOwnerIqama')}} <font color="red">*</font></label>
+                            <input type="text" class="form-control" style="width:200px;" name="account_owner_iqama" id="account_owner_iqama"
+                                value="{{$Drivers->account_owner_iqama}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.DriverType')}} <font color="red">*</font></label>
+                            @if(Auth::user()->user_type_id==1 || session('Session_DriversJahiz')=='yes')
+                                <select name="driver_type_id" id="driver_type_id" class="form-control">
+                                    <option value=""></option>
+                                    @foreach($lkp_driver_type as $lkp_driver_typee)
+                                        <option
+                                            value="{{$lkp_driver_typee->id}}"
+                                            @if ($Drivers->driver_type_id==$lkp_driver_typee->id){{"  selected " }}:{{""}} @endif>{{$lkp_driver_typee->driver_type}}</option>
+                                    @endforeach
+                                </select>
+                            @else
+                                <!--<b><font color="red">{{$Drivers->driver_type}}</font></b>-->
+
+                                <select name="driver_type_id" id="driver_type_id" class="form-control">
+                                    <option value=""></option>
+                                    @foreach($lkp_driver_type as $lkp_driver_typee)
+                                        <option
+                                            value="{{$lkp_driver_typee->id}}"
+                                            @if ($Drivers->driver_type_id==$lkp_driver_typee->id){{"  selected " }}:{{""}} @endif>{{$lkp_driver_typee->driver_type}}</option>
+                                    @endforeach
+                                </select>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.UnderSopnsorship')}} <font color="red">*</font></label>
+                            <select name="under_sopnsorship_id" id="under_sopnsorship_id" class="form-control">
+                                <option value=""></option>
+                                @foreach($lkp_yes_no as $lkp_yes_noo)
+                                    <option value="{{$lkp_yes_noo->id}}"
+                                            @if ($Drivers->under_sopnsorship_id==$lkp_yes_noo->id){{"  selected " }}:{{""}} @endif>{{$lkp_yes_noo->yes_no}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.Ajeer')}} <font color="red">*</font></label>
+                            <select name="ajeer_id" id="ajeer_id" class="form-control">
+                                <option value=""></option>
+                                @foreach($lkp_yes_no as $lkp_yes_noo)
+                                    <option value="{{$lkp_yes_noo->id}}"
+                                            @if ($Drivers->ajeer_id==$lkp_yes_noo->id){{"  selected " }}:{{""}} @endif>{{$lkp_yes_noo->yes_no}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.FuelPerdays')}} <font color="red">*</font></label>
+                            <input type="text" class="form-control" name="fuel_per_day"
+                                        id="fuel_per_day"
+                                        value="{{$Drivers->fuel_per_day}}" placeholder="Specify Daily Fauel Amount">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.BasicSalary')}} <font color="red">*</font></label>
+                            <input type="text" class="form-control" placeholder="Basic Salary" style="width:200px;" name="basic_salary"
+                                        id="basic_salary"
+                                        value="{{$Drivers->basic_salary}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.Vehicle')}} <font color="red">*</font></label>
+                            <select name="vehicle_id" id="vehicle_id" class="form-control" style="width:200px;" onchange="show_date(this.value)">
+                                <option value="">Select Vehicle</option>
+                                @foreach($vehicles as $vehicle)
+                                    <option value="{{$vehicle->id}}"
+                                            @if ($Drivers->vehicle_id==$vehicle->id){{"  selected " }}:{{""}} @endif>{{$vehicle->plate}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.Vehicle')}} <font color="red">*</font></label>
+                            <select name="vehicle_id" id="vehicle_id" class="form-control" style="width:200px;" onchange="show_date(this.value)">
+                                <option value="">Select Vehicle</option>
+                                @foreach($vehicles as $vehicle)
+                                    <option value="{{$vehicle->id}}"
+                                            @if ($Drivers->vehicle_id==$vehicle->id){{"  selected " }}:{{""}} @endif>{{$vehicle->plate}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12" style="display: {{$Drivers->vehicle_id == '' ? 'none' : ''}}" id="expiry_tr">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.VehicleExpiryDate')}}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-calendar4"></i>
+                                </span>
+                                <input type="date" class="form-control" name="vehicle_expiry_date"
+                                        id="vehicle_expiry_date"
+                                        value="{{$Drivers->vehicle_expiry_date}}">
                             </div>
                         </div>
                     </div>
@@ -323,146 +506,19 @@
             </div>
 
         </div>
-        <div class="table-responsive" style="width:100%;padding:0px 10px">
-            <table>
+        <span id="Termination_Reason" <?php if ($Drivers->status_id <> "3") echo 'style="display:none;"';?> >
+            <TH>{{__('drivers.Termination_Reason')}}</TH>
+            <td>
+                <select name="termination_reason_id" id="termination_reason_id" class="form-control">
+                    <option value=""></option>
+                    @foreach($lkp_termination_reasons as $lkp_termination_reasonss)
+                        <option value="{{$lkp_termination_reasonss->id}}"
+                                @if ($Drivers->termination_reason_id==$lkp_termination_reasonss->id){{"  selected " }}:{{""}} @endif>{{$lkp_termination_reasonss->reason_en}}</option>
+                    @endforeach
+                </select>
+            </td>
+        </span>
 
-                <tr>
-                    <td style="vertical-align: top !important;">
-                        <table class="table m-0 show_table">
-
-                            <span id="Termination_Reason" <?php if ($Drivers->status_id <> "3") echo 'style="display:none;"';?> >
-                                <TH>{{__('drivers.Termination_Reason')}}</TH>
-                                <td>
-                                    <select name="termination_reason_id" id="termination_reason_id" class="form-control">
-                                        <option value=""></option>
-                                        @foreach($lkp_termination_reasons as $lkp_termination_reasonss)
-                                            <option value="{{$lkp_termination_reasonss->id}}"
-                                                    @if ($Drivers->termination_reason_id==$lkp_termination_reasonss->id){{"  selected " }}:{{""}} @endif>{{$lkp_termination_reasonss->reason_en}}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                            </span>
-
-                            <tr>
-                                <TH>{{__('drivers.DrivinglicenseExpireyDate')}}</TH>
-                                <td><?php  $from = 0;$to = 90;$name = "licenseExpireyDate";  $Date = explode("-", $Drivers->licenseExpireyDate);include(app_path() . '/includes/Date.php');?></td>
-                            </tr>
-
-                            <tr>
-                                <TH>{{__('drivers.PassportNo')}}</TH>
-                                <td><input type="text" class="form-control" style="width:200px;" name="passportNo"
-                                        value="{{$Drivers->passportNo}}"></td>
-                            </tr>
-                            <tr>
-                                <TH>{{__('drivers.passportExpireyDate')}}</TH>
-                                <td><?php  $from = 0;$to = 90;$name = "passportExpireyDate"; $Date = explode("-", $Drivers->passportExpireyDate);include(app_path() . '/includes/Date.php');?></td>
-                            </tr>
-
-
-                            <tr>
-                                <TH>{{__('drivers.STCAccountNumber')}} <font color="red">*</font></TH>
-                                <td><input type="text" class="form-control" style="width:200px;" name="accountNumber"
-                                        id="accountNumber"
-                                        value="{{$Drivers->accountNumber}}"></td>
-                            </tr>
-
-                            <tr>
-                                <TH>{{__('drivers.STCAccountOwnerIqama')}} <font color="red">*</font></TH>
-                                <td><input type="text" class="form-control" style="width:200px;" name="account_owner_iqama"
-                                        id="account_owner_iqama"
-                                        value="{{$Drivers->account_owner_iqama}}"></td>
-                            </tr>
-
-                            <tr>
-                                <TH>{{__('drivers.DriverType')}} <font color="red">*</font></TH>
-                                <td>
-                                    @if(Auth::user()->user_type_id==1 || session('Session_DriversJahiz')=='yes')
-                                        <select name="driver_type_id" id="driver_type_id" class="form-control">
-                                            <option value=""></option>
-                                            @foreach($lkp_driver_type as $lkp_driver_typee)
-                                                <option
-                                                    value="{{$lkp_driver_typee->id}}"
-                                                    @if ($Drivers->driver_type_id==$lkp_driver_typee->id){{"  selected " }}:{{""}} @endif>{{$lkp_driver_typee->driver_type}}</option>
-                                            @endforeach
-                                        </select>
-                                    @else
-                                        <!--<b><font color="red">{{$Drivers->driver_type}}</font></b>-->
-
-                                        <select name="driver_type_id" id="driver_type_id" class="form-control">
-                                            <option value=""></option>
-                                            @foreach($lkp_driver_type as $lkp_driver_typee)
-                                                <option
-                                                    value="{{$lkp_driver_typee->id}}"
-                                                    @if ($Drivers->driver_type_id==$lkp_driver_typee->id){{"  selected " }}:{{""}} @endif>{{$lkp_driver_typee->driver_type}}</option>
-                                            @endforeach
-                                        </select>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr>
-                                <TH>{{__('drivers.UnderSopnsorship')}}</TH>
-                                <td>
-                                    <select name="under_sopnsorship_id" id="under_sopnsorship_id" class="form-control"
-                                            style="width:200px;">
-                                        <option value=""></option>
-                                        @foreach($lkp_yes_no as $lkp_yes_noo)
-                                            <option value="{{$lkp_yes_noo->id}}"
-                                                    @if ($Drivers->under_sopnsorship_id==$lkp_yes_noo->id){{"  selected " }}:{{""}} @endif>{{$lkp_yes_noo->yes_no}}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <TH>{{__('drivers.Ajeer')}}</TH>
-                                <td>
-                                    <select name="ajeer_id" id="ajeer_id" class="form-control" style="width:200px;">
-                                        <option value=""></option>
-                                        @foreach($lkp_yes_no as $lkp_yes_noo)
-                                            <option value="{{$lkp_yes_noo->id}}"
-                                                    @if ($Drivers->ajeer_id==$lkp_yes_noo->id){{"  selected " }}:{{""}} @endif>{{$lkp_yes_noo->yes_no}}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                            </tr>
-
-
-                            <tr>
-                                <TH>{{__('drivers.FuelPerdays')}}</TH>
-                                <td><input type="text" class="form-control" style="width:200px;" name="fuel_per_day"
-                                        id="fuel_per_day"
-                                        value="{{$Drivers->fuel_per_day}}" placeholder="Specify Daily Fauel Amount"></td>
-                            </tr>
-                            <tr>
-                                <TH>{{__('drivers.BasicSalary')}}</TH>
-                                <td><input type="text" class="form-control" placeholder="Basic Salary" style="width:200px;" name="basic_salary"
-                                        id="basic_salary"
-                                        value="{{$Drivers->basic_salary}}"></td>
-                            </tr>
-                            <tr>
-                                <TH>{{__('drivers.Vehicle')}}</TH>
-                                <td>
-                                    <select name="vehicle_id" id="vehicle_id" class="form-control" style="width:200px;" onchange="show_date(this.value)">
-                                        <option value="">Select Vehicle</option>
-                                        @foreach($vehicles as $vehicle)
-                                            <option value="{{$vehicle->id}}"
-                                                    @if ($Drivers->vehicle_id==$vehicle->id){{"  selected " }}:{{""}} @endif>{{$vehicle->plate}}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr style="display: {{$Drivers->vehicle_id == '' ? 'none' : ''}}" id="expiry_tr">
-                                <TH>{{__('drivers.VehicleExpiryDate')}}</TH>
-                                <td><input type="date" class="form-control" style="width:200px;" name="vehicle_expiry_date"
-                                        id="vehicle_expiry_date"
-                                        value="{{$Drivers->vehicle_expiry_date}}"></td>
-                                </td>
-                            </tr>
-
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>

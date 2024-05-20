@@ -29,6 +29,8 @@ class DashoardController extends Controller
         return view("new_porttal.dashboards.index");
     }
     public function index_drivers(Request $request)  {
+        $vehicles = DB::select("SELECT * from vehicles order by plate");
+
             $users = Drivers::all();
 
             // dd($users[0]);
@@ -415,7 +417,7 @@ class DashoardController extends Controller
 
             }
 
-        return view("new_porttal.dashboards.".$view,compact('warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics'));
+        return view("new_porttal.dashboards.".$view,compact('vehicles', 'warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics'));
     }
     public function drivers_save(Request $request) {
         $validator = Validator::make($request->all(), [

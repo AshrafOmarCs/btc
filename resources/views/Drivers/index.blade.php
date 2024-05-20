@@ -1,19 +1,24 @@
-@extends('layout2')
+@extends('AdminLTE')
 @section('content')
+@section('title', __('drivers.drivers'))
 
 
 
     <!-- Content Header (Page header) -->
     <div style="width:100%;margin: 0px; ">
-        <div style="float:left;margin-top: 2px;"><h2 style="width:100%;font-size: 14px;font-weight: bold;">Drivers</h2>
+        <div style="float:left;margin-top: 2px;"><h2 style="width:100%;font-size: 14px;font-weight: bold;">{{__('drivers.drivers')}}</h2>
         </div>
         @if(Auth::user()->user_type_id==1||session('Session_DriversCarrefour')=='yes')
             <div style="float:right;">
-                <h2><a href="javascript:add();" class="btn btn-sm btn-info "><i class="fa fa-plus"></i> Add New
-                        Driver</a>
+                <h2><a href="javascript:add();" class="btn btn-sm btn-info "><i class="fa fa-plus"></i> {{__('drivers.add_driver')}}</a>
                 </h2>
             </div>
         @endif
+            <!--        <div style="float:right;">-->
+            <!--    <h2><a href="javascript:add();" class="btn btn-sm btn-info "><i class="fa fa-plus"></i> Add New-->
+            <!--            Driver</a>-->
+            <!--    </h2>-->
+            <!--</div>-->
     </div>
     <div class="card card-default" style="width:100%;clear:both;"></div>
     <script>
@@ -53,7 +58,7 @@
             <div id="box-body" class="box-body table-responsive">
                 <table class="table m-0 search_table" style="width:10px!important;">
                     <tr>
-                        <TH>CompanyName</TH>
+                        <TH>{{__('drivers.CompanyName')}}</TH>
                         <td>
                             <select name="filter_companyId" id="filter_companyId" onchange="WarehouseName()"
                                     class="form-control" style="width:200px;" required>
@@ -62,35 +67,46 @@
                                     <option value="{{$lkpcompany->id}}"> {{$lkpcompany->companyName}}</option>
                                 @endforeach
                             </select>
-                        </td> 
-                        <TH>WarehouseName</TH>
+                        </td>
+
+                        <TH>{{__('drivers.WarehouseName')}}</TH>
                         <td>
                             <select id="filter_warehouseId" name="filter_warehouseId" class="form-control"
-                                    style="width:180px;"> 
-                                <option value=""></option> 
+                                    style="width:180px;">
+
+                                <option value=""></option>
+
                             </select>
                         </td>
-                        <TH>fullName</TH>
-                        <td><input type="text" class="form-control" style="width:180px;" id="filter_fullName"
-                                   name="filter_fullName"></td>
+                        <TH>{{__('drivers.Vehicle')}}</TH>
+                        <td>
+                            <select name="filter_vehicleId" id="filter_vehicleId" onchange="WarehouseName()"
+                                    class="form-control" style="width:200px;" required>
+                                <option value=""></option>
+                                @foreach($vehicles as $vehicle)
+                                    <option value="{{$vehicle->id}}"> {{$vehicle->plate}}</option>
+                                @endforeach
+                            </select>
+                        </td>
                     </tr>
-                    <tr> 
-                        <TH>Mobile</TH>
+                    <tr>
+                        <TH>{{__('drivers.fullName')}}</TH>
+                        <td><input type="text" class="form-control" style="width:200px;" id="filter_fullName"
+                                   name="filter_fullName"></td>
+                        <TH>{{__('drivers.Mobile')}}</TH>
                         <td><input type="text" class="form-control" name="filter_mobileNumber" id="filter_mobileNumber">
                         </td>
-                        <TH>Iqama</TH>
+                        <TH>{{__('drivers.Iqama')}}</TH>
                         <td><input type="text" class="form-control" name="filter_iqama" id="filter_iqama"></td>
-
-                        <TH>Email ID</TH>
-                        <td><input type="text" class="form-control" name="filter_email_id" id="filter_email_id"></td>
-
                     </tr>
 
                     <tr>
-                        <TH>Job ID</TH>
+                        <TH>{{__('drivers.EmailID')}}</TH>
+                        <td><input type="text" class="form-control" name="filter_email_id" id="filter_email_id"></td>
+                        <TH>{{__('drivers.JobID')}}</TH>
                         <td><input type="text" class="form-control" name="filter_job_id" id="filter_job_id"></td>
 
-                        <TH>Status</TH>
+                        <TH>{{__('drivers.Status')}}</TH>
                         <td>
                             <select name="filter_status_id" id="filter_status_id" onchange="status()"
                                     class="form-control">
@@ -102,20 +118,19 @@
                                 @endforeach
                             </select>
                         </td>
-                        <TH>Account_Owner_Iqama</TH>
-                        <td><input type="text" class="form-control" name="filter_account_owner_iqama"
-                                   id="filter_account_owner_iqama">
-                        </td>
 
                     </tr>
 
 
                     <tr>
-
-                        <TH>accountNumber</TH>
+                        <TH>{{__('drivers.Account_Owner_Iqama')}}</TH>
+                        <td><input type="text" class="form-control" name="filter_account_owner_iqama"
+                                   id="filter_account_owner_iqama">
+                        </td>
+                        <TH>{{__('drivers.accountNumber')}}</TH>
                         <td><input type="text" class="form-control" name="filter_accountNumber"
                                    id="filter_accountNumber"></td>
-                        <TH>Driver Type</TH>
+                        <TH>{{__('drivers.DriverType')}}</TH>
                         <td>
                             <select name="filter_driver_type_id" id="filter_driver_type_id" class="form-control">
                                 <option value=""></option>
@@ -125,19 +140,18 @@
                                 @endforeach
                             </select>
                         </td>
-
-                        <TH>Bander Car</TH>
+                    </tr>
+                    <tr>
+                        <TH>{{__('drivers.BanderCar')}}</TH>
                         <td>
                             <select name="filter_bander_car_id" id="filter_bander_car_id" class="form-control"
-                                    style="width:180px;">
+                                    style="width:200px;">
                                 <option value=""></option>
                                 <option value="1">Yes</option>
                                 <option value="2">No</option>
                             </select>
                         </td>
-                    </tr>
-                    <tr>
-                        <TH>Image Identity</TH>
+                        <TH>{{__('drivers.ImageIdentity')}}</TH>
                         <td>
                             <select name="filter_Image_Identity" id="filter_Image_Identity" class="form-control"
                                     style="width:180px;">
@@ -146,20 +160,10 @@
                                 <option value="2">No</option>
                             </select>
                         </td>
-                        <TH>Image Passport</TH>
+                        <TH>{{__('drivers.ImagePassport')}}</TH>
                         <td>
                             <select name="filter_Image_Passport" id="filter_Image_Passport" class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
-                            </select>
-                        </td>
-                        <TH>Image DrivingLicence</TH>
-                        <td>
-                            <select name="filter_Image_DrivingLicence" id="filter_Image_DrivingLicence"
-                                    class="form-control"
-                                    style="width:180px;">
+                                    style="width:200px;">
                                 <option value=""></option>
                                 <option value="1">Yes</option>
                                 <option value="2">No</option>
@@ -168,7 +172,17 @@
 
                     </tr>
                     <tr>
-                        <TH>Image VehiclesRegistration</TH>
+                        <TH>{{__('drivers.ImageDrivingLicence')}}</TH>
+                        <td>
+                            <select name="filter_Image_DrivingLicence" id="filter_Image_DrivingLicence"
+                                    class="form-control"
+                                    style="width:200px;">
+                                <option value=""></option>
+                                <option value="1">Yes</option>
+                                <option value="2">No</option>
+                            </select>
+                        </td>
+                        <TH>{{__('drivers.ImageVehiclesRegistration')}}</TH>
                         <td>
                             <select name="filter_Image_VehiclesRegistration" id="filter_Image_VehiclesRegistration"
                                     class="form-control"
@@ -178,20 +192,10 @@
                                 <option value="2">No</option>
                             </select>
                         </td>
-                        <TH>Image JobContract</TH>
+                        <TH>{{__('drivers.ImageJobContract')}}</TH>
                         <td>
                             <select name="filter_Image_JobContract" id="filter_Image_JobContract" class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
-                            </select>
-                        </td>
-                        <TH>Image PromissoryNote</TH>
-                        <td>
-                            <select name="filter_Image_PromissoryNote" id="filter_Image_PromissoryNote"
-                                    class="form-control"
-                                    style="width:180px;">
+                                    style="width:200px;">
                                 <option value=""></option>
                                 <option value="1">Yes</option>
                                 <option value="2">No</option>
@@ -199,7 +203,17 @@
                         </td>
                     </tr>
                     <tr>
-                        <TH>Created_At</TH>
+                        <TH>{{__('drivers.ImagePromissoryNote')}}</TH>
+                        <td>
+                            <select name="filter_Image_PromissoryNote" id="filter_Image_PromissoryNote"
+                                    class="form-control"
+                                    style="width:200px;">
+                                <option value=""></option>
+                                <option value="1">Yes</option>
+                                <option value="2">No</option>
+                            </select>
+                        </td>
+                        <TH>{{__('drivers.Created_At')}}</TH>
                         <td>
                             <div class="input-group">
                                 <div class="input-group-addon">
@@ -226,7 +240,7 @@
                                 </script>
                             </div>
                         </td>
-                        <TH>Updated_At</TH>
+                        <TH>{{__('drivers.Updated_At')}}</TH>
                         <td>
                             <div class="input-group">
                                 <div class="input-group-addon">
@@ -256,9 +270,9 @@
                     </tr>
                 </table>
                 <div class="card-footer" align="center">
-                    <button type="button" name="filter" id="filter" class="btn btn-sm btn-info">Filter</button>
+                    <button type="button" name="filter" id="filter" class="btn btn-sm btn-info">{{__('drivers.Filter')}}</button>
 
-                    <button type="button" name="reset" id="reset" class="btn btn-sm btn-default">Reset</button>
+                    <button type="button" name="reset" id="reset" class="btn btn-sm btn-default">{{__('drivers.Reset')}}</button>
                 </div>
             </div>
             <!-- /.box-body -->
@@ -288,28 +302,29 @@
 
             <table id="customer_data" class="table table-bordered table-striped table-responsive">
                 <thead>
-                <TH>Company</TH>
-                <TH style="display:none;">City</TH>
-                <TH>Warehouse</TH>
-                <TH>Type</TH>
-                <TH>FullName</TH>
-                <TH>Mobile</TH>
-                <TH>Iqama</TH>
+                <TH>{{__('drivers.Company')}}</TH>
+                <TH style="display:none;">{{__('drivers.City')}}</TH>
+                <TH>{{__('drivers.Warehouse')}}</TH>
+                <TH>{{__('drivers.Type')}}</TH>
+                <!--<TH>Vehicle</TH>-->
+                <TH>{{__('drivers.fullName')}}</TH>
+                <TH>{{__('drivers.Mobile')}}</TH>
+                <TH>{{__('drivers.Iqama')}}</TH>
 
-                <TH>Job ID</TH>
-                <TH>Status</TH>
+                <TH>{{__('drivers.JobId')}}</TH>
+                <TH>{{__('drivers.Status')}}</TH>
                 @if(Auth::user()->user_type_id==1)
-                    <TH>On Hold</TH>
-                    <TH>Bander Car</TH>
-                    <TH>P Balance</TH>
-                    <TH>C Balance</TH>
-                    <TH>Update at</TH>
+                    <TH>{{__('drivers.OnHold')}}</TH>
+                    <TH>{{__('drivers.BanderCar')}}</TH>
+                    <TH>{{__('drivers.PBalance')}}</TH>
+                    <TH>{{__('drivers.CBalance')}}</TH>
+                    <TH>{{__('drivers.Updated_At')}}</TH>
                 @endif
                 <TH>Action</TH>
 
 
-                <TH style="display:none;">AccountNumber</TH>
-                <TH style="display:none;">Account_Owner_Iqama</TH>
+                <TH style="display:none;">{{__('drivers.AccountNumber')}}</TH>
+                <TH style="display:none;">{{__('drivers.Account_Owner_Iqama')}}</TH>
 
 
                 </thead>
@@ -319,12 +334,13 @@
         </div>
         @if(Auth::user()->user_type_id==1)
             <center>
-                <button type="submit" name="filter" class="btn btn-sm btn-info" id="filter">On Hold</button>
+                <button type="submit" name="filter" class="btn btn-sm btn-info" id="filter">{{__('drivers.OnHold')}}</button>
             </center>
         @endif
     </form>
     <!---------------------------------------------------------------------------------------------------------------------->
     <!---------------------------------------------------------------------------------------------------------------------->
+
     <div id="edit_modal" class="w3-modal" style="padding-top: 10px !important;">
         <div class="w3-modal-content w3-card-8 w3-animate-zoom" style="max-width:850px">
             <div class="w3-center"><br>
@@ -336,7 +352,7 @@
             <div style="width:100%;clear:both;" id="response">
 
             </div>
-        </div>
+        </div>a
     </div>
     <div id="delete_modal" class="w3-modal">
         <div class="w3-modal-content w3-card-8 w3-animate-zoom" style="max-width:600px">
@@ -346,35 +362,55 @@
                       title="Close Modal">&times;</span>
             </div>
             <header class="w3-container w3-text-indigo w3-margin-top-64">
-                <h1>Delete</h1>
+                <h1>{{__('drivers.Delete')}}</h1>
             </header>
             <form class="w3-container" action="" method="POST" id="delete_form">
                 {{method_field('DELETE')}}
                 @csrf
                 <div class="w3-section">
-                    <p>Are you sure, you want to delete <span id="delete_name"></span> ?</p>
+                    <p>{{__('drivers.Delete_msg')}} <span id="delete_name"></span> ?</p>
                     <div class="w3-center">
-                        <button type="submit" class="w3-btn w3-indigo"> Delete</button>
+                        <button type="submit" class="w3-btn w3-indigo"> {{__('drivers.Delete')}}</button>
                     </div>
                 </div>
             </form>
             <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
                 <button onclick="document.getElementById('delete_modal').style.display='none'" type="button"
-                        class="w3-btn w3-red">Cancel
+                        class="w3-btn w3-red">{{__('drivers.Cancel')}}
                 </button>
             </div>
         </div>
     </div>
     <!---------------------------------------------------------------------------------------------------------------------->
     <!---------------------------------------------------------------------------------------------------------------------->
-
-
+    <!----
+    <select name="vehicle_id" id="vehicle_id" class="form-control" style="width:200px;">
+                                    <option value="">Select Vehicle</option>
+                                    <option value="AL">Alabama</option>
+                                    <option value="AK">Alaska</option>
+                                    <option value="AZ">Arizona</option>
+                                    <option value="AR">Arkansas</option>
+                                    <option value="CA">California</option>
+                                    <option value="CO">Colorado</option>
+                                    <option value="CT">Connecticut</option>
+                                    <option value="DE">Delaware</option>
+                                    <option value="DC">District of Columbia</option>
+                                    <option value="FL">Florida</option>
+                                    <option value="GA">Georgia</option>
+                                    <option value="HI">Hawaii</option>
+                                    <option value="ID">Idaho</option>
+                                    <option value="IL">Illinois</option>
+                                    <option value="IN">Indiana</option>
+                                </select>
+    -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function () {
-
+            $('#filter_vehicleId').select2();
             fill_datatable();
 
-            function fill_datatable(filter_screenId = '', filter_companyId = '', filter_warehouseId = '', filter_driver_type_id = '', filter_fullName = '', filter_mobileNumber = '', filter_iqama = '', filter_email_id = '', filter_job_id = '', filter_status_id = '', filter_account_owner_iqama = '', filter_accountNumber = '', filter_created_at = '', filter_updated_at = '', filter_bander_car_id = '', filter_Image_Identity = '', filter_Image_Passport = '', filter_Image_DrivingLicence = '', filter_Image_VehiclesRegistration = '', filter_Image_JobContract = '', filter_Image_PromissoryNote = '') {
+            function fill_datatable(filter_screenId = '', filter_companyId = '', filter_warehouseId = '', filter_driver_type_id = '', filter_fullName = '', filter_mobileNumber = '', filter_iqama = '', filter_email_id = '', filter_job_id = '', filter_status_id = '', filter_account_owner_iqama = '', filter_accountNumber = '', filter_created_at = '', filter_updated_at = '', filter_bander_car_id = '', filter_Image_Identity = '', filter_Image_Passport = '', filter_Image_DrivingLicence = '', filter_Image_VehiclesRegistration = '', filter_Image_JobContract = '', filter_Image_PromissoryNote = '', filter_vehicleId = '') {
                 var dataTable = $('#customer_data').DataTable({
                     lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                     dom: 'lBfrtip',
@@ -418,7 +454,8 @@
                     ajax: {
                         url: "{{ route('Drivers.index') }}",
                         data: {
-                            filter_screenId: 'Driver',
+                            filter_screenId: 'Drivers',
+                            filter_vehicleId: filter_vehicleId,
                             filter_companyId: filter_companyId,
                             filter_warehouseId: filter_warehouseId,
                             filter_fullName: filter_fullName,
@@ -462,6 +499,10 @@
                             data: 'driver_type',
                             name: 'lkp_driver_type.driver_type',
                         },
+                        // {
+                            // data: 'vehicle',
+                            // name: 'vehicle',
+                        // },
                         {
                             //className: "dt-nowrap",
                             data: 'fullName',
@@ -612,9 +653,10 @@
                     contentType: "html",
                     dataType: 'html',
                     success: function (data) {
-
                         document.getElementById('response').innerHTML = data;
-
+                        $('#vehicle_id').select2({
+                            dropdownParent: $('#edit_modal')
+                        });
                     }
                 });
             });
@@ -695,16 +737,17 @@
 
             $('#filter').click(function () {
 
-                if ($('#filter_companyId').val() != '' || $('#filter_warehouseId').val() != '' || $('#filter_driver_type_id').val() != '' || $('#filter_fullName').val() != '' || $('#filter_mobileNumber').val() != '' || $('#filter_iqama').val() != '' || $('#filter_email_id').val() != '' || $('#filter_job_id').val() != '' || $('#filter_status_id').val() != '' || $('#filter_account_owner_iqama').val() != '' || $('#filter_accountNumber').val() != '' || $('#filter_created_at').val() != '' || $('#filter_updated_at').val() != '' || $('#filter_bander_car_id').val() != ''|| $('#filter_Image_Identity').val() != '' || $('#filter_Image_Passport').val() != '' || $('#filter_Image_DrivingLicence').val() != '' || $('#filter_Image_VehiclesRegistration').val() != '' || $('#filter_Image_JobContract').val() != '' || $('#filter_Image_PromissoryNote').val() != '') {
+                if ($('#filter_vehicleId').val() != '' || $('#filter_companyId').val() != '' || $('#filter_warehouseId').val() != '' || $('#filter_driver_type_id').val() != '' || $('#filter_fullName').val() != '' || $('#filter_mobileNumber').val() != '' || $('#filter_iqama').val() != '' || $('#filter_email_id').val() != '' || $('#filter_job_id').val() != '' || $('#filter_status_id').val() != '' || $('#filter_account_owner_iqama').val() != '' || $('#filter_accountNumber').val() != '' || $('#filter_created_at').val() != '' || $('#filter_updated_at').val() != '' || $('#filter_bander_car_id').val() != ''|| $('#filter_Image_Identity').val() != '' || $('#filter_Image_Passport').val() != '' || $('#filter_Image_DrivingLicence').val() != '' || $('#filter_Image_VehiclesRegistration').val() != '' || $('#filter_Image_JobContract').val() != '' || $('#filter_Image_PromissoryNote').val() != '') {
                     card_change();
                     $('#customer_data').DataTable().destroy();
-                    fill_datatable('Drivers', $('#filter_companyId').val(), $('#filter_warehouseId').val(), $('#filter_driver_type_id').val(), $('#filter_fullName').val(), $('#filter_mobileNumber').val(), $('#filter_iqama').val(), $('#filter_email_id').val(), $('#filter_job_id').val(), $('#filter_status_id').val(), $('#filter_account_owner_iqama').val(), $('#filter_accountNumber').val(), $('#filter_created_at').val(), $('#filter_updated_at').val(), $('#filter_bander_car_id').val(), $('#filter_Image_Identity').val(), $('#filter_Image_Passport').val(), $('#filter_Image_DrivingLicence').val(), $('#filter_Image_VehiclesRegistration').val(), $('#filter_Image_JobContract').val(), $('#filter_Image_PromissoryNote').val());
+                    fill_datatable('Drivers', $('#filter_companyId').val(), $('#filter_warehouseId').val(), $('#filter_driver_type_id').val(), $('#filter_fullName').val(), $('#filter_mobileNumber').val(), $('#filter_iqama').val(), $('#filter_email_id').val(), $('#filter_job_id').val(), $('#filter_status_id').val(), $('#filter_account_owner_iqama').val(), $('#filter_accountNumber').val(), $('#filter_created_at').val(), $('#filter_updated_at').val(), $('#filter_bander_car_id').val(), $('#filter_Image_Identity').val(), $('#filter_Image_Passport').val(), $('#filter_Image_DrivingLicence').val(), $('#filter_Image_VehiclesRegistration').val(), $('#filter_Image_JobContract').val(), $('#filter_Image_PromissoryNote').val(), $('#filter_vehicleId').val());
                 } else {
                     alert('Select filter option');
                 }
             });
 
             $('#reset').click(function () {
+                $('#filter_vehicleId').val('').trigger('change');
                 $('#filter_companyId').val('');
                 $('#filter_warehouseId').val('');
                 $('#filter_fullName').val('');
@@ -744,8 +787,10 @@
                 contentType: "html",
                 dataType: 'html',
                 success: function (data) {
-
                     document.getElementById('response').innerHTML = data;
+                    $('#vehicle_id_create').select2({
+                        dropdownParent: $('#edit_modal')
+                    });
                 }
             });
         }
@@ -758,25 +803,35 @@
                 document.getElementById("Termination_Reason").style.display = 'none';
         }
 
-        function WarehouseName() {
-
-            var filter_companyId = document.getElementById('filter_companyId').value;
-
-            $('#filter_warehouseId').empty();
-
-            $.getJSON("{{URL("/getWarehouseName")}}" + "/" + filter_companyId, function (json) {
+        function WarehouseName(type = 0) {
+            if(type == 1) {
+                var filter_companyId = document.getElementById('filtercompanyId').value;
                 $('#filter_warehouseId').empty();
-                $('#filter_warehouseId').append($('<option>').text("Select ....").attr('value', ''));
-                $.each(json, function (i, obj) {
-                    $('#filter_warehouseId').append($('<option>').text(obj.name).attr('value', obj.id));
+                $.getJSON("{{URL("/getWarehouseName")}}" + "/" + filter_companyId, function (json) {
+                    $('#filterwarehouseId').empty();
+                    $('#filterwarehouseId').append($('<option>').text("Select ....").attr('value', ''));
+                    $.each(json, function (i, obj) {
+                        $('#filterwarehouseId').append($('<option>').text(obj.name).attr('value', obj.id));
+                    });
                 });
-            });
+            } else {
+                var filter_companyId = document.getElementById('filter_companyId').value;
 
+                $('#filter_warehouseId').empty();
+
+                $.getJSON("{{URL("/getWarehouseName")}}" + "/" + filter_companyId, function (json) {
+                    $('#filter_warehouseId').empty();
+                    $('#filter_warehouseId').append($('<option>').text("Select ....").attr('value', ''));
+                    $.each(json, function (i, obj) {
+                        $('#filter_warehouseId').append($('<option>').text(obj.name).attr('value', obj.id));
+                    });
+                });
+            }
         }
 
         function sheet(id, Period) {
             myWindow1 = window.open("{{URL('/SalaryShow')}}" + "/" + id + "/" + Period, "",
-                "height=1000,width=650,scrollbars=yes,top=1,left=1,status,resizable");
+                "height=1000,width=750,scrollbars=yes,top=1,left=1,status,resizable");
         }
 
     </script>
@@ -819,21 +874,18 @@
             return false;
         }
 
+        function show_date(exp_date) {
+            if (exp_date == '') {
+                $('#expiry_tr').hide();
+            } else {
+                $('#expiry_tr').show();
+            }
+        }
+
     </script>
 
 
-@section('javascript') 
-    <!-- Data Tables -->
-    <script src="{{asset('assets/vendor/datatables/dataTables.min.js')}}"></script>
-    <script src="{{asset('assets/vendor/datatables/dataTables.bootstrap.min.js')}}"></script>
 
-    <!-- Custom Data tables -->
-    <script src="{{asset('assets/vendor/datatables/custom/custom-datatables.js')}}"></script>
-
-    <!-- Main Js Required -->
-    <script src="{{asset('assets/js/main.js')}}"></script> 
-    
-@stop
 @endsection
 
 

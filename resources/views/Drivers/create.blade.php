@@ -1,7 +1,5 @@
-<form id="contact_form" method="POST" onsubmit="return validateForm()"
-        action="{{ route('Drivers.store')}}">
+@include('pages.messages2')
 
-    @csrf
     <input type="hidden" name="type_id" value="{{$type_id}}">
     <div class="row">
         <div class="col-sm-4 col-12">
@@ -36,7 +34,7 @@
                 <div class="card-body">
                     <div class="m-0">
                         <label class="form-label">{{__('drivers.fullName')}} <font color="red">*</font></label>
-                        <input type="text" class="form-control" style="width:200px;" name="fullName" required>
+                        <input type="text" class="form-control" name="fullName" required>
                     </div>
                 </div>
             </div>
@@ -217,7 +215,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="m-0">
-                        <div class="form-label">{{__('drivers.licenseExpireyDate')}}</div>
+                        <div class="form-label">{{__('drivers.DrivinglicenseExpireyDate')}}</div>
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="bi bi-calendar4"></i>
@@ -378,8 +376,7 @@
                 </div>
             </div>
         </div>
-
-
+        <button type="submit" class="btn btn-primary">{{__('drivers.Add')}}</button>
     </div>
         <span id="Termination_Reason" style="display:none;">
             <TH>{{__('drivers.Termination_Reason')}}</TH>
@@ -393,7 +390,3 @@
                 </select>
             </td>
         </span>
-    <div class="w3-row">
-        <button type="button" class="btn btn-success" type="submit">{{__('drivers.Add')}}</button>
-    </div>
-</form>
