@@ -5135,6 +5135,7 @@ textarea.form-control-lg {
   background-color: var(--bs-list-group-disabled-bg);
 }
 .list-group-item.active {
+  border-top: 1px solid white;
   z-index: 2;
   color: var(--bs-list-group-active-color);
   background-color: var(--bs-list-group-active-bg);

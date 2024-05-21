@@ -20,7 +20,8 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get("/Drivers",'DashoardController@index_drivers');
     Route::get('/DriversJahiz', 'DashoardController@index_drivers');
     Route::post('/Drivers/upload', 'DashoardController@drivers_save')->name('Drivers/upload');
-
+    // Ashraf Code
+    Route::get("/Filter-layout",'AshrafController@Filter_layout');
 
     // Muhammed Code
 
