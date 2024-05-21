@@ -509,7 +509,7 @@
                                 <button type="button" class="btn btn-success" class="btn btn-info" type="button" onclick="export_excel()"></i>Export Excel</button>
                                 <button type="button" class="btn btn-info" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#addNewDriver" onclick="addNewDriver()"></i>Add new driver</button>
                                 @if(Auth::user()->user_type_id==1)
-                                    <button type="submit" class="btn btn-info" class="btn btn-info" type="submit"></i>On Hold</button>
+                                    {{-- <button type="submit" class="btn btn-info" class="btn btn-info" type="submit"></i>On Hold</button> --}}
                                 @endif
                             </div>
                         </div>

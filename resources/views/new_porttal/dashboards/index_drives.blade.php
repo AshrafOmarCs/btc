@@ -19,7 +19,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel"> Fillter</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.Filter')}} </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -33,7 +33,7 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Company </label>
+                                            <label for="country" class="form-label">{{__('drivers.Company')}} </label>
                                             <select class="form-control" onchange="WarehouseName()" name="filter_companyId" id="filter_companyId">
                                                 <option></option>
                                                 @foreach ($lkp_company as $item)
@@ -45,7 +45,7 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Warehouse</label>
+                                            <label for="country" class="form-label">{{__('drivers.Warehouse')}}</label>
                                             <select class="form-control" id="filter_warehouseId" name="filter_warehouseId" >
                                                 <option></option>
                                             </select>
@@ -54,7 +54,7 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Vehicle</label>
+                                            <label for="country" class="form-label">{{__('drivers.fullName')}}Vehicle</label>
                                             <select name="filter_vehicleId" id="filter_vehicleId" class="form-control"  required>
                                                 <option value=""></option>
                                                 @foreach($vehicles as $vehicle)
@@ -206,9 +206,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
                 <button type="button" class="btn btn-success"
-                    data-bs-dismiss="modal" id="filter">Search</button>
+                    data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
         </div>
     </div>
@@ -220,12 +220,12 @@
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="scrollableLabel"><span id="bck_btn" onclick="go_back()" style="cursor: pointer; display: none; color: #B7A758"><img src="{{URL("dashboard/assets/logos/backward.png")}}" style="width: 7%"> Back</span> Add New Driver(s)</h5>
+                <h5 class="modal-title" id="scrollableLabel"><span id="bck_btn" onclick="go_back()" style="cursor: pointer; display: none; color: #B7A758"><img src="{{URL("dashboard/assets/logos/backward.png")}}" style="width: 7%"> {{__('drivers.Back')}}</span> {{__('drivers.add_driver')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div id="statment">
-                    <h5>Please select a method from bellow options: </h5>
+                    <h5>{{__('drivers.driver_add_method')}}: </h5>
                      <div class="row">
                         <div class="col-6" style="text-align: center;" onclick="handleContent('Form')">
                             <img  style="width: 74px; margin-top: 20px;cursor: pointer;" src="{{asset('design/assets/sign-form.png')}}" alt="fill form to create New driver" >
@@ -238,25 +238,25 @@
                 <form id="driverForm">
                     @csrf
                     <div id="create_da_from" style="display: none">
-                        <h5>Please select a method from bellow options: </h5>
-                        <h6>Form Data</h6>
+                        <h5>{{__('drivers.select_method')}}: </h5>
+                        <h6>{{__('drivers.FormData')}}</h6>
                     </div>
                 </form>
                 <div id="create_da_bulk" style="display: none">
-                    <span onclick="go_back()" style="cursor: pointer; display: flex"><img src="https://static.thenounproject.com/png/1808051-200.png" style="width: 3%"> <h5>Back</h5></span>
+                    {{-- <span onclick="go_back()" style="cursor: pointer; display: flex"><img src="https://static.thenounproject.com/png/1808051-200.png" style="width: 3%"> <h5>{{__('drivers.Back')}}</h5></span> --}}
                     <div class="row">
                         <div class="col-lg-6 mt-3">
                             <small>
-                                You can download following format file and after filling it please upload it here to save the new drivers.
+                                {{__('drivers.download_description')}}.
                             </small>
                             <br />
-                            <a href="{{ url('/storage/docsFormat/Drivers.csv') }}" class="btn btn-sm btn-info " style="padding: 10px"><i class="fa fa-download"></i>Clic {{__('automation.here')}}</a>
+                            <a href="{{ url('/storage/docsFormat/Drivers.csv') }}" class="btn btn-sm btn-info " style="padding: 10px"><i class="fa fa-download"></i>{{__('drivers.clickHere')}}</a>
                         </div>
                         <div class="col-lg-6 mt-3">
                             <form method="POST" action="{{ route('Drivers/upload')}}">
                                 @csrf
-                                <input type="file" name="drivers_file" id="drivers_file" required>
-                                <button type="submit" class="btn btn-success mt-4">Submit</button>
+                                <input type="file" name="drivers_file" id="drivers_file" required><br>
+                                <button type="submit" class="btn btn-success mt-4">{{__('drivers.Submit')}}</button>
                             </form>
                         </div>
                     </div>
@@ -269,7 +269,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
                 {{-- <button type="button" class="btn btn-success" onclick="showSelectBulkOrOne('statment')">Understood</button> --}}
             </div>
 
@@ -283,21 +283,21 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Export Driver Excel</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.ExportDriverExcel')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Row start -->
                 <div class="row">
                     <div class="col-xl-12 col-sm-12 col-12">
-                        <p>Please select the required fields/criteria then click on Download button. </p>
+                        <p>{{__('drivers.criteria_msg')}}. </p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-4 col-sm-4 col-4">
                         <div class="ml-4">
                             <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck()" id="select_all" />
-                            <label class="form-check-label" for="flexCheckDefault">Select All</label>
+                            <label class="form-check-label" for="flexCheckDefault">{{__('drivers.SelectAll')}}</label>
                         </div>
                         <div class="card" style="background-color: lightgrey">
                             <div class="card-body">
@@ -390,8 +390,8 @@
                 <!-- Row end -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" style="background-color: red">Reset</button>
-                <button type="button" class="btn btn-success" style="background-color: #2661ba" id="exportExcelBtn">Download</button>
+                <button type="button" class="btn btn-dark" style="background-color: red">{{__('drivers.Reset')}}</button>
+                <button type="button" class="btn btn-success" style="background-color: #2661ba" id="exportExcelBtn">{{__('drivers.Download')}}</button>
             </div>
         </div>
     </div>
@@ -401,7 +401,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Driver </h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.driver')}} </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <span id="response">
@@ -413,7 +413,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Driver Statement</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.DriverStatement')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -421,7 +421,7 @@
                 </span>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
             </div>
         </div>
     </div>
@@ -430,7 +430,7 @@
     <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Driver</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.driver')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="w3-container" action="" method="POST" id="delete_form">
@@ -440,8 +440,8 @@
                     <p>{{__('drivers.Delete_msg')}} <span id="delete_name"></span> ?</p>
                 </div>
                   <div class="modal-footer">
-                      <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                      <button class="btn btn-danger" type="submit">Delete</button>
+                      <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                      <button class="btn btn-danger" type="submit">{{__('drivers.Delete')}}</button>
                   </div>
               </form>
         </div>
@@ -458,7 +458,7 @@
             </div>
             <div class="sale-details">
                 <h3 class="text-green">{{ number_format($analatics['active'], 0, '.', ',')}} </h3>
-                <p>Active</p>
+                <p>{{__('drivers.active')}}</p>
             </div>
         </div>
     </div>
@@ -469,7 +469,7 @@
             </div>
             <div class="sale-details">
                 <h3 class="text-red" style="font-size: 19px;">{{ number_format($analatics['Onhold'], 0, '.', ',')}} </h3>
-                <p>On hold & Vacation</p>
+                <p>{{__('drivers.OnholdVacation')}}</p>
             </div>
         </div>
     </div>
@@ -480,7 +480,7 @@
             </div>
             <div class="sale-details">
                 <h3 class="text-blue"> {{ number_format($analatics['Terminated'], 0, '.', ',')}} </h3>
-                <p>Terminated & Resigned</p>
+                <p>{{__('drivers.TerminatedResigned')}}</p>
             </div>
         </div>
     </div>
@@ -491,7 +491,7 @@
             </div>
             <div class="sale-details">
                 <h3 class="text-yellow"> {{ number_format($analatics['wrongWarehouse'], 0, '.', ',')}} </h3>
-                <p>Wrong Warehouse</p>
+                <p>{{__('drivers.WrongWarehouse')}}</p>
             </div>
         </div>
     </div>
@@ -517,20 +517,20 @@
         <!-- Card start -->
         <div class="card">
             <div class="card-header">
-                <div class="card-title">Drivers</div>
+                <div class="card-title">{{__('drivers.driver')}}</div>
             </div>
             <!-- Card start -->
             <form method="POST" action="{{ URL('/DriversPost')}}">
                 @csrf
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title" style="font-size: 16px;">This interface enables you to browse, edit, and add Drivers as well as exporting their data </div>
+                        <div class="card-title" style="font-size: 16px;">{{__('drivers.driver_module')}} </div>
                         <div class="row">
                             <div class="col-12">
                                 <div class="custom-btn-group">
-                                    <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>Fillter</button>
-                                    <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>Export Excel</button>
-                                    <button type="button" class="btn btn-info" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#addNewDriver" onclick="addNewDriver()"></i>Add New Driver</button>
+                                    <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
+                                    <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button>
+                                    <button type="button" class="btn btn-info" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#addNewDriver" onclick="addNewDriver()"></i>{{__('drivers.add_driver')}}</button>
                                     @if(Auth::user()->user_type_id==1)
                                         {{-- <button type="submit" class="btn btn-info" class="btn btn-info" type="submit"></i>On Hold</button> --}}
                                     @endif
@@ -550,7 +550,8 @@
                                     <TH>{{__('drivers.Mobile')}}</TH>
                                     <TH>{{__('drivers.Iqama')}}</TH>
                                     <TH>{{__('drivers.JobId')}}</TH>
-                                    <th>Driver's Docs</th>
+                                    <th>{{__('drivers.DriverDocs')}}</th>
+                                    <TH>{{__('drivers.AppStatus')}}</TH>
                                     <TH>{{__('drivers.Status')}}</TH>
                                     @if(Auth::user()->user_type_id==1)
                                         {{-- <TH>{{__('drivers.OnHold')}} --}}
@@ -558,12 +559,12 @@
                                         </TH> --}}
 
                                         <TH>{{__('drivers.BanderCar')}}</TH>
-                                        <TH>Total Balance</TH>
+                                        <TH>{{__('drivers.total_balance')}}</TH>
                                         {{-- <TH>{{__('drivers.PBalance')}}</TH>
                                         <TH>{{__('drivers.CBalance')}}</TH> --}}
                                         <TH>{{__('drivers.Updated_At')}}</TH>
                                     @endif
-                                    <TH>Action</TH>
+                                    <TH>{{__('drivers.Action')}}</TH>
 
 
                                     <TH style="display:none;">{{__('drivers.AccountNumber')}}</TH>
@@ -825,7 +826,7 @@
                             name: 'lkp_company.companyName',
                             render: function (data, type, row, meta) {
 
-                                return '<img src="/dashboard/assets/logos/default_imile_logo.jpg" style="width: 25%">'+row.companyName;
+                                return '<img src="/dashboard/assets/logos/default_imile_logo.jpg" style="width: 25%; margin-right: 5px">'+row.companyName;
 
                             //     if (row.Company_Image == 1) {
                             //         image = `/Attachment/Company_Image/`+row.id+`.jpg`;
@@ -868,7 +869,7 @@
                             "orderable": false,
                             name: 'job_id',
                             render: function (data, type, row, meta) {
-                                var identity = promise_note = contract = '<i style="cursor: not-allowed; color: red" class="bi bi-eye-slash"></i>';
+                                var identity = promise_note = contract = '<i style="cursor: not-allowed; color: red; margin-right: 5px" class="bi bi-eye-slash"></i>';
                                 if(row.Image_Identity == 1) {
                                     identity = '<a target="_blank" href="/Attachment/Image_Identity/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="view" style="color: green"></i></a>';
                                 }
@@ -876,11 +877,19 @@
                                     promise_note = '<a target="_blank" href="/Attachment/Image_PromissoryNote/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="view" style="color: green"></i></a>';
                                 }
                                 if(row.Image_JobContract == 1) {
-                                    contract = '<a target="_blank" href="/Attachment/Image_JobContract/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="view" style="color: green"></i></a>';
+                                    contract = '<a target="_blank" href="/Attachment/Image_JobContract/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="view" style="color: green; margin-right: 5px"></i></a>';
                                 }
                                 return `<table class="inner-table">
-                                    <thead><tr><th style="color: white">IDENTITY</th><td class="text-center" style="">`+identity+`</td></tr><tr><th style="color: white">PROMISSORY NOTE</th><td class="text-center" style="">`+promise_note+`</td></tr><tr><th style="color: white">CONTRACT</th><td class="text-center" style="">`+contract+`</td></tr></thead>
+                                    <thead><tr><th style="color: white">IDENTITY</th><td class="text-center" style="">`+identity+`</td></tr><tr><th style="color: white">PROMISSORY NOTE</th><td class="text-center" style="">`+promise_note+`</td></tr><tr><th style="color: white">CONTRACT</th><td class="text-center" style="display: flex;">`+contract+` | <a target="_blank" href="/Attachment/Image_JobContract/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="E-Contract" style="color: green; margin-left: 5px"></i></a> </td></tr></thead>
                                     </table>`;
+                            }
+                        },
+                        {
+                            "orderable": false,
+                            data: 'app_status',
+                            name: 'driver_status_en',
+                            render: function (data, type, row, meta) {
+                                    return '<span class="badge badge-warning">Not Yet</span>';
                             }
                         },
                         {
@@ -950,48 +959,56 @@
                             "targets": -1,
                             //"data": 'id',
                             "render": function (data, type, row, meta) {
+                                let action = @json(__('drivers.Action'));
+                                let view = @json(__('drivers.view'));
+                                let edit = @json(__('drivers.edit'));
+                                let reset_password = @json(__('drivers.reset_password'));
+                                let attachment = @json(__('drivers.attachment'));
+                                let report_driver = @json(__('drivers.report_driver'));
+                                let statement = @json(__('drivers.statement'));
+                                let deletee = @json(__('drivers.Delete'));
                                 let html = `
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
                                     aria-expanded="false">
-                                    Actions
+                                    `+action+`
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a id=` + row.id + ` data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view dropdown-item" href="#">View</a>
+                                            <a id=` + row.id + ` data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view dropdown-item" href="#">`+view+`</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
                                             <input type="hidden" id="IDs_all_` + meta.row + `" name="IDs_all_` + meta.row + `" value="` + row.id + `">` + `
-                                            <a id=` + row.id + ` data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit dropdown-item" href="#">Edit</a>
+                                            <a id=` + row.id + ` data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit dropdown-item" href="#">`+edit+`</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
-                                            <a id=` + row.id + ` class="dropdown-item resetpass" href="#">Reset-password</a>
+                                            <a id=` + row.id + ` class="dropdown-item resetpass" href="#">`+reset_password+` </a>
                                         </li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment dropdown-item" href="#">Attachment</a></li>
+                                    <li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment dropdown-item" href="#">`+attachment+`</a></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
 
-                                    <li><a class="dropdown-item" href="#">Report Driver</a></li>
+                                    <li><a class="dropdown-item" href="#">`+report_driver+`</a></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a id=` + row.id + ` data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement">Statement </a></li>
+                                    <li><a id=` + row.id + ` data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement">`+statement+` </a></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
                                     `;
                                     @if(Auth::user()->user_type_id==1)
-                                        html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">Delete</span></a></li>
+                                        html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">`+deletee+`</span></a></li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>`;

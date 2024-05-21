@@ -13,13 +13,17 @@ use Illuminate\Support\Facades\DB;
 */
     // DA-Portal
     // dd($locale);
-
+    Route::get('lang/{lang}',function($lang){
+        session(['locale' => $lang]);
+        return redirect()->back();
+    });
 Route::group(['prefix' => 'New-Portal'], function() {
 
     Route::get("/",'DashoardController@index');
     Route::get("/Drivers",'DashoardController@index_drivers');
     Route::get('/DriversJahiz', 'DashoardController@index_drivers');
     Route::post('/Drivers/upload', 'DashoardController@drivers_save')->name('Drivers/upload');
+    // Route::resource('/Drivers', 'DriversController');
 
 
     // Muhammed Code

@@ -393,16 +393,29 @@
 						<!-- Header actions start -->
 						<ul class="header-actions">
 							<li class="dropdown d-none d-md-block">
-								<a href="#" id="countries" data-toggle="dropdown" aria-haspopup="true">
+                                @if (App::isLocale('en'))
+								<a href="#" onclick="set_lang('en')" id="countries" data-toggle="dropdown" aria-haspopup="true">
 									<img src="{{asset('assets/images/flags/1x1/ca.svg')}}" class="flag-img" alt="Admin Panels" />
 								</a>
 								<div class="dropdown-menu dropdown-menu-end mini" aria-labelledby="countries">
 									<div class="country-container">
-										<a href="index.html">
+										<a href="#" onclick="set_lang('ar')">
 											<img src="{{asset('assets/images/flags/1x1/saudi-arabia.svg')}}" alt="Clean Admin Dashboards" />
 										</a>
 									</div>
 								</div>
+                                @elseif (App::isLocale('ar'))
+                                <a href="#" onclick="set_lang('ar')" id="countries" data-toggle="dropdown" aria-haspopup="true">
+									<img src="{{asset('assets/images/flags/1x1/saudi-arabia.svg')}}" class="flag-img" alt="Admin Panels" />
+								</a>
+								<div class="dropdown-menu dropdown-menu-end mini" aria-labelledby="countries">
+									<div class="country-container">
+										<a href="#" onclick="set_lang('en')">
+											<img src="{{asset('assets/images/flags/1x1/ca.svg')}}" alt="Clean Admin Dashboards" />
+										</a>
+									</div>
+								</div>
+                                @endif
 							</li>
 							<li class="dropdown">
 								<a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
@@ -488,6 +501,11 @@
 
         <!-- Custom Data tables -->
         <script src="{{asset('assets/vendor/datatables/custom/custom-datatables.js')}}"></script>
+        <script>
+            function set_lang(lang) {
+                window.location.href = '/lang/'+lang;
+            }
+        </script>
 		@yield('javascript')
 	</body>
 

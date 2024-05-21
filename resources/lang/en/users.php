@@ -33,6 +33,6 @@ return [
     'usersRole_des' => 'Using this module, you can assign privileges to each role or revoke them as needed.',
     'updated_at' => 'Updated At',
     'privilage' => 'privilage',
-    
-    
+    'ResetPassword' => 'Reset Password',
+
 ];

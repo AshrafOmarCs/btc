@@ -581,7 +581,7 @@ class DriversController extends Controller
             $lkp_driver_type = DB::select('SELECT * from lkp_driver_type where id in(2,3) order by id');
         else
             $lkp_driver_type = DB::select('SELECT * from lkp_driver_type order by id');
-        return view('Drivers.create')->with(compact('companies'))->with(compact('lkp_country'))
+        return view('new_porttal.Drivers.create')->with(compact('companies'))->with(compact('lkp_country'))
             ->with(compact('lkp_driver_status'))->with(compact('lkp_termination_reasons'))
             ->with(compact('lkp_bank'))->with(compact('lkp_yes_no'))->with(compact('lkp_driver_type'))
             ->with(compact('type_id'))
@@ -710,7 +710,7 @@ class DriversController extends Controller
             ->where('drivers.id', $id)
             ->first();
 
-        return view('Drivers.show')->with('Drivers', $Drivers);
+        return view('new_porttal.Drivers.show')->with('Drivers', $Drivers);
     }
 
     /**
@@ -759,7 +759,7 @@ class DriversController extends Controller
 
             $vehicles = DB::select("SELECT * from vehicles where id = ". $id ." OR current_status = "."'availabe'"." order by plate");
 
-        return view('Drivers.edit')->with('Drivers', $Drivers)->with(compact('lkp_country'))
+        return view('new_porttal.Drivers.edit')->with('Drivers', $Drivers)->with(compact('lkp_country'))
             ->with(compact('lkp_driver_status'))->with(compact('lkp_termination_reasons'))
             ->with(compact('lkp_bank'))->with(compact('lkp_yes_no'))
             ->with(compact('warehouse'))->with(compact('lkp_driver_type'))
@@ -967,8 +967,8 @@ class DriversController extends Controller
 
     public function ResetPass($id)
     {
-        $Driver = DB::select('SELECT fullName from drivers where id=' . $id)[0];
-        return view('Drivers.ResetPass')->with(compact('Driver'))->with(compact('id'));
+        $Driver = DB::select('SELECT * from drivers where id=' . $id)[0];
+        return view('new_porttal.Drivers.ResetPass')->with(compact('Driver'))->with(compact('id'));
     }
 
     public function SaveResetPass(Request $request)
@@ -990,7 +990,7 @@ class DriversController extends Controller
             ->first();
 
 
-        return view('Drivers.Attachment')->with(compact('Driver'))->with(compact('drivers_attachments'));
+        return view('new_porttal.Drivers.Attachment')->with(compact('Driver'))->with(compact('drivers_attachments'));
     }
 
     public function SaveAttachment(Request $request)
@@ -1128,7 +1128,7 @@ class DriversController extends Controller
                         where drivers.id=" . $id . ")a
                         GROUP BY journal_period,id
                         order by journal_period  ");
-        return view('Drivers.statement')->with(compact('Driver'))->with(compact('statement'));
+        return view('new_porttal.Drivers.statement')->with(compact('Driver'))->with(compact('statement'));
     }
 
     public function ClearancePrint($id, $print)
@@ -1547,7 +1547,7 @@ class DriversController extends Controller
             FROM
                         drivers_jahiz_clearing
                         where driverId=" . $id . " order by updated_at desc limit 10 ");
-        return view('Drivers.statement_Jahiz')->with(compact('Driver'))
+        return view('new_porttal.Drivers.statement_Jahiz')->with(compact('Driver'))
             ->with(compact('statement_SANED'))
             ->with(compact('statement_Bander'));
     }
