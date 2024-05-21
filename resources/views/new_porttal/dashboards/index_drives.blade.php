@@ -1,6 +1,17 @@
 @extends('layout2')
 @section('content')
 @section('title', __('drivers.drivers'))
+<style>
+    .bold {
+        font-weight: 800 !important;
+        cursor: pointer;
+    }
+    .bold_second {
+        font-weight: 800 !important;
+        cursor: pointer;
+        color: #B7A758 !important;
+    }
+</style>
 
 
 <!-- Modal ExportExcel 3 -->
@@ -209,7 +220,7 @@
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="scrollableLabel">Add New Driver</h5>
+                <h5 class="modal-title" id="scrollableLabel"><span id="bck_btn" onclick="go_back()" style="cursor: pointer; display: none; color: #B7A758"><img src="{{URL("dashboard/assets/logos/backward.png")}}" style="width: 7%"> Back</span> Add New Driver(s)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -272,59 +283,56 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Export Excel File </h5>
+                <h5 class="modal-title" id="staticBackdropLabel">Export Driver Excel</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Row start -->
                 <div class="row">
                     <div class="col-xl-12 col-sm-12 col-12">
-                        <h6>Custom filter: </h6>
-                        <hr style="margin: 8px 0;">
+                        <p>Please select the required fields/criteria then click on Download button. </p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-5 col-sm-5 col-5">
+                    <div class="col-xl-4 col-sm-4 col-4">
+                        <div class="ml-4">
+                            <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck()" id="select_all" />
+                            <label class="form-check-label" for="flexCheckDefault">Select All</label>
+                        </div>
                         <div class="card" style="background-color: lightgrey">
                             <div class="card-body">
-                                <div>
-                                    <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck()" id="select_all" />
-                                    <label class="form-check-label" for="flexCheckDefault">Select All</label>
-                                    <hr style="margin: 8px 0;">
-                                </div>
-
                                 <form id="columnSelectionForm">
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="0">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_0" onclick="add_remove_bold(0)">City</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_0" onclick="add_remove_bold(0)">{{__('drivers.Company')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="1">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_1" onclick="add_remove_bold(1)">Type</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_1" onclick="add_remove_bold(1)">{{__('drivers.Warehouse')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="2">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_2" onclick="add_remove_bold(2)">FullName</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_2" onclick="add_remove_bold(2)">{{__('drivers.Type')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="3">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_3" onclick="add_remove_bold(3)">Actual Name</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_3" onclick="add_remove_bold(3)">{{__('drivers.fullName')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="4">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_4" onclick="add_remove_bold(4)">Mobile</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_4" onclick="add_remove_bold(4)">{{__('drivers.Mobile')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="5">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_5" onclick="add_remove_bold(5)">STC Pay</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_5" onclick="add_remove_bold(5)">{{__('drivers.Iqama')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="6">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_6" onclick="add_remove_bold(6)">Job ID</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_6" onclick="add_remove_bold(6)">{{__('drivers.JobId')}}</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="7">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_7" onclick="add_remove_bold(7)">Status</label>
+                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="8">
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_8" onclick="add_remove_bold(8)">{{__('drivers.Status')}}</label>
                                     </div>
                                 </form>
 
@@ -335,46 +343,45 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-2 col-sm-2 col-2">
+                    <div class="col-xl-4 col-sm-4 col-4">
                         <div class="card">
-                            <div class="card-body">
-                                <img onclick="show_selected()" style="width: 60%; cursor: pointer;" src="{{URL("dashboard/assets/logos/forward.png")}}" />
+                            <div class="card-body text-center">
+                                <img onclick="show_selected()" style="width: 20%; cursor: pointer; margin-top: 30%" src="{{URL("dashboard/assets/logos/forward.png")}}" />
                                 <br><br><br><br><br>
-                                <img onclick="hide_selected()" style="width: 60%; cursor: pointer;" src="{{URL("dashboard/assets/logos/backward.png")}}" />
+                                <img onclick="hide_selected()" style="width: 20%; cursor: pointer; display: none" id="backButton" src="{{URL("dashboard/assets/logos/backward.png")}}" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-5 col-sm-5 col-5">
+                    <div class="col-xl-4 col-sm-4 col-4" id="selected_fields" style="display: none">
+                        <div>
+                            {{-- <input class="form-check-input" type="checkbox" value="" onclick="uncheck(this)" id="flexCheckDefault"> --}}
+                            <label class="form-check-label" for="flexCheckDefault" id="selected_count"></label>
+                        </div>
                         <div class="card" style="background-color: lightgrey">
-                            <div class="card-body" id="selected_fields" style="display: none">
-                                <div>
-                                    {{-- <input class="form-check-input" type="checkbox" value="" onclick="uncheck(this)" id="flexCheckDefault"> --}}
-                                    <label class="form-check-label" for="flexCheckDefault">UnSelect</label>
-                                    <hr style="margin: 8px 0;">
-                                </div>
+                            <div class="card-body">
                                 <div class="form-check first_hide" id="no_0">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(0)" id="lbl_sec_0">City</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(0)" id="lbl_sec_0">{{__('drivers.Company')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_1">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(1)" id="lbl_sec_1">Type</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(1)" id="lbl_sec_1">{{__('drivers.Warehouse')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_2">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(2)" id="lbl_sec_2">FullName</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(2)" id="lbl_sec_2">{{__('drivers.Type')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_3">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(3)" id="lbl_sec_3">Actual Name</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(3)" id="lbl_sec_3">{{__('drivers.fullName')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_4">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(4)" id="lbl_sec_4">Mobile</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(4)" id="lbl_sec_4">{{__('drivers.Mobile')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_5">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(5)" id="lbl_sec_5">STC Pay</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(5)" id="lbl_sec_5">{{__('drivers.Iqama')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_6">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(6)" id="lbl_sec_6">Job ID</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(6)" id="lbl_sec_6">{{__('drivers.JobId')}}</label>
                                 </div>
-                                <div class="form-check first_hide" id="no_7">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(7)" id="lbl_sec_7">Status</label>
+                                <div class="form-check first_hide" id="no_8">
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(8)" id="lbl_sec_8">{{__('drivers.Status')}}</label>
                                 </div>
                             </div>
                         </div>
@@ -383,8 +390,8 @@
                 <!-- Row end -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" id="exportExcelBtn">Export</button>
+                <button type="button" class="btn btn-dark" style="background-color: red">Reset</button>
+                <button type="button" class="btn btn-success" style="background-color: #2661ba" id="exportExcelBtn">Download</button>
             </div>
         </div>
     </div>
@@ -522,7 +529,7 @@
                             <div class="col-12">
                                 <div class="custom-btn-group">
                                     <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>Fillter</button>
-                                    <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#ExportExcel"></i>Export Excel</button>
+                                    <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>Export Excel</button>
                                     <button type="button" class="btn btn-info" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#addNewDriver" onclick="addNewDriver()"></i>Add New Driver</button>
                                     @if(Auth::user()->user_type_id==1)
                                         {{-- <button type="submit" class="btn btn-info" class="btn btn-info" type="submit"></i>On Hold</button> --}}
@@ -537,7 +544,6 @@
                             <table id="customer_data" class="table custom-table">
                                 <thead>
                                     <TH>{{__('drivers.Company')}}</TH>
-                                    <TH style="display:none;">{{__('drivers.City')}}</TH>
                                     <TH>{{__('drivers.Warehouse')}}</TH>
                                     <TH>{{__('drivers.Type')}}</TH>
                                     <TH>{{__('drivers.fullName')}}</TH>
@@ -581,6 +587,8 @@
 </div>
 
 
+<input type="hidden" id="check" value="0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
 
 
 @section('javascript')
@@ -588,6 +596,7 @@
     <script src="{{asset('assets/js/main.js')}}"></script>
     <script>
         function export_excel() {
+            $('#backButton').hide();
             $('#exportExcelBtn').prop('disabled', true);
             $('#selected_fields').hide();
             $('.export_checks').prop('checked', true);
@@ -613,38 +622,70 @@
             }
         }
         function add_remove_bold(id) {
-            $("#lbl_"+id).toggleClass("bold");
-            let checkbox = $("#"+id);
-            checkbox.prop("checked", !checkbox.prop("checked"));
+            if($('#check').val() == 0) {
+                $('#exportExcelBtn').prop('disabled', true);
+                $("#lbl_"+id).toggleClass("bold");
+                let checkbox = $("#"+id);
+                checkbox.prop("checked", !checkbox.prop("checked"));
+                $('#check').val(1);
+            } else {
+                alert("Please click on Add or Remove button!");
+            }
         }
         function add_remove_bold_second(id) {
-            $('#exportExcelBtn').prop('disabled', true);
-            $("#lbl_sec_"+id).toggleClass("bold_second");
-            $("#lbl_sec_"+id).hide();
-            let checkbox = $("#"+id);
-            $("#lbl_"+id).toggleClass("bold");
-            checkbox.prop("checked", !checkbox.prop("checked"));
+            if($('#check').val() == 0) {
+                $('#exportExcelBtn').prop('disabled', true);
+                $("#lbl_sec_"+id).toggleClass("bold_second");
+                $("#lbl_sec_"+id).hide();
+                let checkbox = $("#"+id);
+                $("#lbl_"+id).toggleClass("bold");
+                checkbox.prop("checked", !checkbox.prop("checked"));
+                $('#check').val(1);
+            } else {
+                alert("Please click on Add or Remove button!");
+            }
         }
         function show_selected() {
-            $('#exportExcelBtn').prop('disabled', false);
-            $('#selected_fields').show();
+            $('#check').val(0);
+            $('#exportExcelBtn').prop('disabled', true);
+            $('#selected_fields').hide();
             $('.first_hide').hide();
+            let count = 0;
             $('#columnSelectionForm input[type="checkbox"]').each(function() {
                 if ($(this).is(':checked')) {
                     $('#no_'+$(this).attr('id')).show();
                     $("#lbl_sec_"+$(this).attr('id')).addClass("bold_second");
                     $("#lbl_sec_"+$(this).attr('id')).show();
+                    count++;
                 }
             });
+            $('#backButton').hide();
+            if (count > 0) {
+                $('#exportExcelBtn').prop('disabled', false);
+                $('#selected_fields').show();
+                $('#backButton').show();
+            }
+            $('#selected_count').html("UnSelect (<span style='color: red'>"+count+"</span>)");
         }
         function hide_selected() {
-            $('#exportExcelBtn').prop('disabled', false);
+            $('#check').val(0);
+            $('#selected_fields').hide();
+            $('#exportExcelBtn').prop('disabled', true);
             $('.first_hide').hide();
+            let count = 0;
             $('#columnSelectionForm input[type="checkbox"]').each(function() {
                 if ($(this).is(':checked')) {
                     $('#no_'+$(this).attr('id')).show();
+                    count++;
                 }
             });
+            $('#backButton').hide();
+            if (count > 0) {
+                $('#exportExcelBtn').prop('disabled', false);
+                $('#backButton').show();
+                $('#selected_fields').show();
+            }
+            $('#selected_count').html("UnSelect (<span style='color: red'>"+count+"</span>)");
         }
 
         // Export Excel button click event
@@ -663,7 +704,6 @@
             for (var i = 0; i < rowCount; i++) {
                 var rowData = [];
                 selectedColumns.forEach(function(columnId) {
-
                     var cellData = table.cell(i, columnId).data();
                     if (cellData == null) {
                         rowData.push('');
@@ -680,7 +720,7 @@
             var ws = XLSX.utils.aoa_to_sheet(exportData);
             var wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            XLSX.writeFile(wb, 'Jahiz Drivers.xlsx');
+            XLSX.writeFile(wb, 'Drivers.xlsx');
         });
         $(document).ready(function () {
             $('#driverForm').on('submit', function(e) {
@@ -781,21 +821,16 @@
 
                     columns: [
                         {
+                            data: 'companyName',
                             name: 'lkp_company.companyName',
                             render: function (data, type, row, meta) {
-                                let image = `https://pbs.twimg.com/profile_images/1587335578152013824/y4wio-TE_400x400.jpg`;
-                                if (row.Company_Image == 1) {
-                                    image = `/Attachment/Company_Image/`+row.id+`.jpg`;
-                                }
 
-                                return `<img src="https://pbs.twimg.com/profile_images/1587335578152013824/y4wio-TE_400x400.jpg" class="flag-img-lg" alt="Best Admin Dashboards">
-                                        ` + row.companyName;
+                                return '<img src="/dashboard/assets/logos/default_imile_logo.jpg" style="width: 25%">'+row.companyName;
+
+                            //     if (row.Company_Image == 1) {
+                            //         image = `/Attachment/Company_Image/`+row.id+`.jpg`;
+                            //     }
                             }
-                        },
-                        {
-                            visible: false,
-                            data: 'name_en',
-                            name: 'lkp_city.name_en',
                         },
                         {
                             data: 'warehouseName',
@@ -849,7 +884,7 @@
                             }
                         },
                         {
-                            //data: 'driver_status_en',
+                            data: 'driver_status_en',
                             name: 'lkp_driver_status.driver_status_en',
                             render: function (data, type, row, meta) {
                                 if (row.status_id == "1") {
@@ -1126,16 +1161,18 @@
 
         });
 
-    function go_back() {
-        $('#create_da_bulk').hide();
-        $('#create_da_from').hide();
-        $('#statment').show();
-    }
-    function addNewDriver(){
-        $('#create_da_bulk').hide();
-        $('#create_da_from').hide();
-        $('#statment').show();
-    }
+        function go_back() {
+            $('#create_da_bulk').hide();
+            $('#create_da_from').hide();
+            $('#statment').show();
+            $('#bck_btn').hide();
+        }
+        function addNewDriver(){
+            $('#create_da_bulk').hide();
+            $('#create_da_from').hide();
+            $('#statment').show();
+            $('#bck_btn').hide();
+        }
     function showSelectBulkOrOne(args){
         var link = document.getElementById('statment');
 
@@ -1146,6 +1183,7 @@
         // link.style.visibility = 'hidden';
     }
     function handleContent(args){
+        $('#bck_btn').show();
         if(args == 'Form'){
             $('#create_da_bulk').hide();
             $('#statment').hide();
@@ -1169,7 +1207,6 @@
             $('#statment').hide();
             $('#create_da_from').hide();
         }
-        console.log(args);
     }
     function add() {
         // document.getElementById('response').innerHTML = loader;

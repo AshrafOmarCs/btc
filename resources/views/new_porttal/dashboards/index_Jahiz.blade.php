@@ -27,7 +27,6 @@
                         <!-- Card start -->
                         <div class="card">
                             <div class="card-body">
-
                                 <!-- Row start -->
                                 <div class="row">
                                     <div class="col-xl-4 col-sm-6 col-12">
@@ -54,128 +53,148 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Status</label>
-                                            <select class="form-control" id="country">
-                                                <option></option>
-                                                @foreach($lkp_driver_status as $status)
-                                                    <option>{{$status->driver_status_en}}</option>
+                                            <label for="country" class="form-label">Vehicle</label>
+                                            <select name="filter_vehicleId" id="filter_vehicleId" class="form-control"  required>
+                                                <option value=""></option>
+                                                @foreach($vehicles as $vehicle)
+                                                    <option value="{{$vehicle->id}}"> {{$vehicle->plate}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="FullName" class="form-label">Full Name</label>
-                                            <input type="text" class="form-control" id="filter_fullName" name="filter_fullName" placeholder="FullName">
+                                            <label for="country" class="form-label">{{__('drivers.fullName')}}</label>
+                                            <input type="text" class="form-control" id="filter_fullName" name="filter_fullName">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="Mobile" class="form-label">Mobile</label>
-                                            <input type="text" class="form-control" name="filter_mobileNumber" id="filter_mobileNumber" placeholder="Mobile">
+                                            <label for="country" class="form-label">{{__('drivers.Mobile')}}</label>
+                                            <input type="text" class="form-control" name="filter_mobileNumber" id="filter_mobileNumber">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="iqama" class="form-label">Identity or Iqama</label>
-                                            <input type="text" class="form-control" name="filter_iqama" id="filter_iqama" placeholder="Identity or Iqama">
+                                            <label for="country" class="form-label">{{__('drivers.Iqama')}}</label>
+                                            <input type="text" class="form-control" name="filter_iqama" id="filter_iqama">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="iqama" class="form-label">Driver Job ID</label>
-                                            <input type="text" class="form-control" name="filter_job_id" id="filter_job_id" placeholder="Driver Job ID">
+                                            <label for="country" class="form-label">{{__('drivers.EmailID')}}</label>
+                                            <input type="text" class="form-control" name="filter_email_id" id="filter_email_id">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Driver Type</label>
-                                            <select class="form-control"  name="filter_driver_type_id" id="filter_driver_type_id">
-                                                <option></option>
-                                                @foreach($lkp_driver_status as $status)
-                                                    <option>{{$status->driver_status_en}}</option>
-                                                @endforeach
-                                            </select>
+                                            <label for="country" class="form-label">{{__('drivers.JobId')}}</label>
+                                            <input type="text" class="form-control" name="filter_job_id" id="filter_job_id">
                                         </div>
                                     </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Status')}}</label>
+                                        <select name="filter_status_id" id="filter_status_id" onchange="status()" class="form-control">
+                                            <option value=""></option>
 
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="mb-3">
-                                            <label for="accountNumber" class="form-label">STCPAY Number  </label>
-                                            <input type="text" class="form-control" name="filter_accountNumber" id="filter_accountNumber"
-                                                placeholder="9665*****">
-                                        </div>
-                                    </div>
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="mb-3">
-                                            <label for="enterPassword" class="form-label">STCPAY Owner ID </label>
-                                            <input type="text" class="form-control" name="filter_account_owner_iqama" id="filter_account_owner_iqama"
-                                                placeholder="STCPAY Owner ID">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="mb-3">
-                                            <label for="enterPassword" class="form-label">Created at</label>
-                                            <input type="text" class="form-control" name="filter_created_at" id="filter_created_at"
-                                                placeholder="STCPAY Owner ID">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="m-0">
-                                            <div class="form-label">Updated at </div>
-                                            <div class="input-group">
-												<span class="input-group-text">
-													<i class="bi bi-calendar4"></i>
-												</span>
-												<input type="date" class="form-control datepicker-range" id="filter_updated_at" name="filter_updated_at">
-											</div>
-                                        </div>
-                                    </div>
-                                    {{--
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <label for="Created_by" class="form-label">Created by</label>
-                                        <select class="form-control" id="Created_by">
-                                            <option>Select account</option>
-                                            <option>Ashraf</option>
-                                            <option>Samir</option>
-                                            <option>Canada</option>
-                                            <option>Gremany</option>
-                                            <option>India</option>
-                                            <option>Japan</option>
-                                            <option>England</option>
-                                            <option>Brazil</option>
-                                        </select>
-                                    </div> --}}
-
-                                    <div class="col-xxl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <label for="Updated_by" class="form-label">Updated by</label>
-                                        <select class="form-control" id="Updated_by">
-                                            <option>Select account</option>
-                                            <option>Ashraf</option>
-                                            <option>Samir</option>
-                                            <option>Canada</option>
-                                            <option>Gremany</option>
-                                            <option>India</option>
-                                            <option>Japan</option>
-                                            <option>England</option>
-                                            <option>Brazil</option>
+                                            @foreach($lkp_driver_status as $lkp_driver_statuss)
+                                                <option
+                                                    value="{{$lkp_driver_statuss->id}}">{{$lkp_driver_statuss->driver_status_en}}</option>
+                                            @endforeach
                                         </select>
                                     </div>
-
-
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Account_Owner_Iqama')}}</label>
+                                        <input type="text" class="form-control" name="filter_account_owner_iqama" id="filter_account_owner_iqama">
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.accountNumber')}}</label>
+                                        <input type="text" class="form-control" name="filter_accountNumber" id="filter_accountNumber">
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.DriverType')}}</label>
+                                        <select name="filter_driver_type_id" id="filter_driver_type_id" class="form-control">
+                                            <option value=""></option>
+                                            @foreach($lkp_driver_type as $lkp_driver_typee)
+                                                <option
+                                                    value="{{$lkp_driver_typee->id}}">{{$lkp_driver_typee->driver_type}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.BanderCar')}}</label>
+                                        <select name="filter_bander_car_id" id="filter_bander_car_id" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImageIdentity')}}</label>
+                                        <select name="filter_Image_Identity" id="filter_Image_Identity" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImagePassport')}}</label>
+                                        <select name="filter_Image_Passport" id="filter_Image_Passport" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImageDrivingLicence')}}</label>
+                                        <select name="filter_Image_DrivingLicence" id="filter_Image_DrivingLicence" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImageVehiclesRegistration')}}</label>
+                                        <select name="filter_Image_VehiclesRegistration" id="filter_Image_VehiclesRegistration" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImagePromissoryNote')}}</label>
+                                        <select name="filter_Image_PromissoryNote" id="filter_Image_PromissoryNote" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ImageJobContract')}}</label>
+                                        <select name="filter_Image_JobContract" id="filter_Image_JobContract" class="form-control">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="2">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Created_At')}}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="date" class="form-control datepicker-range" id="filter_created_at" name="filter_created_at">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Updated_At')}}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="date" class="form-control datepicker-range" id="filter_updated_at" name="filter_updated_at">
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- Row end -->
 
@@ -188,12 +207,11 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-success"
-                    data-bs-dismiss="modal" >Search</button>
+                    data-bs-dismiss="modal" id="filter">Search</button>
             </div>
         </div>
     </div>
 </div>
-
 <!-- Modal addNewDriver3 -->
 <div class="modal fade" id="addNewDriver" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="scrollableLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -215,10 +233,13 @@
                      </div>
                 </div>
 
-                <div id="create_da_from" style="display: none">
-                    <h5>Please select a method from bellow options: </h5>
-                      <h6>Form Data</h6>
-                </div>
+                <form id="driverForm">
+                    @csrf
+                    <div id="create_da_from" style="display: none">
+                        <h5>Please select a method from bellow options: </h5>
+                        <h6>Form Data</h6>
+                    </div>
+                </form>
                 <div id="create_da_bulk" style="display: none">
                     <div class="row">
                         <div class="col-lg-6 mt-3">
@@ -279,35 +300,35 @@
                                 <form id="columnSelectionForm">
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="0">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_0" onclick="add_remove_bold(0)">City</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_0" onclick="add_remove_bold(0)">{{__('drivers.City')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="1">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_1" onclick="add_remove_bold(1)">Type</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_1" onclick="add_remove_bold(1)">{{__('drivers.Type')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="2">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_2" onclick="add_remove_bold(2)">FullName</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_2" onclick="add_remove_bold(2)">{{__('drivers.fullName')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="3">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_3" onclick="add_remove_bold(3)">Actual Name</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_3" onclick="add_remove_bold(3)">{{__('drivers.ActualName')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="4">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_4" onclick="add_remove_bold(4)">Mobile</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_4" onclick="add_remove_bold(4)">{{__('drivers.Mobile')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="5">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_5" onclick="add_remove_bold(5)">STC Pay</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_5" onclick="add_remove_bold(5)">{{__('drivers.STCPay')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="6">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_6" onclick="add_remove_bold(6)">Job ID</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_6" onclick="add_remove_bold(6)">{{__('drivers.JobId')}}</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="7">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_7" onclick="add_remove_bold(7)">Status</label>
+                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_7" onclick="add_remove_bold(7)">{{__('drivers.Status')}}</label>
                                     </div>
                                 </form>
 
@@ -335,28 +356,28 @@
                         <div class="card" style="background-color: lightgrey">
                             <div class="card-body">
                                 <div class="form-check first_hide" id="no_0">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(0)" id="lbl_sec_0">City</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(0)" id="lbl_sec_0">{{__('drivers.City')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_1">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(1)" id="lbl_sec_1">Type</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(1)" id="lbl_sec_1">{{__('drivers.Type')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_2">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(2)" id="lbl_sec_2">FullName</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(2)" id="lbl_sec_2">{{__('drivers.fullName')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_3">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(3)" id="lbl_sec_3">Actual Name</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(3)" id="lbl_sec_3">{{__('drivers.ActualName')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_4">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(4)" id="lbl_sec_4">Mobile</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(4)" id="lbl_sec_4">{{__('drivers.Mobile')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_5">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(5)" id="lbl_sec_5">STC Pay</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(5)" id="lbl_sec_5">{{__('drivers.STCPay')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_6">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(6)" id="lbl_sec_6">Job ID</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(6)" id="lbl_sec_6">{{__('drivers.JobId')}}</label>
                                 </div>
                                 <div class="form-check first_hide" id="no_7">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(7)" id="lbl_sec_7">Status</label>
+                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(7)" id="lbl_sec_7">{{__('drivers.Status')}}</label>
                                 </div>
                             </div>
                         </div>
@@ -472,6 +493,7 @@
 <div class="row">
     <div class="col-sm-12 col-12">
         <!-- Card start -->
+        <div id="message"></div>
         <div class="card">
             <div class="card-header">
                 <div class="card-title">Jahiz Drivers</div>
@@ -540,7 +562,13 @@
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
 <input type="hidden" id="check" value="0">
-<script>
+
+
+@section('javascript')
+    <!-- Main Js Required -->
+    <script src="{{asset('assets/js/main.js')}}"></script>
+    <script src="https://btcdmins.com/AdminLTE/plugins/iCheck/icheck.min.js"></script>
+    <script>
         function export_excel() {
             $('#backButton').hide();
             $('#exportExcelBtn').prop('disabled', true);
@@ -769,7 +797,31 @@
             $('#jahiz_period_id_'+jahiz_period_id).remove();
         }
         $(document).ready(function () {
-
+            $('#driverForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route("Drivers.store") }}',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.status == 420) {
+                            var alert = 'danger';
+                        } else {
+                            var alert = 'success';
+                        }
+                        $('#message').html('<div class="alert alert-'+alert+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                        $('#driverForm')[0].reset();
+                        $('#addNewDriver').modal('hide');
+                    },
+                    error: function(xhr) {
+                        $('#message').html("");
+                        document.getElementById('create_da_from').innerHTML = response;
+                    }
+                });
+            });
             fill_datatable();
 
             function fill_datatable(filter_screenId = '', filter_companyId = '', filter_warehouseId = '', filter_driver_type_id = '', filter_fullName = '', filter_mobileNumber = '', filter_iqama = '', filter_job_id = '', filter_status_id = '', filter_account_owner_iqama = '', filter_accountNumber = '', filter_claim_dt = '', filter_SANED_SettledDate = '', filter_jahiz_clearing_updated_at = '', filter_collectionAmount = '', filter_created_at = '', filter_updated_at = '', filter_Image_Identity = '', filter_Image_Passport = '', filter_Image_DrivingLicence = '', filter_Image_VehiclesRegistration = '', filter_Image_JobContract = '', filter_Image_PromissoryNote = '') {
@@ -1179,9 +1231,7 @@
             });
 
             $('#filter').click(function () {
-
                 if ($('#filter_warehouseId').val() != '' || $('#filter_driver_type_id').val() != '' || $('#filter_fullName').val() != '' || $('#filter_mobileNumber').val() != '' || $('#filter_iqama').val() != '' || $('#filter_job_id').val() != '' || $('#filter_status_id').val() != '' || $('#filter_account_owner_iqama').val() != '' || $('#filter_accountNumber').val() != '' || $('#filter_claim_dt').val() != '' || $('#filter_SANED_SettledDate').val() != '' || $('#filter_jahiz_clearing_updated_at').val() != '' || $('#filter_collectionAmount').val() != '' || $('#filter_created_at').val() != '' || $('#filter_updated_at').val() != '' || $('#filter_Image_Identity').val() != '' || $('#filter_Image_Passport').val() != '' || $('#filter_Image_DrivingLicence').val() != '' || $('#filter_Image_VehiclesRegistration').val() != '' || $('#filter_Image_JobContract').val() != '' || $('#filter_Image_PromissoryNote').val() != '') {
-                    card_change();
                     $('#customer_data').DataTable().destroy();
                     fill_datatable('Jahiz', $('#filter_companyId').val(), $('#filter_warehouseId').val(), $('#filter_driver_type_id').val(), $('#filter_fullName').val(), $('#filter_mobileNumber').val(), $('#filter_iqama').val(), $('#filter_job_id').val(), $('#filter_status_id').val(), $('#filter_account_owner_iqama').val(), $('#filter_accountNumber').val(), $('#filter_claim_dt').val(), $('#filter_SANED_SettledDate').val(), $('#filter_jahiz_clearing_updated_at').val(), $('#filter_collectionAmount').val(), $('#filter_created_at').val(), $('#filter_updated_at').val(), $('#filter_Image_Identity').val(), $('#filter_Image_Passport').val(), $('#filter_Image_DrivingLicence').val(), $('#filter_Image_VehiclesRegistration').val(), $('#filter_Image_JobContract').val(), $('#filter_Image_PromissoryNote').val());
                 } else {
@@ -1226,293 +1276,285 @@
             $('.bandar').hide();
             $('.calimsinputBtns').val(0.00);
             $('#totalAmount').prop('readonly', true);
-                var selectedOption= $('#documentType :selected').val();
-            //  alert(selectedOption);
-                $('#Cash').val(0.00);
-                $('#ATM').val(0.00);
-                $('#Bank').val(0.00);
-                $('#total').hide();
-                if(selectedOption == 'none'){
-                    $('#totalAmount').val('Select DocumentType');
-                    alert('يجب اختيار نوع المعاملة');
-                }
-                else if(selectedOption == 150){
-                    $('#totalAmount').val('150.00 SAR')
-                } else if(selectedOption == 75){
-                    $('#totalAmount').val('75.00 SAR')
-                } else if(selectedOption == 'clearing'){
-                    $('.claims').show();
-                    $('#totalAmount').val('');
-                } else if(selectedOption == 'bandar') {
-                    let driver_type = $('#driver_type').val();
-                    if (driver_type == 2) {
-                        $('.bandar').show();
-                        $('#totalAmount').prop('readonly', true);
-                    } else {
-                        $('.bandar').hide();
-                        $('#totalAmount').prop('readonly', false);
-                    }
-                    $('.claims').hide();
-                    $('#bandar_body').html('');
-                    $('#totalAmount').val('');
-                }
-                checkType();
-        }
-        function loadTotal() {
-            let saned = $('#saned').val();
-            let bandar = $('#bandar').val();
-            let admin = $('#admin').val();
-            var total = parseFloat(saned)+parseFloat(bandar)+parseFloat(admin);
-            $('#totalAmount').val(total);
-        }
-        function checkType() {
             var selectedOption= $('#documentType :selected').val();
+            $('#Cash').val(0.00);
+            $('#ATM').val(0.00);
+            $('#Bank').val(0.00);
+            $('#total').hide();
             if(selectedOption == 'none'){
-                $('#exampleInputAmount').val('Select DocumentType')
-                    alert('يجب اختيار نوع المعاملة');
-                }else{
-                if($('#Cash').val() == ''){
-                    cash = 0.00;
-                }else{
-                    cash = $('#Cash').val();
-                }
-                if($('#ATM').val() == ''){
-                    atm = 0.00;
-                }else{
-                    atm = $('#ATM').val();
-                }
-                if($('#Bank').val() == ''){
-                    bank = 0.00;
-                }else{
-                    bank = $('#Bank').val();
-                }
-                var total = parseFloat(bank)+parseFloat(atm)+parseFloat(cash);
-                $('#proof_file').prop('required', false);
-                $('.proof_file').hide();
-                if( total > 0){
-                    $('#total').show();
-                    $('#sumAmount').text(total);
-                    if(atm > 0 || bank > 0) {
-                        $('.proof_file').show();
-                        $('#proof_file').prop('required', true);
-                    }
-                    if(selectedOption == 'clearing') {
-                        let saned = $('#saned').val();
-                        let bandar = $('#bandar').val();
-                        let admin = $('#admin').val();
-                        var total_amo = parseFloat(saned)+parseFloat(bandar)+parseFloat(admin);
-                        if(total == total_amo){
-                            $("#confirmBtn").prop('disabled', false);
-                        }else{
-                            $("#confirmBtn").prop('disabled', true);
-                        }
-                    } else if(selectedOption == 'bandar') {
-                        let totalAmount = $("#totalAmount").val();
-                        if(total == totalAmount){
-                            $("#confirmBtn").prop('disabled', false);
-                        }else{
-                            $("#confirmBtn").prop('disabled', true);
-                        }
-                    } else {
-                        if(total == selectedOption){
-                            $("#confirmBtn").prop('disabled', false);
-                        }else{
-                            $("#confirmBtn").prop('disabled', true);
-                        }
-                    }
-                }else{
-                    $("#confirmBtn").prop('disabled', true);
-                }
+                $('#totalAmount').val('Select DocumentType');
+                alert('يجب اختيار نوع المعاملة');
             }
-            // alert(total);
+            else if(selectedOption == 150){
+                $('#totalAmount').val('150.00 SAR')
+            } else if(selectedOption == 75){
+                $('#totalAmount').val('75.00 SAR')
+            } else if(selectedOption == 'clearing'){
+                $('.claims').show();
+                $('#totalAmount').val('');
+            } else if(selectedOption == 'bandar') {
+                let driver_type = $('#driver_type').val();
+                if (driver_type == 2) {
+                    $('.bandar').show();
+                    $('#totalAmount').prop('readonly', true);
+                } else {
+                    $('.bandar').hide();
+                    $('#totalAmount').prop('readonly', false);
+                }
+                $('.claims').hide();
+                $('#bandar_body').html('');
+                $('#totalAmount').val('');
+            }
+            checkType();
+    }
+    function loadTotal() {
+        let saned = $('#saned').val();
+        let bandar = $('#bandar').val();
+        let admin = $('#admin').val();
+        var total = parseFloat(saned)+parseFloat(bandar)+parseFloat(admin);
+        $('#totalAmount').val(total);
+    }
+    function checkType() {
+        var selectedOption= $('#documentType :selected').val();
+        if(selectedOption == 'none'){
+            $('#exampleInputAmount').val('Select DocumentType')
+                alert('يجب اختيار نوع المعاملة');
+            }else{
+            if($('#Cash').val() == ''){
+                cash = 0.00;
+            }else{
+                cash = $('#Cash').val();
+            }
+            if($('#ATM').val() == ''){
+                atm = 0.00;
+            }else{
+                atm = $('#ATM').val();
+            }
+            if($('#Bank').val() == ''){
+                bank = 0.00;
+            }else{
+                bank = $('#Bank').val();
+            }
+            var total = parseFloat(bank)+parseFloat(atm)+parseFloat(cash);
+            $('#proof_file').prop('required', false);
+            $('.proof_file').hide();
+            if( total > 0){
+                $('#total').show();
+                $('#sumAmount').text(total);
+                if(atm > 0 || bank > 0) {
+                    $('.proof_file').show();
+                    $('#proof_file').prop('required', true);
+                }
+                if(selectedOption == 'clearing') {
+                    let saned = $('#saned').val();
+                    let bandar = $('#bandar').val();
+                    let admin = $('#admin').val();
+                    var total_amo = parseFloat(saned)+parseFloat(bandar)+parseFloat(admin);
+                    if(total == total_amo){
+                        $("#confirmBtn").prop('disabled', false);
+                    }else{
+                        $("#confirmBtn").prop('disabled', true);
+                    }
+                } else if(selectedOption == 'bandar') {
+                    let totalAmount = $("#totalAmount").val();
+                    if(total == totalAmount){
+                        $("#confirmBtn").prop('disabled', false);
+                    }else{
+                        $("#confirmBtn").prop('disabled', true);
+                    }
+                } else {
+                    if(total == selectedOption){
+                        $("#confirmBtn").prop('disabled', false);
+                    }else{
+                        $("#confirmBtn").prop('disabled', true);
+                    }
+                }
+            }else{
+                $("#confirmBtn").prop('disabled', true);
+            }
         }
-        function add() {
+        // alert(total);
+    }
+    function add() {
+        document.getElementById('response').innerHTML = loader;
+        document.getElementById('edit_modal').style.display = 'block';
+        $.ajax({
+            type: 'GET',
+            url: "{{URL("/Drivers/create/2")}}",
+            contentType: "html",
+            dataType: 'html',
+            success: function (data) {
+
+                document.getElementById('response').innerHTML = data;
+            }
+        });
+    }
+
+    function status() {
+        var status_id = document.getElementById('status_id').value;
+        if (status_id == "3")
+            document.getElementById("Termination_Reason").style.display = '';
+        else
+            document.getElementById("Termination_Reason").style.display = 'none';
+    }
+
+
+    function sheet(id, Period) {
+        myWindow1 = window.open("{{URL('/SalaryShow')}}" + "/" + id + "/" + Period, "",
+            "height=1000,width=650,scrollbars=yes,top=1,left=1,status,resizable");
+    }
+
+    function AddDriversSettlement(id) {
+        //e.preventDefault();
+        // var id = $(this).attr('id');
+
+        myWindow1 = window.open("{{URL("DriversSettlement")}}" + "/" + id + "/0", "mywin",
+            "height=900,width=820,scrollbars=yes,top=1,left=1,status,resizable");
+        myWindow1.focus();
+    }
+
+    function EditDriversSettlement(driverId, jahiz_clearing_id) {
+        myWindow1 = window.open("{{URL("DriversSettlement")}}" + "/" + driverId + "/" + jahiz_clearing_id, "mywin",
+            "height=900,width=820,scrollbars=yes,top=1,left=1,status,resizable");
+        myWindow1.focus();
+    }
+
+    function DeleteDriversSettlement(driverId, jahiz_clearing_id) {
+        if (confirm("هل انت متاكد من مسح هذه التصفية?") == true) {
+            //e.preventDefault();
             document.getElementById('response').innerHTML = loader;
-            document.getElementById('edit_modal').style.display = 'block';
+            //document.getElementById('edit_modal').style.display = 'block';
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "{{URL('/DriversSettlementDelete')}}" + "/" + driverId + "/" + jahiz_clearing_id,
+                contentType: "html",
+                dataType: 'html',
+                success: function (data) {
+
+                    document.getElementById('response').innerHTML = data;
+                },
+                error: function (jqXHR, status, error) {
+                    document.getElementById('response').innerHTML = "Error: " + error;
+                    alert(status + ": " + error);
+                }
+            });
+        } else {
+
+        }
+
+    }
+
+    function DriversSettlementList(driverId) {
+        //e.preventDefault();
+        document.getElementById('response').innerHTML = loader;
+        document.getElementById('edit_modal').style.display = 'block';
+        $.ajax({
+            type: 'GET',
+            url: "{{URL('/DriversSettlementList')}}" + "/" + driverId,
+            contentType: "html",
+            dataType: 'html',
+            success: function (data) {
+
+                document.getElementById('response').innerHTML = data;
+
+
+            }
+        });
+    }
+
+    function disableConfirmBtn(){
+        // $("#confirmBtn").prop('disabled', true);
+        $("#confirmBtn").click();
+    }
+    function validateForm() {
+        //e.preventDefault();
+        //document.getElementById('response').innerHTML = loader;
+        //document.getElementById('edit_modal').style.display = 'block';
+        if (document.getElementById('accountNumber')) {
+            if ($("#accountNumber").val() != '' && ($("#accountNumber").val().length != 12 || $("#accountNumber").val().substring(0, 3) != '966')) {
+                alert('خطا في رقم الحساب : يجب ان يبدا ب 966 ويحتوي علي 12 رقم');
+                return false;
+            }
+            if ($("#account_owner_iqama").val() != '' && ($("#account_owner_iqama").val().length != 10 || ($("#account_owner_iqama").val().substring(0, 1) != '1' && $("#account_owner_iqama").val().substring(0, 1) != '2'))) {
+                alert('خطا في هوية صاحب الحساب : يجب ان يبدا ب 1 او 2 ويحتوي علي 10 ارقام');
+                return false;
+            }
+        }
+
+        var postData = $("#contact_form").serializeArray();
+        //alert(postData);
+        var formURL = $("#contact_form").attr("action");
+        document.getElementById('response').innerHTML = loader;
+        $.ajax({
+            url: formURL,
+            type: "POST",
+            cache: false,
+            data: postData,
+            success: function (data) {
+                document.getElementById('response').innerHTML = data;
+
+
+            },
+            error: function (jqXHR, status, error) {
+                alert(status + ": " + error);
+            }
+        });
+        return false;
+    }
+
+    function go_back() {
+        $('#create_da_bulk').hide();
+        $('#create_da_from').hide();
+        $('#statment').show();
+        $('#bck_btn').hide();
+    }
+    function addNewDriver(){
+        $('#create_da_bulk').hide();
+        $('#create_da_from').hide();
+        $('#statment').show();
+        $('#bck_btn').hide();
+    }
+    function showSelectBulkOrOne(args){
+        var link = document.getElementById('statment');
+
+
+        link.style.display = 'none'; //or
+        var link = document.getElementById('selectBulkOrOne');
+        link.style.display = 'block'; //or
+    }
+    function handleContent(args){
+        $('#bck_btn').show();
+        if(args == 'Form'){
+            $('#create_da_bulk').hide();
+            $('#statment').hide();
+            $('#create_da_from').show();
+            document.getElementById('create_da_from').innerHTML = 'Loading';
             $.ajax({
                 type: 'GET',
                 url: "{{URL("/Drivers/create/2")}}",
                 contentType: "html",
                 dataType: 'html',
                 success: function (data) {
-
-                    document.getElementById('response').innerHTML = data;
+                    document.getElementById('create_da_from').innerHTML = data;
+                    // $('#vehicle_id_create').select2({
+                    //     dropdownParent: $('#edit_modal')
+                    // });
                 }
             });
-        }
 
-        function status() {
-            var status_id = document.getElementById('status_id').value;
-            if (status_id == "3")
-                document.getElementById("Termination_Reason").style.display = '';
-            else
-                document.getElementById("Termination_Reason").style.display = 'none';
-        }
-
-
-        function sheet(id, Period) {
-            myWindow1 = window.open("{{URL('/SalaryShow')}}" + "/" + id + "/" + Period, "",
-                "height=1000,width=650,scrollbars=yes,top=1,left=1,status,resizable");
-        }
-
-        function AddDriversSettlement(id) {
-            //e.preventDefault();
-            // var id = $(this).attr('id');
-
-            myWindow1 = window.open("{{URL("DriversSettlement")}}" + "/" + id + "/0", "mywin",
-                "height=900,width=820,scrollbars=yes,top=1,left=1,status,resizable");
-            myWindow1.focus();
-        }
-
-        function EditDriversSettlement(driverId, jahiz_clearing_id) {
-            myWindow1 = window.open("{{URL("DriversSettlement")}}" + "/" + driverId + "/" + jahiz_clearing_id, "mywin",
-                "height=900,width=820,scrollbars=yes,top=1,left=1,status,resizable");
-            myWindow1.focus();
-        }
-
-        function DeleteDriversSettlement(driverId, jahiz_clearing_id) {
-            if (confirm("هل انت متاكد من مسح هذه التصفية?") == true) {
-                //e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                //document.getElementById('edit_modal').style.display = 'block';
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-
-                $.ajax({
-                    type: 'GET',
-                    url: "{{URL('/DriversSettlementDelete')}}" + "/" + driverId + "/" + jahiz_clearing_id,
-                    contentType: "html",
-                    dataType: 'html',
-                    success: function (data) {
-
-                        document.getElementById('response').innerHTML = data;
-                    },
-                    error: function (jqXHR, status, error) {
-                        document.getElementById('response').innerHTML = "Error: " + error;
-                        alert(status + ": " + error);
-                    }
-                });
-            } else {
-
-            }
-
-        }
-
-        function DriversSettlementList(driverId) {
-            //e.preventDefault();
-            document.getElementById('response').innerHTML = loader;
-            document.getElementById('edit_modal').style.display = 'block';
-            $.ajax({
-                type: 'GET',
-                url: "{{URL('/DriversSettlementList')}}" + "/" + driverId,
-                contentType: "html",
-                dataType: 'html',
-                success: function (data) {
-
-                    document.getElementById('response').innerHTML = data;
-
-
-                }
-            });
-        }
-
-        function disableConfirmBtn(){
-            // $("#confirmBtn").prop('disabled', true);
-            $("#confirmBtn").click();
-        }
-        function validateForm() {
-            //e.preventDefault();
-            //document.getElementById('response').innerHTML = loader;
-            //document.getElementById('edit_modal').style.display = 'block';
-            if (document.getElementById('accountNumber')) {
-                if ($("#accountNumber").val() != '' && ($("#accountNumber").val().length != 12 || $("#accountNumber").val().substring(0, 3) != '966')) {
-                    alert('خطا في رقم الحساب : يجب ان يبدا ب 966 ويحتوي علي 12 رقم');
-                    return false;
-                }
-                if ($("#account_owner_iqama").val() != '' && ($("#account_owner_iqama").val().length != 10 || ($("#account_owner_iqama").val().substring(0, 1) != '1' && $("#account_owner_iqama").val().substring(0, 1) != '2'))) {
-                    alert('خطا في هوية صاحب الحساب : يجب ان يبدا ب 1 او 2 ويحتوي علي 10 ارقام');
-                    return false;
-                }
-            }
-
-            var postData = $("#contact_form").serializeArray();
-            //alert(postData);
-            var formURL = $("#contact_form").attr("action");
-            document.getElementById('response').innerHTML = loader;
-            $.ajax({
-                url: formURL,
-                type: "POST",
-                cache: false,
-                data: postData,
-                success: function (data) {
-                    document.getElementById('response').innerHTML = data;
-
-
-                },
-                error: function (jqXHR, status, error) {
-                    alert(status + ": " + error);
-                }
-            });
-            return false;
-        }
-
-        function go_back() {
-            $('#create_da_bulk').hide();
+        }else{
+            $('#create_da_bulk').show();
+            $('#statment').hide();
             $('#create_da_from').hide();
-            $('#statment').show();
-            $('#bck_btn').hide();
         }
-        function addNewDriver(){
-            $('#create_da_bulk').hide();
-            $('#create_da_from').hide();
-            $('#statment').show();
-            $('#bck_btn').hide();
-        }
-        function showSelectBulkOrOne(args){
-            var link = document.getElementById('statment');
-
-
-            link.style.display = 'none'; //or
-            var link = document.getElementById('selectBulkOrOne');
-            link.style.display = 'block'; //or
-        }
-        function handleContent(args){
-            $('#bck_btn').show();
-            if(args == 'Form'){
-                $('#create_da_bulk').hide();
-                $('#statment').hide();
-                $('#create_da_from').show();
-                document.getElementById('create_da_from').innerHTML = 'Loading';
-                $.ajax({
-                    type: 'GET',
-                    url: "{{URL("/Drivers/create/1")}}",
-                    contentType: "html",
-                    dataType: 'html',
-                    success: function (data) {
-                        document.getElementById('create_da_from').innerHTML = data;
-                        // $('#vehicle_id_create').select2({
-                        //     dropdownParent: $('#edit_modal')
-                        // });
-                    }
-                });
-
-            }else{
-                $('#create_da_bulk').show();
-                $('#statment').hide();
-                $('#create_da_from').hide();
-            }
-        }
+    }
 </script>
-
-
-@section('javascript')
-    <!-- Main Js Required -->
-    <script src="{{asset('assets/js/main.js')}}"></script>
-    <script src="https://btcdmins.com/AdminLTE/plugins/iCheck/icheck.min.js"></script>
-
 @stop
 @endsection
 
