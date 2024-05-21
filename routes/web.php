@@ -24,7 +24,8 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('/DriversJahiz', 'DashoardController@index_drivers');
     Route::post('/Drivers/upload', 'DashoardController@drivers_save')->name('Drivers/upload');
     // Route::resource('/Drivers', 'DriversController');
-
+    // Ashraf Code
+    Route::get("/Filter-layout",'AshrafController@Filter_layout');
 
     // Muhammed Code
 

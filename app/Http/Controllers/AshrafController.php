@@ -17,6 +17,11 @@ use Illuminate\Http\Request;
 class AshrafController extends Controller
 {
     //
+
+public function Filter_layout(){
+    return view('Filter_layout');
+    dd("Filter_layout");
+}
     public function updateDriver(){
         $payload = "'P_BTC_66_NDD_TIF',
 'P_BTC_70_NDD_TIF',

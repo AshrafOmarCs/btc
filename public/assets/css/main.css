@@ -5138,6 +5138,7 @@ textarea.form-control-lg {
   z-index: 2;
   color: var(--bs-list-group-active-color);
   background-color: var(--bs-list-group-active-bg);
+  
   border-color: var(--bs-list-group-active-border-color);
 }
 .list-group-item + .list-group-item {
@@ -5146,6 +5147,7 @@ textarea.form-control-lg {
 .list-group-item + .list-group-item.active {
   margin-top: calc(-1 * var(--bs-list-group-border-width));
   border-top-width: var(--bs-list-group-border-width);
+  border-top: 1px solid white;
 }
 
 .list-group-horizontal {
