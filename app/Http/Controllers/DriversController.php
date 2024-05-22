@@ -581,11 +581,14 @@ class DriversController extends Controller
             $lkp_driver_type = DB::select('SELECT * from lkp_driver_type where id in(2,3) order by id');
         else
             $lkp_driver_type = DB::select('SELECT * from lkp_driver_type order by id');
+        $warehouse = DB::select('SELECT warehouse.id,warehouse.warehouseName from warehouse
+        INNER JOIN lkp_company on lkp_company.id=warehouse.companyId
+        WHERE lkp_company.id=6 order by warehouseName');
         return view('new_porttal.Drivers.create')->with(compact('companies'))->with(compact('lkp_country'))
             ->with(compact('lkp_driver_status'))->with(compact('lkp_termination_reasons'))
             ->with(compact('lkp_bank'))->with(compact('lkp_yes_no'))->with(compact('lkp_driver_type'))
             ->with(compact('type_id'))
-            ->with(compact('vehicles'));
+            ->with(compact('vehicles'))->with(compact('warehouse'));
     }
 
     /**
@@ -722,9 +725,11 @@ class DriversController extends Controller
     public function edit($id, $type_id)
     {
         //return Route::getFacadeRoot()->current()->uri().$id.'-'.$type_id;
-        if ($type_id == 2)
-            $warehouse = DB::select('SELECT * from warehouse where companyId=6 order by warehouseName');
-        else
+        if ($type_id == 2 || $type_id == 3) {
+            $warehouse = DB::select('SELECT warehouse.id,warehouse.warehouseName from warehouse
+            INNER JOIN lkp_company on lkp_company.id=warehouse.companyId
+            WHERE lkp_company.id=6 order by warehouseName');
+        } else
             $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
         $lkp_country = DB::select('SELECT * from lkp_country order by country_en');
         $lkp_driver_status = DB::select('SELECT * from lkp_driver_status');
@@ -981,16 +986,13 @@ class DriversController extends Controller
 
     public function Attachment($id)
     {
-        $Driver = DB::select('SELECT id,fullName from drivers where id=' . $id)[0];
 
         $drivers_attachments = DB::table('drivers_attachments')
-            ->select('driverId', 'Image_Identity', 'Image_Passport', 'Image_DrivingLicence',
-                'Image_VehiclesRegistration', 'Image_JobContract', 'Image_PromissoryNote')
-            ->where('driverId', '=', $id)
-            ->first();
-
-
-        return view('new_porttal.Drivers.Attachment')->with(compact('Driver'))->with(compact('drivers_attachments'));
+        ->select('drivers.id', 'drivers.fullName', 'drivers.job_id', 'drivers_attachments.driverId', 'drivers_attachments.Image_Identity', 'drivers_attachments.Image_Passport', 'drivers_attachments.Image_DrivingLicence', 'drivers_attachments.Image_VehiclesRegistration', 'drivers_attachments.Image_JobContract', 'drivers_attachments.Image_PromissoryNote')
+        ->join('drivers', 'drivers.id', '=', 'drivers_attachments.driverId')
+        ->where('drivers_attachments.driverId', $id)
+        ->first();
+        return view('new_porttal.Drivers.Attachment')->with(compact('drivers_attachments'));
     }
 
     public function SaveAttachment(Request $request)
@@ -1183,7 +1185,7 @@ class DriversController extends Controller
                 'name', 'drivers_jahiz_clearing.created_at', 'drivers_jahiz_clearing.updated_at')
             ->orderBy('drivers_jahiz_clearing.updated_at', 'desc')
             ->offset(0)->limit(10)->get();
-        return view('Drivers.DriversSettlementList')->with(compact('Driver'))
+        return view('new_porttal.Drivers.DriversSettlementList')->with(compact('Driver'))
             ->with(compact('drivers_jahiz_clearing'));
     }
 //******************************************************************************************************************************

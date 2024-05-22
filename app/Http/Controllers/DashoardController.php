@@ -30,9 +30,6 @@ class DashoardController extends Controller
     }
     public function index_drivers(Request $request)  {
         $vehicles = DB::select("SELECT * from vehicles order by plate");
-
-            $users = Drivers::all();
-
             // dd($users[0]);
             if (!request()->ajax()) {
                 $whereIn_array = array();
@@ -372,10 +369,14 @@ class DashoardController extends Controller
                 $view = "DriverWindow";
             if (Route::getFacadeRoot()->current()->uri() == 'DriverJahizWindow')
                 $view = "DriverJahizWindow";
-            elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/Drivers')
+            elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/Drivers') {
                 $view = "index_drives";
-            elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/DriversJahiz')
+                $users = Drivers::all();
+            }
+            elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/DriversJahiz') {
                 $view = "index_Jahiz";
+                $users = Drivers::whereIn('driver_type_id', [2, 3])->get();
+            }
             // return view('Drivers.' . $view)->with(compact('warehouse'))->with(compact('lkp_country'))
             //     ->with(compact('lkp_driver_status'))->with(compact('lkp_termination_reasons'))
             //     ->with(compact('lkp_bank'))->with(compact('lkp_yes_no'))->with(compact('lkp_company'))
@@ -416,8 +417,10 @@ class DashoardController extends Controller
                 }
 
             }
-
-        return view("new_porttal.dashboards.".$view,compact('vehicles', 'warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics'));
+        $lkp_jahiz_period = DB::select("SELECT lkp_jahiz_period.id,year,month_id,month,CONCAT(year,'-',month) as ym
+        from lkp_jahiz_period
+        left join lkp_month on lkp_month.id=lkp_jahiz_period.month_id order by year desc,month_id desc");
+        return view("new_porttal.dashboards.".$view,compact('vehicles', 'warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics', 'lkp_jahiz_period'));
     }
     //
     public function drivers_save(Request $request) {

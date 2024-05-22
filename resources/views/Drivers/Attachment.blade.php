@@ -61,8 +61,7 @@ folder instead of downloading all of them to reduce the load. -->
 
     </center>
 
-    <form method="POST" enctype="multipart/form-data" action="{{ URL('/SaveAttachment')}}"
-    ">
+    <form method="POST" enctype="multipart/form-data" action="{{ URL('/SaveAttachment')}}">
 
     @csrf
 

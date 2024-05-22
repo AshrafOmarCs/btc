@@ -2,33 +2,51 @@
 
     <input type="hidden" name="type_id" value="{{$type_id}}">
     <div class="row">
-        <div class="col-sm-4 col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="m-0">
-                        <label class="form-label">{{__('drivers.Company')}} <font color="red">*</font></label>
-                        <select name="companyId" class="form-control" id="filtercompanyId" onchange="WarehouseName(1)" required>
-                            <option value="">Select company</option>
-                            @foreach($companies as $company)
-                                <option value="{{$company->id}}">{{$company->companyName}}</option>
-                            @endforeach
-                        </select>
+        @if($type_id == 1)
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.Company')}} <font color="red">*</font></label>
+                            <select name="companyId" class="form-control" id="filtercompanyId" onchange="WarehouseName(1)" required>
+                                <option value="">Select company</option>
+                                @foreach($companies as $company)
+                                    <option value="{{$company->id}}">{{$company->companyName}}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-sm-4 col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="m-0">
-                        <label class="form-label">{{__('drivers.WarehouseName')}} <font color="red">*</font></label>
-                        <select id="filterwarehouseId" name="warehouseId" placeholder="Select ..." class="form-control" required>
-                            <option value="">Select warehouse</option>
-                        </select>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.WarehouseName')}} <font color="red">*</font></label>
+                            <select id="filterwarehouseId" name="warehouseId" placeholder="Select ..." class="form-control" required>
+                                <option value="">Select warehouse</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @else
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('drivers.City')}} <font color="red">*</font></label>
+                            <select name="companyId" class="form-control" id="filtercompanyId" required>
+                                <option value="">Select City</option>
+                                @foreach($warehouse as $warehousee)
+                                    <option value="{{$warehousee->id}}"> {{$warehousee->warehouseName}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
         <div class="col-sm-4 col-12">
             <div class="card">
                 <div class="card-body">

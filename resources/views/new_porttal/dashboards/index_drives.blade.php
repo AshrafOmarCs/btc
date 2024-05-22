@@ -54,7 +54,7 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('drivers.fullName')}}Vehicle</label>
+                                            <label for="country" class="form-label">{{__('drivers.Vehicle')}}</label>
                                             <select name="filter_vehicleId" id="filter_vehicleId" class="form-control"  required>
                                                 <option value=""></option>
                                                 @foreach($vehicles as $vehicle)

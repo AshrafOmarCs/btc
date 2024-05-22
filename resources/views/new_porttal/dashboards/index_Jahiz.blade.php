@@ -13,12 +13,171 @@
     }
 </style>
 
+<!-- Modal -->
+<div class="modal fade" id="AttachmentModal" tabindex="-1" role="dialog" aria-labelledby="AttachmentModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        <form action="{{url('DriversJahiz/storeDocument')}}" method="post">
+            @csrf
+            <div class="modal-header">
+                <h5 class="modal-title" id="AttachmentModal"> {{__('drivers.Issuingdocument')}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" >
+                    <label for='Driver_name1'>DA Details | المندوب</label>
+                    <div id="responseDiv">
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Document Type  | نوع المستند <span style="color:red !important">*</span></label>
+                    <select class="form-control" onchange="setDocumentType()" name="documentType" id="documentType">
+                        <option value="none">Choose Doc type</option>
+                        <option value="150">Quittance | مخالصة </option>
+                        <option value="75">Bond cancellation | الغاء سند</option>
+                        <option value="clearing">Claims Clearing | تصفية مطالبات متأخرة</option>
+                        <option value="bandar">Bandar Commission | عمولة بندر</option>
+                    </select>
+                </div>
+
+                <b style="direction:rtl; display: none; width: 100%; float: left; margin-bottom: 10px;" class='bandar'>
+                    عمولة الشركة بندر:
+                    <span id="td_Bander_Commission"></span>
+                </b>
+                <table style="direction:rtl; display: none; width: 100%; float: left" class='bandar'>
+                    <tr>
+                        <th style="text-align: center">الشهر:</th>
+                        <th style="text-align: center">
+                            <select name="jahiz_period_id" id="jahiz_period_id"
+                                class="form-control" style="width:170px;display: inline;!important; margin-bottom: 10px;">
+                                <option value="">اختر الفترة</option>
+                                @foreach($lkp_jahiz_period as $lkp_jahiz_periodd)
+                                    <option value="{{$lkp_jahiz_periodd->id}}"> {{$lkp_jahiz_periodd->ym}}</option>
+                                @endforeach
+                            </select>
+                        </th>
+                        <th style="text-align: center">
+                            <a href="javascript:addRow();" class="btn btn-sm btn-info " style="font-size: 12px;font-family: 'Segoe UI' !important;font-weight: bold">
+                                اضافة شهر
+                                <i class="fa fa-plus"></i>
+                            </a>
+                        </th>
+                    </tr>
+                </table>
+
+                <br>
+                <table id="dataTabl" class="table table-striped dataTable bandar" style="padding-top: 10px; display: none" dir="rtl">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid;">حذف</th>
+                            <th style="border: 1px solid;">الشهر</th>
+                            <th style="border: 1px solid;background-color: #B1F1F0">الاسبوع(1)
+                                <br>
+                                40 ريال
+                            </th>
+                            <th style="border: 1px solid;background-color: #B1F1F0">الاسبوع(2)
+                                <br>
+                                40 ريال
+                            </th>
+                            <th style="border: 1px solid;background-color: #B1F1F0">الاسبوع(3)
+                                <br>
+                                35 ريال
+                            </th>
+                            <th style="border: 1px solid;background-color: #B1F1F0">الاسبوع(4)
+                                <br>
+                                35 ريال
+                            </th>
+
+                            <th style="border: 1px solid;background-color: #56E0DA">كل العمولة
+                                <br>
+                                150 ريال
+                            </th>
+                            <th style="border: 1px solid;background-color: #CD9BFF">المبلغ بالايام</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bandar_body"></tbody>
+                </table>
+
+
+                <label style="display: none" class='claims' for="exampleInputPassword1">Claims Clearing | تصفية مطالبات متأخرة</label>
+                <table style="display: none; width: 100%" class='claims'>
+                    <tr>
+                        <th>{{__('drivers.Saned_amount')}}</th>
+                        <th>{{__('drivers.Bandar_commission')}}</th>
+                        <th>{{__('drivers.Administrativefee')}}</th>
+                    </tr>
+                    <tr>
+                        <td><input type="number" class="calimsinputBtns" id="saned" min="0" name="saned" onchange="loadTotal(this.value)"></td>
+                        <td><input type="number" class="calimsinputBtns"  id="bandar" min="0" name="bandar" onchange="loadTotal(this.value)"></td>
+                        <td><input type="number" class="calimsinputBtns" id="admin" min="0" name="admin" onchange="loadTotal(this.value)"></td>
+                    </tr>
+                </table>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Amount | المبلغ </label>
+                    <input type="Text" readonly value="0.00 SAR" class="form-control" id="totalAmount" name="totalAmount">
+                </div>
+                <style>
+                .inputBtns{
+                        width: 89%;
+                        margin: 5px;
+                        float: right;
+                    }
+                    td{
+                        text-align: center;
+                    }
+                </style>
+                <div class="form-group">
+                <label for="exampleInputPassword1">Payment type | نوع السداد </label>
+                    <table>
+                        <tr>
+                            <th>{{__('drivers.Cash')}}</th>
+                            <td><input type="number" class="inputBtns" id="Cash" min="0" placeholder="Cash" name="cash" onchange="checkType()"></td>
+                            <th>{{__('drivers.ATM')}}</th>
+                            <td><input type="number" class="inputBtns"  id="ATM" min="0" placeholder="ATM" name="atm" onchange="checkType()"></td>
+                            <th>{{__('drivers.BANK')}}</th>
+                            <td><input type="number" class="inputBtns" id="Bank" min="0" placeholder="Bank" name="bank" onchange="checkType()"></td>
+                        </tr>
+                        <tr style="display: none;" class='proof_file'>
+                            <th>{{__('drivers.Proof')}}</th>
+                            <td><input style="margin-top: 10px" type="file" id="proof_file" name="proof_file" accept=".pdf, .jpg, .jpeg, .png"></td>
+                        </tr>
+                    </table>
+
+
+
+
+                </div>
+                <!-- <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                </div> -->
+                <h2 id="total" style="display:none;text-align: center; margin-top: 44px;">
+                    {{__('drivers.PaidAmount')}} <span style="color:red" id="sumAmount"> </span>
+                    {{__('drivers.SAR')}}
+                </h2>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="submit" class="btn btn-success" onclick="disableConfirmBtn()"
+                    data-bs-dismiss="modal" id="confirmBtn" disabled>{{__('drivers.Confirm')}}</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Modal ExportExcel 3 -->
 <div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel"> Fillter</h5>
+                <h5 class="modal-title" id="staticBackdropLabel"> {{__('drivers.Filter')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -32,7 +191,7 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Company </label>
+                                            <label for="country" class="form-label">{{__('drivers.Company')}} </label>
                                             <select class="form-control" onchange="WarehouseName()" name="filter_companyId" id="filter_companyId">
                                                 <option></option>
                                                 @foreach ($lkp_company as $item)
@@ -44,7 +203,7 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Warehouse</label>
+                                            <label for="country" class="form-label">{{__('drivers.Warehouse')}}</label>
                                             <select class="form-control" id="filter_warehouseId" name="filter_warehouseId" >
                                                 <option></option>
                                             </select>
@@ -53,7 +212,7 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Vehicle</label>
+                                            <label for="country" class="form-label">{{__('drivers.Vehicle')}}</label>
                                             <select name="filter_vehicleId" id="filter_vehicleId" class="form-control"  required>
                                                 <option value=""></option>
                                                 @foreach($vehicles as $vehicle)
@@ -205,9 +364,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
                 <button type="button" class="btn btn-success"
-                    data-bs-dismiss="modal" id="filter">Search</button>
+                    data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
         </div>
     </div>
@@ -217,12 +376,12 @@
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="scrollableLabel"><span id="bck_btn" onclick="go_back()" style="cursor: pointer; display: none; color: #B7A758"><img src="{{URL("dashboard/assets/logos/backward.png")}}" style="width: 7%"> Back</span> Add New Driver(s)</h5>
+                <h5 class="modal-title" id="scrollableLabel"><span id="bck_btn" onclick="go_back()" style="cursor: pointer; display: none; color: #B7A758"><img src="{{URL("dashboard/assets/logos/backward.png")}}" style="width: 7%"> {{__('drivers.Back')}}</span> {{__('drivers.add_driver')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div id="statment">
-                    <h5>Please select a method from bellow options: </h5>
+                    <h5>{{__('drivers.driver_add_method')}}: </h5>
                      <div class="row">
                         <div class="col-6" style="text-align: center;" onclick="handleContent('Form')">
                             <img  style="width: 74px; margin-top: 20px;cursor: pointer;" src="{{asset('design/assets/sign-form.png')}}" alt="fill form to create New driver" >
@@ -236,24 +395,24 @@
                 <form id="driverForm">
                     @csrf
                     <div id="create_da_from" style="display: none">
-                        <h5>Please select a method from bellow options: </h5>
-                        <h6>Form Data</h6>
+                        <h5>{{__('drivers.select_method')}}: </h5>
+                        <h6>{{__('drivers.FormData')}}</h6>
                     </div>
                 </form>
                 <div id="create_da_bulk" style="display: none">
                     <div class="row">
                         <div class="col-lg-6 mt-3">
                             <small>
-                                You can download following format file and after filling it please upload it here to save the new drivers.
+                                {{__('drivers.download_description')}}.
                             </small>
                             <br />
-                            <a href="{{ url('/storage/docsFormat/Drivers.csv') }}" class="btn btn-sm btn-info " style="padding: 10px"><i class="fa fa-download"></i>Clic {{__('automation.here')}}</a>
+                            <a href="{{ url('/storage/docsFormat/Drivers.csv') }}" class="btn btn-sm btn-info " style="padding: 10px"><i class="fa fa-download"></i>{{__('drivers.clickHere')}}</a>
                         </div>
                         <div class="col-lg-6 mt-3">
                             <form method="POST" action="{{ route('Drivers/upload')}}" enctype="multipart/form-data">
                                 @csrf
                                 <input type="file" name="drivers_file" id="drivers_file" required accept=".xlsx,.xls,.csv">
-                                <button type="submit" class="btn btn-success mt-4">Submit</button>
+                                <button type="submit" class="btn btn-success mt-4">{{__('drivers.Submit')}}</button>
                             </form>
                         </div>
                     </div>
@@ -266,7 +425,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
                 {{-- <button type="button" class="btn btn-success" onclick="showSelectBulkOrOne('statment')">Understood</button> --}}
             </div>
         </div>
@@ -279,21 +438,21 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Export Driver Excel</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.ExportDriverExcel')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Row start -->
                 <div class="row">
                     <div class="col-xl-12 col-sm-12 col-12">
-                        <p>Please select the required fields/criteria then click on Download button. </p>
+                        <p>{{__('drivers.criteria_msg')}}. </p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-4 col-sm-4 col-4">
                         <div class="ml-4">
                             <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck()" id="select_all" />
-                            <label class="form-check-label" for="flexCheckDefault">Select All</label>
+                            <label class="form-check-label" for="flexCheckDefault">{{__('drivers.SelectAll')}}</label>
                         </div>
                         <div class="card" style="background-color: lightgrey">
                             <div class="card-body">
@@ -386,22 +545,26 @@
                 <!-- Row end -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" style="background-color: red">Reset</button>
-                <button type="button" class="btn btn-success" style="background-color: #2661ba" id="exportExcelBtn">Download</button>
+                <button type="button" class="btn btn-dark" style="background-color: red">{{__('drivers.Reset')}}</button>
+                <button type="button" class="btn btn-success" style="background-color: #2661ba" id="exportExcelBtn">{{__('drivers.Download')}}</button>
             </div>
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="edit_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Driver </h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.driver')}} </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <span id="response">
             </span>
+            {{-- <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+            </div> --}}
+
         </div>
     </div>
 </div>
@@ -409,11 +572,14 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Driver Statement</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.DriverStatement')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <span id="statement_response">
             </span>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+            </div>
         </div>
     </div>
 </div>
@@ -421,7 +587,7 @@
     <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Driver</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.driver')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="w3-container" action="" method="POST" id="delete_form">
@@ -431,8 +597,8 @@
                     <p>{{__('drivers.Delete_msg')}} <span id="delete_name"></span> ?</p>
                 </div>
                   <div class="modal-footer">
-                      <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                      <button class="btn btn-danger" type="submit">Delete</button>
+                      <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                      <button class="btn btn-danger" type="submit">{{__('drivers.Delete')}}</button>
                   </div>
               </form>
         </div>
@@ -449,7 +615,7 @@
             </div>
             <div class="sale-details">
                 <h3 class="text-green">{{ number_format($analatics['active'], 0, '.', ',')}} </h3>
-                <p>Active</p>
+                <p>{{__('drivers.active')}}</p>
             </div>
         </div>
     </div>
@@ -460,7 +626,7 @@
             </div>
             <div class="sale-details">
                 <h3 class="text-red" style="font-size: 19px;">{{ number_format($analatics['Onhold'], 0, '.', ',')}} </h3>
-                <p>On hold & Vacation</p>
+                <p>{{__('drivers.OnholdVacation')}}</p>
             </div>
         </div>
     </div>
@@ -471,7 +637,7 @@
             </div>
             <div class="sale-details">
                 <h3 class="text-blue"> {{ number_format($analatics['Terminated'], 0, '.', ',')}} </h3>
-                <p>Terminated & Resigned</p>
+                <p>{{__('drivers.TerminatedResigned')}}</p>
             </div>
         </div>
     </div>
@@ -482,7 +648,7 @@
             </div>
             <div class="sale-details">
                 <h3 class="text-yellow"> {{ number_format($analatics['wrongWarehouse'], 0, '.', ',')}} </h3>
-                <p>Wrong Warehouse</p>
+                <p>{{__('drivers.WrongWarehouse')}}</p>
             </div>
         </div>
     </div>
@@ -496,18 +662,29 @@
         <div id="message"></div>
         <div class="card">
             <div class="card-header">
-                <div class="card-title">Jahiz Drivers</div>
+                <div class="card-title">{{__('drivers.JahizDrivers')}}</div>
             </div>
             <!-- Card start -->
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title" style="font-size: 16px;">This interface enables you to browse, edit, and add Jahiz Drivers as well as exporting their data </div>
+                    <div class="card-title" style="font-size: 16px;">{{__('drivers.driver_module')}}</div>
                     <div class="row">
                         <div class="col-12">
                             <div class="custom-btn-group">
-                                <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>Fillter</button>
-                                <button type="button" class="btn btn-success" class="btn btn-info" type="button" onclick="export_excel()"></i>Export Excel</button>
-                                <button type="button" class="btn btn-info" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#addNewDriver" onclick="addNewDriver()"></i>Add new driver</button>
+                                <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
+                                <button type="button" class="btn btn-success" class="btn btn-info" type="button" onclick="export_excel()"></i>{{__('drivers.ExportExcel')}}</button>
+                                @if(Auth::user()->user_type_id==1 || session('Session_DriversJahiz')=='yes')
+                                    <button type="button" class="btn btn-info" class="btn btn-info" data-bs-toggle="modal" type="button" data-bs-target="#addNewDriver" onclick="addNewDriver()"></i>{{__('drivers.add_driver')}}</button>
+                                    @if(Auth::user()->email=='manager@btclogistic.com' || Auth::user()->email=='rah@btc.com' || Auth::user()->email == 'm.shehroze@btclogistic.com' || Auth::user()->email == 'a.omar@btclogistic.com' || Auth::user()->email == 'asim@btclogistic.com' )
+                                        <a target="popup"
+                                        onclick="window.open('{{ url('/DriversJahiz/import') }}','popup','width=800,height=600'); return false;" class="btn btn-sm btn-warning "><i class="fa fa-plus"></i>
+                                        {{__('drivers.Import_SANAD_Clearing')}}</a>
+                                        @endif
+                                        <a target="popup"
+                                            onclick="window.open('{{ url('/Syinc-drivers-sanad') }}','popup','width=600,height=600'); return false;" class="btn btn-sm btn-success "><i class="fa fa-plus"></i>
+                                        {{__('drivers.Sync_Drivers')}} </a>
+                                @endif
+
                                 @if(Auth::user()->user_type_id==1)
                                     {{-- <button type="submit" class="btn btn-info" class="btn btn-info" type="submit"></i>On Hold</button> --}}
                                 @endif
@@ -726,7 +903,6 @@
         function addRow() {
             var driverId = $("input[name='Driver_id']").val();
             var job_id = $("input[name='job_id']").val();
-
             var jahiz_period_id = $('#jahiz_period_id').val();
             if (jahiz_period_id > 0) {
                 if($('#jahiz_period_id_'+jahiz_period_id).length) {
@@ -764,7 +940,7 @@
                                 amount_by_days = "<input style='width:70px' id='amount_by_days_"+jahiz_period_id+"' type='number' min='0' onchange='update_total(this.value)' name='amount_by_days_"+jahiz_period_id+"' value=''>";
                             }
                             var selectedOptionText = $("#jahiz_period_id option:selected").text();
-                            var tr = "<tr id='jahiz_period_id_"+jahiz_period_id+"'><td style='border: 1px solid'><a onclick='delete_row("+jahiz_period_id+")' href='#'><i class='fa fa-trash-o' title='delete row'></i></a></td><td style='border: 1px solid;color: red'>"+selectedOptionText+"<input type='hidden' value='"+jahiz_period_id+"' name='jahiz_period_ids[]'></td><td style='border: 1px solid'>"+week1+"</td><td style='border: 1px solid'>"+week2+"</td><td style='border: 1px solid'>"+week3+"</td><td style='border: 1px solid'>"+week4+"</td><td style='border: 1px solid'>"+weekAll+"</td><td style='border: 1px solid'>"+amount_by_days+"</td></tr>";
+                            var tr = "<tr id='jahiz_period_id_"+jahiz_period_id+"'><td style='border: 1px solid'><a onclick='delete_row("+jahiz_period_id+")' href='#'><i class='bi bi-trash' title='delete row'></i></a></td><td style='border: 1px solid;color: red'>"+selectedOptionText+"<input type='hidden' value='"+jahiz_period_id+"' name='jahiz_period_ids[]'></td><td style='border: 1px solid'>"+week1+"</td><td style='border: 1px solid'>"+week2+"</td><td style='border: 1px solid'>"+week3+"</td><td style='border: 1px solid'>"+week4+"</td><td style='border: 1px solid'>"+weekAll+"</td><td style='border: 1px solid'>"+amount_by_days+"</td></tr>";
                             $("#dataTabl tbody").append(tr);
                         },
                         error: function (jqXHR, status, error) {
@@ -772,7 +948,6 @@
                             alert(status + ": " + error);
                         }
                     });
-
                 }
             } else {
                 alert("Please Select a Period!")
@@ -917,15 +1092,15 @@
                             name: 'lkp_driver_status.driver_status_en',
                             render: function (data, type, row, meta) {
                                 if (row.status_id == "1") {
-                                    return '<span class="label label-success">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-success">' + row.driver_status_en + '</span>';
                                 } else if (row.status_id == "2") {
-                                    return '<span class="label label-warning">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-warning">' + row.driver_status_en + '</span>';
                                 } else if (row.status_id == "3") {
-                                    return '<span class="label label-danger">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-danger">' + row.driver_status_en + '</span>';
                                 } else if (row.status_id == "4") {
-                                    return '<span class="label label-default">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-secondary">' + row.driver_status_en + '</span>';
                                 } else if (row.status_id == "5") {
-                                    return '<span class="label label-danger">' + row.driver_status_en + '</span>';
+                                    return '<span class="badge badge-danger">' + row.driver_status_en + '</span>';
                                 }
                             }
                         },
@@ -1058,10 +1233,8 @@
                                         </li>`;
                                         @if (Auth::user()->user_type_id == 1)
                                         if (row.warehouseId == '201' || row.warehouseId == '220' || row.warehouseId == '221') {
-                                            html += '<li><a id=' + row.id + ' type="button" class="btn btn-primary btn-xs DriversSettlementList">تصفية</a><li>';
+                                            html += '<li><a id=' + row.id + ' data-original-title="Issuing documents" data-toggle="tooltip" data-placement="top" class=" btnaction btn menu-icon vd_bd-blue vd_blue DriversSettlementList">تصفية</a><li>';
                                         }
-                                        @else
-                                            html += '<li><a id=' + row.id + ' type="button" class="btn btn-primary btn-xs DriversSettlementList">تصفية</a><li>';
                                         @endif
                                         html += `<li>
                                             <hr class="dropdown-divider">
@@ -1102,7 +1275,7 @@
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
-                    url: "{{URL('/Drivers')}}" + "/" + id + "/edit/1",
+                    url: "{{URL('/Drivers')}}" + "/" + id + "/edit/2",
                     contentType: "html",
                     dataType: 'html',
                     success: function (data) {
@@ -1160,7 +1333,6 @@
                     contentType: "html",
                     dataType: 'html',
                     success: function (data) {
-                        console.log(data);
                         document.getElementById('responseDiv').innerHTML = data;
                     }
                 });
@@ -1170,8 +1342,8 @@
 
             $('#customer_data tbody').on('click', '.DriversSettlementList', function (e) {
                 e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                // document.getElementById('response').innerHTML = loader;
+                $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
@@ -1473,40 +1645,34 @@
         $("#confirmBtn").click();
     }
     function validateForm() {
-        //e.preventDefault();
-        //document.getElementById('response').innerHTML = loader;
-        //document.getElementById('edit_modal').style.display = 'block';
-        if (document.getElementById('accountNumber')) {
-            if ($("#accountNumber").val() != '' && ($("#accountNumber").val().length != 12 || $("#accountNumber").val().substring(0, 3) != '966')) {
-                alert('خطا في رقم الحساب : يجب ان يبدا ب 966 ويحتوي علي 12 رقم');
-                return false;
-            }
-            if ($("#account_owner_iqama").val() != '' && ($("#account_owner_iqama").val().length != 10 || ($("#account_owner_iqama").val().substring(0, 1) != '1' && $("#account_owner_iqama").val().substring(0, 1) != '2'))) {
-                alert('خطا في هوية صاحب الحساب : يجب ان يبدا ب 1 او 2 ويحتوي علي 10 ارقام');
-                return false;
-            }
+        if ($("#accountNumber").val() != '' && ($("#accountNumber").val().length != 12 || $("#accountNumber").val().substring(0, 3) != '966')) {
+            alert('خطا في رقم الحساب : يجب ان يبدا ب 966 ويحتوي علي 12 رقم');
+            return false;
         }
-
+        if ($("#account_owner_iqama").val() != '' && ($("#account_owner_iqama").val().length != 10 || ($("#account_owner_iqama").val().substring(0,1) != '1' && $("#account_owner_iqama").val().substring(0,1) != '2'))) {
+            alert('خطا في هوية صاحب الحساب : يجب ان يبدا ب 1 او 2 ويحتوي علي 10 ارقام');
+            return false;
+        }
         var postData = $("#contact_form").serializeArray();
-        //alert(postData);
         var formURL = $("#contact_form").attr("action");
-        document.getElementById('response').innerHTML = loader;
+        // document.getElementById('response').innerHTML = loader;
         $.ajax({
             url: formURL,
-            type: "POST",
-            cache: false,
+            type: "PUT",
+            // cache: false,
             data: postData,
             success: function (data) {
+                // $('#edit_modal').modal('toggle');
                 document.getElementById('response').innerHTML = data;
-
-
             },
             error: function (jqXHR, status, error) {
+                document.getElementById('response').innerHTML = "<br><br><br>" + error + "<br><br><br>";
                 alert(status + ": " + error);
             }
         });
         return false;
     }
+
 
     function go_back() {
         $('#create_da_bulk').hide();
