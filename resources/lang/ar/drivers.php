@@ -15,7 +15,7 @@ return [
     'Iqama' => 'الهوية',
     'EmailID' => '  البريد الالكتروني',
     'Status' => 'الحالة',
-    'JobId' => 'الرقم التعريفي',
+    'JobId' => 'ID/Job ID ',
     'Account_Owner_Iqama' => 'رقم الاقامة المرتبط بالـ STCPAY',
     'accountNumber' => 'رقم حساب الـSTCPAY  ',
     'DriverType' => 'نوع السائق',
