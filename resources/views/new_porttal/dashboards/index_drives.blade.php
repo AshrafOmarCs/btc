@@ -10,6 +10,23 @@
         font-weight: 800 !important;
         cursor: pointer;
         color: #B7A758 !important;
+    } 
+    .list-group-item+.list-group-item.active {
+        border-top: 1px solid white;
+        background-color: #0866e9;
+    }
+    .list-group-item.active{
+        background-color: #0866e9;
+    }
+    #table{
+        width: 90%; margin: 0 auto; margin-top: 44px;
+    } 
+    .list-group .list-group-item {
+
+    }
+    td{
+        vertical-align: middle !important;
+        text-align: center ;
     }
 </style>
 
@@ -294,97 +311,73 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-4 col-sm-4 col-4">
-                        <div class="ml-4">
-                            <input class="form-check-input" type="checkbox" checked value="" onclick="check_uncheck()" id="select_all" />
-                            <label class="form-check-label" for="flexCheckDefault">{{__('drivers.SelectAll')}}</label>
-                        </div>
-                        <div class="card" style="background-color: lightgrey">
-                            <div class="card-body">
-                                <form id="columnSelectionForm">
-                                    <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="0">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_0" onclick="add_remove_bold(0)">{{__('drivers.Company')}}</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="1">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_1" onclick="add_remove_bold(1)">{{__('drivers.Warehouse')}}</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="2">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_2" onclick="add_remove_bold(2)">{{__('drivers.Type')}}</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="3">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_3" onclick="add_remove_bold(3)">{{__('drivers.fullName')}}</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="4">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_4" onclick="add_remove_bold(4)">{{__('drivers.Mobile')}}</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="5">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_5" onclick="add_remove_bold(5)">{{__('drivers.Iqama')}}</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="6">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_6" onclick="add_remove_bold(6)">{{__('drivers.JobId')}}</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input export_checks" type="checkbox" checked value="" style="display: none" id="8">
-                                        <label class="form-check-label bold export_checks" for="flexCheckDefault" id="lbl_8" onclick="add_remove_bold(8)">{{__('drivers.Status')}}</label>
-                                    </div>
-                                </form>
-
-                                {{-- <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" checked value="" id="flexCheckDefault">
-                                    <label class="form-check-label" for="flexCheckDefault">STCPAY Owner Identity/Iqama</label>
-                                </div> --}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-4 col-4">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <img onclick="show_selected()" style="width: 20%; cursor: pointer; margin-top: 30%" src="{{URL("dashboard/assets/logos/forward.png")}}" />
-                                <br><br><br><br><br>
-                                <img onclick="hide_selected()" style="width: 20%; cursor: pointer; display: none" id="backButton" src="{{URL("dashboard/assets/logos/backward.png")}}" />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-sm-4 col-4" id="selected_fields" style="display: none">
-                        <div>
-                            {{-- <input class="form-check-input" type="checkbox" value="" onclick="uncheck(this)" id="flexCheckDefault"> --}}
-                            <label class="form-check-label" for="flexCheckDefault" id="selected_count"></label>
-                        </div>
-                        <div class="card" style="background-color: lightgrey">
-                            <div class="card-body">
-                                <div class="form-check first_hide" id="no_0">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(0)" id="lbl_sec_0">{{__('drivers.Company')}}</label>
-                                </div>
-                                <div class="form-check first_hide" id="no_1">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(1)" id="lbl_sec_1">{{__('drivers.Warehouse')}}</label>
-                                </div>
-                                <div class="form-check first_hide" id="no_2">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(2)" id="lbl_sec_2">{{__('drivers.Type')}}</label>
-                                </div>
-                                <div class="form-check first_hide" id="no_3">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(3)" id="lbl_sec_3">{{__('drivers.fullName')}}</label>
-                                </div>
-                                <div class="form-check first_hide" id="no_4">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(4)" id="lbl_sec_4">{{__('drivers.Mobile')}}</label>
-                                </div>
-                                <div class="form-check first_hide" id="no_5">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(5)" id="lbl_sec_5">{{__('drivers.Iqama')}}</label>
-                                </div>
-                                <div class="form-check first_hide" id="no_6">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(6)" id="lbl_sec_6">{{__('drivers.JobId')}}</label>
-                                </div>
-                                <div class="form-check first_hide" id="no_8">
-                                    <label class="form-check-label bold_second bold_unbold" for="flexCheckDefault" onclick="add_remove_bold_second(8)" id="lbl_sec_8">{{__('drivers.Status')}}</label>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-12">
+                        <table id="table">
+                            {{-- End Header --}} 
+                            <tr>
+                                <td>
+                                   <input type="checkbox" name="" id=""> Select all
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="" id=""> Unselect all
+                                </td>
+                            </tr>
+                            {{-- End Header --}} 
+                    
+                    
+                            {{-- Body --}} 
+                            @php 
+                    
+                            $array = [
+                                0=>'Company name',
+                                1=>'Hub',
+                                2=>'Driver name',
+                                3=>'Driver ID',
+                                4=>'Balance',
+                                5=>'Suppervisor', 
+                            ]; 
+                            @endphp
+                            <tr>
+                                <td>
+                                    <ul class="list-group"> 
+                                        @foreach($array as $k=>$option)
+                                            <li class="list-group-item"  id="option{{$k}}" onclick="selectOption('{{$k}}')" style="cursor: pointer;">{{$option}}</li>
+                                        @endforeach  
+                                    </ul>
+                                </td>
+                                <td style="text-align: center;">
+                                    <img style="width: 37px;    margin-top: 4px;" src="{{asset('assets/2735071.png')}}" alt="">
+                                    <br>
+                                    <img style="width: 37px; margin-top: 53px;" src="{{asset('assets/2985161.png')}}" alt="">
+                                </td>
+                                <td>
+                                    <ul class="list-group"> 
+                                        @foreach($array as $k=>$option)
+                                            <li class="list-group-item"  id="unselect_option{{$k}}" onclick="unselectOption('{{$k}}')" style="    cursor: pointer;"> &nbsp </li>
+                                        @endforeach
+                                    </ul>
+                                </td>
+                            </tr>  
+                            {{-- End Body --}}
+                    
+                    
+                            {{-- Footer --}}
+                            <tr>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td style="text-align: right;">
+                                    Total Select (<span style="color: red">3</span>)
+                                </td>
+                            </tr>  
+                            {{-- End-Footer --}}
+                        </table>
                     </div>
                 </div>
                 <!-- Row end -->
@@ -495,6 +488,37 @@
             </div>
         </div>
     </div>
+
+    <div class="col-12">
+        <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-10"> 
+                    <div class="custom-btn-group">
+                        <button type="button" class="btn btn-outline-primary btn-rounded">iMile</button>
+                        <button type="button" class="btn btn-outline-secondary btn-rounded">Riyadh Munesia </button>
+                        <button type="button" class="btn btn-outline-warning btn-rounded">(2024-02-01 - 2024-02-31)</button>
+                        <button type="button" class="btn btn-outline-success btn-rounded">Paid</button>
+                        <button type="button" class="btn btn-outline-danger btn-rounded">Danger</button>
+                        
+                        <button type="button" class="btn btn-outline-info btn-rounded">Active</button>
+                        <button type="button" class="btn btn-outline-light btn-rounded">Created by Ashraf</button> 
+                    </div>  
+                </div>
+                <div class="col-2">
+                    <!-- Card start -->
+                    
+                            <div class="custom-btn-group"> 
+                                <button type="button" style="    margin: 0 auto;"  class="btn btn-outline-light btn-rounded">Edit</button> 
+                            </div>
+                            
+                    <!-- Card end --> 
+                </div>
+            </div> 
+        </div>
+    </div>
+    </div>
+    
 </div>
 <style>
     .inner-table {
@@ -1316,7 +1340,24 @@
         }
     }
 </script>
-
+<script>
+    function selectOption(args){
+        var option_id = 'option'+args;
+         
+        var option_id = document.getElementById(option_id);
+        
+        // console.log(element.classList);
+        var classList = option_id.classList
+        classList.forEach(element => {
+            if(element == 'active'){
+                classList.remove("active");
+            }else{
+                classList.add("active");
+            }
+        });
+        // console.log(index);
+    }
+</script>
 @stop
 @endsection
 
