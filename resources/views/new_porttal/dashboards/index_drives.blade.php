@@ -24,10 +24,10 @@
     .list-group .list-group-item {
 
     }
-    td{
+    /* td{
         vertical-align: middle !important;
         text-align: center ;
-    }
+    } */
 </style>
 
 
