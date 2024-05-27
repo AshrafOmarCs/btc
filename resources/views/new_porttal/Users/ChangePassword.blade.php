@@ -101,66 +101,70 @@
 
         // Check and display messages
         let check = 'false';
+        let validation1 = @json(__('passwords.validation1'));
         if (password.length >= minLength) {
             lengthMessage.style.color = "green";
-            lengthMessage.textContent = "Password should be at least 8 characters long";
+            lengthMessage.textContent = validation1;
         } else {
             lengthMessage.style.color = "red";
             check = 'true';
-            lengthMessage.textContent = " * Password should be at least 8 characters long\n";
+            lengthMessage.textContent = " * " + validation1;
         }
-
+        let validation2 = @json(__('passwords.validation2'));
         if (hasLowercase) {
             lowercaseMessage.style.color = "green";
-            lowercaseMessage.textContent = "Password should contain at least one lowercase letter";
+            lowercaseMessage.textContent = validation2;
         } else {
             lowercaseMessage.style.color = "red";
             check = 'true';
-            lowercaseMessage.textContent = " * Password should contain at least one lowercase letter\n";
+            lowercaseMessage.textContent = " * " + validation2;
         }
+        let validation3 = @json(__('passwords.validation3'));
 
         if (hasUppercase) {
             uppercaseMessage.style.color = "green";
-            uppercaseMessage.textContent = "Password should contain at least one uppercase letter";
+            uppercaseMessage.textContent = validation3;
         } else {
             uppercaseMessage.style.color = "red";
             check = 'true';
-            uppercaseMessage.textContent = " * Password should contain at least one uppercase letter\n";
+            uppercaseMessage.textContent = " * " + validation3;
         }
+        let validation4 = @json(__('passwords.validation4'));
 
         if (hasDigit) {
             digitMessage.style.color = "green";
-            digitMessage.textContent = "Password should contain at least one digit";
+            digitMessage.textContent = validation4;
         } else {
             digitMessage.style.color = "red";
             check = 'true';
-            digitMessage.textContent = " * Password should contain at least one digit\n";
+            digitMessage.textContent = " * " + validation4;
         }
-
+        let validation5 = @json(__('passwords.validation5'));
         if (hasSpecialChar) {
             specialCharMessage.style.color = "green";
-            specialCharMessage.textContent = "Password should contain at least one special character";
+            specialCharMessage.textContent = validation5;
         } else {
             specialCharMessage.style.color = "red";
             check = 'true';
-            specialCharMessage.textContent = " * Password should contain at least one special character\n";
+            specialCharMessage.textContent = " * " + validation5;
         }
-
+        let validation6 = @json(__('passwords.validation6'));
         if (hasRepeatingChars && password != '') {
             repeatingCharMessage.style.color = "green";
-            repeatingCharMessage.textContent = "Password should not contain same characters repeating 3 times or more like (111, aaa etc)";
+            repeatingCharMessage.textContent = validation6;
         } else {
             repeatingCharMessage.style.color = "red";
             check = 'true';
-            repeatingCharMessage.textContent = " * Password should not contain same characters repeating 3 times or more like (111, aaa etc)\n";
+            repeatingCharMessage.textContent = " * " + validation6;
         }
+        let validation7 = @json(__('passwords.validation7'));
         if (hasSequentialPatterns && password != '') {
             sequenceCharMessage.style.color = "green";
-            sequenceCharMessage.textContent = "Password should not contain sequence of characters like (123, abc etc)";
+            sequenceCharMessage.textContent = validation7;
         } else {
             sequenceCharMessage.style.color = "red";
             check = 'true';
-            sequenceCharMessage.textContent = " * Password should not contain sequence of characters like (123, abc etc)\n";
+            sequenceCharMessage.textContent = " * " + validation7;
         }
         const changeButton = document.getElementById("change_btn");
         if(check == 'true') {
@@ -175,13 +179,14 @@
         const password = document.getElementById("password").value;
         // let check = validate_Password(m_password)
         let check = 'false';
+        let validation8 = @json(__('passwords.validation8'));
         if(password == m_password && check == 'false' && m_password != '' && password != '') {
             changeButton.type = "submit";
-            $('#confirmPasswordMessage').html('Password and confirm password should be same')
+            $('#confirmPasswordMessage').html(validation8)
             $('#confirmPasswordMessage').css('color', 'green');
         }
         else {
-            $('#confirmPasswordMessage').html(' * Password and confirm password should be same')
+            $('#confirmPasswordMessage').html(' * ' + validation8)
             changeButton.type = "button";
             $('#confirmPasswordMessage').css('color', 'red');
         }
