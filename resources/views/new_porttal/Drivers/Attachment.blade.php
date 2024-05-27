@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Input Form</title>
     <!-- Bootstrap CSS (version 5.0) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://jeremyfagis.github.io/dropify/dist/css/dropify.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
         <style>
@@ -29,7 +29,7 @@
             @include('pages.messages2')
             @include('pages.messages')
             <div>
-                <h4 style="font-weight: bold;">{{$drivers_attachments->fullName}} (<span style="color: #B7A758">{{$drivers_attachments->job_id}}</span>)</h4>
+                <h4 style="font-weight: bold;">{{$Driver->fullName}} (<span style="color: #B7A758">{{$Driver->job_id}}</span>)</h4>
             </div>
             <div>
                 <h2 style="font-size: 14px;font-weight: bold;"><font color="red">Select Files for Upload .jpg</font></h2>
@@ -37,7 +37,7 @@
             <!-- Loop to create 5 cards -->
             <form method="POST" enctype="multipart/form-data" action="{{ URL('/SaveAttachment')}}" style="display: contents">
                 @csrf
-                <input type="hidden" name="id" value="{{$drivers_attachments->id}}">
+                <input type="hidden" name="id" value="{{$Driver->id}}">
 
                 <div class="col-md-4 mb-4" style="padding: 10px">
                     <div class="card h-100">
@@ -51,7 +51,7 @@
                                     <?php if(isset($drivers_attachments->Image_Identity) && $drivers_attachments->Image_Identity == '1'){?>
                                         <a
                                             target="_blank"
-                                            href='{{asset("/Attachment/Image_Identity/".$drivers_attachments->id.".jpg")}}'
+                                            href='{{asset("/Attachment/Image_Identity/".$Driver->id.".jpg")}}'
                                             style="background-color: green"
                                             class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye"></i> </a>
                                         <a
@@ -80,7 +80,7 @@
                                     <?php if(isset($drivers_attachments->Image_Passport) && $drivers_attachments->Image_Passport == '1'){?>
                                         <a
                                             target="_blank"
-                                            href='{{asset("/Attachment/Image_Passport/".$drivers_attachments->id.".jpg")}}'
+                                            href='{{asset("/Attachment/Image_Passport/".$Driver->id.".jpg")}}'
                                             style="background-color: green"
                                             class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye"></i> </a>
                                         <a
@@ -108,7 +108,7 @@
                                     <?php if(isset($drivers_attachments->Image_DrivingLicence) && $drivers_attachments->Image_DrivingLicence == '1'){?>
                                         <a
                                             target="_blank"
-                                            href='{{asset("/Attachment/Image_DrivingLicence/".$drivers_attachments->id.".jpg")}}'
+                                            href='{{asset("/Attachment/Image_DrivingLicence/".$Driver->id.".jpg")}}'
                                             style="background-color: green"
                                             class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye"></i> </a>
                                         <a
@@ -136,7 +136,7 @@
                                     <?php if(isset($drivers_attachments->Image_VehiclesRegistration) && $drivers_attachments->Image_VehiclesRegistration == '1'){?>
                                         <a
                                             target="_blank"
-                                            href='{{asset("/Attachment/Image_VehiclesRegistration/".$drivers_attachments->id.".jpg")}}'
+                                            href='{{asset("/Attachment/Image_VehiclesRegistration/".$Driver->id.".jpg")}}'
                                             style="background-color: green"
                                             class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye"></i> </a>
                                         <a
@@ -164,7 +164,7 @@
                                     <?php if(isset($drivers_attachments->Image_JobContract) && $drivers_attachments->Image_JobContract == '1'){?>
                                         <a
                                             target="_blank"
-                                            href='{{asset("/Attachment/Image_JobContract/".$drivers_attachments->id.".jpg")}}'
+                                            href='{{asset("/Attachment/Image_JobContract/".$Driver->id.".jpg")}}'
                                             style="background-color: green"
                                             class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye"></i> </a>
                                         <a
@@ -192,7 +192,7 @@
                                     <?php if(isset($drivers_attachments->Image_PromissoryNote) && $drivers_attachments->Image_PromissoryNote == '1'){?>
                                         <a
                                             target="_blank"
-                                            href='{{asset("/Attachment/Image_PromissoryNote/".$drivers_attachments->id.".jpg")}}'
+                                            href='{{asset("/Attachment/Image_PromissoryNote/".$Driver->id.".jpg")}}'
                                             style="background-color: green"
                                             class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye"></i> </a>
                                         <a
@@ -231,7 +231,7 @@
         });
         function view_attach(name) {
             alert(name);
-            // myWindow1 = window.open("{{URL("/Attachment")}}" + "/" + name + "/" + {{$drivers_attachments->id}} + ".jpg", "mywin2",
+            // myWindow1 = window.open("{{URL("/Attachment")}}" + "/" + name + "/" + {{$Driver->id}} + ".jpg", "mywin2",
             //     "height=900,width=800,scrollbars=yes,top=1,left=1,status,resizable");
             // myWindow1.focus();
     }
@@ -245,7 +245,7 @@
             });
             $.ajax({
                 type: 'GET',
-                url: "{{URL("/DeleteAttachment")}}" + "/" + name + "/" + {{$drivers_attachments->id}},
+                url: "{{URL("/DeleteAttachment")}}" + "/" + name + "/" + {{$Driver->id}},
                 contentType: "html",
                 dataType: 'html',
                 success: function (data) {

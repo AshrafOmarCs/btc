@@ -14,9 +14,9 @@
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-            
-                <div class="modal-body"> 
-                
+
+                <div class="modal-body">
+
                         <div class="form-group" >
                             <label for='Driver_name1'>DA Details | المندوب</label>
                             <div id="responseDiv">
@@ -28,7 +28,7 @@
                             <select class="form-control" onchange="setDocumentType()" name="documentType" id="documentType">
                                 <option value="none">Choose Doc type</option>
                                 <option value="150">Quittance | مخالصة </option>
-                                <option value="75">Bond cancellation | الغاء سند</option> 
+                                <option value="75">Bond cancellation | الغاء سند</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -54,13 +54,13 @@
                                     <th>ATM</th>
                                     <td><input type="number" class="inputBtns"  id="ATM" min="0" placeholder="ATM" name="atm" onchange="checkType()"></td>
                                     <th>BANK</th>
-                                    <td><input type="number" class="inputBtns" id="Bank" min="0" placeholder="Bank" name="bank" onchange="checkType()"></td> 
+                                    <td><input type="number" class="inputBtns" id="Bank" min="0" placeholder="Bank" name="bank" onchange="checkType()"></td>
                                 </tr>
                             </table>
-                            
-                            
-                            
-                            
+
+
+
+
                         </div>
                         <!-- <div class="form-group form-check">
                             <input type="checkbox" class="form-check-input" id="exampleCheck1">
@@ -71,8 +71,8 @@
                             SAR
                         </h2>
 
-                        
-                
+
+
                 </div>
                 <div class="modal-footer" style="margin-top: 32px;">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -81,7 +81,7 @@
             </form>
             </div>
         </div>
-    </div> 
+    </div>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Content Header (Page header) -->
         <div style="width:100%;margin: 0px; ">
@@ -92,12 +92,12 @@
                     <h2>
                             <a href="javascript:add();" class="btn btn-sm btn-info "><i class="fa fa-plus"></i> Add New
                             Driver</a>
-                            <a target="popup" 
-                            onclick="window.open('{{ url('/DriversJahiz/import') }}','popup','width=600,height=600'); return false;" class="btn btn-sm btn-warning "><i class="fa fa-plus"></i>  
+                            <a target="popup"
+                            onclick="window.open('{{ url('/DriversJahiz/import') }}','popup','width=600,height=600'); return false;" class="btn btn-sm btn-warning "><i class="fa fa-plus"></i>
                             Import SANAD Clearing</a>
 
-                            <a target="popup" 
-                            onclick="window.open('{{ url('/Syinc-drivers-sanad') }}','popup','width=600,height=600'); return false;" class="btn btn-sm btn-success "><i class="fa fa-plus"></i>  
+                            <a target="popup"
+                            onclick="window.open('{{ url('/Syinc-drivers-sanad') }}','popup','width=600,height=600'); return false;" class="btn btn-sm btn-success "><i class="fa fa-plus"></i>
                         Syinc SANED </a>
                     </h2>
                 </div>
@@ -758,10 +758,10 @@
                                 @endif
                                     a += '&nbsp;<a id=' + row.id + ' data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>' +
                                     '&nbsp;<a id=' + row.id + ' data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement"> <i class="fa fa-bars"></i> </a>' +
-                                    '&nbsp;<a id=' + row.id + ' data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment"> <i class="fa fa-paperclip"></i> </a>'; 
+                                    '&nbsp;<a id=' + row.id + ' data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment"> <i class="fa fa-paperclip"></i> </a>';
 
 
-                                    
+
                                 if(row.driver_type_id == null){
                                     a += '&nbsp;<a id=' + row.id+ ' data-original-title="Update Driver Type To Issuing documents"  disabled data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue documents"> <i class="fa fa-file-text-o" aria-hidden="true"></i> </a>';
                                 }else{
@@ -800,7 +800,7 @@
                     url: "{{URL('/Drivers')}}" + "/" + id,
                     contentType: "html",
                     dataType: 'html',
-                    success: function (data) { 
+                    success: function (data) {
                         document.getElementById('response').innerHTML = data;
 
                     }
@@ -816,8 +816,8 @@
                     url: "{{URL('/Drivers')}}" + "/" + id + "/edit/2",
                     contentType: "html",
                     dataType: 'html',
-                    success: function (data) { 
-                        document.getElementById('response').innerHTML = data; 
+                    success: function (data) {
+                        document.getElementById('response').innerHTML = data;
                     }
                 });
             });
@@ -879,31 +879,31 @@
             // ashraf code, documents
             $('#customer_data tbody').on('click', '.documents', function (e) {
                 e.preventDefault();
-                var id = $(this).attr('id'); 
+                var id = $(this).attr('id');
                 $('#totalAmount').val('0.00 SAR')
                 $('#Cash').val(0.00)
-                $('#ATM').val(0.00) 
-                $('#Bank').val(0.00) 
+                $('#ATM').val(0.00)
+                $('#Bank').val(0.00)
                 $('#total').hide();
                 $("option:selected").prop("selected", false)
                 // $("#documentType select").val("none").change();
-                
-                
+
+
                 $.ajax({
                     type: 'GET',
-                    url: "{{URL('Drivers_jahiz_doc/')}}" + "/" + id, 
+                    url: "{{URL('Drivers_jahiz_doc/')}}" + "/" + id,
                     contentType: "html",
                     dataType: 'html',
-                    success: function (data) { 
+                    success: function (data) {
                         console.log(data);
                         document.getElementById('responseDiv').innerHTML = data;
-                        // document.getElementById('response').innerHTML = data; 
+                        // document.getElementById('response').innerHTML = data;
                     }
-                }); 
-                $('#AttachmentModal').modal('show');  
-                
+                });
+                $('#AttachmentModal').modal('show');
+
             });
-            
+
             // ashraf code
             $('#customer_data tbody').on('click', '.DriversSettlementList', function (e) {
                 e.preventDefault();
@@ -915,7 +915,7 @@
                     url: "{{URL('/DriversSettlementList')}}" + "/" + id,
                     contentType: "html",
                     dataType: 'html',
-                    success: function (data) { 
+                    success: function (data) {
                         document.getElementById('response').innerHTML = data;
 
 
@@ -1110,25 +1110,25 @@
     </script>
     <script>
         $(document).ready(function(){
-            
-        }); 
+
+        });
         function setDocumentType(){
                 var selectedOption= $('#documentType :selected').val();
             //  alert(selectedOption);
                 $('#Cash').val(0.00)
-                $('#ATM').val(0.00) 
-                $('#Bank').val(0.00) 
+                $('#ATM').val(0.00)
+                $('#Bank').val(0.00)
                 $('#total').hide();
-                if(selectedOption == 'none'){ 
+                if(selectedOption == 'none'){
                 $('#totalAmount').val('Select DocumentType')
-                
-                alert('يجب اختيار نوع المعاملة'); 
+
+                alert('يجب اختيار نوع المعاملة');
                 }
                 if(selectedOption == 150){
-                $('#totalAmount').val('150.00 SAR')  
+                $('#totalAmount').val('150.00 SAR')
                 }
                 if(selectedOption == 75){
-                $('#totalAmount').val('75.00 SAR')  
+                $('#totalAmount').val('75.00 SAR')
                 }
                 checkType()
 
@@ -1166,7 +1166,7 @@
                 error: function (jqXHR, status, error) {
                     alert(status + ": " + error);
                 }
-            }); 
+            });
             return false;
         }
         function checkType() {
@@ -1175,30 +1175,30 @@
                 $('#exampleInputAmount').val('Select DocumentType')
                     alert('يجب اختيار نوع المعاملة');
                 }else{
-                if($('#Cash').val() == ''){  
-                    cash = 0.00; 
+                if($('#Cash').val() == ''){
+                    cash = 0.00;
                 }else{
                     cash = $('#Cash').val();
-                }  
-                if($('#ATM').val() == ''){ 
+                }
+                if($('#ATM').val() == ''){
                     atm = 0.00;
                 }else{
                     atm = $('#ATM').val();
                 }
-                if($('#Bank').val() == ''){ 
+                if($('#Bank').val() == ''){
                     bank = 0.00;
                 }else{
-                    bank = $('#Bank').val(); 
-                }  
+                    bank = $('#Bank').val();
+                }
                 var total = parseFloat(bank)+parseFloat(atm)+parseFloat(cash);
-                
+
                 if( total > 0){
                     $('#total').show();
-                    $('#sumAmount').text(total); 
-                    
+                    $('#sumAmount').text(total);
+
                     if(total == selectedOption){
                         $("#confirmBtn").prop('disabled', false);
-                        
+
                         // alert('True sn Equal');
                     }else{
                         $("#confirmBtn").prop('disabled', true);
@@ -1211,9 +1211,9 @@
     }
 
     </script>
-    
 
-@section('javascript') 
+
+@section('javascript')
 <!-- Data Tables -->
 <script src="{{asset('assets/vendor/datatables/dataTables.min.js')}}"></script>
 <script src="{{asset('assets/vendor/datatables/dataTables.bootstrap.min.js')}}"></script>
@@ -1222,7 +1222,7 @@
 <script src="{{asset('assets/vendor/datatables/custom/custom-datatables.js')}}"></script>
 
 <!-- Main Js Required -->
-<script src="{{asset('assets/js/main.js')}}"></script> 
+<script src="{{asset('assets/js/main.js')}}"></script>
 
 @stop
 @endsection

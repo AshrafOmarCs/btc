@@ -3,6 +3,7 @@
 return [
     'bander_users' => 'Bander Users',
     'users' => 'Users',
+    'user' => 'User',
     'supervisors' => 'Supervisors',
     'users_des' => 'By using this module, you can perform CRUD operations for Bander users.',
     'super_des' => 'By using this module, you can perform CRUD operations for Supervisors/AreaManagers.',
@@ -34,5 +35,6 @@ return [
     'updated_at' => 'Updated At',
     'privilage' => 'privilage',
     'ResetPassword' => 'Reset Password',
+    'userPassDes' => 'By using this module you can change your password.'
 
 ];

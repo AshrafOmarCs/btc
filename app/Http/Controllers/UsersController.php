@@ -30,7 +30,7 @@ class UsersController extends Controller
     {
         $results = DB::select("SELECT lkp_company.companyName,warehouse.warehouseName,lkp_city.name_en,warehouse.id,users.allowed_warehouse_attendance FROM users_privilege JOIN warehouse ON warehouse.id=users_privilege.warehouseId JOIN lkp_company ON lkp_company.id=warehouse.companyId INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id INNER JOIN users ON users_privilege.user_id=users.id WHERE users_privilege.user_id='$id' AND lkp_company.id<> 6");
         return view('Users.assign_warehouses')->with(compact('results'))->with(compact('id'))->with(compact('name'));
-        
+
     }
     public function updateUserWarehouses(Request $request)
     {
@@ -38,18 +38,18 @@ class UsersController extends Controller
         $name = $request->name;
         if(isset($request->warehouses)) {
             $warehouses = implode(", ",$request->warehouses);
-            $warehouses = '[' .  $warehouses . ']'; 
+            $warehouses = '[' .  $warehouses . ']';
             DB::update("UPDATE users SET `allowed_warehouse_attendance` = '$warehouses' WHERE `id` = '$id'");
         } else {
             DB::update("UPDATE users SET `allowed_warehouse_attendance` = NULL WHERE `id` = '$id'");
         }
         $results = DB::select("SELECT lkp_company.companyName,warehouse.warehouseName,lkp_city.name_en,warehouse.id,users.allowed_warehouse_attendance FROM users_privilege JOIN warehouse ON warehouse.id=users_privilege.warehouseId JOIN lkp_company ON lkp_company.id=warehouse.companyId INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id INNER JOIN users ON users_privilege.user_id=users.id WHERE users_privilege.user_id='$id' AND lkp_company.id<> 6");
         return view('Users.assign_warehouses')->with(compact('results'))->with(compact('id'))->with(compact('name'))->with('success', 'Warehouses assignment updated successfully');
-        
+
     }
-    
-     
-     
+
+
+
     public function index(Request $request)
     {
 
@@ -72,18 +72,52 @@ class UsersController extends Controller
             if ($request->filter_screenId == 'Users') {
                 $Select_db->where('users.user_type_id', 1);
             }
-            if ($request->filter_screenId == 'Supervisors') {
+            else if ($request->filter_screenId == 'Supervisors') {
                 $Select_db->whereRaw("users.user_type_id in(2,3)");
             }
+            if ($request->filter_user_name != '') {
+                $Select_db->whereRaw("UPPER(users.name) LIKE '%" . strtoupper($request->filter_user_name) . "%'");
+            }
+            if ($request->filter_phone != '') {
+                $Select_db->whereRaw("UPPER(users.phone) LIKE '%" . $request->filter_phone . "%'");
+            }
+            if ($request->filter_email != '') {
+                $Select_db->whereRaw("UPPER(users.email) LIKE '%" . strtoupper($request->filter_email) . "%'");
+            }
+            if ($request->filter_screenId == 'Users') {
+                $Select_db->where('users.user_type_id', 1);
+            }
+            if ($request->filter_identityNo != '') {
+                $Select_db->whereRaw("UPPER(users.IdentityNo) LIKE '%" . $request->filter_identityNo . "%'");
+            }
+            if ($request->filter_user_type != '') {
+                $Select_db->whereRaw("UPPER(users.user_type_id) = " . $request->filter_user_type);
+            }
+            if ($request->filter_role_name != '') {
+                $Select_db->whereRaw("UPPER(users.role_id) = " . $request->filter_role_name);
+            }
+            if ($request->filter_status != '') {
+                $Select_db->whereRaw("UPPER(users.active_id) = " . $request->filter_status);
+            }
+            if ($request->filter_created_at != '') {
+                $Select_db->whereRaw("users.created_at LIKE '%" . $request->filter_created_at . "%'");
+            }
+            if ($request->filter_updated_at != '') {
+                $Select_db->whereRaw("users.updated_at LIKE '%" . $request->filter_updated_at . "%'");
+            }
+            // echo $Select_db->tosql();
             return datatables()->of($Select_db)->make(true);
         } //$data = $Select_db->get();
-
-
-        elseif (Route::getFacadeRoot()->current()->uri() == 'Users')
+        elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/Users')
             $view = "index";
-        elseif (Route::getFacadeRoot()->current()->uri() == 'Supervisors')
+        elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/Supervisors')
             $view = "Supervisors";
-        return view('Users.' . $view);
+
+        $lkp_user_type = DB::select("SELECT * FROM lkp_user_type");
+        $lkp_active = DB::select("SELECT * FROM lkp_active");
+        $roles = DB::select('SELECT id, role_name from users_role');
+
+        return view('new_porttal.Users.' . $view)->with(compact('lkp_user_type'))->with(compact('lkp_active'))->with(compact('roles'));
     }
 
     /**
@@ -102,7 +136,7 @@ class UsersController extends Controller
 
         $lkp_bank = DB::select('SELECT * from lkp_bank');
         $lkp_active = DB::select('SELECT * from lkp_active');
-        return view('Users.create')
+        return view('new_porttal.Users.create')
             ->with(compact('lkp_bank'))
             ->with(compact('lkp_user_type'))
             ->with(compact('lkp_active'))
@@ -144,10 +178,9 @@ class UsersController extends Controller
         $Users->save();
 
         if ($request->input('type_id') == 1)
-            return redirect('/Users')->with('success', 'Done successfully');
+            return redirect()->back()->with('success', 'Done successfully');
         if ($request->input('type_id') == 2)
-            return redirect('/Supervisors')->with('success', 'Done successfully');
-
+            return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -166,7 +199,7 @@ class UsersController extends Controller
             ->leftJoin('lkp_bank', 'users.bank_id', '=', 'lkp_bank.id')
             ->where('users.id', $id);
         $Users = $Select_db->first();
-        return view('Users.show')->with('Users', $Users);
+        return view('new_porttal.Users.show')->with('Users', $Users);
     }
 
     /**
@@ -187,7 +220,7 @@ class UsersController extends Controller
         $lkp_bank = DB::select('SELECT * from lkp_bank');
         $lkp_active = DB::select('SELECT * from lkp_active');
         $Users = DB::select(DB::raw('SELECT * from users where id=' . $id))[0];
-        return view('Users.edit')->with('Users', $Users)
+        return view('new_porttal.Users.edit')->with('Users', $Users)
             ->with(compact('lkp_bank'))
             ->with(compact('lkp_user_type'))
             ->with(compact('lkp_active'))
@@ -235,7 +268,7 @@ class UsersController extends Controller
             if($Users->role_id != $request->input('role_id'))
                 $action .= "role_id: " . $Users->role_id . " to " . $request->input('role_id') . ", ";
             $Users->role_id = $request->input('role_id');
-            
+
 
             if (!empty($request->input('bank_id'))) {
                 if($Users->bank_id != $request->input('bank_id'))
@@ -280,14 +313,14 @@ class UsersController extends Controller
         $made_by = Auth::user()->name;
         $msg = "<b>$made_by</b> deleted the user ($id)";
         HelperFunctionsController::add_log($msg, '', $id);
-        return redirect('/Users')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     public function ResetPass($id)
     {
 
         $User = DB::select('SELECT id,name from users where id=' . $id)[0];
-        return view('Users.ResetPass')->with(compact('User'));
+        return view('new_porttal.Users.ResetPass')->with(compact('User'));
     }
 
     public function SaveResetPass(Request $request)
@@ -310,7 +343,7 @@ class UsersController extends Controller
     public function ChangePassword()
     {
         $User = DB::select('SELECT id,name from users where id=' . Auth::user()->id)[0];
-        return view('Users.ChangePassword')->with(compact('User'));
+        return view('new_porttal.Users.ChangePassword')->with(compact('User'));
     }
 
     public function ChangePasswordSave(Request $request)
@@ -324,11 +357,11 @@ class UsersController extends Controller
                 $Users->password = bcrypt($request->input('password'));
                 $Users->save();
             } catch (\Illuminate\Database\QueryException $e) {
-                return redirect('/ChangePassword')->with('error', $e->getPrevious()->getMessage());
+                return redirect()->back()->with('error', $e->getPrevious()->getMessage());
             }
-            return redirect('/ChangePassword')->with('success', 'Done successfully');
+            return redirect()->back()->with('success', 'Done successfully');
         } else {
-            return redirect('/ChangePassword')->with('error', 'Your Password does not matching the password criteria, ');
+            return redirect()->back()->with('error', 'Your Password does not matching the password criteria, ');
         }
 
     }

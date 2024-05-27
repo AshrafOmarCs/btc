@@ -23,6 +23,12 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get("/Drivers",'DashoardController@index_drivers');
     Route::get('/DriversJahiz', 'DashoardController@index_drivers');
     Route::post('/Drivers/upload', 'DashoardController@drivers_save')->name('Drivers/upload');
+    Route::get('/ChangePassword', 'UsersController@ChangePassword');
+    Route::POST('/ChangePasswordSave', 'UsersController@ChangePasswordSave');
+    Route::get("/Users",'UsersController@index');
+    Route::post('/DriverDetails', 'DashoardController@DriverDetails')->name('DriverDetails');
+
+
     // Route::resource('/Drivers', 'DriversController');
     // Ashraf Code
     Route::get("/Filter-layout",'AshrafController@Filter_layout');

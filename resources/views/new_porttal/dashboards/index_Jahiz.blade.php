@@ -2,16 +2,46 @@
 @section('content')
 @section('title', __('drivers.JahizDrivers'))
 <style>
-    .bold {
-        font-weight: 800 !important;
-        cursor: pointer;
+    .disabled {
+        opacity: 0.5;
+        pointer-events: none;
     }
-    .bold_second {
-        font-weight: 800 !important;
-        cursor: pointer;
-        color: #B7A758 !important;
+    .inner-table {
+        border-collapse: collapse;
+        width: 100%;
     }
+    .inner-table th {
+        padding: 5px;
+        background-color: #4CAF50;
+    }
+    .inner-table td {
+        padding: 8px;
+        border-bottom: 1px solid #dddddd;
+    }
+    .list-group-item+.list-group-item.active {
+        border-top: 1px solid white;
+        background-color: #0866e9;
+    }
+    .list-group-item.active{
+        background-color: #0866e9;
+    }
+    #table{
+        width: 90%; margin: 0 auto; margin-top: 44px;
+    }
+    .list-group .list-group-item {
+
+    }
+    .inputBtns{
+        width: 89%;
+        margin: 5px;
+        float: right;
+    }
+    /* td{
+        vertical-align: middle !important;
+        text-align: center ;
+    } */
 </style>
+
 
 <!-- Modal -->
 <div class="modal fade" id="AttachmentModal" tabindex="-1" role="dialog" aria-labelledby="AttachmentModal" aria-hidden="true">
@@ -117,16 +147,6 @@
                     <label for="exampleInputPassword1">Amount | المبلغ </label>
                     <input type="Text" readonly value="0.00 SAR" class="form-control" id="totalAmount" name="totalAmount">
                 </div>
-                <style>
-                .inputBtns{
-                        width: 89%;
-                        margin: 5px;
-                        float: right;
-                    }
-                    td{
-                        text-align: center;
-                    }
-                </style>
                 <div class="form-group">
                 <label for="exampleInputPassword1">Payment type | نوع السداد </label>
                     <table>
@@ -174,7 +194,7 @@
 
 <!-- Modal ExportExcel 3 -->
 <div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel"> {{__('drivers.Filter')}}</h5>
@@ -188,39 +208,20 @@
                             <div class="card-body">
                                 <!-- Row start -->
                                 <div class="row">
+
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <!-- Form Field Start -->
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('drivers.Company')}} </label>
-                                            <select class="form-control" onchange="WarehouseName()" name="filter_companyId" id="filter_companyId">
-                                                <option></option>
-                                                @foreach ($lkp_company as $item)
-                                                    <option value="{{$item->id}}">{{$item->companyName}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('drivers.Warehouse')}}</label>
+                                            <label for="country" class="form-label">{{__('drivers.City')}}</label>
                                             <select class="form-control" id="filter_warehouseId" name="filter_warehouseId" >
-                                                <option></option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <!-- Form Field Start -->
-                                        <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('drivers.Vehicle')}}</label>
-                                            <select name="filter_vehicleId" id="filter_vehicleId" class="form-control"  required>
                                                 <option value=""></option>
-                                                @foreach($vehicles as $vehicle)
-                                                    <option value="{{$vehicle->id}}"> {{$vehicle->plate}}</option>
+                                                @foreach($warehouse as $warehousee)
+                                                    <option value="{{$warehousee->id}}"> {{$warehousee->warehouseName}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
+
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
                                             <label for="country" class="form-label">{{__('drivers.fullName')}}</label>
@@ -241,15 +242,17 @@
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('drivers.EmailID')}}</label>
-                                            <input type="text" class="form-control" name="filter_email_id" id="filter_email_id">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <div class="mb-3">
                                             <label for="country" class="form-label">{{__('drivers.JobId')}}</label>
                                             <input type="text" class="form-control" name="filter_job_id" id="filter_job_id">
                                         </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.accountNumber')}}</label>
+                                        <input type="text" class="form-control" name="filter_accountNumber" id="filter_accountNumber">
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.Account_Owner_Iqama')}}</label>
+                                        <input type="text" class="form-control" name="filter_account_owner_iqama" id="filter_account_owner_iqama">
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <label for="country" class="form-label">{{__('drivers.Status')}}</label>
@@ -262,14 +265,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <label for="country" class="form-label">{{__('drivers.Account_Owner_Iqama')}}</label>
-                                        <input type="text" class="form-control" name="filter_account_owner_iqama" id="filter_account_owner_iqama">
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <label for="country" class="form-label">{{__('drivers.accountNumber')}}</label>
-                                        <input type="text" class="form-control" name="filter_accountNumber" id="filter_accountNumber">
-                                    </div>
+
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <label for="country" class="form-label">{{__('drivers.DriverType')}}</label>
                                         <select name="filter_driver_type_id" id="filter_driver_type_id" class="form-control">
@@ -281,13 +277,14 @@
                                         </select>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
-                                        <label for="country" class="form-label">{{__('drivers.BanderCar')}}</label>
-                                        <select name="filter_bander_car_id" id="filter_bander_car_id" class="form-control">
+                                        <label for="country" class="form-label">{{__('drivers.Amount')}}</label>
+                                        <select name="filter_collectionAmount" id="filter_collectionAmount" class="form-control">
                                             <option value=""></option>
-                                            <option value="1">Yes</option>
-                                            <option value="2">No</option>
+                                            <option value="1">+</option>
+                                            <option value="2">-</option>
                                         </select>
                                     </div>
+
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <label for="country" class="form-label">{{__('drivers.ImageIdentity')}}</label>
                                         <select name="filter_Image_Identity" id="filter_Image_Identity" class="form-control">
@@ -337,12 +334,40 @@
                                         </select>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.ClaimDate')}}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="text" class="form-control datepicker-range" id="filter_claim_dt" name="filter_claim_dt">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.SANEDDate')}}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="text" class="form-control datepicker-range" id="filter_SANED_SettledDate" name="filter_SANED_SettledDate">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">{{__('drivers.BanderDate')}}</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="text" class="form-control datepicker-range" id="filter_jahiz_clearing_updated_at" name="filter_jahiz_clearing_updated_at">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
                                         <label for="country" class="form-label">{{__('drivers.Created_At')}}</label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <i class="bi bi-calendar4"></i>
                                             </span>
-                                            <input type="date" class="form-control datepicker-range" id="filter_created_at" name="filter_created_at">
+                                            <input type="text" class="form-control datepicker-range" id="filter_created_at" name="filter_created_at">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
@@ -351,7 +376,7 @@
                                             <span class="input-group-text">
                                                 <i class="bi bi-calendar4"></i>
                                             </span>
-                                            <input type="date" class="form-control datepicker-range" id="filter_updated_at" name="filter_updated_at">
+                                            <input type="text" class="form-control datepicker-range" id="filter_updated_at" name="filter_updated_at">
                                         </div>
                                     </div>
                                 </div>
@@ -391,7 +416,6 @@
                         </div>
                      </div>
                 </div>
-
                 <form id="driverForm">
                     @csrf
                     <div id="create_da_from" style="display: none">
@@ -400,6 +424,7 @@
                     </div>
                 </form>
                 <div id="create_da_bulk" style="display: none">
+                    {{-- <span onclick="go_back()" style="cursor: pointer; display: flex"><img src="https://static.thenounproject.com/png/1808051-200.png" style="width: 3%"> <h5>{{__('drivers.Back')}}</h5></span> --}}
                     <div class="row">
                         <div class="col-lg-6 mt-3">
                             <small>
@@ -409,9 +434,9 @@
                             <a href="{{ url('/storage/docsFormat/Drivers.csv') }}" class="btn btn-sm btn-info " style="padding: 10px"><i class="fa fa-download"></i>{{__('drivers.clickHere')}}</a>
                         </div>
                         <div class="col-lg-6 mt-3">
-                            <form method="POST" action="{{ route('Drivers/upload')}}" enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('Drivers/upload')}}">
                                 @csrf
-                                <input type="file" name="drivers_file" id="drivers_file" required accept=".xlsx,.xls,.csv">
+                                <input type="file" name="drivers_file" id="drivers_file" required><br>
                                 <button type="submit" class="btn btn-success mt-4">{{__('drivers.Submit')}}</button>
                             </form>
                         </div>
@@ -428,12 +453,98 @@
                 <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
                 {{-- <button type="button" class="btn btn-success" onclick="showSelectBulkOrOne('statment')">Understood</button> --}}
             </div>
+
         </div>
     </div>
 </div>
 <!--End Modal addNewDriver 3 -->
 
 <!-- Modal ExportExcel 3 -->
+<div class="modal fade" id="ExportExcel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.ExportDriverExcel')}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Row start -->
+                <div class="row">
+                    <div class="col-xl-12 col-sm-12 col-12">
+                        <p>{{__('drivers.criteria_msg')}}. </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <table id="table">
+                            <tr>
+                                <td>
+                                   <input type="checkbox" name="" id="select_all" onclick="check_uncheck()"> Select all
+                                </td>
+                                <td>
+
+                                </td>
+                                <td class="secondList">
+                                    <input type="checkbox" name="" id="select_all_second" onclick="check_uncheckSecond()"> Unselect all
+                                </td>
+                            </tr>
+                            @php
+                            $array = [
+                                0=>'City',
+                                1=>'Type',
+                                2=>'FullName',
+                                3=>'Actual Name',
+                                4=>'Mobile',
+                                5=>'STC Pay',
+                                6=>'Job ID',
+                                7=>'Status',
+                            ];
+                            @endphp
+                            <tr>
+                                <td>
+                                    <ul class="list-group">
+                                        @foreach($array as $k=>$option)
+                                            <li class="list-group-item select_options"  id="option{{$k}}" onclick="selectOption('{{$k}}', '{{$option}}')" style="cursor: pointer;">{{$option}}</li>
+                                        @endforeach
+                                    </ul>
+                                </td>
+                                <td style="text-align: center;">
+                                    <img style="width: 37px; margin-top: 4px; cursor: pointer;" id="forwardBtn" src="{{asset('assets/2735071.png')}}" onclick="pushSelected()" alt="">
+                                    <br>
+                                    <img style="width: 37px; margin-top: 53px; cursor: pointer;" id="reverseBtn" src="{{asset('assets/2985161.png')}}" onclick="popSelected()" alt="">
+                                </td>
+                                <td>
+                                    <ul class="list-group secondList" class="secondList" id="secondListContent">
+                                        @foreach($array as $k=>$option)
+                                            <li class="list-group-item unselect_options"  id="unselect_option{{$k}}" onclick="unselectOption('{{$k}}')" style="cursor: pointer;"> &nbsp </li>
+                                        @endforeach
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+
+                                </td>
+                                <td>
+
+                                </td>
+                                <td style="text-align: right;">
+                                    Total Select (<span style="color: red" id="totalSelected">0</span>)
+                                </td>
+                            </tr>
+                            {{-- End-Footer --}}
+                        </table>
+                    </div>
+                </div>
+                <!-- Row end -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" style="background-color: red; border: 0;">{{__('drivers.Reset')}}</button>
+                <button type="button" class="btn btn-success" style="background-color: #2661ba; border: 0;" id="exportExcelBtn">{{__('drivers.Download')}}</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="ExportExcel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -614,7 +725,7 @@
                 <i class="bi bi-handbag"></i>
             </div>
             <div class="sale-details">
-                <h3 class="text-green">{{ number_format($analatics['active'], 0, '.', ',')}} </h3>
+                <h3 class="text-green" id="active_lbl">{{ number_format($analatics['active'], 0, '.', ',')}} </h3>
                 <p>{{__('drivers.active')}}</p>
             </div>
         </div>
@@ -625,7 +736,7 @@
                 <i class="bi bi-pie-chart"></i>
             </div>
             <div class="sale-details">
-                <h3 class="text-red" style="font-size: 19px;">{{ number_format($analatics['Onhold'], 0, '.', ',')}} </h3>
+                <h3 class="text-red" style="font-size: 19px;" id="onhold_lbl">{{ number_format($analatics['Onhold'], 0, '.', ',')}} </h3>
                 <p>{{__('drivers.OnholdVacation')}}</p>
             </div>
         </div>
@@ -636,7 +747,7 @@
                 <i class="bi bi-emoji-smile"></i>
             </div>
             <div class="sale-details">
-                <h3 class="text-blue"> {{ number_format($analatics['Terminated'], 0, '.', ',')}} </h3>
+                <h3 class="text-blue" id="terminated_lbl"> {{ number_format($analatics['Terminated'], 0, '.', ',')}} </h3>
                 <p>{{__('drivers.TerminatedResigned')}}</p>
             </div>
         </div>
@@ -647,8 +758,37 @@
                 <i class="bi bi-box-seam"></i>
             </div>
             <div class="sale-details">
-                <h3 class="text-yellow"> {{ number_format($analatics['wrongWarehouse'], 0, '.', ',')}} </h3>
+                <h3 class="text-yellow" id="wrongWarehouse_lbl"> {{ number_format($analatics['wrongWarehouse'], 0, '.', ',')}} </h3>
                 <p>{{__('drivers.WrongWarehouse')}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12" style="display: none" id="edit_btn">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-10">
+                        <div class="custom-btn-group" id="selectedCriteria">
+                            <button type="button" class="btn btn-outline-primary btn-rounded">iMile</button>
+                            <button type="button" class="btn btn-outline-secondary btn-rounded">Riyadh Munesia </button>
+                            <button type="button" class="btn btn-outline-warning btn-rounded">(2024-02-01 - 2024-02-31)</button>
+                            <button type="button" class="btn btn-outline-success btn-rounded">Paid</button>
+                            <button type="button" class="btn btn-outline-danger btn-rounded">Danger</button>
+
+                            <button type="button" class="btn btn-outline-info btn-rounded">Active</button>
+                            <button type="button" class="btn btn-outline-light btn-rounded">Created by Ashraf</button>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <!-- Card start -->
+
+                                <div class="custom-btn-group">
+                                    <button type="button" style="margin: 0 auto;"  class="btn btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#FillterButton">Edit</button>
+                                </div>
+
+                        <!-- Card end -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -695,9 +835,9 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="customer_data" class="table custom-table">
+                        <table id="customer_data" class="table table-bordered">
                             <thead>
-                                <tr>
+                                <tr class="table-primary">
                                     <TH rowspan="2">{{__('drivers.City')}}</TH>
                                     <TH rowspan="2">{{__('drivers.Type')}}</TH>
                                     <TH rowspan="2">{{__('drivers.fullName')}}</TH>
@@ -708,20 +848,20 @@
                                     <TH rowspan="2">{{__('drivers.Status')}}</TH>
                                     <TH rowspan="2"><?php echo date('Y-m', strtotime(date('Y-m') . " -1 month"));?></TH>
                                     <TH rowspan="2"><?php echo date('Y-m');?></TH>
-                                    <TH colspan="2" style="text-align: center!important;border-bottom: 0px!important;">{{__('drivers.SANED')}}</TH>
-                                    <TH colspan="2" style="text-align: center!important;border-bottom: 0px!important;">{{__('drivers.Bander')}}</TH>
-                                    <TH colspan="2" style="text-align: center!important;border-bottom: 0px!important;">مطالبة</TH>
+                                    <TH style="background-color: #B7A758" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">{{__('drivers.SANED')}}</TH>
+                                    <TH style="background-color: #B7A758" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">{{__('drivers.Bander')}}</TH>
+                                    <TH style="background-color: #B7A758" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">مطالبة</TH>
                                     <TH rowspan="2">{{__('drivers.Amount')}}</TH>
                                     <TH rowspan="2">{{__('drivers.Create')}}</TH>
                                     <TH rowspan="2">{{__('drivers.Action')}}</TH>
                                 </tr>
                                 <tr>
-                                    <TH>{{__('drivers.SAR')}}</TH>
-                                    <TH>{{__('drivers.Days')}}</TH>
-                                    <TH>{{__('drivers.SAR')}}</TH>
-                                    <TH>{{__('drivers.Days')}}</TH>
-                                    <TH>{{__('drivers.SAR')}}</TH>
-                                    <TH style="border-right: 1px solid #f4f4f4!important;">{{__('drivers.Days')}}</TH>
+                                    <TH style="background-color: #B7A758">{{__('drivers.SAR')}}</TH>
+                                    <TH style="background-color: #B7A758">{{__('drivers.Days')}}</TH>
+                                    <TH style="background-color: #B7A758">{{__('drivers.SAR')}}</TH>
+                                    <TH style="background-color: #B7A758">{{__('drivers.Days')}}</TH>
+                                    <TH style="background-color: #B7A758">{{__('drivers.SAR')}}</TH>
+                                    <TH style="background-color: #B7A758" style="border-right: 1px solid #f4f4f4!important;">{{__('drivers.Days')}}</TH>
                                 </tr>
                             </thead>
                             <tbody>
@@ -746,134 +886,134 @@
     <script src="{{asset('assets/js/main.js')}}"></script>
     <script src="https://btcdmins.com/AdminLTE/plugins/iCheck/icheck.min.js"></script>
     <script>
-        function export_excel() {
-            $('#backButton').hide();
-            $('#exportExcelBtn').prop('disabled', true);
-            $('#selected_fields').hide();
-            $('.export_checks').prop('checked', true);
-            $(".export_checks").addClass("bold");
-            $('#ExportExcel').modal('toggle');
-        }
-        function check_uncheck() {
-            if ($('#select_all').prop('checked')) {
-                $('.export_checks').prop('checked', true);
-                $(".export_checks").addClass("bold");
-            } else {
-                $('.export_checks').prop('checked', false);
-                $(".export_checks").removeClass("bold");
-            }
-        }
-        function uncheck(the) {
-            if (the.checked) {
-                $('#exportExcelBtn').prop('disabled', true);
-                $(".bold_unbold").removeClass("bold_second");
-            } else {
-                $('#exportExcelBtn').prop('disabled', false);
-                $(".bold_unbold").addClass("bold_second");
-            }
-        }
-        function add_remove_bold(id) {
-            if($('#check').val() == 0) {
-                $('#exportExcelBtn').prop('disabled', true);
-                $("#lbl_"+id).toggleClass("bold");
-                let checkbox = $("#"+id);
-                checkbox.prop("checked", !checkbox.prop("checked"));
-                $('#check').val(1);
-            } else {
-                alert("Please click on Add or Remove button!");
-            }
-        }
-        function add_remove_bold_second(id) {
-            if($('#check').val() == 0) {
-                $('#exportExcelBtn').prop('disabled', true);
-                $("#lbl_sec_"+id).toggleClass("bold_second");
-                $("#lbl_sec_"+id).hide();
-                let checkbox = $("#"+id);
-                $("#lbl_"+id).toggleClass("bold");
-                checkbox.prop("checked", !checkbox.prop("checked"));
-                $('#check').val(1);
-            } else {
-                alert("Please click on Add or Remove button!");
-            }
-        }
-        function show_selected() {
-            $('#check').val(0);
-            $('#exportExcelBtn').prop('disabled', true);
-            $('#selected_fields').hide();
-            $('.first_hide').hide();
-            let count = 0;
-            $('#columnSelectionForm input[type="checkbox"]').each(function() {
-                if ($(this).is(':checked')) {
-                    $('#no_'+$(this).attr('id')).show();
-                    $("#lbl_sec_"+$(this).attr('id')).addClass("bold_second");
-                    $("#lbl_sec_"+$(this).attr('id')).show();
-                    count++;
-                }
-            });
-            $('#backButton').hide();
-            if (count > 0) {
-                $('#exportExcelBtn').prop('disabled', false);
-                $('#selected_fields').show();
-                $('#backButton').show();
-            }
-            $('#selected_count').html("UnSelect (<span style='color: red'>"+count+"</span>)");
-        }
-        function hide_selected() {
-            $('#check').val(0);
-            $('#selected_fields').hide();
-            $('#exportExcelBtn').prop('disabled', true);
-            $('.first_hide').hide();
-            let count = 0;
-            $('#columnSelectionForm input[type="checkbox"]').each(function() {
-                if ($(this).is(':checked')) {
-                    $('#no_'+$(this).attr('id')).show();
-                    count++;
-                }
-            });
-            $('#backButton').hide();
-            if (count > 0) {
-                $('#exportExcelBtn').prop('disabled', false);
-                $('#backButton').show();
-                $('#selected_fields').show();
-            }
-            $('#selected_count').html("UnSelect (<span style='color: red'>"+count+"</span>)");
-        }
+        // function export_excel() {
+        //     $('#backButton').hide();
+        //     $('#exportExcelBtn').prop('disabled', true);
+        //     $('#selected_fields').hide();
+        //     $('.export_checks').prop('checked', true);
+        //     $(".export_checks").addClass("bold");
+        //     $('#ExportExcel').modal('toggle');
+        // }
+        // function check_uncheck() {
+        //     if ($('#select_all').prop('checked')) {
+        //         $('.export_checks').prop('checked', true);
+        //         $(".export_checks").addClass("bold");
+        //     } else {
+        //         $('.export_checks').prop('checked', false);
+        //         $(".export_checks").removeClass("bold");
+        //     }
+        // }
+        // function uncheck(the) {
+        //     if (the.checked) {
+        //         $('#exportExcelBtn').prop('disabled', true);
+        //         $(".bold_unbold").removeClass("bold_second");
+        //     } else {
+        //         $('#exportExcelBtn').prop('disabled', false);
+        //         $(".bold_unbold").addClass("bold_second");
+        //     }
+        // }
+        // function add_remove_bold(id) {
+        //     if($('#check').val() == 0) {
+        //         $('#exportExcelBtn').prop('disabled', true);
+        //         $("#lbl_"+id).toggleClass("bold");
+        //         let checkbox = $("#"+id);
+        //         checkbox.prop("checked", !checkbox.prop("checked"));
+        //         $('#check').val(1);
+        //     } else {
+        //         alert("Please click on Add or Remove button!");
+        //     }
+        // }
+        // function add_remove_bold_second(id) {
+        //     if($('#check').val() == 0) {
+        //         $('#exportExcelBtn').prop('disabled', true);
+        //         $("#lbl_sec_"+id).toggleClass("bold_second");
+        //         $("#lbl_sec_"+id).hide();
+        //         let checkbox = $("#"+id);
+        //         $("#lbl_"+id).toggleClass("bold");
+        //         checkbox.prop("checked", !checkbox.prop("checked"));
+        //         $('#check').val(1);
+        //     } else {
+        //         alert("Please click on Add or Remove button!");
+        //     }
+        // }
+        // function show_selected() {
+        //     $('#check').val(0);
+        //     $('#exportExcelBtn').prop('disabled', true);
+        //     $('#selected_fields').hide();
+        //     $('.first_hide').hide();
+        //     let count = 0;
+        //     $('#columnSelectionForm input[type="checkbox"]').each(function() {
+        //         if ($(this).is(':checked')) {
+        //             $('#no_'+$(this).attr('id')).show();
+        //             $("#lbl_sec_"+$(this).attr('id')).addClass("bold_second");
+        //             $("#lbl_sec_"+$(this).attr('id')).show();
+        //             count++;
+        //         }
+        //     });
+        //     $('#backButton').hide();
+        //     if (count > 0) {
+        //         $('#exportExcelBtn').prop('disabled', false);
+        //         $('#selected_fields').show();
+        //         $('#backButton').show();
+        //     }
+        //     $('#selected_count').html("UnSelect (<span style='color: red'>"+count+"</span>)");
+        // }
+        // function hide_selected() {
+        //     $('#check').val(0);
+        //     $('#selected_fields').hide();
+        //     $('#exportExcelBtn').prop('disabled', true);
+        //     $('.first_hide').hide();
+        //     let count = 0;
+        //     $('#columnSelectionForm input[type="checkbox"]').each(function() {
+        //         if ($(this).is(':checked')) {
+        //             $('#no_'+$(this).attr('id')).show();
+        //             count++;
+        //         }
+        //     });
+        //     $('#backButton').hide();
+        //     if (count > 0) {
+        //         $('#exportExcelBtn').prop('disabled', false);
+        //         $('#backButton').show();
+        //         $('#selected_fields').show();
+        //     }
+        //     $('#selected_count').html("UnSelect (<span style='color: red'>"+count+"</span>)");
+        // }
 
-        // Export Excel button click event
-        $('#exportExcelBtn').click(function() {
-            var table = $('#customer_data').DataTable();
-            $('#ExportExcel').modal('hide');
-            var selectedColumns = [];
-            $('#columnSelectionForm input[type="checkbox"]').each(function() {
-                if ($(this).is(':checked')) {
-                    selectedColumns.push($(this).attr('id'));
-                }
-            });
-            var rowCount = table.rows().count();
-            var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
-            var rowCount = table.rows().count();
-            for (var i = 0; i < rowCount; i++) {
-                var rowData = [];
-                selectedColumns.forEach(function(columnId) {
+        // // Export Excel button click event
+        // $('#exportExcelBtn').click(function() {
+        //     var table = $('#customer_data').DataTable();
+        //     $('#ExportExcel').modal('hide');
+        //     var selectedColumns = [];
+        //     $('#columnSelectionForm input[type="checkbox"]').each(function() {
+        //         if ($(this).is(':checked')) {
+        //             selectedColumns.push($(this).attr('id'));
+        //         }
+        //     });
+        //     var rowCount = table.rows().count();
+        //     var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
+        //     var rowCount = table.rows().count();
+        //     for (var i = 0; i < rowCount; i++) {
+        //         var rowData = [];
+        //         selectedColumns.forEach(function(columnId) {
 
-                    var cellData = table.cell(i, columnId).data();
-                    if (cellData == null) {
-                        rowData.push('');
-                    } else {
-                        rowData.push(cellData); // Or provide a placeholder value
-                    }
-                });
-                exportData.push(rowData);
-            }
-            if (exportData[0].length === 0) {
-                alert('No columns selected for export!');
-                return;
-            }
-            var ws = XLSX.utils.aoa_to_sheet(exportData);
-            var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-            XLSX.writeFile(wb, 'Jahiz Drivers.xlsx');
-        });
+        //             var cellData = table.cell(i, columnId).data();
+        //             if (cellData == null) {
+        //                 rowData.push('');
+        //             } else {
+        //                 rowData.push(cellData); // Or provide a placeholder value
+        //             }
+        //         });
+        //         exportData.push(rowData);
+        //     }
+        //     if (exportData[0].length === 0) {
+        //         alert('No columns selected for export!');
+        //         return;
+        //     }
+        //     var ws = XLSX.utils.aoa_to_sheet(exportData);
+        //     var wb = XLSX.utils.book_new();
+        //     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        //     XLSX.writeFile(wb, 'Jahiz Drivers.xlsx');
+        // });
         function update_total(new_val, the = '') {
             var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
             var sum = 0;
@@ -1026,7 +1166,7 @@
                         $('[data-toggle="tooltip"]').tooltip();
                     },
                     ajax: {
-                        url: "{{ route('Drivers.index') }}",
+                        url: "{{ URL('New-Portal/DriversJahiz') }}",
                         data: {
                             filter_screenId: 'Jahiz',
                             filter_companyId: filter_companyId,
@@ -1157,13 +1297,13 @@
                             name: 'Last_Clear'
                         },
                         {
-                            className: "table-cell-load",
+                            className: "table-success",
                             "searchable": false,
                             data: 'amount',
                             name: 'amount'
                         },
                         {
-                            className: "table-cell-touchpoint",
+                            className: "table-danger",
                             "searchable": false,
                             data: 'Claim_After',
                             name: 'Claim_After'
@@ -1184,39 +1324,49 @@
                             //"data": 'id',
                             "render": function (data, type, row, meta) {
                                 // <button type="button" class="btn btn-light"><i class="bi bi-list text-green"></i> </button>
+                                let action = @json(__('drivers.Action'));
+                                let view = @json(__('drivers.view'));
+                                let edit = @json(__('drivers.edit'));
+                                let reset_password = @json(__('drivers.reset_password'));
+                                let attachment = @json(__('drivers.attachment'));
+                                let report_driver = @json(__('drivers.report_driver'));
+                                let statement = @json(__('drivers.statement'));
+                                let deletee = @json(__('drivers.Delete'));
+                                let Issuingdocuments = @json(__('drivers.Issuingdocuments'));
+
                                 let html = `
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
                                     aria-expanded="false">
-                                    Actions
+                                    `+action+`
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a id=` + row.id + ` data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view dropdown-item" href="#">View</a>
+                                            <a id=` + row.id + ` data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view dropdown-item" href="#">`+view+`</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
                                             <input type="hidden" id="IDs_all_` + meta.row + `" name="IDs_all_` + meta.row + `" value="` + row.id + `">` + `
-                                            <a id=` + row.id + ` data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit dropdown-item" href="#">Edit</a>
+                                            <a id=` + row.id + ` data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit dropdown-item" href="#">`+edit+`</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>`;
                                         @if(Auth::user()->user_type_id==1)
-                                            html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">Delete</span></a></li>
+                                            html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">`+deletee+`</span></a></li>
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>
                                             `;
                                         @endif
-                                        html += `<li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment dropdown-item" href="#">Attachment</a></li>
+                                        html += `<li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment dropdown-item" href="#">`+attachment+`</a></li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
-                                            <a id=` + row.id + ` data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement">Statement</a>
+                                            <a id=` + row.id + ` data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement">`+statement+`</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">
@@ -1225,7 +1375,7 @@
                                         if(row.driver_type_id == null){
                                             html += `<li><a id=` + row.id+ ` data-original-title="Update Driver Type To Issuing documents"  disabled data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue documents">Issuing documents </a></li>`;
                                         } else {
-                                            html += '<li><a id=' + row.id+ ' data-original-title="Issuing documents" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue documents">Issuing documents </a></li>';
+                                            html += '<li><a id=' + row.id+ ' data-original-title="Issuing documents" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue documents">'+Issuingdocuments+'</a></li>';
                                         }
 
                                         html += `<li>
@@ -1406,6 +1556,96 @@
                 if ($('#filter_warehouseId').val() != '' || $('#filter_driver_type_id').val() != '' || $('#filter_fullName').val() != '' || $('#filter_mobileNumber').val() != '' || $('#filter_iqama').val() != '' || $('#filter_job_id').val() != '' || $('#filter_status_id').val() != '' || $('#filter_account_owner_iqama').val() != '' || $('#filter_accountNumber').val() != '' || $('#filter_claim_dt').val() != '' || $('#filter_SANED_SettledDate').val() != '' || $('#filter_jahiz_clearing_updated_at').val() != '' || $('#filter_collectionAmount').val() != '' || $('#filter_created_at').val() != '' || $('#filter_updated_at').val() != '' || $('#filter_Image_Identity').val() != '' || $('#filter_Image_Passport').val() != '' || $('#filter_Image_DrivingLicence').val() != '' || $('#filter_Image_VehiclesRegistration').val() != '' || $('#filter_Image_JobContract').val() != '' || $('#filter_Image_PromissoryNote').val() != '') {
                     $('#customer_data').DataTable().destroy();
                     fill_datatable('Jahiz', $('#filter_companyId').val(), $('#filter_warehouseId').val(), $('#filter_driver_type_id').val(), $('#filter_fullName').val(), $('#filter_mobileNumber').val(), $('#filter_iqama').val(), $('#filter_job_id').val(), $('#filter_status_id').val(), $('#filter_account_owner_iqama').val(), $('#filter_accountNumber').val(), $('#filter_claim_dt').val(), $('#filter_SANED_SettledDate').val(), $('#filter_jahiz_clearing_updated_at').val(), $('#filter_collectionAmount').val(), $('#filter_created_at').val(), $('#filter_updated_at').val(), $('#filter_Image_Identity').val(), $('#filter_Image_Passport').val(), $('#filter_Image_DrivingLicence').val(), $('#filter_Image_VehiclesRegistration').val(), $('#filter_Image_JobContract').val(), $('#filter_Image_PromissoryNote').val());
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{URL("/New-Portal/DriverDetails")}}",
+                        cache: false,
+                        data : {
+                            filter_screenId: 'Jahiz',
+                            filter_companyId: $('#filter_companyId').val(),
+                            filter_warehouseId: $('#filter_warehouseId').val(),
+                            filter_fullName: $('#filter_fullName').val(),
+                            filter_mobileNumber: $('#filter_mobileNumber').val(),
+                            filter_iqama: $('#filter_iqama').val(),
+                            filter_job_id: $('#filter_job_id').val(),
+                            filter_status_id: $('#filter_status_id').val(),
+                            filter_account_owner_iqama: $('#filter_account_owner_iqama').val(),
+                            filter_accountNumber: $('#filter_accountNumber').val(),
+                            filter_driver_type_id: $('#filter_driver_type_id').val(),
+                            filter_claim_dt: $('#filter_claim_dt').val(),
+                            filter_SANED_SettledDate: $('#filter_SANED_SettledDate').val(),
+                            filter_jahiz_clearing_updated_at: $('#filter_jahiz_clearing_updated_at').val(),
+                            filter_created_at: $('#filter_created_at').val(),
+                            filter_collectionAmount: $('#filter_collectionAmount').val(),
+                            filter_updated_at: $('#filter_updated_at').val(),
+                            filter_Image_Identity: $('#filter_Image_Identity').val(),
+                            filter_Image_Passport: $('#filter_Image_Passport').val(),
+                            filter_Image_DrivingLicence: $('#filter_Image_DrivingLicence').val(),
+                            filter_Image_VehiclesRegistration: $('#filter_Image_VehiclesRegistration').val(),
+                            filter_Image_JobContract: $('#filter_Image_JobContract').val(),
+                            filter_Image_PromissoryNote: $('#filter_Image_PromissoryNote').val(),
+                            _token: "{{ csrf_token() }}",
+                        },
+                        success: function (data) {
+                            html = '';
+                        if ($('#filter_companyId').val() > 0)
+                            html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_companyId option:selected').text()+'</button>';
+                        if ($('#filter_warehouseId').val() > 0)
+                            html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_warehouseId option:selected').text()+'</button>';
+                        if ($('#filter_fullName').val() != '')
+                            html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_fullName').val()+'</button>';
+                        if ($('#filter_mobileNumber').val() != '')
+                            html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_mobileNumber').val()+'</button>';
+                        if ($('#filter_iqama').val() != '')
+                            html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+$('#filter_iqama').val()+'</button>';
+                        if ($('#filter_job_id').val() != '')
+                            html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_job_id').val()+'</button>';
+                        if ($('#filter_status_id').val() > 0)
+                            html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_status_id option:selected').text()+'</button>';
+                        if ($('#filter_account_owner_iqama').val() != '')
+                            html += '<button type="button" class="btn btn-outline-dark btn-rounded">'+$('#filter_account_owner_iqama').val()+'</button>';
+                        if ($('#filter_accountNumber').val() != '')
+                            html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_accountNumber').val()+'</button>';
+                        if ($('#filter_driver_type_id').val() > 0)
+                            html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_driver_type_id option:selected').text()+'</button>';
+                        if ($('#filter_created_at').val() != '')
+                            html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_created_at').val()+'</button>';
+
+                        if ($('#filter_Image_Identity').val() != '')
+                            html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_Image_Identity option').val()+'</button>';
+                        if ($('#filter_Image_Passport').val() != '')
+                            html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+$('#filter_Image_Passport option').val()+'</button>';
+                        if ($('#filter_Image_DrivingLicence').val() != '')
+                            html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_Image_DrivingLicence option').val()+'</button>';
+                        if ($('#filter_Image_VehiclesRegistration').val() != '')
+                            html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_Image_VehiclesRegistration option').val()+'</button>';
+                        if ($('#filter_Image_JobContract').val() != '')
+                            html += '<button type="button" class="btn btn-outline-dark btn-rounded">'+$('#filter_Image_JobContract option').val()+'</button>';
+                        if ($('#filter_Image_PromissoryNote').val() != '')
+                            html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_Image_PromissoryNote option').val()+'</button>';
+                        if ($('#filter_claim_dt').val() != '')
+                            html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_claim_dt option').val()+'</button>';
+                        if ($('#filter_SANED_SettledDate').val() != '')
+                            html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_SANED_SettledDate option').val()+'</button>';
+                        if ($('#filter_jahiz_clearing_updated_at').val() != '')
+                            html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+$('#filter_jahiz_clearing_updated_at option').val()+'</button>';
+                        if ($('#filter_collectionAmount').val() != '')
+                            html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_collectionAmount option').val()+'</button>';
+                        if ($('#filter_updated_at').val() != '')
+                            html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_updated_at option').val()+'</button>';
+
+                        if(html != '') {
+                            $('#edit_btn').show();
+                            $('#selectedCriteria').html(html);
+                        } else {
+                            $('#edit_btn').hide();
+                        }
+                            $('#active_lbl').html(data.active);
+                            $('#onhold_lbl').html(data.Onhold);
+                            $('#terminated_lbl').html(data.Terminated);
+                            $('#wrongWarehouse_lbl').html(data.wrongWarehouse);
+                        }
+                    });
                 } else {
                     alert('Select filter option');
                 }
@@ -1443,7 +1683,7 @@
 
         });
 
-        function setDocumentType(){
+    function setDocumentType(){
             $('.claims').hide();
             $('.bandar').hide();
             $('.calimsinputBtns').val(0.00);
@@ -1720,6 +1960,156 @@
             $('#create_da_from').hide();
         }
     }
+
+    var selected = [];
+    function export_excel() {
+        $('#backButton').hide();
+        $('#exportExcelBtn').prop('disabled', true);
+        $('.secondList').hide();
+        $('#select_all_second').prop('checked', false);
+        $('#select_all').prop('checked', false);
+        $('.select_options').removeClass('active');
+        $('#ExportExcel').modal('toggle');
+    }
+    function check_uncheck() {
+        selected = [];
+        var all_array = @json($array);
+        if ($('#select_all').prop('checked')) {
+            $(".select_options").addClass("active");
+            let i = 0;
+            all_array.forEach(element => {
+                selected.push({ id: i, name: element });
+                i++;
+            });
+        } else {
+            $(".select_options").removeClass("active");
+        }
+    }
+    function check_uncheckSecond() {
+        selected = [];
+        var second_array = @json($array);
+        if ($('#select_all_second').prop('checked')) {
+            $(".unselect_options").removeClass("active");
+        } else {
+            let i = 0;
+            second_array.forEach(element => {
+                selected.push({ id: i, name: element });
+                i++;
+            });
+            $(".unselect_options").addClass("active");
+        }
+    }
+
+    function selectOption(args, name) {
+        $('#forwardBtn').removeClass('disabled');
+        $('#reverseBtn').addClass('disabled');
+
+        var option_id = 'option' + args;
+        var optionElement = document.getElementById(option_id);
+        if (!optionElement) {
+            console.error('Element not found:', option_id);
+            return;
+        }
+        if (optionElement.classList.contains('active')) {
+            optionElement.classList.remove('active');
+            selected = selected.filter(item => item.name !== name);
+        } else {
+            optionElement.classList.add('active');
+            selected.push({ id: args, name: name });
+        }
+    }
+    function selectOptionSecond(args, name) {
+        $('#forwardBtn').addClass('disabled');
+        $('#reverseBtn').removeClass('disabled');
+
+        var option_id = 'option_' + args;
+        var optionElement = document.getElementById(option_id);
+        if (!optionElement) {
+            console.error('Element not found:', option_id);
+            return;
+        }
+        if (optionElement.classList.contains('active')) {
+            optionElement.classList.remove('active');
+            selected = selected.filter(item => item.name !== name);
+        } else {
+            optionElement.classList.add('active');
+            selected.push({ id: args, name: name });
+        }
+    }
+
+    function pushSelected() {
+        $('#totalSelected').html(selected.length);
+        let html = '';
+        selected.forEach(element => {
+            let id = element['id'];
+
+            $('#option'+id).hide();
+            let name = element['name'];
+            html += `<li class="list-group-item active unselect_options"  id="option_`+id+`" onclick="selectOptionSecond('`+id+`', '`+name+`')" style="cursor: pointer;">`+name+`</li>`;
+        });
+        if (html != '') {
+            $('#exportExcelBtn').prop('disabled', false);
+            $('.secondList').show();
+            $('#secondListContent').html(html);
+        } else {
+            $('#exportExcelBtn').prop('disabled', true);
+            $('.secondList').hide();
+            $('#secondListContent').html('');
+        }
+    }
+    function popSelected() {
+        $('#totalSelected').html(selected.length);
+        $('.select_options').removeClass('active');
+        $('.select_options').show();
+        $('.unselect_options').hide();
+
+        selected.forEach(element => {
+            $('#option'+element['id']).addClass('active');
+            $('#option'+element['id']).hide();
+            $('#option_'+element['id']).show();
+        });
+    }
+    // Export Excel button click event
+    $('#exportExcelBtn').click(function() {
+        var table = $('#customer_data').DataTable();
+        $('#ExportExcel').modal('hide');
+        var selectedColumns = [];
+        console.log(selected);
+        selected.forEach(element => {
+            // if (element['id'] == 7) {
+            //     let id  = element['id'] + 2;
+            //     selectedColumns.push(id);
+            // } else if (element['id'] == 8) {
+            //     let id  = element['id'] + 3;
+            //     selectedColumns.push(id);
+            // } else {
+                selectedColumns.push(element['id']);
+            // }
+        });
+        var rowCount = table.rows().count();
+        var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
+        var rowCount = table.rows().count();
+        for (var i = 0; i < rowCount; i++) {
+            var rowData = [];
+            selectedColumns.forEach(function(columnId) {
+                var cellData = table.cell(i, columnId).data();
+                if (cellData == null) {
+                    rowData.push('');
+                } else {
+                    rowData.push(cellData); // Or provide a placeholder value
+                }
+            });
+            exportData.push(rowData);
+        }
+        if (exportData[0].length === 0) {
+            alert('No columns selected for export!');
+            return;
+        }
+        var ws = XLSX.utils.aoa_to_sheet(exportData);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        XLSX.writeFile(wb, 'Drivers.xlsx');
+    });
 </script>
 @stop
 @endsection

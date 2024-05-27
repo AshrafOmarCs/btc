@@ -131,6 +131,8 @@ return [
     'driver_add_method' => "Please select a method to add driver",
     'AppStatus' => 'App Status',
     'DriverStatement' => 'Driver Statement',
+    'Issuingdocuments' => 'Issuing documents',
+
 
 
 ];

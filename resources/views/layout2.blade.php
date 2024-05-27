@@ -121,7 +121,7 @@
 								<div class="sidebar-submenu">
 									<ul>
 										<li>
-											<a href="widgets.html">Administrator</a>
+											<a href="{{url('New-Portal/Users')}}">Administrator</a>
 										</li>
 										<li>
 											<a href="graph-widgets.html">Supervisors </a>
@@ -349,7 +349,7 @@
 					<div class="toggle-sidebar" id="toggle-sidebar"><i class="bi bi-list"></i></div>
 					<!-- Welcome start -->
 					<div class="welcome-note ms-2">
-						Welcome, <span>Ashraf </span>
+						Welcome, <span>{{AUTH::user()->name}} </span>
 					</div>
 					<!-- Welcome end -->
 
@@ -427,9 +427,10 @@
 								</a>
 								<div class="dropdown-menu dropdown-menu-end" aria-labelledby="userSettings">
 									<div class="header-profile-actions">
-										<a href="profile.html">Profile</a>
+										{{-- <a href="profile.html">Profile</a>
 										<a href="profile.html">Applications</a>
-										<a href="account-settings.html">Settings</a>
+										<a href="account-settings.html">Settings</a> --}}
+										<a href="{{url('New-Portal/ChangePassword')}}">Reset Password</a>
 										<a href="{{url('logout')}}">Logout</a>
 									</div>
 								</div>

@@ -244,7 +244,7 @@
                     <div class="card-body">
                         <div class="m-0">
                             <label class="form-label">{{__('drivers.BanderCar')}}</label>
-                            <select name="bander_car_id" id="bander_car_id" class="form-control" style="width:200px;">
+                            <select name="bander_car_id" id="bander_car_id" class="form-control">
                                 <option value=""></option>
                                 @foreach($lkp_yes_no as $lkp_yes_noo)
                                     <option value="{{$lkp_yes_noo->id}}"
@@ -352,7 +352,7 @@
                     <div class="card-body">
                         <div class="m-0">
                             <label class="form-label">{{__('drivers.STCAccountNumber')}} <font color="red">*</font></label>
-                            <input type="text" class="form-control" style="width:200px;" name="accountNumber"
+                            <input type="text" class="form-control" name="accountNumber"
                                         id="accountNumber" value="{{$Drivers->accountNumber}}">
                         </div>
                     </div>
@@ -363,7 +363,7 @@
                     <div class="card-body">
                         <div class="m-0">
                             <label class="form-label">{{__('drivers.STCAccountOwnerIqama')}} <font color="red">*</font></label>
-                            <input type="text" class="form-control" style="width:200px;" name="account_owner_iqama" id="account_owner_iqama"
+                            <input type="text" class="form-control" name="account_owner_iqama" id="account_owner_iqama"
                                 value="{{$Drivers->account_owner_iqama}}">
                         </div>
                     </div>
@@ -448,7 +448,7 @@
                     <div class="card-body">
                         <div class="m-0">
                             <label class="form-label">{{__('drivers.BasicSalary')}} <font color="red">*</font></label>
-                            <input type="text" class="form-control" placeholder="Basic Salary" style="width:200px;" name="basic_salary"
+                            <input type="text" class="form-control" placeholder="Basic Salary" name="basic_salary"
                                         id="basic_salary"
                                         value="{{$Drivers->basic_salary}}">
                         </div>
@@ -460,23 +460,7 @@
                     <div class="card-body">
                         <div class="m-0">
                             <label class="form-label">{{__('drivers.Vehicle')}} <font color="red">*</font></label>
-                            <select name="vehicle_id" id="vehicle_id" class="form-control" style="width:200px;" onchange="show_date(this.value)">
-                                <option value="">Select Vehicle</option>
-                                @foreach($vehicles as $vehicle)
-                                    <option value="{{$vehicle->id}}"
-                                            @if ($Drivers->vehicle_id==$vehicle->id){{"  selected " }}:{{""}} @endif>{{$vehicle->plate}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4 col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="m-0">
-                            <label class="form-label">{{__('drivers.Vehicle')}} <font color="red">*</font></label>
-                            <select name="vehicle_id" id="vehicle_id" class="form-control" style="width:200px;" onchange="show_date(this.value)">
+                            <select name="vehicle_id" id="vehicle_id" class="form-control" onchange="show_date(this.value)">
                                 <option value="">Select Vehicle</option>
                                 @foreach($vehicles as $vehicle)
                                     <option value="{{$vehicle->id}}"
