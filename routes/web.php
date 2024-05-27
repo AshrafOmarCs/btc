@@ -26,6 +26,7 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('/ChangePassword', 'UsersController@ChangePassword');
     Route::POST('/ChangePasswordSave', 'UsersController@ChangePasswordSave');
     Route::get("/Users",'UsersController@index');
+    Route::get('/Supervisors', 'UsersController@index');
     Route::post('/DriverDetails', 'DashoardController@DriverDetails')->name('DriverDetails');
 
 

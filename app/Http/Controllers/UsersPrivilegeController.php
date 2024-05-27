@@ -38,7 +38,7 @@ class UsersPrivilegeController extends Controller
             ->orderBy('warehouseName', 'ASC')
             ->get();
 
-        return view('UsersPrivilege.index')->with(compact('UsersMenu'))
+        return view('new_porttal.UsersPrivilege.index')->with(compact('UsersMenu'))
             ->with(compact('lkp_privilege_type'))
             ->with(compact('user'));
     }

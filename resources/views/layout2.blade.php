@@ -124,7 +124,7 @@
 											<a href="{{url('New-Portal/Users')}}">Administrator</a>
 										</li>
 										<li>
-											<a href="graph-widgets.html">Supervisors </a>
+											<a href="{{url('New-Portal/Supervisors')}}">Supervisors </a>
 										</li>
 										<li>
 											<a href="widgets.html">Employee</a>
