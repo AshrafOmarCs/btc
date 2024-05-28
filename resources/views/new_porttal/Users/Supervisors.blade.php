@@ -1,6 +1,6 @@
 @extends('layout2')
 @section('content')
-@section('title', __('users.supervisors'))
+@section('title', __('users.supervisorsAndAreamanger'))
 <style>
     .disabled {
         opacity: 0.5;
@@ -340,6 +340,28 @@
 
  <!-- Row start -->
  <div class="row">
+    <div class="col-xl-3 col-sm-6 col-12">
+        <div class="stats-tile">
+            <div class="sale-icon shade-green">
+                <i class="bi bi-handbag"></i>
+            </div>
+            <div class="sale-details">
+                <h3 class="text-green" id="supervisors_lbl"></h3>
+                <p>{{__('users.supervisors')}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 col-12">
+        <div class="stats-tile">
+            <div class="sale-icon shade-red">
+                <i class="bi bi-pie-chart"></i>
+            </div>
+            <div class="sale-details">
+                <h3 class="text-red" id="areaManager_lbl"></h3>
+                <p>{{__('users.areaManagers')}}</p>
+            </div>
+        </div>
+    </div>
     <div class="col-12" style="display: none" id="edit_btn">
         <div class="card">
             <div class="card-body">
@@ -379,7 +401,7 @@
         <div id="message"></div>
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{{__('users.supervisors')}}</div>
+                <div class="card-title">{{__('users.supervisorsAndAreamanger')}}</div>
             </div>
             <!-- Card start -->
             <div class="card">
@@ -436,7 +458,7 @@
     <script src="{{asset('assets/js/main.js')}}"></script>
     <script>
         $(document).ready(function () {
-
+            var supervisors = areamanager = 0;
             fill_datatable();
             function fill_datatable(filter_user_type = '', filter_user_name = '', filter_phone = '', filter_email = '', filter_identityNo = '', filter_role_name = '', filter_status = '', filter_created_at = '', filter_updated_at = '') {
                 var dataTable = $('#customer_data').DataTable({
@@ -493,7 +515,13 @@
                         {
                             data: 'active_id',
                             render: function (data, type, row, meta) {
-
+                                if (row.user_type == 'AreaManager') {
+                                    areamanager++;
+                                } else {
+                                    supervisors++;
+                                }
+                                $('#supervisors_lbl').html(supervisors);
+                                $('#areaManager_lbl').html(areamanager);
                                 if (data == "1") {
                                     return '<span class="label label-success">' + row.active_status + '</span>';
                                 } else if (data == "0") {
