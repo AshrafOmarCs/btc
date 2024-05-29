@@ -28,6 +28,9 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get("/Users",'UsersController@index');
     Route::get('/Supervisors', 'UsersController@index');
     Route::post('/DriverDetails', 'DashoardController@DriverDetails')->name('DriverDetails');
+    Route::get('/Documents', 'DocumentsController@index');
+    Route::get('/UploadDocuments', 'DocumentsController@upload_index');
+    Route::get('/ContractsQuotation', 'ContractsQuotationController@index');
 
 
     // Route::resource('/Drivers', 'DriversController');

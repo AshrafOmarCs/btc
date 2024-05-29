@@ -367,11 +367,9 @@ class DashoardController extends Controller
                 $Select_db->whereRaw("CAST(drivers.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
             }
 
-            //return $Select_db->toSql();
             //return Route::getFacadeRoot()->current()->uri();
             return datatables()->of($Select_db)->make(true);
         }
-        //$data = $Select_db->get();
         //return $Select_db->toSql();
         if (Route::getFacadeRoot()->current()->uri() == 'DriverWindow')
             $view = "DriverWindow";
@@ -429,159 +427,286 @@ class DashoardController extends Controller
         return view("new_porttal.dashboards.".$view,compact('vehicles', 'warehouse','lkp_country','lkp_driver_status','lkp_termination_reasons','lkp_bank','lkp_yes_no','lkp_company','lkp_driver_type','analatics', 'lkp_jahiz_period'));
     }
     public function DriverDetails(Request $request) {
-        $clause = "";
-        if (!empty($request->filter_companyId)) {
-            $clause .= ' AND companyId = ' . $request->filter_companyId;
-        }
-        if (!empty($request->filter_warehouseId)) {
-            $clause .= ' AND warehouseId=' . $request->filter_warehouseId;
-        }
-        if (!empty($request->filter_driver_type_id)) {
-            $clause .= ' AND driver_type_id ='. $request->filter_driver_type_id;
-        }
-        if (!empty($request->filter_fullName)) {
-            $clause .= " AND UPPER(fullName) LIKE '%" . strtoupper($request->filter_fullName) . "%'";
-        }
-        if (!empty($request->filter_fullName_ar)) {
-            $clause .= " AND UPPER(fullName_ar) LIKE '%" . strtoupper($request->filter_fullName_ar) . "%'";
-        }
-        if (!empty($request->filter_mobileNumber)) {
-            $clause .= " AND UPPER(mobileNumber) LIKE '%" . strtoupper($request->filter_mobileNumber) . "%'";
-        }
-        if (!empty($request->filter_nationality_id)) {
-            $clause .= ' AND nationality_id ='. $request->filter_nationality_id;
-        }
-        if (!empty($request->filter_iqama)) {
-            $clause .= " AND UPPER(iqama) LIKE '%" . strtoupper($request->filter_iqama) . "%'";
-        }
-        if (!empty($request->filter_iqamaExpireyDate)) {
-            $filter_iqamaExpireyDate = explode(" - ", $request->filter_iqamaExpireyDate);
-            $clause .= " AND CAST(iqamaExpireyDate as date) between STR_TO_DATE('$filter_iqamaExpireyDate[0]','%d/%m/%Y') and STR_TO_DATE('$filter_iqamaExpireyDate[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_email_id)) {
-            $clause .= " AND UPPER(email_id) LIKE '%" . strtoupper($request->filter_email_id) . "%'";
-        }
-        if (!empty($request->filter_job_id)) {
-            $clause .= " AND UPPER(job_id) LIKE '%" . strtoupper($request->filter_job_id) . "%'";
-        }
-        if (!empty($request->filter_dob)) {
-            $filter_dob = explode(" - ", $request->filter_dob);
-            $clause .= " AND CAST(dob as date) between STR_TO_DATE('$filter_dob[0]','%d/%m/%Y') and STR_TO_DATE('$filter_dob[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_status_id)) {
-            $clause .= " AND status_id = ". $request->filter_status_id;
-        }
-        if (!empty($request->filter_termination_reason_id)) {
-            $clause .= ' AND termination_reason_id = '. $request->filter_termination_reason_id;
-        }
-        if (!empty($request->filter_interview_date)) {
-            $filter_interview_date = explode(" - ", $request->filter_interview_date);
-            $clause .= " AND CAST(interview_date as date) between STR_TO_DATE('$filter_interview_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_interview_date[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_start_date)) {
-            $filter_start_date = explode(" - ", $request->filter_start_date);
-            $clause .= " AND CAST(start_date as date) between STR_TO_DATE('$filter_start_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_start_date[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_licenseExpireyDate)) {
-            $filter_licenseExpireyDate = explode(" - ", $request->filter_licenseExpireyDate);
-            $clause .= " AND CAST(licenseExpireyDate as date) between STR_TO_DATE('$filter_licenseExpireyDate[0]','%d/%m/%Y') and STR_TO_DATE('$filter_licenseExpireyDate[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_passportNo)) {
-            $clause .= " AND UPPER(passportNo) LIKE '%" . strtoupper($request->filter_passportNo) . "%'";
-        }
-        if (!empty($request->filter_passportExpireyDate)) {
-            $filter_passportExpireyDate = explode(" - ", $request->filter_passportExpireyDate);
-            $clause .= " AND CAST(passportExpireyDate as date) between STR_TO_DATE('$filter_passportExpireyDate[0]','%d/%m/%Y') and STR_TO_DATE('$filter_passportExpireyDate[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_bank_id)) {
-            $clause .= ' AND bank_id ='. $request->filter_bank_id;
-        }
-        if (!empty($request->filter_accountNumber)) {
-            $clause .= " AND UPPER(accountNumber) LIKE '%" . strtoupper($request->filter_accountNumber) . "%'";
-        }
-        if (!empty($request->filter_account_owner_iqama)) {
-            $clause .= " AND UPPER(account_owner_iqama) LIKE '%" . strtoupper($request->filter_account_owner_iqama) . "%'";
-        }
-        if (!empty($request->filter_under_sopnsorship_id)) {
-            $clause .= ' AND under_sopnsorship_id = '. $request->filter_under_sopnsorship_id;
-        }
-        if (!empty($request->filter_ajeer_id)) {
-            $clause .= ' AND ajeer_id = '. $request->filter_ajeer_id;
-        }
-        if (!empty($request->filter_bander_car_id)) {
-            $clause .= ' AND bander_car_id = '. $request->filter_bander_car_id;
-        }
-        // this
-        if (!empty($request->filter_vehicleId)) {
-             $clause .= ' AND drivers.vehicle_id = '. $request->filter_vehicleId;
-        }
-        if (!empty($request->filter_claim_dt)) {
-            $filter_claim_dt = explode(" - ", $request->filter_claim_dt);
-            $clause .= " AND CAST(claim_dt as date) between STR_TO_DATE('$filter_claim_dt[0]','%d/%m/%Y') and STR_TO_DATE('$filter_claim_dt[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_SANED_SettledDate)) {
-            $filter_SANED_SettledDate = explode(" - ", $request->filter_SANED_SettledDate);
-            $clause .= " AND CAST(SANED_SettledDate as date) between STR_TO_DATE('$filter_SANED_SettledDate[0]','%d/%m/%Y') and STR_TO_DATE('$filter_SANED_SettledDate[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_jahiz_clearing_updated_at)) {
-            $filter_jahiz_clearing_updated_at = explode(" - ", $request->filter_jahiz_clearing_updated_at);
-            $clause .= " AND CAST(jahiz_clearing_updated_at as date) between STR_TO_DATE('$filter_jahiz_clearing_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_jahiz_clearing_updated_at[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_collectionAmount)) {
-            if ($request->filter_collectionAmount == "1")
-                $clause .= " AND drivers.collectionAmount >0 ";
-            elseif ($request->filter_collectionAmount == "2")
-                $clause .= " AND drivers.collectionAmount <0 ";
-        }
-        //-------------------------------------------------------------------------------------------------------
-        if ($request->filter_Image_Identity == "1") {
-            $clause .= " AND Image_Identity is not null";
-        } elseif ($request->filter_Image_Identity == "2") {
-            $clause .= " AND Image_Identity is  null";
-        }
-        if ($request->filter_Image_Passport == "1") {
-            $clause .= " AND Image_Passport is not null";
-        } elseif ($request->filter_Image_Passport == "2") {
-            $clause .= " AND Image_Passport is  null";
-        }
-        if ($request->filter_Image_DrivingLicence == "1") {
-            $clause .= " AND Image_DrivingLicence is not null";
-        } elseif ($request->filter_Image_DrivingLicence == "2") {
-            $clause .= " AND Image_DrivingLicence is  null";
-        }
-        if ($request->filter_Image_VehiclesRegistration == "1") {
-            $clause .= " AND Image_VehiclesRegistration is not null";
-        } elseif ($request->filter_Image_VehiclesRegistration == "2") {
-            $clause .= " AND Image_VehiclesRegistration is  null";
-        }
-        if ($request->filter_Image_JobContract == "1") {
-            $clause .= " AND Image_JobContract is not null";
-        } elseif ($request->filter_Image_JobContract == "2") {
-            $clause .= " AND Image_JobContract is  null";
-        }
-        if ($request->filter_Image_PromissoryNote == "1") {
-            $clause .= " AND Image_PromissoryNote is not null";
-        } elseif ($request->filter_Image_PromissoryNote == "2") {
-            $clause .= " AND Image_PromissoryNote is  null";
-        }
-        //-------------------------------------------------------------------------------------------------------
-        if (!empty($request->filter_created_at)) {
-            $filter_created_at = explode(" - ", $request->filter_created_at);
-            $clause .= " AND CAST(drivers.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')";
-        }
-        if (!empty($request->filter_updated_at)) {
-            $filter_updated_at = explode(" - ", $request->filter_updated_at);
-            $clause .= " AND CAST(drivers.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')";
-        }
-        if ($request->filter_screenId == 'Drivers') {
-            $users = DB::select("SELECT drivers.status_id FROM drivers INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE 1 = 1 $clause");
-        }
-        elseif ($request->filter_screenId == 'Jahiz') {
-            $users = DB::select("SELECT drivers.status_id FROM drivers INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE driver_type_id in (2, 3) $clause");
-        }
+        $Select_db = DB::table('drivers')
+                ->select('drivers_attachments.Image_Identity', 'drivers_attachments.Image_PromissoryNote', 'drivers_attachments.Image_JobContract', 'drivers.id as id', 'companyName', 'warehouseId', 'warehouseName', 'lkp_city.name_en', 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else','car_plateNumber' ,'nationality_id', 'lkp_country.country_ar',
+                    'iqama', 'iqamaExpireyDate', 'email_id', 'job_id', 'dob', 'status_id', 'lkp_driver_status.driver_status_en', 'termination_reason_id', 'reason_en',
+                    'interview_date', 'start_date', 'licenseExpireyDate', 'passportNo', 'passportExpireyDate', 'bank_id', 'bank_name_en', 'accountNumber', 'account_owner_iqama',
+                    'a.yes_no AS under_sopnsorship', 'b.yes_no AS ajeer','bander_car.yes_no AS bander_car', 'collectionAmount', 'openBalance',
+                    'onhold_date', DB::raw("DATE_FORMAT(drivers.created_at, '%Y-%m-%d') as created_at"), 'drivers.updated_at as updated_at',
+                    'driver_type_id', 'driver_type');
+            if ($request->filter_screenId == 'Jahiz') {
+                $Select_db->selectRaw("NULLIF(IFNULL(Monthly_Salary.p_month,0)+IFNULL(Per_Shipment.p_month,0),0) as per_priod,
+                                                NULLIF(IFNULL(Monthly_Salary.c_month,0)+IFNULL(Per_Shipment.c_month,0),0) as cur_priod,
+                                                DATEDIFF(NOW(),jahiz_clearing_updated_at) as Last_Clear,Jahiz_Amount,SANED_amount,DATEDIFF(NOW(),SANED_SettledDate) as SANED_SettledDate,
+                                                DATEDIFF(NOW(),drivers.created_at) as created_at2,
+                                                TRIM(drivers_jahiz_claim.amount)+0 as amount,DATEDIFF(claim_dt,NOW()) as Claim_After");
+            } else
+                $Select_db->selectRaw("NULLIF(per_priod,0) as per_priod, NULLIF(cur_priod,0) as cur_priod");
+            $Select_db->leftJoin('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')
+                ->leftJoin('lkp_city', 'warehouse.cityId', '=', 'lkp_city.id')
+                ->leftJoin('lkp_company', 'warehouse.companyId', '=', 'lkp_company.id')
+                ->leftJoin('lkp_country', 'drivers.nationality_id', '=', 'lkp_country.id')
+                ->leftJoin('lkp_driver_status', 'drivers.status_id', '=', 'lkp_driver_status.id')
+                ->leftJoin('lkp_termination_reasons', 'drivers.termination_reason_id', '=', 'lkp_termination_reasons.id')
+                ->leftJoin('lkp_bank', 'drivers.bank_id', '=', 'lkp_bank.id')
+                ->leftJoin('lkp_yes_no as a', 'drivers.under_sopnsorship_id', '=', 'a.id')
+                ->leftJoin('lkp_yes_no as b', 'drivers.ajeer_id', '=', 'b.id')
+                ->leftJoin('lkp_yes_no as bander_car', 'drivers.bander_car_id', '=', 'bander_car.id')
+                ->leftJoin('lkp_driver_type', 'drivers.driver_type_id', '=', 'lkp_driver_type.id');
+                $Select_db->leftJoin('drivers_attachments', 'drivers.id', '=', 'drivers_attachments.driverId');
+                // this
+                // ->leftJoin('vehicles as v', 'drivers.vehicle_id', '=', 'v.id')
+
+            // if ($request->filter_Image_Identity <> "" || $request->filter_Image_Passport <> "" || $request->filter_Image_DrivingLicence <> "" || $request->filter_Image_VehiclesRegistration <> "" || $request->filter_Image_JobContract <> "" || $request->filter_Image_PromissoryNote <> "")
+            $Select_db->whereRaw('users_account_type_id = 1');
+
+            if ($request->filter_screenId == 'Jahiz') {
+                //return  Route::getFacadeRoot()->current()->uri();
+                $Select_db->leftJoin('drivers_jahiz_claim', 'drivers_jahiz_claim.driverId', '=', 'drivers.id');
+                $Select_db->leftJoin(DB::raw("(SELECT driverId,
+            sum(CASE
+                WHEN CONCAT(year,'-',month)= DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m') THEN IFNULL(week1,0)+IFNULL(week2,0)+IFNULL(week3,0)+IFNULL(week4,0)+IFNULL(weekAll,0)+IFNULL(amount_by_days,0)
+            END) p_month,
+            sum(CASE
+                WHEN CONCAT(year,'-',month)= DATE_FORMAT(NOW() , '%Y-%m') THEN IFNULL(week1,0)+IFNULL(week2,0)+IFNULL(week3,0)+IFNULL(week4,0)+IFNULL(weekAll,0)+IFNULL(amount_by_days,0)
+            END) c_month
+
+            from drivers_jahiz_montly
+            LEFT JOIN lkp_jahiz_period on lkp_jahiz_period.id=drivers_jahiz_montly.jahiz_period_id
+            LEFT JOIN lkp_month on lkp_month.id=lkp_jahiz_period.month_id
+            where CONCAT(year,'-',month) in(DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m'),DATE_FORMAT(NOW() , '%Y-%m'))
+            GROUP BY driverId
+                )Monthly_Salary"),
+                    'Monthly_Salary.driverId', '=', 'drivers.id');
+                $Select_db->leftJoin(DB::raw("(select driverId,
+                sum(CASE
+                    WHEN DATE_FORMAT(updated_at , '%Y-%m')= DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m')  THEN IFNULL(Bander_Commission,0)
+                END) p_month,
+                sum(CASE
+                    WHEN DATE_FORMAT(updated_at , '%Y-%m')= DATE_FORMAT(NOW() , '%Y-%m')  THEN IFNULL(Bander_Commission,0)
+                END) c_month
+                 from drivers_jahiz_clearing
+                where
+                 driver_type_id = 3
+                AND DATE_FORMAT(updated_at , '%Y-%m') in(DATE_FORMAT(NOW() - INTERVAL 1 MONTH, '%Y-%m'),DATE_FORMAT(NOW() , '%Y-%m'))
+                GROUP BY driverId
+                )Per_Shipment"),
+                    'Per_Shipment.driverId', '=', 'drivers.id');
+                $Select_db->leftJoin(DB::raw("(SELECT a.driverId,
+                    CASE
+                        WHEN Jahiz_Amount_Sign = 1 THEN a.Jahiz_Amount
+                        WHEN Jahiz_Amount_Sign = 2 THEN a.Jahiz_Amount*-1
+
+                    END
+                    as Jahiz_Amount,
+                    a.updated_at as jahiz_clearing_updated_at
+                    FROM drivers_jahiz_clearing a
+                    INNER JOIN (
+                        SELECT driverId, MAX(updated_at) updated_at
+                        FROM drivers_jahiz_clearing
+                        GROUP BY driverId
+                    ) b ON a.driverId = b.driverId AND a.updated_at = b.updated_at
+                )tb_jahiz_amount"),
+                    'tb_jahiz_amount.driverId', '=', 'drivers.id');
+                $Select_db->leftJoin(DB::raw("(SELECT a.AMP_ID,a.CollectionAmount-a.DeliveryPrice-a.DriverCredit+a.DriverDebit as SANED_amount, a.SettledDate as SANED_SettledDate
+                        FROM drivers_saned_settlement a
+                        INNER JOIN (
+                            SELECT AMP_ID, MAX(SettledDate) SettledDate
+                            FROM drivers_saned_settlement
+                            GROUP BY AMP_ID
+                        ) b ON a.AMP_ID = b.AMP_ID AND a.SettledDate = b.SettledDate
+                )drivers_saned_settlement"),
+                    'drivers_saned_settlement.AMP_ID', '=', 'drivers.job_id');
+
+            } else
+                $Select_db->leftJoin(DB::raw("(SELECT
+            driverId,
+            TRIM(sum( if( month_logged <= per_priod, credit-debit, 0 ) ))+0 AS per_priod,
+            TRIM(sum( if( month_logged >= cur_priod, credit-debit, 0 ) ))+0 AS cur_priod
+           from
+        (select driverId,period_start,period_end,sum(IFNULL(credit,0)) as credit,sum(IFNULL(debit,0)) as debit,
+               date_format(journal_date - interval period_start-1 day, '%Y-%m') AS month_logged,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m') AS per_priod,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m') AS cur_priod,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m') AS next_priod
+        from journal
+        inner join drivers on drivers.id=journal.driverId
+        inner join warehouse on warehouse.id=drivers.warehouseId
+        inner join lkp_company on lkp_company.id=warehouse.companyId
+        group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
+        group by driverId,per_priod,cur_priod,next_priod
+        )balance"),
+                    'balance.driverId', '=', 'drivers.id');
+
+            $whereIn_array = array();
+            if (Auth::user()->user_type_id <> 1) {
+                $users_privilege = DB::select('SELECT user_id,warehouseId from users_privilege where user_id=' . Auth::user()->id);
+                foreach ($users_privilege as $users_privilegee) {
+                    //echo $users_privilegee->warehouseId;
+                    $whereIn_array[] = $users_privilegee->warehouseId;
+                }
+                if (count($whereIn_array) == 0) $whereIn_array[] = 0;
+                $Select_db->whereIn('warehouseId', $whereIn_array);
+            }
+
+
+            if ($request->filter_screenId == 'Drivers') {
+                $Select_db->whereRaw("companyId<>6");
+            }
+            if ($request->filter_screenId == 'Jahiz') {
+                $Select_db->whereRaw("companyId=6");
+            }
+
+            if (!empty($request->filter_companyId)) {
+                $Select_db->whereRaw('companyId=' . $request->filter_companyId);
+            }
+            if (!empty($request->filter_warehouseId)) {
+                $Select_db->whereRaw('warehouseId=' . $request->filter_warehouseId);
+
+            }
+            if (!empty($request->filter_driver_type_id)) {
+                $Select_db->where('driver_type_id', $request->filter_driver_type_id);
+            }
+            if (!empty($request->filter_fullName)) {
+                $Select_db->whereRaw("UPPER(fullName) LIKE '%" . strtoupper($request->filter_fullName) . "%'");
+            }
+            if (!empty($request->filter_fullName_ar)) {
+                $Select_db->whereRaw("UPPER(fullName_ar) LIKE '%" . strtoupper($request->filter_fullName_ar) . "%'");
+            }
+            if (!empty($request->filter_mobileNumber)) {
+                $Select_db->whereRaw("UPPER(mobileNumber) LIKE '%" . strtoupper($request->filter_mobileNumber) . "%'");
+            }
+            if (!empty($request->filter_nationality_id)) {
+                $Select_db->where('nationality_id', $request->filter_nationality_id);
+            }
+            if (!empty($request->filter_iqama)) {
+                $Select_db->whereRaw("UPPER(iqama) LIKE '%" . strtoupper($request->filter_iqama) . "%'");
+            }
+            if (!empty($request->filter_iqamaExpireyDate)) {
+                $filter_iqamaExpireyDate = explode(" - ", $request->filter_iqamaExpireyDate);
+                $Select_db->whereRaw("CAST(iqamaExpireyDate as date) between STR_TO_DATE('$filter_iqamaExpireyDate[0]','%d/%m/%Y') and STR_TO_DATE('$filter_iqamaExpireyDate[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_email_id)) {
+                $Select_db->whereRaw("UPPER(email_id) LIKE '%" . strtoupper($request->filter_email_id) . "%'");
+            }
+            if (!empty($request->filter_job_id)) {
+                $Select_db->whereRaw("UPPER(job_id) LIKE '%" . strtoupper($request->filter_job_id) . "%'");
+            }
+            if (!empty($request->filter_dob)) {
+                $filter_dob = explode(" - ", $request->filter_dob);
+                $Select_db->whereRaw("CAST(dob as date) between STR_TO_DATE('$filter_dob[0]','%d/%m/%Y') and STR_TO_DATE('$filter_dob[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_status_id)) {
+                $Select_db->where('status_id', $request->filter_status_id);
+            }
+            if (!empty($request->filter_termination_reason_id)) {
+                $Select_db->where('termination_reason_id', $request->filter_termination_reason_id);
+            }
+            if (!empty($request->filter_interview_date)) {
+                $filter_interview_date = explode(" - ", $request->filter_interview_date);
+                $Select_db->whereRaw("CAST(interview_date as date) between STR_TO_DATE('$filter_interview_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_interview_date[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_start_date)) {
+                $filter_start_date = explode(" - ", $request->filter_start_date);
+                $Select_db->whereRaw("CAST(start_date as date) between STR_TO_DATE('$filter_start_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_start_date[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_licenseExpireyDate)) {
+                $filter_licenseExpireyDate = explode(" - ", $request->filter_licenseExpireyDate);
+                $Select_db->whereRaw("CAST(licenseExpireyDate as date) between STR_TO_DATE('$filter_licenseExpireyDate[0]','%d/%m/%Y') and STR_TO_DATE('$filter_licenseExpireyDate[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_passportNo)) {
+                $Select_db->whereRaw("UPPER(passportNo) LIKE '%" . strtoupper($request->filter_passportNo) . "%'");
+            }
+            if (!empty($request->filter_passportExpireyDate)) {
+                $filter_passportExpireyDate = explode(" - ", $request->filter_passportExpireyDate);
+                $Select_db->whereRaw("CAST(passportExpireyDate as date) between STR_TO_DATE('$filter_passportExpireyDate[0]','%d/%m/%Y') and STR_TO_DATE('$filter_passportExpireyDate[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_bank_id)) {
+                $Select_db->where('bank_id', $request->filter_bank_id);
+            }
+            if (!empty($request->filter_accountNumber)) {
+                $Select_db->whereRaw("UPPER(accountNumber) LIKE '%" . strtoupper($request->filter_accountNumber) . "%'");
+            }
+            if (!empty($request->filter_account_owner_iqama)) {
+                $Select_db->whereRaw("UPPER(account_owner_iqama) LIKE '%" . strtoupper($request->filter_account_owner_iqama) . "%'");
+            }
+            if (!empty($request->filter_under_sopnsorship_id)) {
+                $Select_db->where('under_sopnsorship_id', $request->filter_under_sopnsorship_id);
+            }
+            if (!empty($request->filter_ajeer_id)) {
+                $Select_db->where('ajeer_id', $request->filter_ajeer_id);
+            }
+            if (!empty($request->filter_bander_car_id)) {
+                $Select_db->where('bander_car_id', $request->filter_bander_car_id);
+            }
+            // this
+            if (!empty($request->filter_vehicleId)) {
+                 $Select_db->where('drivers.vehicle_id', $request->filter_vehicleId);
+            }
+            if (!empty($request->filter_claim_dt)) {
+                $filter_claim_dt = explode(" - ", $request->filter_claim_dt);
+                $Select_db->whereRaw("CAST(claim_dt as date) between STR_TO_DATE('$filter_claim_dt[0]','%d/%m/%Y') and STR_TO_DATE('$filter_claim_dt[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_SANED_SettledDate)) {
+                $filter_SANED_SettledDate = explode(" - ", $request->filter_SANED_SettledDate);
+                $Select_db->whereRaw("CAST(SANED_SettledDate as date) between STR_TO_DATE('$filter_SANED_SettledDate[0]','%d/%m/%Y') and STR_TO_DATE('$filter_SANED_SettledDate[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_jahiz_clearing_updated_at)) {
+                $filter_jahiz_clearing_updated_at = explode(" - ", $request->filter_jahiz_clearing_updated_at);
+                $Select_db->whereRaw("CAST(jahiz_clearing_updated_at as date) between STR_TO_DATE('$filter_jahiz_clearing_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_jahiz_clearing_updated_at[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_collectionAmount)) {
+                if ($request->filter_collectionAmount == "1")
+                    $Select_db->whereRaw("drivers.collectionAmount >0 ");
+                elseif ($request->filter_collectionAmount == "2")
+                    $Select_db->whereRaw("drivers.collectionAmount <0 ");
+            }
+            //-------------------------------------------------------------------------------------------------------
+            if ($request->filter_Image_Identity == "1") {
+                $Select_db->whereRaw("Image_Identity is not null");
+            } elseif ($request->filter_Image_Identity == "2") {
+                $Select_db->whereRaw("Image_Identity is  null");
+            }
+            if ($request->filter_Image_Passport == "1") {
+                $Select_db->whereRaw("Image_Passport is not null");
+            } elseif ($request->filter_Image_Passport == "2") {
+                $Select_db->whereRaw("Image_Passport is  null");
+            }
+            if ($request->filter_Image_DrivingLicence == "1") {
+                $Select_db->whereRaw("Image_DrivingLicence is not null");
+            } elseif ($request->filter_Image_DrivingLicence == "2") {
+                $Select_db->whereRaw("Image_DrivingLicence is  null");
+            }
+            if ($request->filter_Image_VehiclesRegistration == "1") {
+                $Select_db->whereRaw("Image_VehiclesRegistration is not null");
+            } elseif ($request->filter_Image_VehiclesRegistration == "2") {
+                $Select_db->whereRaw("Image_VehiclesRegistration is  null");
+            }
+            if ($request->filter_Image_JobContract == "1") {
+                $Select_db->whereRaw("Image_JobContract is not null");
+            } elseif ($request->filter_Image_JobContract == "2") {
+                $Select_db->whereRaw("Image_JobContract is  null");
+            }
+            if ($request->filter_Image_PromissoryNote == "1") {
+                $Select_db->whereRaw("Image_PromissoryNote is not null");
+            } elseif ($request->filter_Image_PromissoryNote == "2") {
+                $Select_db->whereRaw("Image_PromissoryNote is  null");
+            }
+            //-------------------------------------------------------------------------------------------------------
+            if (!empty($request->filter_created_at)) {
+                $filter_created_at = explode(" - ", $request->filter_created_at);
+                $Select_db->whereRaw("CAST(drivers.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_updated_at)) {
+                $filter_updated_at = explode(" - ", $request->filter_updated_at);
+                $Select_db->whereRaw("CAST(drivers.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
+            }
+
+        $Select_db = $Select_db->toSql();
+        $data = DB::select($Select_db);
 
         $analatics = array('active'=>0,'Onhold'=>0,'Terminated'=>0,'wrongWarehouse'=>0);
-            foreach ($users as $key => $value) {
+            foreach ($data as $key => $value) {
                 # code...
                 switch ($value->status_id ) {
                     case 1:

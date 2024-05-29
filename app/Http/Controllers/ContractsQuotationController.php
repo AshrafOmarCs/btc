@@ -83,7 +83,7 @@ function get_email_template($id) {
         </thead>
         <tbody style="color: 1A3231;">';
     }
-    
+
     $i = 0;
     foreach($items as $item) {
         $i++;
@@ -92,9 +92,9 @@ function get_email_template($id) {
             $back_color = "background-color: #EBEBEA;";
         $name = $item->name_ar;
         $description = $item->description_ar;
-        if($item->vehicle_info_check == 1) 
-            $vehicle_info = 'N/A'; 
-        else 
+        if($item->vehicle_info_check == 1)
+            $vehicle_info = 'N/A';
+        else
             $vehicle_info = $item->vehicle_info_ar;
         $quantity = $item->quantity;
         $price = $item->price;
@@ -138,16 +138,16 @@ function get_email_template($id) {
 //                     <tr>
 //                         <td style="border-color: rgb(69, 161, 222); border: 1px solid rgb(69, 161, 222); padding: 10px 5px 10px 50px;">'.date("Ymd").$company[0]->id.'</td>
 //                         <td style="border-color: rgb(69, 161, 222); border: 1px solid rgb(69, 161, 222); padding: 10px 5px 10px 50px; background: rgba(69, 161, 222, 0.3);"># الفرقم عرض السعر </td>
-    
+
 //                     </tr>
 //                     <tr>
 //                         <td style="border-color: rgb(69, 161, 222); border: 1px solid rgb(69, 161, 222); padding: 10px 5px 10px 50px;">'.$todayDateArabic.'</td>
 //                         <td style="border-color: rgb(69, 161, 222); border: 1px solid rgb(69, 161, 222); padding: 10px 5px 10px 50px; background: rgba(69, 161, 222, 0.3);">التاريخ</td>
-    
+
 //                     </tr>';
 //                     // <tr>
 //                     //     <td style="border-color: rgb(69, 161, 222); border: 1px solid rgb(69, 161, 222); padding: 10px 5px 10px 50px;">SAR '.$total.'</td>
-    
+
 //                     //     <td style="border-color: rgb(69, 161, 222); border: 1px solid rgb(69, 161, 222); padding: 10px 5px 10px 50px; background: rgba(69, 161, 222, 0.3);">المبلغ المستحق</td>
 //                     // </tr>
 //             $body .= '</tbody>
@@ -250,7 +250,7 @@ class ContractsQuotationController extends Controller
         }
         return $template;
     }
-    
+
     // HR process
     public function reject_file(Request $request)
     {
@@ -293,7 +293,7 @@ class ContractsQuotationController extends Controller
                 $msg .= $head_foot[1];
                 $msg .= '</div>
                 </span>';
-                
+
                 $recipients = [
                     $email,
                     // 'm.shehroze@btclogistic.com',
@@ -306,16 +306,16 @@ class ContractsQuotationController extends Controller
                 if($email_status == false) {
                     return response()->json(['message' => 'Failed to send email.'], 500);
                 } else {
-                    return redirect('ContractsQuotation')->with('success', "Contract sent successfully");
+                    return redirect()->back()->with('success', "Contract sent successfully");
                 }
             } else {
-                return redirect('ContractsQuotation')->with('error', "Unable to find your location");
+                return redirect()->back()->with('error', "Unable to find your location");
             }
         } else if($quot_status == 0) {
             $reject_reason = HelperFunctionsController::clean_string($request->reject_reason);
             $cont_date_clause = "cont_start_date = '$cont_start_date',";
             if($cont_start_date === null)
-                $cont_date_clause = "";    
+                $cont_date_clause = "";
             DB::update("UPDATE contracts_quotations set $cont_date_clause reject_reason = '$reject_reason', status = '3' WHERE id = '$id'");
             if ($row[0]->type == 'contract') {
                 $msg = "Hi <b>$company</b>, <br><br>We trust this email find you well.<br><br>You provided some invalid data.<br>";
@@ -327,7 +327,7 @@ class ContractsQuotationController extends Controller
                 $msg .= 'Please <a href="'.url('').'/QuotationAccept/'.base64_encode($row[0]->id).'">Click here</a> to provide correct data again.<br><br><br>';
                 $msg .= 'Best Regards<br>';
                 $msg .= 'Bandar Trading Company';
-                
+
                 $subject = "Required information for BTC Contract";
             } else {
                 $head_foot = get_header_footer($row);
@@ -346,7 +346,7 @@ class ContractsQuotationController extends Controller
                 </span>';
                 $subject = "Quotation by BTC";
             }
-            
+
             $recipients = [
                 $email,
                 // 'm.shehroze@btclogistic.com',
@@ -358,7 +358,7 @@ class ContractsQuotationController extends Controller
             if($email_status == false) {
                 return response()->json(['message' => 'Failed to send email.'], 500);
             } else {
-                return redirect('ContractsQuotation')->with('success', "Quotation sent again successfully");
+                return redirect()->back()->with('success', "Quotation sent again successfully");
             }
         }
     }
@@ -369,10 +369,10 @@ class ContractsQuotationController extends Controller
         $contracts = DB::select('SELECT contracts_quotations.*, users.`name` as user_name from contracts_quotations join users on contracts_quotations.created_by = users.id order by created_at desc');
         $approved_users = DB::select('SELECT * from contracts_quotations_approved_by');
         $approval_users = DB::select("SELECT contracts_quotations_approval_users.emp_id, users.`name` FROM contracts_quotations_approval_users INNER JOIN users ON contracts_quotations_approval_users.emp_id=users.id ORDER BY CASE WHEN users.id = '$user_id' THEN 0 ELSE 1 END, users.id");
-        
-        return view('ContractsQuotation.index')->with('contracts', $contracts)->with('approved_users', $approved_users)->with('approval_users', $approval_users);
+
+        return view('new_porttal.ContractsQuotation.index')->with('contracts', $contracts)->with('approved_users', $approved_users)->with('approval_users', $approval_users);
     }
-    
+
     public function create(Request $request)
     {
         $type = $request->type;
@@ -385,8 +385,8 @@ class ContractsQuotationController extends Controller
         foreach($items as $item)
             $options .= "<option value='$item->id'>$item->name</option>";
         $options .= "<option value='other'>Other</option>";
-        
-        return view('ContractsQuotation.create')->with('type', $type)->with('options', $options)->with('contract_types', $contract_types)->with('companies', $companies);
+
+        return view('new_porttal.ContractsQuotation.create')->with('type', $type)->with('options', $options)->with('contract_types', $contract_types)->with('companies', $companies);
     }
     public function store(Request $request)
     {
@@ -449,7 +449,7 @@ class ContractsQuotationController extends Controller
                 DB::insert("INSERT into contracts_quotations_items (quot_id, name, name_ar, description, description_ar, price, created_by, created_at) VALUES ('$id', '$name', '$name_ar', '$description', '$description_ar', '$price', '$user_id', NOW())");
             }
         }
-        return redirect('ContractsQuotation')->with('success', "Data Added successfully");
+        return redirect()->back()->with('success', "Data Added successfully");
     }
     public function get(Request $request)
     {
@@ -463,12 +463,12 @@ class ContractsQuotationController extends Controller
 
         foreach($itemss as $item)
             $options .= "<option value='$item->id'>$item->name</option>";
-        $options .= "<option value='other'>Other</option>";        
+        $options .= "<option value='other'>Other</option>";
         $companies = DB::select('SELECT * from lkp_contracts_quotations_companies');
 
         $reject_reasons = DB::select("SELECT contracts_quotations_approved_by.reject_reason,users.`name` FROM contracts_quotations_approved_by INNER JOIN users ON contracts_quotations_approved_by.emp_id=users.id WHERE contracts_quotations_approved_by.reject_reason is not null AND contracts_quotations_approved_by.cont_quot_id = '$id'");
         $companies = DB::select('SELECT * from lkp_contracts_quotations_companies');
-        return view('ContractsQuotation.edit')->with('companies', $companies)->with('type', $type)->with('data', $contract)->with('reject_reasons', $reject_reasons)->with('items', $items)->with('contract_types', $contract_types)->with('options', $options);
+        return view('new_porttal.ContractsQuotation.edit')->with('companies', $companies)->with('type', $type)->with('data', $contract)->with('reject_reasons', $reject_reasons)->with('items', $items)->with('contract_types', $contract_types)->with('options', $options);
     }
     public function showContract(Request $request)
     {
@@ -478,10 +478,10 @@ class ContractsQuotationController extends Controller
         $contract_types = DB::select('SELECT * from lkp_contract_type');
         $items = DB::select("SELECT * from contracts_quotations_items WHERE quot_id = '$id' order by id");
 
-        return view('ContractsQuotation.show')->with('type', $type)->with('data', $contract)->with('contract_types', $contract_types)->with('items', $items);
+        return view('new_porttal.ContractsQuotation.show')->with('type', $type)->with('data', $contract)->with('contract_types', $contract_types)->with('items', $items);
     }
-    
-    
+
+
     public function update(Request $request)
     {
         $contractType = $request->contractType;
@@ -491,7 +491,7 @@ class ContractsQuotationController extends Controller
         $body = $request->body;
         $id = $request->id;
         $user_id = Auth::user()->id;
-        
+
         $names = $request->name;
         $names_ar = $request->name_ar;
         $descriptions = $request->description;
@@ -516,7 +516,7 @@ class ContractsQuotationController extends Controller
                     $quot_check = DB::select("SELECT id from lkp_contracts_quotations_items where name = '$name'");
                     if(count($quot_check) > 0){} else {
                         DB::insert("INSERT into lkp_contracts_quotations_items (type, name, name_ar, description, description_ar, price, created_by, created_at) VALUES ('2', '$name', '$name_ar', '$description', '$description_ar', '$price', '$user_id', NOW())");
-                    } 
+                    }
                     DB::insert("INSERT into contracts_quotations_items (type, quot_id, name, name_ar, description, description_ar, price, created_by, created_at) VALUES ('2', '$id', '$name', '$name_ar', '$description', '$description_ar', '$price', '$user_id', NOW())");
                 } else {
                     if($vehicle_infos[$i] === null) {
@@ -543,7 +543,7 @@ class ContractsQuotationController extends Controller
         if(isset($request->reasons_update))
             DB::delete("DELETE FROM contracts_quotations_approved_by WHERE cont_quot_id = '$id'");
         DB::update("UPDATE contracts_quotations set contractType = '$contractType', companyName = '$companyName', companyName_ar = '$companyName_ar', companyEmail = '$companyEmail', status = null, updated_by = '$user_id', updated_at = NOW() WHERE id = '$id'");
-        return redirect('ContractsQuotation')->with('success', "Data Updated successfully");
+        return redirect()->back()->with('success', "Data Updated successfully");
     }
     public function delete(Request $request)
     {
@@ -551,8 +551,8 @@ class ContractsQuotationController extends Controller
         DB::delete("DELETE FROM contracts_quotations_approved_by WHERE cont_quot_id = '$id'");
         DB::delete("DELETE FROM contracts_quotations_items WHERE quot_id = '$id'");
         DB::delete("DELETE FROM contracts_quotations WHERE id = '$id'");
-        
-        return redirect('ContractsQuotation')->with('success', "Data DELETED successfully");
+
+        return redirect()->back()->with('success', "Data DELETED successfully");
     }
     public function add_approval(Request $request)
     {
@@ -567,7 +567,7 @@ class ContractsQuotationController extends Controller
             $company = $row[0]->companyName;
             $email = $row[0]->companyEmail;
             $type = $row[0]->type;
-            
+
             $ref_no = date("dmy").$cont_quot_id;
             DB::update("UPDATE contracts_quotations set ref_no = '$ref_no' WHERE id = '$cont_quot_id'");
             if ($type == 'contract') {
@@ -575,13 +575,13 @@ class ContractsQuotationController extends Controller
                 $msg = 'Please <a href="'.url('').'/QuotationAccept/'.base64_encode($row[0]->id).'">Click here</a> to provide data of your company.<br><br><br>';
                 $msg .= 'Best Regards<br>';
                 $msg .= 'Bandar Trading Company';
-                
+
                 $subject = "Required information for BTC Contract";
             } else {
                 $msg = get_email_template($cont_quot_id);
                 $subject = "Quotation by BTC";
             }
-            
+
             $recipients = [
                 $email,
                 // 'm.shehroze@btclogistic.com',
@@ -595,7 +595,7 @@ class ContractsQuotationController extends Controller
             }
         }
     }
-    
+
     public function reject_quotation(Request $request)
     {
         $reject_reason = HelperFunctionsController::clean_string($request->reject_reason);
@@ -603,7 +603,7 @@ class ContractsQuotationController extends Controller
         $emp_id = $request->emp_id;
         $cont_quot_id = $request->cont_quot_id;
         DB::insert("INSERT into contracts_quotations_approved_by (emp_id, status, reject_reason, cont_quot_id, created_on) VALUES ('$emp_id', '$status', '$reject_reason', '$cont_quot_id', NOW())");
-        return redirect('ContractsQuotation')->with('success', "Reject reason Added successfully");
+        return redirect()->back()->with('success', "Reject reason Added successfully");
     }
     public function company_quotation_accept($id) {
         $id = base64_decode($id);
@@ -612,7 +612,7 @@ class ContractsQuotationController extends Controller
             $company = $row[0]->companyName;
             $status = $row[0]->status;
             $id = base64_encode($id);
-            return view('ContractsQuotation.accept')->with('row', $row);
+            return view('new_porttal.ContractsQuotation.accept')->with('row', $row);
         } else {
             return response()->json(['message' => 'Something is wrong.'], 500);
         }
@@ -639,7 +639,7 @@ class ContractsQuotationController extends Controller
         // ]);
         $id = base64_decode($request->id);
         $query = '';
-        
+
         $queryData = [];
         $fields = [
             'company_type',
@@ -684,7 +684,7 @@ class ContractsQuotationController extends Controller
                 $auth_letter = 'Authentication letter_' . time() . '.' . $request->auth_letter->extension();
                 $request->auth_letter->move(storage_path('app/public/CompanyQuotation'), $auth_letter);
             }
-        
+
             if (isset($request->iqama_image)) {
                 $iqama_image = 'Info_Iqama_' . time() . '.' . $request->iqama_image->extension();
                 $request->iqama_image->move(storage_path('app/public/CompanyQuotation'), $iqama_image);
@@ -713,7 +713,7 @@ class ContractsQuotationController extends Controller
             return redirect()->back();
         }
     }
-    
+
     public function company_quotation_reject($id) {
         $id = base64_decode($id);
         $row = DB::select("SELECT * FROM contracts_quotations WHERE id = '$id'");
@@ -721,7 +721,7 @@ class ContractsQuotationController extends Controller
             $company = $row[0]->companyName;
             $status = $row[0]->status;
             $id = base64_encode($id);
-            return view('ContractsQuotation.reject')->with('id', $id)->with('status', $status)->with('company', $company);
+            return view('new_porttal.ContractsQuotation.reject')->with('id', $id)->with('status', $status)->with('company', $company);
         } else {
             return response()->json(['message' => 'Something is wrong.'], 500);
         }
@@ -756,8 +756,8 @@ class ContractsQuotationController extends Controller
             return redirect()->back();
         }
     }
-    
-    
+
+
     public function company_contract_accept($id) {
         $id = base64_decode($id);
         $row = DB::select("SELECT * FROM contracts_quotations WHERE id = '$id'");
@@ -769,7 +769,7 @@ class ContractsQuotationController extends Controller
             $company = $row[0]->companyName;
             $status = $row[0]->status;
             $id = base64_encode($id);
-            return view('ContractsQuotation.contract_accept')->with('id', $id)->with('status', $status)->with('company', $company)->with('row', $row)->with('items', $items);
+            return view('new_porttal.ContractsQuotation.contract_accept')->with('id', $id)->with('status', $status)->with('company', $company)->with('row', $row)->with('items', $items);
         } else {
             return response()->json(['message' => 'Something is wrong.'], 500);
         }
@@ -793,7 +793,7 @@ class ContractsQuotationController extends Controller
             $company = $row[0]->companyName;
             $cont_start_date = $row[0]->cont_start_date;
             $cont_end_date = HelperFunctionsController::one_year_later_date($cont_start_date);
-            
+
             DB::update("UPDATE contracts_quotations set client_ip = '$client_ip', client_address = '$client_address', cont_end_date = '$cont_end_date', type = 'contract', status = '4', signature_date = NOW(), eSignature = '$eSignature' WHERE id = '$id'");
             $row = DB::select("SELECT * FROM contracts_quotations WHERE id = '$id'");
             $company = $row[0]->companyName;
@@ -830,7 +830,7 @@ class ContractsQuotationController extends Controller
                 $msg .= $head_foot[1];
                 $msg .= '</div>
                 </span>';
-                
+
                 $recipients = [
                     $email,
                     // 'm.shehroze@btclogistic.com',
@@ -854,7 +854,7 @@ class ContractsQuotationController extends Controller
             return response()->json(['message' => 'We are unable to find your location. Please try again.'], 500);
         }
     }
-    
+
     public function company_contract_reject($id) {
         $id = base64_decode($id);
         $row = DB::select("SELECT * FROM contracts_quotations WHERE id = '$id'");
@@ -862,7 +862,7 @@ class ContractsQuotationController extends Controller
             $company = $row[0]->companyName;
             $status = $row[0]->status;
             $id = base64_encode($id);
-            return view('ContractsQuotation.contract_reject')->with('id', $id)->with('status', $status)->with('company', $company);
+            return view('new_porttal.ContractsQuotation.contract_reject')->with('id', $id)->with('status', $status)->with('company', $company);
         } else {
             return response()->json(['message' => 'Something is wrong.'], 500);
         }
@@ -875,11 +875,11 @@ class ContractsQuotationController extends Controller
         $id = base64_decode($request->id);
         $reject_reason = HelperFunctionsController::clean_string($request->reject_reason);
         DB::update("UPDATE contracts_quotations set status = '5', reject_reason = '$reject_reason' WHERE id = '$id'");
-        
+
         session()->flash('message', 'Thanks for providing the reason.');
         return redirect()->back();
     }
-    
+
     public function contract($id) {
         $id = base64_decode($id);
         $row = DB::select("SELECT * FROM contracts_quotations WHERE id = '$id'");
@@ -887,23 +887,23 @@ class ContractsQuotationController extends Controller
 
         if(count($row) > 0) {
             $company = $row[0]->companyName;
-            return view('ContractsQuotation.contract')->with('company', $company)->with('row', $row)->with('items', $items);
+            return view('new_porttal.ContractsQuotation.contract')->with('company', $company)->with('row', $row)->with('items', $items);
         } else {
             return response()->json(['message' => 'Something is wrong.'], 500);
         }
     }
-    
+
     public function validateOTP($id) {
         $id = base64_decode($id);
         $row = DB::select("SELECT * FROM contracts_quotations WHERE id = '$id'");
-        return view('ContractsQuotation.otp')->with('row', $row);
+        return view('new_porttal.ContractsQuotation.otp')->with('row', $row);
     }
     public function phoneEmailVerification(Request $request) {
         $id = base64_decode($request->id);
         $type = $request->type;
         $row = DB::select("SELECT * FROM contracts_quotations WHERE id = '$id'");
         $ref_no = $row[0]->ref_no;
-        $recp_name = explode(" ", $row[0]->companyName); 
+        $recp_name = explode(" ", $row[0]->companyName);
         $recp_name = $recp_name[0];
         if($type == 'phone') {
             $number = $request->phoneInput;
@@ -920,8 +920,8 @@ class ContractsQuotationController extends Controller
                 "templateid" => "1973",
                 "V1" => $recp_name,
                 "V2" => $otp
-              );    
-              $data_string = json_encode($data); 
+              );
+              $data_string = json_encode($data);
               $ch =
               curl_init('https://rest.gateway.sa/api/SendSMS');
               curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -942,8 +942,8 @@ class ContractsQuotationController extends Controller
                 $otp = HelperFunctionsController::generateOTP(6);
                 DB::update("UPDATE contracts_quotations set otp = '$otp' WHERE id = '$id'");
                 $msg .= '
-                <p style="color: #1A3231;direction: rtl; font-size: 15px;">لقت تم طلب التحقق من هوية بغرض  عرض تفاصيل العقد('.$ref_no.') عبر البريد الالكتروني. 
-                </br> رمز التحقق الخاص بك هو : 
+                <p style="color: #1A3231;direction: rtl; font-size: 15px;">لقت تم طلب التحقق من هوية بغرض  عرض تفاصيل العقد('.$ref_no.') عبر البريد الالكتروني.
+                </br> رمز التحقق الخاص بك هو :
                 </p>
                 <p style="color: #1A3231;direction: rtl; font-size: 15px;"><b>'.$otp.'</b></p>
                 <p style="color: #1A3231;direction: rtl; font-size: 15px;">في حالة لم تقم بطل رمز التوثيق يرجى تجاهل هذة الرسالة</p>
@@ -951,7 +951,7 @@ class ContractsQuotationController extends Controller
                 $msg .= $head_foot[1];
                 $msg .= '</div>
                 </span>';
-                
+
                 $recipients = [
                     $email,
                 ];
@@ -979,11 +979,11 @@ class ContractsQuotationController extends Controller
         $status = $row[0]->status;
         if($row[0]->otp == $request->otp) {
             if($row[0]->status == 4) {
-                return view('ContractsQuotation.contract')->with('company', $company)->with('row', $row)->with('items', $items);
+                return view('new_porttal.ContractsQuotation.contract')->with('company', $company)->with('row', $row)->with('items', $items);
             } else {
                 $cont_id = $row[0]->id;
                 DB::update("UPDATE contracts_quotations set cont_view_date = NOW() WHERE id = '$cont_id'");
-                return view('ContractsQuotation.contract_accept')->with('id', $id)->with('status', $status)->with('company', $company)->with('row', $row)->with('items', $items);
+                return view('new_porttal.ContractsQuotation.contract_accept')->with('id', $id)->with('status', $status)->with('company', $company)->with('row', $row)->with('items', $items);
             }
         } else {
             session()->flash('message', 'Otp is not Correct.');

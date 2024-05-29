@@ -42,6 +42,7 @@ return [
     'view_info' => 'عرض المعلومات',
     'delete' => 'يمسح',
     'delete_msg' => 'هل أنت متأكد أنك تريد حذف',
+    'edit' => 'يحرر',
     'cancel' => 'يلغي',
     'submit' => 'يُقدِّم',
     'export_PDF' => 'تصدير قوات الدفاع الشعبي',
@@ -82,7 +83,7 @@ return [
     'contract_information' => 'معلومات العقد',
     'national_address_en' => 'العنوان الوطني انجليزي',
     'national_address_ar' => 'العنوان الوطني عربي',
-    
-    
+
+
 
 ];

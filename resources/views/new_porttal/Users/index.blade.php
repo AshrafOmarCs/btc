@@ -319,7 +319,7 @@
     <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">{{__('drivers.driver')}}</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('users.user')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="w3-container" action="" method="POST" id="delete_form">
@@ -401,7 +401,7 @@
                     <div class="table-responsive">
                         <table id="customer_data" class="table table-bordered">
                             <thead>
-                                <tr class="table-primary">
+                                <tr>
                                     <TH>Name</TH>
                                     <TH>{{__('users.phone')}}</TH>
                                     <TH>{{__('users.email')}}</TH>
@@ -663,9 +663,9 @@
                     if ($('#filter_status').val() > 0)
                         html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_status option:selected').text()+'</button>';
                     if ($('#filter_created_at').val() != '')
-                        html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_created_at').val()+'</button>';
+                        html += '<button type="button" class="btn btn-outline-secondary btn-rounded">Created at: '+$('#filter_created_at').val()+'</button>';
                     if ($('#filter_updated_at').val() != '')
-                        html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_updated_at').val()+'</button>';
+                        html += '<button type="button" class="btn btn-outline-success btn-rounded">Updated at: '+$('#filter_updated_at').val()+'</button>';
 
                     if(html != '') {
                         $('#edit_btn').show();
@@ -750,17 +750,19 @@
 
     var selected = [];
     function export_excel() {
-        $('#backButton').hide();
+        // $('#backButton').hide();
         $('#exportExcelBtn').prop('disabled', true);
         // $('.secondList').hide();
         $('#select_all_second').prop('checked', false);
-        $('#select_all').prop('checked', false);
-        $('.select_options').removeClass('active');
+        // $('#select_all').prop('checked', false);
+        // $('.select_options').removeClass('active');
         $('#ExportExcel').modal('toggle');
     }
     function check_uncheck() {
         selected = [];
         var all_array = @json($array);
+        $('#forwardBtn').removeClass('disabled');
+        $('#reverseBtn').addClass('disabled');
         if ($('#select_all').prop('checked')) {
             $(".select_options").addClass("active");
             let i = 0;
@@ -774,6 +776,8 @@
     }
     function check_uncheckSecond() {
         selected = [];
+        $('#forwardBtn').addClass('disabled');
+        $('#reverseBtn').removeClass('disabled');
         var second_array = @json($array);
         if ($('#select_all_second').prop('checked')) {
             $(".unselect_options").removeClass("active");

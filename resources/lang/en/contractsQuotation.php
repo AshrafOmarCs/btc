@@ -36,12 +36,14 @@ return [
     'waiting_management_approval' => 'Waiting Management Approval',
     'click_to_modify' => 'Click to Modify',
     'click_to_verify' => 'Click to Verify',
+    'verification' => 'Verification',
     'pending_company_approval' => 'Pending Company Approval',
     'pending_info_recheck_by_company' => 'Pending Info recheck by company',
     'view_contract' => 'View Contract',
     'view_info' => 'View Info',
     'delete' => 'Delete',
     'delete_msg' => 'Are you sure, you want to delete',
+    'edit' => 'Edit',
     'cancel' => 'Cancel',
     'submit' => 'Submit',
     'export_PDF' => 'Export PDF',
@@ -82,10 +84,10 @@ return [
     'contract_information' => 'Contract Information',
     'national_address_en' => 'National Address English',
     'national_address_ar' => 'National Address Arabic',
-    
-    
-    
-    
-    
+
+
+
+
+
 
 ];

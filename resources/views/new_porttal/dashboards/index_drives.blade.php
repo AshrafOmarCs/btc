@@ -550,34 +550,33 @@
                         <div class="table-responsive">
                             <table id="customer_data" class="table table-bordered">
                                 <thead>
-                                    <tr class="table-primary">
-                                        <TH>{{__('drivers.Company')}}</TH>
-                                        <TH>{{__('drivers.Warehouse')}}</TH>
-                                        <TH>{{__('drivers.Type')}}</TH>
-                                        <TH>{{__('drivers.fullName')}}</TH>
-                                        <TH>{{__('drivers.Mobile')}}</TH>
-                                        <TH>{{__('drivers.Iqama')}}</TH>
-                                        <TH>{{__('drivers.JobId')}}</TH>
-                                        <th>{{__('drivers.DriverDocs')}}</th>
-                                        <TH>{{__('drivers.AppStatus')}}</TH>
-                                        <TH>{{__('drivers.Status')}}</TH>
+                                    <tr>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Company')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Warehouse')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Type')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.fullName')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Mobile')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Iqama')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.JobId')}}</TH>
+                                        <th class="text-center" style="vertical-align: middle;">{{__('drivers.DriverDocs')}}</th>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.AppStatus')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Status')}}</TH>
                                         @if(Auth::user()->user_type_id==1)
-                                            {{-- <TH>{{__('drivers.OnHold')}} --}}
+                                            {{-- <TH class="text-center" style="vertical-align: middle;">{{__('drivers.OnHold')}} --}}
                                                 {{-- <input class="flat-red" type="checkbox" name="select-all" id="select-all"/>
                                             </TH> --}}
 
-                                            <TH>{{__('drivers.BanderCar')}}</TH>
-                                            <TH>{{__('drivers.total_balance')}}</TH>
-                                            {{-- <TH>{{__('drivers.PBalance')}}</TH>
-                                            <TH>{{__('drivers.CBalance')}}</TH> --}}
-                                            <TH>{{__('drivers.Updated_At')}}</TH>
+                                            <TH class="text-center" style="vertical-align: middle;">{{__('drivers.BanderCar')}}</TH>
+                                            <TH class="text-center" style="vertical-align: middle;">{{__('drivers.total_balance')}}</TH>
+                                            {{-- <TH class="text-center" style="vertical-align: middle;">{{__('drivers.PBalance')}}</TH>
+                                            <TH class="text-center" style="vertical-align: middle;">{{__('drivers.CBalance')}}</TH> --}}
+                                            <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Updated_At')}}</TH>
                                         @endif
-                                        <TH>{{__('drivers.Action')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Action')}}</TH>
 
 
-                                        <TH style="display:none;">{{__('drivers.AccountNumber')}}</TH>
-                                        <TH style="display:none;">{{__('drivers.Account_Owner_Iqama')}}</TH>
-
+                                        <TH class="text-center" style="vertical-align: middle; display:none;">{{__('drivers.AccountNumber')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle; display:none;">{{__('drivers.Account_Owner_Iqama')}}</TH>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -606,6 +605,17 @@
 <script>
         // Export Excel button click event
     $(document).ready(function () {
+        $('#filter_updated_at').val('');
+        $('#filter_created_at').val('');
+
+        // Clear the input when the cancel button is clicked
+        $('#filter_created_at').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+        $('#filter_updated_at').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
         $('#driverForm').on('submit', function(e) {
             e.preventDefault();
             var formData = new FormData(this);
@@ -1078,7 +1088,9 @@
                         if ($('#filter_driver_type_id').val() > 0)
                             html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_driver_type_id option:selected').text()+'</button>';
                         if ($('#filter_created_at').val() != '')
-                            html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_created_at').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-success btn-rounded">Created at: '+$('#filter_created_at').val()+'</button>';
+                        if ($('#filter_updated_at').val() != '')
+                            html += '<button type="button" class="btn btn-outline-success btn-rounded">Updated at: '+$('#filter_updated_at').val()+'</button>';
 
                         if ($('#filter_Image_Identity').val() != '')
                             html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_Image_Identity option').val()+'</button>';
@@ -1281,17 +1293,19 @@
 <script>
     var selected = [];
     function export_excel() {
-        $('#backButton').hide();
+        // $('#backButton').hide();
         $('#exportExcelBtn').prop('disabled', true);
-        $('.secondList').hide();
+        // $('.secondList').hide();
         $('#select_all_second').prop('checked', false);
-        $('#select_all').prop('checked', false);
-        $('.select_options').removeClass('active');
+        // $('#select_all').prop('checked', false);
+        // $('.select_options').removeClass('active');
         $('#ExportExcel').modal('toggle');
     }
     function check_uncheck() {
         selected = [];
         var all_array = @json($array);
+        $('#forwardBtn').removeClass('disabled');
+        $('#reverseBtn').addClass('disabled');
         if ($('#select_all').prop('checked')) {
             $(".select_options").addClass("active");
             let i = 0;
@@ -1305,6 +1319,8 @@
     }
     function check_uncheckSecond() {
         selected = [];
+        $('#forwardBtn').addClass('disabled');
+        $('#reverseBtn').removeClass('disabled');
         var second_array = @json($array);
         if ($('#select_all_second').prop('checked')) {
             $(".unselect_options").removeClass("active");

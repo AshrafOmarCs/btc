@@ -16,6 +16,7 @@
 		<meta property="og:type" content="Website">
 		<meta property="og:site_name" content="Bootstrap Gallery">
 		<link rel="shortcut icon" href="{{asset('assets/images/logo.png')}}">
+        <link rel="stylesheet" type="text/css" href="https://jeremyfagis.github.io/dropify/dist/css/dropify.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
 
 		<!-- Title -->
@@ -116,15 +117,15 @@
 							<li class="sidebar-dropdown">
 								<a href="#">
 									<i class="bi bi-credit-card-2-front"></i>
-									<span class="menu-text">Accounts</span>
+									<span class="menu-text">{{__('nav.accounts')}}</span>
 								</a>
 								<div class="sidebar-submenu">
 									<ul>
 										<li>
-											<a href="{{url('New-Portal/Users')}}">Administrator</a>
+											<a href="{{url('New-Portal/Users')}}">{{__('nav.administration')}}</a>
 										</li>
 										<li>
-											<a href="{{url('New-Portal/Supervisors')}}">Supervisors </a>
+											<a href="{{url('New-Portal/Supervisors')}}">{{__('nav.supervisors_areaManager')}} </a>
 										</li>
 										<li>
 											<a href="widgets.html">Employee</a>
@@ -151,13 +152,13 @@
 							<li>
 								<a href="{{url('New-Portal/Drivers')}}">
 									<i class="bi bi-calendar4"></i>
-									<span class="menu-text {{ request()->is('New-Portal/Drivers') ? 'current-page' : '' }}">Drivers</span>
+									<span class="menu-text {{ request()->is('New-Portal/Drivers') ? 'current-page' : '' }}">{{__('nav.drivers')}}</span>
 								</a>
 							</li>
 							<li>
 								<a href="{{url('New-Portal/DriversJahiz')}}">
 									<i class="bi bi-calendar4"></i>
-									<span class="menu-text" class="{{ request()->is('New-Portal/DriversJahiz') ? 'current-page' : '' }}">Jahiz's Drivers</span>
+									<span class="menu-text" class="{{ request()->is('New-Portal/DriversJahiz') ? 'current-page' : '' }}">{{__('nav.drivers_jahiz')}}</span>
 								</a>
 							</li>
 							<li>
@@ -245,9 +246,9 @@
 								</a>
 							</li>
 							<li>
-								<a href="calendar.html">
+								<a href="{{URL("New-Portal/ContractsQuotation")}}">
 									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">Contracts</span>
+									<span class="menu-text">{{__('nav.contracts_quotations')}}</span>
 								</a>
 							</li>
 							<li class="sidebar-dropdown">
@@ -258,10 +259,10 @@
 								<div class="sidebar-submenu">
 									<ul>
 										<li>
-											<a href="accordions.html">New Docs/Tutorials</a>
+											<a href="{{url('New-Portal/UploadDocuments')}}">{{__('nav.upload_documents')}}</a>
 										</li>
 										<li>
-											<a href="alerts.html"> Docs/Tutorials </a>
+											<a href="{{url('New-Portal/Documents')}}"> {{__('nav.documents')}} </a>
 										</li>
 									</ul>
 								</div>
@@ -502,7 +503,10 @@
 
         <!-- Custom Data tables -->
         <script src="{{asset('assets/vendor/datatables/custom/custom-datatables.js')}}"></script>
+        {{-- !-- Dropify JS --> --}}
+        <script type="text/javascript" src="https://jeremyfagis.github.io/dropify/dist/js/dropify.min.js"></script>
         <script>
+            $('.dropify').dropify();
             function set_lang(lang) {
                 window.location.href = '/lang/'+lang;
             }

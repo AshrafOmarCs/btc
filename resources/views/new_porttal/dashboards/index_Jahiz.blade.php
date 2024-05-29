@@ -339,7 +339,7 @@
                                             <span class="input-group-text">
                                                 <i class="bi bi-calendar4"></i>
                                             </span>
-                                            <input type="text" class="form-control datepicker-range" id="filter_claim_dt" name="filter_claim_dt">
+                                            <input type="text" class="form-control datepicker-range" id="filter_claim_dt" name="filter_claim_dt" value="">
                                         </div>
                                     </div>
 
@@ -349,7 +349,7 @@
                                             <span class="input-group-text">
                                                 <i class="bi bi-calendar4"></i>
                                             </span>
-                                            <input type="text" class="form-control datepicker-range" id="filter_SANED_SettledDate" name="filter_SANED_SettledDate">
+                                            <input type="text" class="form-control datepicker-range" id="filter_SANED_SettledDate" name="filter_SANED_SettledDate" value="">
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
@@ -837,31 +837,31 @@
                     <div class="table-responsive">
                         <table id="customer_data" class="table table-bordered">
                             <thead>
-                                <tr class="table-primary">
-                                    <TH rowspan="2">{{__('drivers.City')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.Type')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.fullName')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.ActualName')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.Mobile')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.STCPay')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.JobId')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.Status')}}</TH>
-                                    <TH rowspan="2"><?php echo date('Y-m', strtotime(date('Y-m') . " -1 month"));?></TH>
-                                    <TH rowspan="2"><?php echo date('Y-m');?></TH>
-                                    <TH style="background-color: #B7A758" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">{{__('drivers.SANED')}}</TH>
-                                    <TH style="background-color: #B7A758" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">{{__('drivers.Bander')}}</TH>
-                                    <TH style="background-color: #B7A758" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">مطالبة</TH>
-                                    <TH rowspan="2">{{__('drivers.Amount')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.Create')}}</TH>
-                                    <TH rowspan="2">{{__('drivers.Action')}}</TH>
+                                <tr>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.City')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.Type')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.fullName')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.ActualName')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.Mobile')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.STCPay')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.JobId')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.Status')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2"><?php echo date('Y-m', strtotime(date('Y-m') . " -1 month"));?></TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2"><?php echo date('Y-m');?></TH>
+                                    <TH class="text-center" style="background-color: #b9ad73ba" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">{{__('drivers.SANED')}}</TH>
+                                    <TH class="text-center" style="background-color: #b9ad73ba" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">{{__('drivers.Bander')}}</TH>
+                                    <TH class="text-center" style="background-color: #b9ad73ba" colspan="2" style="text-align: center!important;border-bottom: 0px!important;">مطالبة</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.Amount')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.Create')}}</TH>
+                                    <TH class="text-center" style="vertical-align: middle;" rowspan="2">{{__('drivers.Action')}}</TH>
                                 </tr>
                                 <tr>
-                                    <TH style="background-color: #B7A758">{{__('drivers.SAR')}}</TH>
-                                    <TH style="background-color: #B7A758">{{__('drivers.Days')}}</TH>
-                                    <TH style="background-color: #B7A758">{{__('drivers.SAR')}}</TH>
-                                    <TH style="background-color: #B7A758">{{__('drivers.Days')}}</TH>
-                                    <TH style="background-color: #B7A758">{{__('drivers.SAR')}}</TH>
-                                    <TH style="background-color: #B7A758" style="border-right: 1px solid #f4f4f4!important;">{{__('drivers.Days')}}</TH>
+                                    <TH style="background-color: #b7a75842">{{__('drivers.SAR')}}</TH>
+                                    <TH style="background-color: #b7a75842">{{__('drivers.Days')}}</TH>
+                                    <TH style="background-color: #b7a75842">{{__('drivers.SAR')}}</TH>
+                                    <TH style="background-color: #b7a75842">{{__('drivers.Days')}}</TH>
+                                    <TH style="background-color: #b7a75842">{{__('drivers.SAR')}}</TH>
+                                    <TH style="background-color: #b7a75842" style="border-right: 1px solid #f4f4f4!important;">{{__('drivers.Days')}}</TH>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1137,6 +1137,28 @@
                     }
                 });
             });
+            $('#filter_claim_dt').val('');
+            $('#filter_SANED_SettledDate').val('');
+            $('#filter_jahiz_clearing_updated_at').val('');
+            $('#filter_created_at').val('');
+            $('#filter_updated_at').val('');
+            // Clear the input when the cancel button is clicked
+            $('#filter_claim_dt').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+            $('#filter_SANED_SettledDate').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+            $('#filter_jahiz_clearing_updated_at').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+            $('#filter_created_at').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+            $('#filter_updated_at').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+
             fill_datatable();
 
             function fill_datatable(filter_screenId = '', filter_companyId = '', filter_warehouseId = '', filter_driver_type_id = '', filter_fullName = '', filter_mobileNumber = '', filter_iqama = '', filter_job_id = '', filter_status_id = '', filter_account_owner_iqama = '', filter_accountNumber = '', filter_claim_dt = '', filter_SANED_SettledDate = '', filter_jahiz_clearing_updated_at = '', filter_collectionAmount = '', filter_created_at = '', filter_updated_at = '', filter_Image_Identity = '', filter_Image_Passport = '', filter_Image_DrivingLicence = '', filter_Image_VehiclesRegistration = '', filter_Image_JobContract = '', filter_Image_PromissoryNote = '') {
@@ -1608,8 +1630,6 @@
                             html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_accountNumber').val()+'</button>';
                         if ($('#filter_driver_type_id').val() > 0)
                             html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_driver_type_id option:selected').text()+'</button>';
-                        if ($('#filter_created_at').val() != '')
-                            html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_created_at').val()+'</button>';
 
                         if ($('#filter_Image_Identity').val() != '')
                             html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_Image_Identity option').val()+'</button>';
@@ -1624,15 +1644,17 @@
                         if ($('#filter_Image_PromissoryNote').val() != '')
                             html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_Image_PromissoryNote option').val()+'</button>';
                         if ($('#filter_claim_dt').val() != '')
-                            html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_claim_dt option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-success btn-rounded">Claim date: '+$('#filter_claim_dt').val()+'</button>';
                         if ($('#filter_SANED_SettledDate').val() != '')
-                            html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_SANED_SettledDate option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-danger btn-rounded">Saned date: '+$('#filter_SANED_SettledDate').val()+'</button>';
                         if ($('#filter_jahiz_clearing_updated_at').val() != '')
-                            html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+$('#filter_jahiz_clearing_updated_at option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-warning btn-rounded">Jahiz date: '+$('#filter_jahiz_clearing_updated_at').val()+'</button>';
                         if ($('#filter_collectionAmount').val() != '')
                             html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_collectionAmount option').val()+'</button>';
+                        if ($('#filter_created_at').val() != '')
+                            html += '<button type="button" class="btn btn-outline-success btn-rounded">Created at: '+$('#filter_created_at').val()+'</button>';
                         if ($('#filter_updated_at').val() != '')
-                            html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_updated_at option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-light btn-rounded">Updated at: '+$('#filter_updated_at').val()+'</button>';
 
                         if(html != '') {
                             $('#edit_btn').show();
@@ -1963,17 +1985,19 @@
 
     var selected = [];
     function export_excel() {
-        $('#backButton').hide();
+        // $('#backButton').hide();
         $('#exportExcelBtn').prop('disabled', true);
-        $('.secondList').hide();
+        // $('.secondList').hide();
         $('#select_all_second').prop('checked', false);
-        $('#select_all').prop('checked', false);
-        $('.select_options').removeClass('active');
+        // $('#select_all').prop('checked', false);
+        // $('.select_options').removeClass('active');
         $('#ExportExcel').modal('toggle');
     }
     function check_uncheck() {
         selected = [];
         var all_array = @json($array);
+        $('#forwardBtn').removeClass('disabled');
+        $('#reverseBtn').addClass('disabled');
         if ($('#select_all').prop('checked')) {
             $(".select_options").addClass("active");
             let i = 0;
@@ -1987,6 +2011,8 @@
     }
     function check_uncheckSecond() {
         selected = [];
+        $('#forwardBtn').addClass('disabled');
+        $('#reverseBtn').removeClass('disabled');
         var second_array = @json($array);
         if ($('#select_all_second').prop('checked')) {
             $(".unselect_options").removeClass("active");
