@@ -647,7 +647,7 @@
                 if ($('#filter_user_name').val() != '' || $('#filter_phone').val() != '' || $('#filter_email').val() != '' || $('#filter_identityNo').val() != '' || $('#filter_user_type').val() != '' || $('#filter_role_name').val() != '' || $('#filter_status').val() != '' || $('#filter_created_at').val() != '' || $('#filter_updated_at').val() != '') {
                     $('#customer_data').DataTable().destroy();
                     fill_datatable($('#filter_user_type').val(), $('#filter_user_name').val(), $('#filter_phone').val(), $('#filter_email').val(), $('#filter_identityNo').val(), $('#filter_role_name').val(), $('#filter_status').val(), $('#filter_created_at').val(), $('#filter_updated_at').val());
-                    html = '';
+                    let html = '';
                     if ($('#filter_user_type').val() > 0)
                         html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_user_type option:selected').text()+'</button>';
                     if ($('#filter_user_name').val() != '')
@@ -878,7 +878,13 @@
             // }
         });
         var rowCount = table.rows().count();
-        var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
+        var rowCount = table.rows().count();
+            var headerRow = selected.map(column => {
+                var label = $('#' + column.id).siblings('label').text();
+                return label ? label : column.name;
+            });
+
+            var exportData = [headerRow];
         var rowCount = table.rows().count();
         for (var i = 0; i < rowCount; i++) {
             var rowData = [];

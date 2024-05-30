@@ -67,18 +67,18 @@ class CompanyController extends Controller
             }
             if (!empty($request->filter_created_at)) {
                 $filter_created_at = explode(" - ", $request->filter_created_at);
-                $Select_db->whereRaw("CAST(drivers.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')");
+                $Select_db->whereRaw("CAST(lkp_company.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')");
             }
             if (!empty($request->filter_updated_at)) {
                 $filter_updated_at = explode(" - ", $request->filter_updated_at);
-                $Select_db->whereRaw("CAST(drivers.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
+                $Select_db->whereRaw("CAST(lkp_company.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
             }
 
             return datatables()->of($Select_db)->make(true);
         }
 
         //$data = $Select_db->get();
-        return view('Company.index')->with(compact('lkp_calculation_method'));
+        return view('new_porttal.Company.index')->with(compact('lkp_calculation_method'));
     }
 
     /**
@@ -89,7 +89,7 @@ class CompanyController extends Controller
     public function create()
     {
         $lkp_calculation_method = DB::select('SELECT * from lkp_calculation_method ');
-        return view('Company.create')->with(compact('lkp_calculation_method'));
+        return view('new_porttal.Company.create')->with(compact('lkp_calculation_method'));
     }
 
     /**
@@ -144,7 +144,7 @@ class CompanyController extends Controller
             ->where('lkp_company.id', $id)
             ->first();
 
-        return view('Company.show')->with('Company', $Company);
+        return view('new_porttal.Company.show')->with('Company', $Company);
     }
 
     /**
@@ -168,7 +168,7 @@ class CompanyController extends Controller
             ->leftJoin('users as updated_users', 'lkp_company.updatedby_id', '=', 'updated_users.id')
             ->where('lkp_company.id', $id)
             ->first();
-        return view('Company.edit')->with(compact('Company'))->with(compact('lkp_calculation_method'));
+        return view('new_porttal.Company.edit')->with(compact('Company'))->with(compact('lkp_calculation_method'));
     }
 
     /**

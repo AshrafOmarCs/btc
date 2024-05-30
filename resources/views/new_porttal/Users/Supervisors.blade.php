@@ -6,18 +6,6 @@
         opacity: 0.5;
         pointer-events: none;
     }
-    .inner-table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-    .inner-table th {
-        padding: 5px;
-        background-color: #4CAF50;
-    }
-    .inner-table td {
-        padding: 8px;
-        border-bottom: 1px solid #dddddd;
-    }
     .list-group-item+.list-group-item.active {
         border-top: 1px solid white;
         background-color: #0866e9;
@@ -31,15 +19,6 @@
     .list-group .list-group-item {
 
     }
-    .inputBtns{
-        width: 89%;
-        margin: 5px;
-        float: right;
-    }
-    /* td{
-        vertical-align: middle !important;
-        text-align: center ;
-    } */
 </style>
 
 

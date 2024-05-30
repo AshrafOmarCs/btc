@@ -2113,7 +2113,13 @@
             // }
         });
         var rowCount = table.rows().count();
-        var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
+        var headerRow = selectedColumns.map(columnId => {
+            var label = $('#' + columnId).siblings('label').text();
+            return label ? label : '';
+        });
+        var exportData = [headerRow];
+
+        // var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
         var rowCount = table.rows().count();
         for (var i = 0; i < rowCount; i++) {
             var rowData = [];
