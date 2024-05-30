@@ -25,13 +25,13 @@ function get_category_table_body($categories) {
             <td>
                 '.$category->total;
                 if($category->total > 0) {
-                    $html .= '<a id="'.$category->id.'" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green total_devices"> <i class="fa fa-eye"></i> </a>';
+                    $html .= '<a id="'.$category->id.'" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green total_devices"> <i class="bi bi-eye-fill"></i> </a>';
                 }
             $html .= '</td>
             <td>
                 '.$category->available;
                 if($category->available > 0) {
-                    $html .= '<a id="'.$category->id.'" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green available_devices"> <i class="fa fa-eye"></i> </a>';
+                    $html .= '<a id="'.$category->id.'" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green available_devices"> <i class="bi bi-eye-fill"></i> </a>';
                 }
             $html .= '</td>
         </tr>';
@@ -47,7 +47,7 @@ function get_device_table_body($devices) {
             <td>'.++$no.'</td>
             <td><center>
                 '.$device->user_name.'<br><br>
-                <a id="'.$device->user_id.'" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a></center>
+                <a id="'.$device->user_id.'" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye-fill"></i> </a></center>
             </td>
             <td>'.$device->branches.'</td>
             <td>#'.strtoupper($device->reference_no).'</td>
@@ -63,7 +63,7 @@ function get_device_table_body($devices) {
                 $status = 'Awaiting <span style="color: #FF9800;">'.$device->assign_by.'</span> Approvel';
             $html .= $status .'
             </td>
-            <td> 
+            <td>
                 '.$device->action.'
             </td>
         </tr>';
@@ -88,7 +88,7 @@ class PropertyIssuanceController extends Controller
     public function propertiesConfirm($token){
          DB::update("UPDATE `properties_assignment` SET `delivery_timestamp`=NOW() WHERE `reference_no`='".$token."'");
         //  dd($payload);
-        // send a confirmation email to created by or/and HR 
+        // send a confirmation email to created by or/and HR
         $data = DB::select("SELECT users.NAME,assigned_user.NAME AS to_user,users.email FROM properties_assignment INNER JOIN users ON properties_assignment.assign_by=users.id INNER JOIN users assigned_user ON properties_assignment.user_id=assigned_user.id WHERE reference_no='$token'");
         $name = $data[0]->to_user;
         $email = $data[0]->email;
@@ -120,26 +120,26 @@ class PropertyIssuanceController extends Controller
         // $filename = 'hello_world.pdf';
         $sql = "SELECT users.name as 'user_name',users.department,users.IdentityNo,btc_properties.*,lkp_properties_category.name_ar as 'category_name_ar',lkp_properties_status.status_ar,`properties_assignment`.reference_no,`properties_assignment`.delivery_timestamp FROM `properties_assignment` JOIN users ON users.id = properties_assignment.user_id JOIN btc_properties ON btc_properties.id = properties_assignment.property_id JOIN lkp_properties_category ON lkp_properties_category.id = btc_properties.property_id JOIN lkp_properties_status ON lkp_properties_status.id = btc_properties.status_id WHERE properties_assignment.reference_no = '".$user_id."';"; //2
         $payload = DB::select($sql);
-        // dd($payload[0]->category_name_ar); 
+        // dd($payload[0]->category_name_ar);
         $table ;
-        foreach($payload as $getuniq){ 
+        foreach($payload as $getuniq){
             // dd($getuniq->category_name_ar);
             $uniq_array[] = $getuniq->name.' ('.$getuniq->category_name_ar.') - '.$getuniq->description ;
         }
         $uniq_arrayssss = array_unique($uniq_array);
-        $uniq_array = array_count_values($uniq_array); 
+        $uniq_array = array_count_values($uniq_array);
         foreach($uniq_arrayssss as $item){
             $table[] = [
                 "description"=>$item,
                 "status"=>$getuniq->status_ar,
                 "qty"=>$uniq_array[$item]
-            ]; 
+            ];
         }
         // dd($payload);
         return view('CompanyProprtiesIssuanceForm',compact('payload','table', 'type'));
         return response()->download(public_path($filename));
 
-        // return view('CompanyProprtiesIssuanceForm'); 
+        // return view('CompanyProprtiesIssuanceForm');
     }
     public function get_back_devices(Request $request)
     {
@@ -186,7 +186,7 @@ class PropertyIssuanceController extends Controller
         // devices section end
         // property issuance section start
         $devices = DB::select("SELECT users.`id` AS user_id, users.`name` AS user_name,properties_assignment.assign_by as assigned_by,properties_assignment.assign_at,properties_assignment.reference_no,properties_assignment.admin_approval_by,properties_assignment.delivery_timestamp,GROUP_CONCAT(DISTINCT btc_properties.`name` ORDER BY btc_properties.`name` ASC) AS device_names,btc_properties.branches FROM properties_assignment INNER JOIN users ON properties_assignment.user_id=users.id INNER JOIN btc_properties ON properties_assignment.property_id=btc_properties.id GROUP BY users.id,properties_assignment.reference_no,btc_properties.branches order by properties_assignment.id desc");
-        
+
         foreach($devices as $device) {
             $device_names = explode(',', $device->device_names);
             $user_id = $device->user_id;
@@ -195,46 +195,46 @@ class PropertyIssuanceController extends Controller
             $count;
             foreach($device_names as $name) {
                 $cont = DB::select("SELECT users.`name` as assign_by, btc_properties.name, btc_properties.description FROM btc_properties INNER JOIN properties_assignment ON btc_properties.id=properties_assignment.property_id INNER JOIN users ON properties_assignment.assign_by = users.id WHERE properties_assignment.reference_no='$reference_no' AND properties_assignment.user_id='$user_id' AND btc_properties.`name`='$name'");
-                
+
                 $count = count($cont);
-                 
+
                 if($count>0){
                     $html .= "<li>".$cont[0]->name." (".$cont[0]->description.") <span style='color: red; font-size: 14px'>*</span> <b style='color: #d7d322; font-size: 14px'>(".$count.")</b></li>";
                     $assign_by = $cont[0]->assign_by;
                 }else{
                     $assign_by = null;
                 }
-                
+
             }
             $html .= '</ul>';
             $device->device_names = $html;
             // dd($device);
-            $device->device_names .= "<center><a href='/Properties/Form/".$device->reference_no."/view' target='_blank' data-original-title='view' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green'> <i class='fa fa-eye'></i> </a></center>";
+            $device->device_names .= "<center><a href='/Properties/Form/".$device->reference_no."/view' target='_blank' data-original-title='view' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green'> <i class='bi bi-eye-fill'></i> </a></center>";
             $device->assign_by = $assign_by;
             $device->action = "<center>";
             if($device->admin_approval_by == '')
-                $device->action .= "&nbsp;&nbsp;<a onclick='devices_confirmation(`".$device->reference_no."`)' data-original-title='confirm device(s) list' title='confirm device(s) list' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green'> <i class='fa fa-check-square-o'></i> </a>";
-            
-            $device->action .= "&nbsp;&nbsp;<a href='#' onclick='get_devices(`".$device->reference_no."`)' data-original-title='receive device(s)' title='receive device(s)' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-yellow vd_yellow'> <i class='fa fa-undo'></i> </a>";
+                $device->action .= "<a onclick='devices_confirmation(`".$device->reference_no."`)' data-original-title='confirm device(s) list' title='confirm device(s) list' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green'> <i class='bi bi-check-square-fill'></i> </a>";
+
+            $device->action .= "<a href='#' onclick='get_devices(`".$device->reference_no."`)' data-original-title='receive device(s)' title='receive device(s)' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-yellow vd_yellow'> <i class='bi bi-arrow-counterclockwise'></i> </a>";
             if($device->admin_approval_by == '')
-                $device->action .= "&nbsp;&nbsp;<a href='#' data-original-title='delete' title='delete' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-red vd_red' aria-describedby='tooltip944117'> <i class='fa fa-times'></i> </a>";
+                $device->action .= "<a href='#' data-original-title='delete' title='delete' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-red vd_red' aria-describedby='tooltip944117'> <i class='bi bi-trash-fill'></i> </a>";
             $device->action .= "</center>";
-            
+
             $assigned_by = $device->assigned_by;
             $assigned = DB::select("SELECT users.`name` from users where id = '$assigned_by'");
             if(count($assigned)>0){
                 $device->assigned_by = $assigned[0]->name;
             }
-            
-            
+
+
         }
-        
+
         if(count($branches)>5){
             $swap=$branches[5];
             $branches[5] = $branches[3];
             $branches[3] = $swap;
         }
-        return view('PropertyIssuance.index_new')->with('assign_employees', $assign_employees)->with('categories', $categories)->with('employees', $employees)->with('branches', $branches)->with('devices', $devices);
+        return view('new_porttal.PropertyIssuance.index')->with('assign_employees', $assign_employees)->with('categories', $categories)->with('employees', $employees)->with('branches', $branches)->with('devices', $devices);
     }
     public function search(Request $request)
     {
@@ -269,8 +269,8 @@ class PropertyIssuanceController extends Controller
         if($filter_status != '') {
             $clause_status = " AND btc_properties.status_id = '$filter_status'";
         }
-        
-        
+
+
         // devices section start
         $categories = DB::select("SELECT * from lkp_properties_category WHERE 1 = 1 $clause_deviceType");
         foreach($categories as $row) {
@@ -303,15 +303,15 @@ class PropertyIssuanceController extends Controller
             $html .= '</ul>';
             $device->device_names = $html;
             // dd($device);
-            $device->device_names .= "<center><a href='/Properties/Form/".$device->reference_no."/view' target='_blank' data-original-title='view' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green'> <i class='fa fa-eye'></i> </a></center>";
+            $device->device_names .= "<center><a href='/Properties/Form/".$device->reference_no."/view' target='_blank' data-original-title='view' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green'> <i class='bi bi-eye-fill'></i> </a></center>";
             $device->assign_by = $assign_by;
             $device->action = "<center>";
             if($device->admin_approval_by == '') {
-                $device->action .= "&nbsp;&nbsp;<a onclick='devices_confirmation(`".$device->reference_no."`)' data-original-title='confirm device(s) list' title='confirm device(s) list' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green'> <i class='fa fa-check-square-o'></i> </a>";
+                $device->action .= "<a onclick='devices_confirmation(`".$device->reference_no."`)' data-original-title='confirm device(s) list' title='confirm device(s) list' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green'> <i class='bi bi-check-square-fill'></i> </a>";
             }
-            $device->action .= "&nbsp;&nbsp;<a href='#' onclick='get_devices(`".$device->reference_no."`)' data-original-title='receive device(s)' title='receive device(s)' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-yellow vd_yellow'> <i class='fa fa-undo'></i> </a>";
+            $device->action .= "<a href='#' onclick='get_devices(`".$device->reference_no."`)' data-original-title='receive device(s)' title='receive device(s)' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-yellow vd_yellow'> <i class='bi bi-arrow-counterclockwise'></i> </a>";
             if($device->admin_approval_by == '') {
-                $device->action .= "&nbsp;&nbsp;<a href='#' data-original-title='delete' title='delete' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-red vd_red' aria-describedby='tooltip944117'> <i class='fa fa-times'></i> </a>";
+                $device->action .= "<a href='#' data-original-title='delete' title='delete' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-red vd_red' aria-describedby='tooltip944117'> <i class='bi bi-trash-fill'></i> </a>";
             }
             $device->action .= "</center>";
             $assigned_by = $device->assigned_by;
@@ -363,10 +363,10 @@ class PropertyIssuanceController extends Controller
         }
         $allCategories = DB::select("SELECT * from lkp_properties_category");
         $categoryTotal = $categoryAvaiable = $categories = array();
-        
+
         foreach($allCategories as $row) {
             $id = $row->id;
-            $categories[] = "'" .$row->name. "'";   
+            $categories[] = "'" .$row->name. "'";
             $pro = DB::select("SELECT * from btc_properties Where status_id = '1' AND property_id = '$id'");
             $categoryAvaiable[] = count($pro);
             $pro = DB::select("SELECT * from btc_properties Where property_id = '$id'");
@@ -412,9 +412,9 @@ class PropertyIssuanceController extends Controller
             return redirect()->back()->with('error', 'Please select the checkbox.');
         }
     }
-     
-    
-    
+
+
+
     public function create(Request $request)
     {
         $type = $request->type;
@@ -422,20 +422,20 @@ class PropertyIssuanceController extends Controller
             $categories = DB::select('SELECT * from lkp_properties_category');
             $users = DB::select('SELECT * from users where active_id = 1');
             $properties = DB::select("SELECT * from btc_properties where status_id = '1'");
-            
-            
+
+
             $branches = DB::select("SELECT DISTINCT description, branches FROM btc_properties WHERE status_id = 1 ORDER BY name");
             foreach($branches as $branch) {
                 $cont = DB::select("SELECT name FROM btc_properties WHERE status_id = 1 AND description = '". $branch->description. "' AND branches = '". $branch->branches."'");
                 $branch->device = $cont[0]->name;
                 $branch->available = count($cont);
             }
-            
+
             return view('PropertyIssuance.assign')->with('branches', $branches)->with('properties', $properties)->with('categories', $categories)->with('users', $users);
 
         } else if($type == 'cat') {
             $categories = DB::select('SELECT lkp_properties_category.*, users.`name` as user_name from lkp_properties_category join users on lkp_properties_category.created_by = users.id');
-            return view('PropertyIssuance.create')->with('categories', $categories)->with('type', $type);            
+            return view('PropertyIssuance.create')->with('categories', $categories)->with('type', $type);
         } else {
             $categories = DB::select('SELECT * from lkp_properties_category');
             $status = DB::select('SELECT * from lkp_properties_status');
@@ -477,7 +477,7 @@ class PropertyIssuanceController extends Controller
         $branches = DB::select("SELECT DISTINCT branches FROM btc_properties ORDER BY name");
         return view('PropertyIssuance.edit')->with('branches', $branches)->with('categories', $categories)->with('type', $type)->with('status', $status)->with('property', $property);
     }
-    
+
     public function update(Request $request)
     {
         $user_id = Auth::user()->id;
@@ -542,7 +542,7 @@ class PropertyIssuanceController extends Controller
         foreach($descriptions as $description) {
             $i = 0;
             $branch = $branches[$j];
-            
+
             if($properties[$j] > 0 AND $properties[$j] != '') {
                 // echo $properties[$j];
                 $devices = DB::select("SELECT * FROM btc_properties WHERE status_id = 1 AND branches = '$branch' AND description = '$description'");
@@ -558,7 +558,7 @@ class PropertyIssuanceController extends Controller
             $j++;
         }
         return redirect()->back()->with('success', "Data Updated successfully");
-        
+
         // if($properties <> null) {
         //     foreach($properties as $property_id) {
         //         DB::update("UPDATE btc_properties set status_id = '2', updated_by = '$user_id', updated_at = NOW() WHERE id = '$property_id'");
@@ -569,5 +569,5 @@ class PropertyIssuanceController extends Controller
         //     return redirect('Properties/PropertyIssuance')->with('error', "Please select at least 1 device!");
         // }
     }
-    
+
 }

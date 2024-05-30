@@ -246,6 +246,12 @@
 								</a>
 							</li>
 							<li>
+								<a href="{{URL("New-Portal/Properties/index")}}">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">{{__('nav.properties')}}</span>
+								</a>
+							</li>
+                            <li>
 								<a href="{{URL("New-Portal/ContractsQuotation")}}">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">{{__('nav.contracts_quotations')}}</span>
