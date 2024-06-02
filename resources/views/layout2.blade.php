@@ -150,6 +150,12 @@
 								</div>
 							</li>
 							<li>
+								<a href="{{url('New-Portal/union')}}">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text {{ request()->is('New-Portal/union') ? 'current-page' : '' }}">{{__('nav.union')}}</span>
+								</a>
+							</li>
+                            <li>
 								<a href="{{url('New-Portal/Drivers')}}">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text {{ request()->is('New-Portal/Drivers') ? 'current-page' : '' }}">{{__('nav.drivers')}}</span>
@@ -159,6 +165,18 @@
 								<a href="{{url('New-Portal/DriversJahiz')}}">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text" class="{{ request()->is('New-Portal/DriversJahiz') ? 'current-page' : '' }}">{{__('nav.drivers_jahiz')}}</span>
+								</a>
+							</li>
+                            <li>
+								<a href="{{url('New-Portal/DriversJahizClearing')}}">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text" class="{{ request()->is('New-Portal/DriversJahizClearing') ? 'current-page' : '' }}">{{__('nav.bander_clearing')}}</span>
+								</a>
+							</li>
+                            <li>
+								<a href="{{url('New-Portal/DriversSANEDClearing')}}">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text" class="{{ request()->is('New-Portal/DriversSANEDClearing') ? 'current-page' : '' }}">{{__('nav.SANED_clearing')}}</span>
 								</a>
 							</li>
 							<li>

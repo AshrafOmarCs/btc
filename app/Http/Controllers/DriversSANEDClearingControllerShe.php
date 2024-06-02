@@ -70,17 +70,17 @@ function get_table_body($data) {
         } else {
             $body .= '<td><span class="label label-success">Yes</span></td>';
         }
-        
+
         if ($row->SANED_amount == null) {
             $body .= '<td></td>';
         } else if ($row->SANED_amount !== $row->Jahiz_Amount) {
             $saned_total += $row->SANED_amount;
-            $body .= '<td class="red_color">' . $row->SANED_amount . '</td>';   
+            $body .= '<td class="red_color">' . $row->SANED_amount . '</td>';
         } else {
             $body .= '<td>'.$row->SANED_amount.'</td>';
             $saned_total += $row->SANED_amount;
         }
-        
+
         if ($row->Jahiz_Amount == null) {
             $body .= '<td></td>';
         } else if ($row->SANED_amount != $row->Jahiz_Amount) {
@@ -139,23 +139,23 @@ function get_table_body($data) {
         if($row->ATM_plus > 0 AND $row->proof_file != '') {
             $atm_eye = '<a style="margin-left: 8px;font-size:14px;" href="/storage/images/'.$row->proof_file.'" target="_blank"><i class="fa fa-eye"></i></a>';
         }
-        $body .= '<td class="table-cell-load">'.$row->bank_plus . $bank_eye .'</td>';
+        $body .= '<td class="table-success">'.$row->bank_plus . $bank_eye .'</td>';
         $bank_total1 += $row->bank_plus;
-        $body .= '<td class="table-cell-load">'.$row->cash_plus.'</td>';
+        $body .= '<td class="table-success">'.$row->cash_plus.'</td>';
         $cash_total1 += $row->cash_plus;
         if (Auth::user()->user_type_id == 1)
         {
-            $body .= '<td class="table-cell-load">'.$row->ATM_plus. $atm_eye .'</td>';
+            $body .= '<td class="table-success">'.$row->ATM_plus. $atm_eye .'</td>';
             $atm_total += $row->ATM_plus;
         }
-        $body .= '<td class="table-cell-touchpoint">'.$row->bank_minus.'</td>';
+        $body .= '<td class="table-danger">'.$row->bank_minus.'</td>';
         $bank_total2 += $row->bank_minus;
-        $body .= '<td class="table-cell-touchpoint">'.$row->cash_minus.'</td>';
+        $body .= '<td class="table-danger">'.$row->cash_minus.'</td>';
         if (!$row->drivers_jahiz_clearing_paid_id) {
             $body .= '<td></td>';
         } else {
             // $body .= '<td></td>';
-            $body .= '<td><a onclick="revert_status(\'' . $row->drivers_jahiz_clearing_paid_id . '\', \'' . $row->DriverName . '\', \'' . $row->AMP_ID . '\', \'' . $row->SANED_amount . '\')" data-original-title="revert" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow revert"> <i class="fa fa-undo"></i> </a></td>';
+            $body .= '<td><a onclick="revert_status(\'' . $row->drivers_jahiz_clearing_paid_id . '\', \'' . $row->DriverName . '\', \'' . $row->AMP_ID . '\', \'' . $row->SANED_amount . '\')" data-original-title="revert" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow revert"> <i class="bi bi-arrow-counterclockwise"></i> </a></td>';
         }
         $cash_total2 += $row->cash_minus;
         $body .= '</tr>';
@@ -228,11 +228,11 @@ class DriversSANEDClearingControllerShe extends Controller
             DB::update("UPDATE drivers_saned_settlement set drivers_jahiz_clearing_paid_id = null, paid_by_id = null, status = 'Ready', paid_dt = null, exported_by = null, reverse_by = '$user_by' WHERE id = '$drivers_saned_settlement_id'");
             $msg = "<b>$made_by</b> Reverted the saned from Paid to Ready with this Reason: " . $reason;
             HelperFunctionsController::add_log($msg, '', $saned_id);
-            return redirect()->back()->with('success', 'Saned reverted successfully');    
+            return redirect()->back()->with('success', 'Saned reverted successfully');
         } else {
             $msg = "<b>$made_by</b> Requested to revert the saned from Paid to Ready with this Reason: " . $reason;
             HelperFunctionsController::add_log($msg, '', $saned_id);
-            
+
             $subject = "Saned Reverse Request";
             $result = DB::select("SELECT drivers.fullName,drivers.job_id,drivers_jahiz_clearing.paid_dt,warehouse.warehouseName,lkp_company.companyName,drivers_jahiz_clearing.Jahiz_Amount FROM drivers_jahiz_clearing INNER JOIN drivers ON drivers_jahiz_clearing.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE drivers_jahiz_clearing.id='$id'");
             $yes = url("/approval/saned/" . $reason . "/" . $id . "/1");
@@ -277,10 +277,10 @@ class DriversSANEDClearingControllerShe extends Controller
         }
     }
     public function index(Request $request)
-    {   
-        
+    {
+
         if (!request()->ajax()) {
-            
+
             $whereIn_array = array();
             if (Auth::user()->user_type_id <> 1) {
                 $users_privilege = DB::select('SELECT user_id,warehouseId from users_privilege
@@ -301,7 +301,7 @@ class DriversSANEDClearingControllerShe extends Controller
          left join lkp_month on lkp_month.id=lkp_jahiz_period.month_id order by year desc,month_id desc");
 
             $lkp_clearing_type = DB::select('SELECT id,clearing_type from lkp_clearing_type  order by id ');
-            return view('DriversSANEDClearing.index_she')
+            return view('new_porttal.DriversSANEDClearing.index')
                 ->with(compact('warehouse'))
                 ->with(compact('lkp_driver_type'))
                 ->with(compact('lkp_jahiz_period'))
@@ -311,7 +311,7 @@ class DriversSANEDClearingControllerShe extends Controller
 //***********************************************************************************************************************
 
         elseif (request()->ajax()) {
-            
+
             $Select_db = DB::table('drivers_saned_settlement')
                 ->select(DB::raw("drivers_saned_settlement.export_attempt, drivers_saned_settlement.exported_by, drivers_saned_settlement.status, drivers_saned_settlement.id,AMP_ID,DriverName,SettledDate,
                 CASE
@@ -480,7 +480,7 @@ class DriversSANEDClearingControllerShe extends Controller
             $Select_dbb = clone $Select_db;
             $Select_db->orderBy('drivers_saned_settlement.SettledDate', 'desc');
             $data = $Select_db->get();
-            
+
             $response = get_table_body($data);
             echo $response['body'];
             echo ':::';
@@ -566,7 +566,7 @@ class DriversSANEDClearingControllerShe extends Controller
     }
     public function DriversSANEDClearingPost(Request $request)
     {
-        
+
         $date = date("Y-m-d H:i:s");
         $amp_ids = $sanedids = array();
         for ($i = 0; $i < 1000; $i++) {

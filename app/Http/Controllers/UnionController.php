@@ -11,10 +11,10 @@ class UnionController extends Controller
 {
     function index() {
         $unions = DB::select('SELECT * FROM tbl_union');
-        return view('Union.index')->with('unions', $unions);
+        return view('new_porttal.Union.index')->with('unions', $unions);
     }
     function create() {
-        return view('Union.create');
+        return view('new_porttal.Union.create');
     }
     function store(Request $request) {
         $user_id = Auth::user()->id;
@@ -23,15 +23,15 @@ class UnionController extends Controller
         $description = htmlspecialchars($request->description, ENT_QUOTES, 'UTF-8');
         $link = htmlspecialchars($request->link, ENT_QUOTES, 'UTF-8');
 
-        if($id > 0) 
+        if($id > 0)
             DB::update("UPDATE tbl_union set name = '$name', description = '$description', link = '$link', updated_by = '$user_id', updated_on = now() WHERE id = '$id'");
         else
             DB::insert("INSERT into tbl_union (name, description, link, created_by, created_on) Values('$name', '$description', '$link', '$user_id', now())");
-        return redirect('union')->with('success', 'Data Added successfully.');
+        return redirect()->back()->with('success', 'Data Added successfully.');
     }
     function get($id) {
         $union = DB::select("SELECT * FROM tbl_union where id = '$id'");
-        return view('Union.create')->with('union', $union);
+        return view('new_porttal.Union.create')->with('union', $union);
     }
     function delete(Request $request) {
         $id = $request->id;

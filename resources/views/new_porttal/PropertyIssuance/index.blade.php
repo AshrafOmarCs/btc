@@ -1,7 +1,187 @@
 @extends('layout2')
 @section('content')
-@section('title', __('documents.documents'))
+@section('title', __('properties.properties'))
 
+<div class="modal fade" id="edit_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('properties.properties')}} </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <span id="response">
+            </span>
+            {{-- <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+            </div> --}}
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="delete_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('properties.properties')}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="w3-container" action="" method="POST" id="delete_form">
+                {{method_field('DELETE')}}
+                @csrf
+                <div class="modal-body">
+                    <p>{{__('drivers.Delete_msg')}} <span id="delete_name"></span> ?</p>
+                </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                      <button class="btn btn-danger" type="submit">{{__('properties.Delete')}}</button>
+                  </div>
+              </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel"> {{__('properties.Filter')}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <!-- Card start -->
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- Row start -->
+                                <div class="row">
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <!-- Form Field Start -->
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">{{__('properties.referenceId')}}</label>
+                                            <input type="text" class="form-control" name="filter_referenceId" id="filter_referenceId">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <!-- Form Field Start -->
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">{{__('properties.device_type')}}</label>
+                                            <select id="filter_deviceType" name="filter_deviceType"class="form-control">
+                                                <option value="">Select type</option>
+                                                @foreach($categories as $category)
+                                                    <option value="{{$category->id}}">{{$category->name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <!-- Form Field Start -->
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">{{__('properties.delivery_approve')}}</label>
+                                            <select class="form-control" name="filter_deliveryApprove" id="filter_deliveryApprove">
+                                                <option value="">Select status</option>
+                                                <option value="1">Yes</option>
+                                                <option value="0">No</option>
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <!-- Form Field Start -->
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">{{__('properties.created_by')}}</label>
+                                            <select id="filter_createdBy" name="filter_createdBy" class="form-control">
+                                                <option value="">Select employee</option>
+                                                @foreach($employees as $emp)
+                                                    <option value="{{$emp->id}}">{{$emp->name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <!-- Form Field Start -->
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">{{__('properties.employee')}}</label>
+                                            <select class="form-control" name="filter_emp" id="filter_emp">
+                                                <option value="">Select employee</option>
+                                                @foreach($assign_employees as $assign_employee)
+                                                    <option value="{{$assign_employee->id}}">{{$assign_employee->name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <!-- Form Field Start -->
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">{{__('properties.department')}}</label>
+                                            <select id="filter_branch" name="filter_branch" class="form-control" >
+                                                <option value="">Select branch</option>
+                                                @foreach($branches as $branch)
+                                                    <option value="{{$branch->branches}}">{{$branch->branches}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <!-- Form Field Start -->
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">{{__('properties.status')}}</label>
+                                            <select id="filter_status" name="filter_status" class="form-control">
+                                                <option value="">Select status</option>
+                                                <option value="1">Available</option>
+                                                <option value="2">Delegated</option>
+                                                <option value="3">Damaged</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Row end -->
+
+                            </div>
+                        </div>
+                        <!-- Card end -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" class="btn btn-success"
+                    data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12" style="display: none" id="edit_btn">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-10">
+                        <div class="custom-btn-group" id="selectedCriteria">
+                            <button type="button" class="btn btn-outline-primary btn-rounded">iMile</button>
+                            <button type="button" class="btn btn-outline-secondary btn-rounded">Riyadh Munesia </button>
+                            <button type="button" class="btn btn-outline-warning btn-rounded">(2024-02-01 - 2024-02-31)</button>
+                            <button type="button" class="btn btn-outline-success btn-rounded">Paid</button>
+                            <button type="button" class="btn btn-outline-danger btn-rounded">Danger</button>
+
+                            <button type="button" class="btn btn-outline-info btn-rounded">Active</button>
+                            <button type="button" class="btn btn-outline-light btn-rounded">Created by Ashraf</button>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <!-- Card start -->
+
+                                <div class="custom-btn-group">
+                                    <button type="button" style="margin: 0 auto;"  class="btn btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#FillterButton">Edit</button>
+                                </div>
+
+                        <!-- Card end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-sm-12 col-12">
         <!-- Card start -->
@@ -17,11 +197,11 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="custom-btn-group">
+                                <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
                                 <a href="javascript:add('cat');" class="btn btn-sm btn-info "><i class="bi bi-plus-square-fill"></i> {{__('properties.add_new_category')}}</a>
                                 <a href="javascript:add('pro');" class="btn btn-sm btn-info "><i class="bi bi-plus-square-fill"></i> {{__('properties.add_new_device')}}</a>
                                 <a href="javascript:add('assign');" class="btn btn-sm btn-info "><i class="bi bi-plus-square-fill"></i> {{__('properties.property_issuance')}}</a>
-                                {{-- <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
-                                <button type="button" class="btn btn-success" class="btn btn-info" type="button" onclick="export_excel()"></i>{{__('drivers.ExportExcel')}}</button> --}}
+                                {{-- <button type="button" class="btn btn-success" class="btn btn-info" type="button" onclick="export_excel()"></i>{{__('drivers.ExportExcel')}}</button> --}}
                             </div>
                         </div>
                     </div>
@@ -151,8 +331,10 @@
     <script src="{{asset('assets/js/main.js')}}"></script>
     <script>
         function devices_confirmation(reference_no) {
-            document.getElementById('response').innerHTML = loader;
-            document.getElementById('edit_modal').style.display = 'block';
+            // document.getElementById('response').innerHTML = loader;
+
+            // document.getElementById('edit_modal').style.display = 'block';
+            $('#edit_modal').modal('toggle');
             $.ajax({
                 type: 'POST',
                 url: "{{URL("/PropertyIssuance/device_confirmation")}}",
@@ -166,8 +348,9 @@
             });
         }
         function get_devices(user_id) {
-            document.getElementById('response').innerHTML = loader;
-            document.getElementById('edit_modal').style.display = 'block';
+            // document.getElementById('response').innerHTML = loader;
+            // document.getElementById('edit_modal').style.display = 'block';
+            $('#edit_modal').modal('toggle');
             $.ajax({
                 type: 'POST',
                 url: "{{URL("/PropertyIssuance/get_back_devices")}}",
@@ -213,12 +396,13 @@
     	    });
             $('.customer_data tbody').on('click', '.view', function (e) {
                 e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                // document.getElementById('response').innerHTML = loader;
+                // document.getElementById('edit_modal').style.display = 'block';
+                $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
-                    url: "https://btcdmins.com/Users" + "/" + id,
+                    url: "{{URL('/Users')}}" + "/" + id,
                     contentType: "html",
                     dataType: 'html',
                     success: function (data) {
@@ -260,8 +444,9 @@
     	    });
             $('#customer_data tbody').on('click', '.total_devices', function (e) {
                 e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                // document.getElementById('response').innerHTML = loader;
+                // document.getElementById('edit_modal').style.display = 'block';
+                $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
@@ -277,8 +462,9 @@
             });
             $('#customer_data tbody').on('click', '.available_devices', function (e) {
                 e.preventDefault();
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                // document.getElementById('response').innerHTML = loader;
+                // document.getElementById('edit_modal').style.display = 'block';
+                $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
                     type: 'GET',
@@ -334,6 +520,33 @@
                             $('#customer_data').DataTable().rows.add($(data[0])).draw();
                             $('.customer_data').DataTable().rows.add($(data[1])).draw();
                             $('#pre_loader_build').hide();
+
+                            let html = '';
+                            if ($('#filter_deviceType').val() > 0)
+                                html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_deviceType option:selected').text()+'</button>';
+                            if ($('#filter_deliveryApprove').val() > 0)
+                                html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_deliveryApprove option:selected').text()+'</button>';
+                            if ($('#filter_referenceId').val() != '')
+                                html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_referenceId').val()+'</button>';
+                            if ($('#filter_createdBy').val() != '')
+                                html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_createdBy option:selected').val()+'</button>';
+                            if ($('#filter_emp').val() != '')
+                                html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+$('#filter_emp option:selected').val()+'</button>';
+                            if ($('#filter_branch').val() != '')
+                                html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_branch option:selected').val()+'</button>';
+                            if ($('#filter_status').val() > 0)
+                                html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_status option:selected').text()+'</button>';
+
+                            if(html != '') {
+                                $('#edit_btn').show();
+                                $('#selectedCriteria').html(html);
+                            } else {
+                                $('#edit_btn').hide();
+                            }
+                            $('#active_lbl').html(data.active);
+                            $('#onhold_lbl').html(data.Onhold);
+                            $('#terminated_lbl').html(data.Terminated);
+                            $('#wrongWarehouse_lbl').html(data.wrongWarehouse);
                         }
                     });
 
@@ -344,8 +557,9 @@
 
 
         function add(type) {
-            document.getElementById('response').innerHTML = loader;
-            document.getElementById('edit_modal').style.display = 'block';
+            // document.getElementById('response').innerHTML = loader;
+            // document.getElementById('edit_modal').style.display = 'block';
+            $('#edit_modal').modal('toggle');
             $.ajax({
                 type: 'POST',
                 url: "{{URL("/PropertyIssuance/create")}}",
@@ -364,8 +578,9 @@
                 $('#cat_id').val(id);
                 $('#name').val(name);
             } else {
-                document.getElementById('response').innerHTML = loader;
-                document.getElementById('edit_modal').style.display = 'block';
+                // document.getElementById('response').innerHTML = loader;
+                // document.getElementById('edit_modal').style.display = 'block';
+                $('#edit_modal').modal('toggle');
                 $.ajax({
                     type: 'POST',
                     url: "{{URL("/PropertyIssuance/getRecord")}}",
@@ -386,7 +601,8 @@
                 document.getElementById('delete_form').action = "{{URL('/PropertyIssuance/delete')}}" + "/" + id;
             else
                 document.getElementById('delete_form').action = "{{URL('/PropertyIssuance/cat_delete')}}" + "/" + id;
-            document.getElementById('delete_modal').style.display = 'block';
+            // document.getElementById('delete_modal').style.display = 'block';
+            $('#delete_modal').modal('toggle');
         }
 
 
@@ -405,6 +621,11 @@
             if(branch == 'other') {
                 $('#new_branch').show();
                 $("#new_branches").prop('required',true);
+            }
+        }
+        function disableEnterKey(event) {
+            if (event.keyCode === 13 && event.target.tagName !== 'TEXTAREA') {
+                event.preventDefault(); // Prevent Enter key behavior for other form fields
             }
         }
     </script>

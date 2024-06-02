@@ -1066,7 +1066,7 @@
                         _token: "{{ csrf_token() }}",
                     },
                     success: function (data) {
-                        html = '';
+                        let html = '';
                         if ($('#filter_companyId').val() > 0)
                             html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_companyId option:selected').text()+'</button>';
                         if ($('#filter_warehouseId').val() > 0)

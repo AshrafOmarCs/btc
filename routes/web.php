@@ -34,6 +34,9 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('/Company', 'CompanyController@index');
     Route::get('/Warehouses', 'WarehousesController@index');
     Route::get('Properties/index', 'PropertyIssuanceController@index_new');
+    Route::get('union','UnionController@index');
+    Route::resource('/DriversJahizClearing', 'DriversJahizClearingController');
+    Route::resource('DriversSANEDClearing', 'DriversSANEDClearingControllerShe');
 
 
     // Route::resource('/Drivers', 'DriversController');

@@ -277,7 +277,7 @@ class DriversJahizClearingController extends Controller
 
         //$data = $Select_db->get();
 
-        return view('DriversJahizClearing.index')
+        return view('new_porttal.DriversJahizClearing.index')
             ->with(compact('warehouse'))
             ->with(compact('lkp_driver_type'))
             ->with(compact('lkp_jahiz_period'))

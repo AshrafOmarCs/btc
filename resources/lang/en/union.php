@@ -9,7 +9,7 @@ return [
     'description' => 'Description',
     'link' => 'Link',
     'action' => 'Action',
-    'cancel' => 'cancel',
+    'cancel' => 'Cancel',
     'submit' => 'Submit'
-    
+
 ];
