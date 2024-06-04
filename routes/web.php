@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 Route::group(['prefix' => 'New-Portal'], function() {
 
     Route::get("/",'DashoardController@index');
+    Route::get("/Requires_action",'RequiredActionController@index');
     Route::get("/Drivers",'DashoardController@index_drivers');
     Route::get('/DriversJahiz', 'DashoardController@index_drivers');
     Route::post('/Drivers/upload', 'DashoardController@drivers_save')->name('Drivers/upload');
