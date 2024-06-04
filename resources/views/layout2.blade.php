@@ -141,10 +141,10 @@
 								<div class="sidebar-submenu">
 									<ul>
 										<li>
-											<a href="widgets.html">Companies </a>
+											<a href="{{URL("New-Portal/Company")}}">{{__('nav.companies')}} </a>
 										</li>
 										<li>
-											<a href="graph-widgets.html">Warehouses/Projects </a>
+											<a href="{{URL("New-Portal/Warehouses")}}">{{__('nav.warehouses')}} </a>
 										</li>
 									</ul>
 								</div>
@@ -246,6 +246,12 @@
 								</a>
 							</li>
 							<li>
+								<a href="{{URL("New-Portal/Properties/index")}}">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">{{__('nav.properties')}}</span>
+								</a>
+							</li>
+                            <li>
 								<a href="{{URL("New-Portal/ContractsQuotation")}}">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">{{__('nav.contracts_quotations')}}</span>

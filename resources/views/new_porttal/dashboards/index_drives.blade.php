@@ -1408,7 +1408,6 @@
             var table = $('#customer_data').DataTable();
             $('#ExportExcel').modal('hide');
             var selectedColumns = [];
-            console.log(selected);
             selected.forEach(element => {
                 if (element['id'] == 7) {
                     let id  = element['id'] + 2;
@@ -1421,7 +1420,12 @@
                 }
             });
             var rowCount = table.rows().count();
-            var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
+            var headerRow = selected.map(column => {
+                var label = $('#' + column.id).siblings('label').text();
+                return label ? label : column.name;
+            });
+
+            var exportData = [headerRow];
             var rowCount = table.rows().count();
             for (var i = 0; i < rowCount; i++) {
                 var rowData = [];

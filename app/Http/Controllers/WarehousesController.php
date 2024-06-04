@@ -35,8 +35,10 @@ class WarehousesController extends Controller
         $where2 = implode(" AND ", $where);
         if (count($where) > 0) $where2 = " and " . $where2;
 
-        if (!empty($request->pakage_date)) $pakage_date = \DateTime::createFromFormat('d/m/Y', $request->pakage_date)->format('Y-m-d');
-        else $pakage_date = date('Y-m-d');
+        if (!empty($request->pakage_date))
+            $pakage_date = $request->pakage_date;
+        else
+            $pakage_date = date('Y-m-d');
 
         $lkp_company = DB::select('SELECT * from lkp_company WHERE status = "active"');
         $lkp_yes_no = DB::select('SELECT * from lkp_yes_no');
@@ -174,7 +176,7 @@ class WarehousesController extends Controller
         //$data = $Select_db->get();
 
 
-        return view('Warehouses.index')->with(compact('lkp_company'))->with(compact('lkp_yes_no'));
+        return view('new_porttal.Warehouses.index')->with(compact('lkp_company'))->with(compact('lkp_yes_no'));
     }
 
     /**
@@ -189,7 +191,7 @@ class WarehousesController extends Controller
         $lkp_active = DB::select('SELECT * from lkp_active');
         $lkp_city = DB::select('SELECT * from lkp_city');
         $lkp_yes_no = DB::select('SELECT * from lkp_yes_no');
-        return view('Warehouses.create')->with(compact('lkp_company'))
+        return view('new_porttal.Warehouses.create')->with(compact('lkp_company'))
             ->with(compact('lkp_city'))->with(compact('lkp_active'))->with(compact('lkp_yes_no'));
     }
 
@@ -228,7 +230,7 @@ class WarehousesController extends Controller
 
         $Warehouses->save();
 
-        return redirect('/Warehouses')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -251,7 +253,7 @@ class WarehousesController extends Controller
             ->where('warehouse.id', $id);
         $Warehouses = $Select_db->first();
 
-        return view('Warehouses.show')->with('Warehouses', $Warehouses);
+        return view('new_porttal.Warehouses.show')->with('Warehouses', $Warehouses);
     }
 
     /**
@@ -267,7 +269,7 @@ class WarehousesController extends Controller
         $lkp_active = DB::select('SELECT * from lkp_active');
         $Warehouses = DB::select(DB::raw('SELECT * from warehouse where id=' . $id))[0];
         $lkp_yes_no = DB::select('SELECT * from lkp_yes_no');
-        return view('Warehouses.edit')->with('Warehouses', $Warehouses)
+        return view('new_porttal.Warehouses.edit')->with('Warehouses', $Warehouses)
             ->with(compact('lkp_company'))->with(compact('lkp_city'))->with(compact('lkp_active'))->with(compact('lkp_yes_no'));
     }
 
@@ -306,7 +308,7 @@ class WarehousesController extends Controller
         $Warehouses->warehouse_unit_cost = $request->input('warehouse_unit_cost');
         $Warehouses->save();
 
-        return redirect('/Warehouses')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -329,7 +331,7 @@ class WarehousesController extends Controller
 
         $Warehouses->delete();
 
-        return redirect('/Warehouses')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     public function MapWindow($id)

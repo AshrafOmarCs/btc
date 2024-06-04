@@ -20,7 +20,7 @@ class WarehouseDriversController extends Controller
 
     public function index($id, $name, Request $request)
     {
-        $dt = \DateTime::createFromFormat('d/m/Y', $request->dt)->format('Y-m-d');
+        $dt = $request->dt;
 
         $UsersMenu = DB::table('drivers')
             ->select('drivers.id as id', 'fullName', 'fullName_ar', 'job_id',
@@ -43,7 +43,7 @@ class WarehouseDriversController extends Controller
             ->orderBy('fullName', 'ASC')
             ->get();
         $dt = $request->dt;
-        return view('WarehouseDrivers.index')->with(compact('UsersMenu'))->with(compact('id'))->with(compact('name'))->with(compact('dt'));
+        return view('new_porttal.Warehouses.warehouseDrivers')->with(compact('UsersMenu'))->with(compact('id'))->with(compact('name'))->with(compact('dt'));
     }
 
     public function store(Request $request)
