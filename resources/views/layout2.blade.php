@@ -105,7 +105,7 @@
 								</div>
 							</li>
 							<li>
-								<a href="starter-page.html">
+								<a href="{{url('New-Portal/Requires_action')}}">
 									<i class="bi bi-align-top" style="color: #FF5722;"></i>
 									<span class="menu-text">Requires action <span class="badge rounded-pill shade-red" style="margin-left: 6px;">3+</span></span>
 								</a>
