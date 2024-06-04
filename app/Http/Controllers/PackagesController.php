@@ -38,7 +38,7 @@ class PackagesController extends Controller
         $Select_db = DB::table('packages_report')
             ->select('packages_report.id as id', 'driverId', 'job_id', 'fullName', 'fullName_ar', 'companyName', 'warehouseName', 'total_out_for_deliver',
                 'total_no_touchpoint', 'no_of_deliverd', 'no_of_touch_point', 'return_no_of_deliverd', 'return_no_of_touch_point', 'attendence', 'pakage_date', 'packageStatusId',
-                'status', 'approveStatusId', 'approvestatus', 'packages_report.updatedby_id', 'name', 'updated_usertypeid', 'user_type', 'journal_id',
+                'lkp_package_status.status', 'approveStatusId', 'approvestatus', 'packages_report.updatedby_id', 'name', 'updated_usertypeid', 'user_type', 'journal_id',
                 'packages_report.created_at as created_at', 'packages_report.updated_at as updated_at', 'No_of_D', 'No_of_CIR', 'No_of_TP', 'Total_OFD', 'damage')
             ->leftJoin('drivers', 'packages_report.driverId', '=', 'drivers.id')
             ->leftJoin('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')

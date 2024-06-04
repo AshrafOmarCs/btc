@@ -95,6 +95,9 @@
 										<li>
 											<a href="{{url('/New-Portal')}}" class="{{ request()->is('New-Portal') ? 'current-page' : '' }}">Analytics</a>
 										</li>
+                                        <li>
+											<a href="{{url('/New-Portal/Logs')}}" class="{{ request()->is('New-Portal/Logs') ? 'current-page' : '' }}">{{__('nav.system_logs')}}</a>
+										</li>
 										<li>
 											<a href="reports.html">Reports</a>
 										</li>
@@ -180,9 +183,9 @@
 								</a>
 							</li>
 							<li>
-								<a href="calendar.html">
+								<a href="{{url('New-Portal/DriversJahizClaim')}}">
 									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">Jahiz Clearance</span>
+									<span class="menu-text">{{__('nav.jahiz_claim')}}</span>
 								</a>
 							</li>
 							<li class="menu-title">
@@ -242,6 +245,39 @@
 								</div>
 							</li>
 							<li>
+								<a href="{{url('New-Portal/Journal')}}">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">{{__('nav.journal')}} </span>
+								</a>
+							</li>
+                            @if(session('Read_17')==1 || Auth::user()->id == 20 || Auth::user()->id == 90)
+                                <li class="sidebar-dropdown">
+                                    <a href="#">
+                                        <i class="bi bi-check2-circle"></i>
+                                        <span class="menu-text"> {{__('nav.sync_claims')}}  </span>
+                                    </a>
+                                    <div class="sidebar-submenu">
+                                        <ul>
+                                            <li>
+                                                <a href="{{URL("New-Portal/ClaimsDeduction")}}">{{__('nav.claims_deduction')}}</a>
+                                            </li>
+                                            {{-- <li>
+                                                <a href="{{URL("New-Portal/ClaimsDeduction/SyncJahiz")}}">{{__('nav.jahiz_sync_claims')}}</a>
+                                            </li> --}}
+                                    </div>
+                                </li>
+
+                            @endif
+                            @if(Auth::user()->user_type_id==1)
+                                <li>
+                                    <a href="{{url('New-Portal/Transaction-History')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.transactions_history')}} </span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            <li>
 								<a href="calendar.html">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Generate Sales.R </span>

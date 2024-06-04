@@ -5138,7 +5138,7 @@ textarea.form-control-lg {
   z-index: 2;
   color: var(--bs-list-group-active-color);
   background-color: var(--bs-list-group-active-bg);
-  
+
   border-color: var(--bs-list-group-active-border-color);
 }
 .list-group-item + .list-group-item {
@@ -16711,3 +16711,4 @@ select:-webkit-autofill:focus {
   padding-right: 10px;
   padding-left: 10px;
 }
+

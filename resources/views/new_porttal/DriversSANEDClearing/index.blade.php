@@ -584,6 +584,47 @@
                             $('#administrative_fee_total').html(data[13]);
                             $('#ids').val(data[14]);
                             $('#jahiz_ids').val(data[15]);
+
+                            let html = '';
+                            if ($('#filter_job_id').val() > 0)
+                                html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_job_id').val()+'</button>';
+                            var selectedOptions = $('#filter_warehouseId option:selected');
+                            let warehouses = '';
+                            if (selectedOptions.length > 0) {
+                                selectedOptions.each(function() {
+                                    var selectedText = $(this).text();
+                                    if (selectedText) {
+                                        warehouses += selectedText;
+                                    }
+                                });
+                                html += '<button type="button" class="btn btn-outline-secondary btn-rounded">' + warehouses + '</button> ';
+                            }
+                            if ($('#filter_driver_type_id').val() != '')
+                                html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_driver_type_id option:selected').text()+'</button>';
+                            if ($('#filter_driverId').val() != '')
+                                html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_driverId').val()+'</button>';
+
+                            if ($('#filter_bank').checked)
+                                html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_bank:checked').val()+'</button>';
+                            if ($('#filter_cash').checked)
+                                html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_cash:checked').val()+'</button>';
+                            if ($('#filter_ATM').checked)
+                                html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_ATM:checked').val()+'</button>';
+                            if ($('#filter_clearing_type_id').val() != '')
+                                html += '<button type="button" class="btn btn-outline-dark btn-rounded">'+$('#filter_clearing_type_id option:selected').text()+'</button>';
+                            if ($('#filter_SettledDate').val() != '')
+                                html += '<button type="button" class="btn btn-outline-danger btn-rounded">Updated at: '+$('#filter_SettledDate').val()+'</button>';
+                            if ($('#filter_Equal').val() > 0)
+                                html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_Equal option:selected').text()+'</button>';
+                            if ($('#filter_paid_id').val() > 0)
+                                html += '<button type="button" class="btn btn-outline-dark btn-rounded">'+$('#filter_paid_id option:selected').text()+'</button>';
+
+                            if(html != '') {
+                                $('#edit_btn').show();
+                                $('#selectedCriteria').html(html);
+                            } else {
+                                $('#edit_btn').hide();
+                            }
                         }
 
                     });

@@ -26,14 +26,14 @@ class LogsController extends Controller
         $logs = DB::select("SELECT tbl_events_log.*, users.name from tbl_events_log join users on tbl_events_log.done_by = users.id order by done_at DESC");
         return view('EventLogs.index')->with('logs', $logs);
     }
-    
+
     public function index(Request $request)
     {
         $Select_db = DB::table('tbl_events_log')
         ->select('tbl_events_log.*', 'users.name', DB::raw('JSON_UNQUOTE(tbl_events_log.loan_ids) as decoded_loan_ids'))
         ->leftJoin('users', 'tbl_events_log.done_by', '=', 'users.id');
 
-        
+
         if (request()->ajax()) {
             if (!empty($request->filter_type)) {
                 $Select_db->whereRaw("action LIKE '%" . strtoupper($request->filter_type) . "%'");
@@ -47,16 +47,16 @@ class LogsController extends Controller
             }
              return  datatables()->of($Select_db)->make(true);
         }
-        
-        return view('EventLogs.index');
+
+        return view('new_porttal.EventLogs.index');
     }
-    
+
     public function search(Request $request)
     {
         $filter_type = $request->filter_type;
         $filter_text = $request->filter_text;
         $filter_done_at = $request->filter_done_at;
-        
+
         $clause_type = $clause_text = $clause_doneAt = "";
         if($filter_type != '') {
             $clause_type = " AND tbl_events_log.action like '%$filter_type%'";
@@ -75,7 +75,7 @@ class LogsController extends Controller
         echo get_logs_table_body($logs);
         // echo ':::';
     }
-    
+
     public function get(Request $request)
     {
         $type = $request->type;
@@ -86,7 +86,7 @@ class LogsController extends Controller
         $branches = DB::select("SELECT DISTINCT branches FROM btc_properties ORDER BY name");
         return view('PropertyIssuance.edit')->with('branches', $branches)->with('categories', $categories)->with('type', $type)->with('status', $status)->with('property', $property);
     }
-    
+
     public function update(Request $request)
     {
         $user_id = Auth::user()->id;
@@ -105,7 +105,7 @@ class LogsController extends Controller
         DB::delete("DELETE FROM tbl_events_log WHERE id = '$id'");
         return redirect()->back()->with('success', "Data DELETED successfully");
     }
-    
+
 }
 
 function get_logs_table_body($logs) {

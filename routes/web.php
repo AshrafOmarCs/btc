@@ -37,6 +37,13 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('union','UnionController@index');
     Route::resource('/DriversJahizClearing', 'DriversJahizClearingController');
     Route::resource('DriversSANEDClearing', 'DriversSANEDClearingControllerShe');
+    Route::get('Logs', 'LogsController@index');
+    Route::resource('/Journal', 'JournalController');
+    Route::get('/ClaimsDeduction', 'ClaimsDeductionController@index');
+    Route::post('/ClaimsDeduction/Search', 'ClaimsDeductionController@search');
+    Route::get('/Transaction-History','Transaction_historyController@index');
+    Route::resource('/DriversJahizClaim', 'DriversJahizClaimController');
+    Route::DELETE('/DriversClaimDeleteAction', 'DriversJahizClaimController@DriversClaimDeleteAction');
 
 
     // Route::resource('/Drivers', 'DriversController');

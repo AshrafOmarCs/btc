@@ -233,7 +233,7 @@ class DriversJahizClaimController extends Controller
             //return datatables()->of($Select_db)->make(true);
         }
         //$data = $Select_db->get();
-        return view('DriversJahizClaim.index')
+        return view('new_porttal.DriversJahizClaim.index')
             ->with(compact('warehouse'))
             ->with(compact('lkp_driver_type'))
             ->with(compact('lkp_claim_status'));
@@ -249,7 +249,7 @@ class DriversJahizClaimController extends Controller
         DATE_FORMAT(claim_dt,'%d/%m/%Y') as claim_dt,note"))
             ->where('driverId', $id)
             ->first();
-        return view('DriversJahizClaim.DriversClaim')->with(compact('Driver'))
+        return view('new_porttal.DriversJahizClaim.DriversClaim')->with(compact('Driver'))
             ->with(compact('drivers_jahiz_claim'));
     }
 //******************************************************************************************************************************
@@ -294,15 +294,13 @@ class DriversJahizClaimController extends Controller
 //******************************************************************************************************************************
     public function DriversClaimDelete($id, Request $request)
     {
-
-
         if (isset($request->success)) {
-            return view('DriversJahizClaim.DriversClaimDeleted')
+            return view('new_porttal.DriversJahizClaim.DriversClaimDeleted')
                 ->with(compact('id'))
                 ->with('success', 'Delete successfully');
         }
         else
-            return view('DriversJahizClaim.DriversClaimDeleted')
+            return view('new_porttal.DriversJahizClaim.DriversClaimDeleted')
                 ->with(compact('id'));
     }
 //******************************************************************************************************************************
@@ -317,7 +315,7 @@ class DriversJahizClaimController extends Controller
         }
 
         //return redirect('/DriversJahizClaim')->with('success', 'Done successfully');
-        //return view('DriversJahizClaim.DriversClaimDeleted/')->with('success', 'Delete successfully');
+        //return view('new_porttal.DriversJahizClaim.DriversClaimDeleted/')->with('success', 'Delete successfully');
 
         $request = new Request([
             'success' => 'Delete successfully',
@@ -348,12 +346,12 @@ class DriversJahizClaimController extends Controller
             //return $reply_txt;
         } else $reply_txt = '-1';
         if ($request->success <> '')
-            return view('DriversJahizClaim.DriversClaimReply')
+            return view('new_porttal.DriversJahizClaim.DriversClaimReply')
                 ->with(compact('reply_txt'))
                 ->with(compact('Driver'))
                 ->with('success', 'Done successfully');
         else
-            return view('DriversJahizClaim.DriversClaimReply')
+            return view('new_porttal.DriversJahizClaim.DriversClaimReply')
                 ->with(compact('reply_txt'))
                 ->with(compact('Driver'));
     }
@@ -400,12 +398,12 @@ class DriversJahizClaimController extends Controller
             from drivers_jahiz_claim
             where id=' . $id)[0];
         if (isset($success))
-            return view('DriversJahizClaim.DriversClaimBag')
+            return view('new_porttal.DriversJahizClaim.DriversClaimBag')
                 ->with(compact('drivers_jahiz_claim'))
                 ->with(compact('Driver'))
                 ->with('success', 'Done successfully');
         else
-            return view('DriversJahizClaim.DriversClaimBag')
+            return view('new_porttal.DriversJahizClaim.DriversClaimBag')
                 ->with(compact('drivers_jahiz_claim'))
                 ->with(compact('Driver'));
     }
@@ -435,12 +433,12 @@ class DriversJahizClaimController extends Controller
             from drivers_jahiz_claim
             where id=' . $id)[0];
         if (isset($success))
-            return view('DriversJahizClaim.DriversClaimCommission')
+            return view('new_porttal.DriversJahizClaim.DriversClaimCommission')
                 ->with(compact('drivers_jahiz_claim'))
                 ->with(compact('Driver'))
                 ->with('success', 'Done successfully');
         else
-            return view('DriversJahizClaim.DriversClaimCommission')
+            return view('new_porttal.DriversJahizClaim.DriversClaimCommission')
                 ->with(compact('drivers_jahiz_claim'))
                 ->with(compact('Driver'));
     }
@@ -471,12 +469,12 @@ class DriversJahizClaimController extends Controller
             from drivers_jahiz_claim
             where id=' . $id)[0];
         if (isset($success))
-            return view('DriversJahizClaim.DriversClaimDate')
+            return view('new_porttal.DriversJahizClaim.DriversClaimDate')
                 ->with(compact('drivers_jahiz_claim'))
                 ->with(compact('Driver'))
                 ->with('success', 'Done successfully');
         else
-            return view('DriversJahizClaim.DriversClaimDate')
+            return view('new_porttal.DriversJahizClaim.DriversClaimDate')
                 ->with(compact('drivers_jahiz_claim'))
                 ->with(compact('Driver'));
     }
@@ -532,14 +530,14 @@ class DriversJahizClaimController extends Controller
             $status_txt = '-1';
         }
         if ($request->success <> '')
-            return view('DriversJahizClaim.DriversClaimStatus')
+            return view('new_porttal.DriversJahizClaim.DriversClaimStatus')
                 ->with(compact('reply_txt'))
                 ->with(compact('status_txt'))
                 ->with(compact('Driver'))
                 ->with(compact('lkp_claim_status'))
                 ->with('success', 'Done successfully');
         else
-            return view('DriversJahizClaim.DriversClaimStatus')
+            return view('new_porttal.DriversJahizClaim.DriversClaimStatus')
                 ->with(compact('reply_txt'))
                 ->with(compact('status_txt'))
                 ->with(compact('Driver'))
@@ -604,7 +602,7 @@ class DriversJahizClaimController extends Controller
         $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
         $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
         $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setAutoSize(true);
-        $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setAutoSize(true); 
+        $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setAutoSize(true);
         $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(24);
 
 
@@ -647,7 +645,7 @@ class DriversJahizClaimController extends Controller
         foreach ($Select_db as $index=>$Select_dbdb) {
             $lastReplyText = null;
             $lastReplyDate = null;
-             
+
             // dd($Select_db);
             // $sql = "SELECT * FROM `drivers_jahiz_claim_reply` where drivers_jahiz_claim_id = ".$Select_dbdb->id."  ORDER BY `drivers_jahiz_claim_reply`.`created_at` DESC";
             $sql = "SELECT * FROM `drivers_jahiz_claim_reply` WHERE `claim_status_id` IN (11,12) and drivers_jahiz_claim_id = ".$Select_dbdb->id." ORDER BY `drivers_jahiz_claim_reply`.`created_at` DESC";
@@ -665,28 +663,28 @@ class DriversJahizClaimController extends Controller
                         }else{
                             $lastReplyDate = $Select_dbdb->created_at;
                         }
-                         
+
                     //   dd('$drivers_jahiz_claim_reply equal null');
                    }else{
                        if($drivers_jahiz_claim_reply[0]->reply_txt != null){
-                           $lastReplyText = $drivers_jahiz_claim_reply[0]->reply_txt; 
+                           $lastReplyText = $drivers_jahiz_claim_reply[0]->reply_txt;
                            $lastReplyDate = $drivers_jahiz_claim_reply[0]->created_at;
                        }else{
-                            //   reply_txt is empty 
+                            //   reply_txt is empty
                            $sql1 = "SELECT drivers_jahiz_claim_reply.*,lkp_claim_status.status_txt FROM `drivers_jahiz_claim_reply` JOIN lkp_claim_status on lkp_claim_status.id = drivers_jahiz_claim_reply.claim_status_id where drivers_jahiz_claim_reply.drivers_jahiz_claim_id =  ".$Select_dbdb->id."  ORDER BY `drivers_jahiz_claim_reply`.`created_at` DESC";
-                            $sql1 = DB::select($sql1); 
+                            $sql1 = DB::select($sql1);
                             if(count($sql1)>0){
-                                $lastReplyText = $sql1[0]->status_txt; 
+                                $lastReplyText = $sql1[0]->status_txt;
                                 $lastReplyDate = $sql1[0]->created_at;
-                            } 
+                            }
                        }
-                       
+
                     //   dd('$drivers_jahiz_claim_reply NOT equal null');
                    }
-                    
+
                }
-            
-            
+
+
             if(isset($Select_db[$index])){
                 // dd($Select_db[$index]);
                 $total=floatval($Select_dbdb->amount)+floatval($Select_dbdb->Bander_Commission)+ floatval($Select_dbdb->bag_fee)+900;
@@ -702,14 +700,14 @@ class DriversJahizClaimController extends Controller
                     ->SetCellValue('I' . $rowCount, $total)
                     ->SetCellValue('J' . $rowCount, $lastReplyText)
                     ->SetCellValue('K' . $rowCount, $lastReplyDate);
-                     
-                
-                
+
+
+
                      $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:D$rowCount")
                                     ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
                                 $objPHPExcel->getActiveSheet()->getStyle("E$rowCount:I$rowCount")
                                     ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-                    
+
                                 $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:I$rowCount")->applyFromArray(
                                     array(
                                         'borders' => array(
@@ -727,11 +725,11 @@ class DriversJahizClaimController extends Controller
                                 //$objPHPExcel->getActiveSheet()->getRowDimension($rowCount)->setRowHeight(24);
                                 $rowCount++;
             }else{
-                // $selecction_condtion equal Flase 
+                // $selecction_condtion equal Flase
             }
-            
+
             //$objPHPExcel->getActiveSheet()->getStyle("A$rowCount:H$rowCount")->getFont()->setSize(14);
- 
+
 
         }
         // dd($Select_db);

@@ -144,7 +144,7 @@ class JournalController extends Controller
 
         //$data = $Select_db->get();
 
-        return view('Journal.index')->with(compact('lkp_journal_type'))->with(compact('users'))
+        return view('new_porttal.Journal.index')->with(compact('lkp_journal_type'))->with(compact('users'))
         ->with(compact('lkp_company'))->with(compact('warehouse'));
     }
 
