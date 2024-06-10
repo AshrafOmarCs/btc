@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
         return redirect()->back();
     });
 Route::group(['prefix' => 'New-Portal'], function() {
+    Route::post('BulkDriversUpdate', 'DriversController@BulkDriversUpdate')->name('BulkDriversUpdate');
 
     Route::get("/",'DashoardController@index');
     Route::get("/Requires_action",'RequiredActionController@index');
@@ -45,6 +46,13 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('/Transaction-History','Transaction_historyController@index');
     Route::resource('/DriversJahizClaim', 'DriversJahizClaimController');
     Route::DELETE('/DriversClaimDeleteAction', 'DriversJahizClaimController@DriversClaimDeleteAction');
+    Route::get('/CreditNotes','CreditNotesController@index');
+    Route::resource('/Settlements', 'SettlementsController');
+    Route::get('Landmark','LandmarkController@index');
+    Route::get('Salaries', 'SalaryControllerShe@Salaries');
+    Route::resource('Salary', 'SalaryControllerShe');
+    Route::get('SalaryShow/{id}/{Period}', 'SalaryControllerShe@SalaryShowNew');
+
 
 
     // Route::resource('/Drivers', 'DriversController');
@@ -546,7 +554,7 @@ Route::POST('/SettlementsPost', 'SettlementsController@SettlementsPost');
 // Route::resource('Salary', 'SalaryController');
 Route::resource('Salary', 'SalaryControllerShe');
 
-Route::get('SalaryShow/{id}/{Period}', 'SalaryController@SalaryShow');
+Route::get('SalaryShow/{id}/{Period}', 'SalaryControllerShe@SalaryShow');
 
 Route::get('/getCityName/{companyId}', 'AjaxController@getCityName');
 Route::get('/getWarehouse/{cityId}', 'AjaxController@getWarehouse');

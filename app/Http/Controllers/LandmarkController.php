@@ -11,13 +11,13 @@ use App\Exports\LandmarkExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Packages_report;
 use App\Journal;
-use App\Warehouse; 
+use App\Warehouse;
 use App\Driver_state;
 use App\Driver_type;
-use App\City; 
+use App\City;
 use App\Temporary;
 use Auth;
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
@@ -32,38 +32,38 @@ class LandmarkController extends Controller
     }
     public function index()
     {
-        return view('landmark.index');
+        return view('new_porttal.Landmark.index');
         # code...
     }
     public function HandleLandmarkFile(Request $request)
     {
         # code...
-        
+
         if($request->hasfile('myFile')){
-         
-            // read file before storing 
-            $file = $request->myFile; 
+
+            // read file before storing
+            $file = $request->myFile;
             $safeName = 'uploaded_Dailload_File_at_by_EmpID_'.Auth::user()->id.'_'.date("Y-m-d").'.csv';
-            $fileSaved = \Storage::put('public/Landmark/'.$safeName,\File::get($file)); 
+            $fileSaved = \Storage::put('public/Landmark/'.$safeName,\File::get($file));
 
             $checkTemFile = Temporary::where([
                 ['path','storage/Landmark/'.$safeName],
                 ['journal_date',date("Y-m-d")]
             ])->get();
-            
+
             if(count($checkTemFile)>0){
-                $tep= $checkTemFile->first(); 
-            }else{ 
-                $tep = new Temporary(); 
-            } 
+                $tep= $checkTemFile->first();
+            }else{
+                $tep = new Temporary();
+            }
             // $safeName = 'imile_'.date("Y-m-d").'.csv';
 
-             
+
             if($fileSaved == true){
                 $tep->path = 'storage/Landmark/'.$safeName;
-                $tep->journal_date = date("Y-m-d"); 
-                $tep->save(); 
-                $res = $this->convertCsvToArray($tep->path,$tep->id); 
+                $tep->journal_date = date("Y-m-d");
+                $tep->save();
+                $res = $this->convertCsvToArray($tep->path,$tep->id);
                 // dd($request->all());
                 // dd($res);
                 // $extra = array(''=>'',''=>'');
@@ -72,7 +72,7 @@ class LandmarkController extends Controller
                 // return (new LandmarkExport(2022))->download('invoices.xlsx');
                 // return Excel::download(new LMMultiSheetExport($res), 'I-Mile_PRODUCTIVITY REPORT.xlsx');
                 // return Excel::download(new LandmarkReportExport, 'مطالبات المشاريع ما عدا جاهز.xlsx');
-                // return $res; 
+                // return $res;
             }else{
             }
             // dd($fileSaved);
@@ -90,24 +90,24 @@ class LandmarkController extends Controller
     public function convertCsvToArray($path,$file_id)
     {
         # code...
-         
+
         $CSVfp = fopen($path, "r");
         $count = 0;
         $recoreds = array();
         if($CSVfp !== FALSE) {
-        fgetcsv($CSVfp); 
+        fgetcsv($CSVfp);
         while (($data = fgetcsv($CSVfp, 1000, ",")) !== FALSE) {
                 // dd($data);
                 if($data[0] == '' || $data[1] == '' || $data[2] == '' || $data[3] == '' || $data[4] == '' || $data[5] == ''){
-                    continue; 
+                    continue;
                 }
                 $recoreds[] =[
                     'Date'=>$data[0],
-                    'Hub'=>$data[1], 
+                    'Hub'=>$data[1],
                     'Field_Executive'=>$data[2],
                     'Vehicle_type'=>$data[4],
                     'Vehicle_Model'=>$data[5],
-                    'Driver_Type'=>$data[5],                    
+                    'Driver_Type'=>$data[5],
                     'CID'=>$data[6],
                     'OFD'=>$data[7],
                     'Dlvd'=>$data[8],
@@ -115,7 +115,7 @@ class LandmarkController extends Controller
                     'NA'=>$data[10],
                     'FD'=>$data[11],
                     'CL'=>$data[12],
-                    'WN'=>$data[13], 
+                    'WN'=>$data[13],
                     'IA'=>$data[14],
                     'NSS'=>$data[15],
                     'Others'=>$data[16],
@@ -123,32 +123,32 @@ class LandmarkController extends Controller
                     'RVP_Picked'=>$data[18],
                     'bounce'=>null,
                     'Total'=>$data[19],
-                ]; 
+                ];
             }
             // $unique = array_unique($recoreds); .
             $new_recoreds = array();
             $res = array_unique(array_column($recoreds, 'Field_Executive'));
-            foreach ($res as $counter => $re) { 
+            foreach ($res as $counter => $re) {
                 $new_recoreds[] = $this->search($recoreds, 'Field_Executive',$re);
             }
             $payload = array('DA_QTY'=>count($res),'payload'=>$new_recoreds);
-            // $dupes = array_diff_key( $recoreds, 'Field_Executive' ); 
+            // $dupes = array_diff_key( $recoreds, 'Field_Executive' );
             // dd($recoreds);
             // $key = array_search("P_BTC_01_NDD_ABDUL BASHIR_MAK_LMG", $recoreds[2]);
-            
+
             return $new_recoreds;
-            
+
             fclose($CSVfp);
         }
 
-        
+
     }
     function search($array, $key, $value)
-    {    
-        $results = array();  
+    {
+        $results = array();
         $monthly =[
             'days'=>null,
-            'Hub'=>null, 
+            'Hub'=>null,
             'Field_Executive'=>null,
             'Vehicle_type'=>null,
             'Vehicle_Model'=>null,
@@ -160,7 +160,7 @@ class LandmarkController extends Controller
             'NA'=>null,
             'FD'=>null,
             'CL'=>null,
-            'WN'=>null, 
+            'WN'=>null,
             'IA'=>null,
             'NSS'=>null,
             'Others'=>null,
@@ -168,12 +168,12 @@ class LandmarkController extends Controller
             'RVP_Picked'=>null,
             'bounce'=>null,
             'Total'=>null
-        ]; 
+        ];
         $days = 0;
         foreach($array as $k=>$item){
-            if ($item['Field_Executive'] == $value) {   
+            if ($item['Field_Executive'] == $value) {
                 $days = $days + 1;
-                $results[] = $item;  
+                $results[] = $item;
                 if($item['percentage'] == '#DIV/0!'){
                     // dd($item);
                     $item['percentage'] = 0;
@@ -194,41 +194,41 @@ class LandmarkController extends Controller
                     $item['NA'] = 0;
                     // $item['percentage'] = 0;
                 }
- 
-                $monthly['Hub'] = $item['Hub']; 
+
+                $monthly['Hub'] = $item['Hub'];
                 $monthly['Field_Executive'] = $item['Field_Executive'];
                 $monthly['Vehicle_type'] = $item['Vehicle_type'];
                 $monthly['Vehicle_Model'] = $item['Vehicle_Model'];
-                $monthly['Driver_Type'] = $item['Driver_Type']; 
-                $monthly['CID'] = $monthly['CID']+$item['CID']; 
-                $monthly['OFD'] = $monthly['OFD']+$item['OFD']; 
-                $monthly['Dlvd'] = $monthly['Dlvd']+$item['Dlvd']; 
-                $monthly['percentage'] = $monthly['percentage'] + str_replace('%', '', $item['percentage']); 
-                $monthly['FD'] = $monthly['FD']+$item['FD']; 
-                $monthly['CL'] = $monthly['CL']+$item['CL']; 
-                $monthly['NA'] = $monthly['NA']+$item['NA'];  
-                $monthly['WN'] = (int)$monthly['WN']+(int)$item['WN'];  
-                $monthly['IA'] = (int)$monthly['IA']+(int)$item['CID']; 
-                $monthly['NSS'] = (int)$monthly['NSS']+(int)$item['NSS']; 
-                $monthly['Others'] = (int)$monthly['Others']+(int)$item['Others']; 
+                $monthly['Driver_Type'] = $item['Driver_Type'];
+                $monthly['CID'] = $monthly['CID']+$item['CID'];
+                $monthly['OFD'] = $monthly['OFD']+$item['OFD'];
+                $monthly['Dlvd'] = $monthly['Dlvd']+$item['Dlvd'];
+                $monthly['percentage'] = $monthly['percentage'] + str_replace('%', '', $item['percentage']);
+                $monthly['FD'] = $monthly['FD']+$item['FD'];
+                $monthly['CL'] = $monthly['CL']+$item['CL'];
+                $monthly['NA'] = $monthly['NA']+$item['NA'];
+                $monthly['WN'] = (int)$monthly['WN']+(int)$item['WN'];
+                $monthly['IA'] = (int)$monthly['IA']+(int)$item['CID'];
+                $monthly['NSS'] = (int)$monthly['NSS']+(int)$item['NSS'];
+                $monthly['Others'] = (int)$monthly['Others']+(int)$item['Others'];
 
-                $monthly['RVP_OFP'] = $monthly['RVP_OFP']+$item['RVP_OFP']; 
-                $monthly['RVP_Picked'] = $monthly['RVP_Picked']+$item['RVP_Picked']; 
-                $monthly['Total'] = $monthly['Total']+$item['Total']; 
-            } 
+                $monthly['RVP_OFP'] = $monthly['RVP_OFP']+$item['RVP_OFP'];
+                $monthly['RVP_Picked'] = $monthly['RVP_Picked']+$item['RVP_Picked'];
+                $monthly['Total'] = $monthly['Total']+$item['Total'];
+            }
             // $returedData = array('daily'=>$results,'summary'=>'');
-            
+
             // foreach ($array as $subarray) {
             //     $results = array_merge($results, search($subarray, $key, $value));
-            // }  
+            // }
         }
         $monthly['days'] = $days;
-        $monthly['percentage'] = round(($monthly['percentage']/$days),2); 
+        $monthly['percentage'] = round(($monthly['percentage']/$days),2);
         $summary = array('Days'=>$results,'monthly'=>$monthly);
         return $summary;
-         
 
-    } 
+
+    }
 
 
 }

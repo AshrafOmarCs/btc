@@ -25,7 +25,7 @@ class HelperFunctionsController extends Controller
         fclose($CSVfp);
         return $records;
     }
-                    
+
     public static function readExcelData($filePath, $numCells)
     {
         // $filePath = Storage::disk('public')->path('importSANAD/files/' . $safeName);
@@ -62,7 +62,7 @@ class HelperFunctionsController extends Controller
             $colIndex = ord($col) - 65; // 'A' has ASCII code 65
             return $rowData[$colIndex];
         }, $expression);
-        
+
         // Evaluate the expression
         $result = null;
         try {
@@ -75,7 +75,7 @@ class HelperFunctionsController extends Controller
         }
         return $result;
     }
-    
+
 
     public static function getDriverData($driverId) {
         $driver = DB::select("SELECT * FROM drivers WHERE id = '$driverId'");
@@ -83,7 +83,7 @@ class HelperFunctionsController extends Controller
     }
     public static function getInfo($table, $column = '', $id = '') {
         $whereClause = '';
-        if ($column == '') 
+        if ($column == '')
             $column = 'id';
         if($id != '')
             $whereClause = "WHERE $column = '$id'";
@@ -100,13 +100,14 @@ class HelperFunctionsController extends Controller
             $warehouse_ids = json_encode($warehouse_ids);
         else
             $warehouse_ids = null;
-        DB::table('tbl_events_log')->insert([
+        $log_id = DB::table('tbl_events_log')->insertGetId([
             'action' => $lastQuery,
             'done_at' => now(),
             'done_by' => $done_by,
             'warehouse_ids' => $warehouse_ids,
             'loan_ids' => $loan_ids
         ]);
+        return $log_id;
     }
 
     // public static function add_log($lastQuery = '', $warehouse_ids = '', $loans_ids = '') {
@@ -122,12 +123,12 @@ class HelperFunctionsController extends Controller
     //     // $lastQuery = self::clean_string($lastQuery);
     //     DB::insert("INSERT INTO tbl_events_log (action, done_at, done_by, warehouse_ids, loan_ids) VALUES ('$lastQuery', NOW(), '$done_by', '$warehouse_ids', '$loans_ids')");
     // }
-    
+
     public static function clean_string($str) {
         $special_chars = array("'", "\"", ",", ";", "<", ">", "!", "@", "#", "$", "^", "*", "+", "=", "?", "[", "]", "{", "}", "|", "\\", "~", "`");
         return $str = str_replace($special_chars, "", $str);
     }
-    
+
     public static function one_year_later_date($date) {
         $oneYearLater = new \DateTime($date);
         $oneYearLater->add(new DateInterval('P1Y'));
@@ -146,10 +147,10 @@ class HelperFunctionsController extends Controller
         $count = count($supervisors);
         $counter = 0;
         foreach ($supervisors as $supervisor) {
-            
+
             $counter++;
             if ($counter < $count) {
-                $supervisor_names .= $supervisor->name. ', ';                    
+                $supervisor_names .= $supervisor->name. ', ';
             } else {
                 $supervisor_names .= $supervisor->name;
             }
@@ -170,9 +171,9 @@ class HelperFunctionsController extends Controller
                 if (file_exists($file_path)) {
                     $message->attach($file_path);
                 }
-    
+
             });
-        
+
         } catch (Exception $e) {
             // Handle the exception, log the error, or display an error message.
             echo "Error: " . $e->getMessage();

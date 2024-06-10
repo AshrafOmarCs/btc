@@ -1,24 +1,9 @@
-<style>
 
-    .show_table th{
-        padding: 0.0rem 0.3rem !important;
-        border:solid 1px !important;
-        margin:0!important;
-        width:10px;
-        white-space: nowrap;
-    }
-    .show_table td{
-        white-space: nowrap;
-        padding: 0.0rem 0.3rem !important;
-        border:solid 1px !important;
-        vertical-align: middle !important;
-    }
-</style>
 <center>
  <div style="float:left;margin-top: 5px;margin-left: 20px;width:100%;"><h2 style="width:100%;font-size: 14px;font-weight: bold;">{{$Driver->fullName}}</h2>
 </div>
 
-<table class="table m-0 show_table" style="width:10px!important;">
+<table class="table table-bordered" style="width: 95%">
     <tr>
         <TH>Journal Period</TH>
         <TH>Carried Down</TH>

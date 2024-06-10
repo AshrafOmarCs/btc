@@ -18,6 +18,68 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Mail\Mailable;
+use PDF_HTML;
+
+
+
+function generateAndSendPdf($ref_no, $created_at, $company, $period)
+{
+    require_once(app_path() . '/Libraries/fpdf186/html2fpdf.php');
+    $pdf=new PDF_HTML();
+    $pdf->AliasNbPages();
+    $pdf->AddPage();
+    // $pdf->Cell(0,10,'I, '.AUTH::user()->name.', holder of ID/residence number: '.AUTH::user()->IdentityNo.' and mobile number: '.AUTH::user()->phone.', pledge that ',0,1);
+    // $pdf->Cell(0,10,'the information entered is correct and has been directly verified by the representatives.',0,1);
+    // $pdf->Cell(0,10,'I bear full responsibility in the event of any error resulting in a financial transfer as a result of ',0,1);
+    // $pdf->Cell(0,10,'entering/updating the representatives data.',0,1);
+    // $pdf->Ln(20);
+    // $pdf->Ln(20);
+    // $pdf->Ln(20);
+    // $pdf->Ln(20);
+    // $pdf->Cell(0,10,'Bander Al Amir: ',0,1);
+    // $pdf->Cell(30);
+    // $pdf->Ln(20);
+    // $pdf->Cell(0,10,'Signature: ________________________________________________',0,1);
+
+    $pdf->Image(url('/undertake.png'),10,6,190);
+    $pdf->SetFont('Arial','B',9);
+    $pdf->Cell(4);
+    $pdf->Cell(4,17, strtoupper($ref_no),0,1);
+    $pdf->SetFont('Arial','B',9);
+    $pdf->Cell(19);
+    $pdf->Cell(41,52, AUTH::user()->phone . '                                          ' . AUTH::user()->IdentityNo . '                                                ' . AUTH::user()->name,0,1);
+    $pdf->Cell(10);
+    $pdf->Cell(44,-15, AUTH::user()->name . '                                                                     ' . AUTH::user()->IdentityNo . '                                            ' . AUTH::user()->phone,0,1);
+
+
+    $pdf->Output();
+    // Define the path to save the PDF
+    $filePath = storage_path('app/public/pdfFiles/Acknowledgment of pledge '.AUTH::user()->name.'-'.$ref_no.'.pdf');
+
+    // Ensure the directory exists
+    if (!file_exists(dirname($filePath))) {
+        mkdir(dirname($filePath), 0755, true);
+    }
+    // Output the PDF to the specified path
+    $pdf->Output('F', $filePath);
+    sendEmailWithAttachment($filePath, $company, $ref_no, $created_at, $period);
+}
+function sendEmailWithAttachment($pdfPath, $company = '', $ref_no = '', $created_at = '', $period = '')
+{
+    $email = AUTH::user()->email;
+    $body = 'Dear '.AUTH::user()->name.', <br><br>
+        This is an automated email to confirm <b>'.$company.' driver information</b> the reference No of the action: #<b>'.strtoupper($ref_no).'</b>, on <b>'.$created_at.'</b> for the period of (<b>'.$period.'</b>), Please reach the attachment section for downloading the <b>Acknowledgment of pledge pdf</b> file. <br><br>
+        System feed ';
+    Mail::send([], [], function ($message) use ($pdfPath, $body, $email) {
+        $message->to($email)
+            ->subject('Acknowledgment of pledge')
+            ->setBody($body, 'text/html'); // Use setBody to set the email body
+        $message->attach($pdfPath);
+    });
+}
 
 
 class DriversController extends Controller
@@ -915,6 +977,91 @@ class DriversController extends Controller
         return $this->edit($id, $request->input('type_id'))->with('success', 'Done successfully');
     }
 
+    public function BulkDriversUpdate(Request $request) {
+        // $rules = [
+        //     'drivers.*.mobileNumber' => ['nullable', 'regex:/^5\d{8}$/'],
+        //     'drivers.*.accountNumber' => ['nullable', 'regex:/^966\d{9}$/'],
+        //     'drivers.*.iqama' => ['nullable', 'regex:/^\d{10}$/'],
+        //     'drivers.*.account_owner_iqama' => ['nullable', 'regex:/^\d{10}$/'],
+        // ];
+
+        // $messages = [
+        //     'drivers.*.mobileNumber.regex' => 'The mobile number must be exactly 9 digits and start with 5.',
+        //     'drivers.*.accountNumber.regex' => 'The account number must be exactly 12 digits and start with 966.',
+        //     'drivers.*.iqama.regex' => 'The Iqama number must be exactly 10 digits.',
+        //     'drivers.*.account_owner_iqama.regex' => 'The Iqama number must be exactly 10 digits.',
+        // ];
+
+        // $validator = Validator::make($request->all(), $rules, $messages);
+
+        // if ($validator->fails()) {
+        //     return response()->json(['errors' => $validator->errors()], 422);
+        // }
+        $log_ids = array();
+        $made_by = Auth::user()->name;
+        $user_id = Auth::user()->id;
+
+        foreach ($request->drivers as $driverData) {
+            $action = '';
+            $driver = Drivers::find($driverData['driverId']);
+            if ($driver) {
+
+                if(isset($driverData['mobileNumber']) AND ($driverData['mobileNumber'] === -1 OR $driverData['mobileNumber'] > 0)) {
+                    if ($driverData['mobileNumber'] === -1) {
+                        $action .= "mobileNumber: " . $driver->mobileNumber . " to null, ";
+                        $driver->mobileNumber = null;
+                    } else {
+                         $action .= "mobileNumber: " . $driver->mobileNumber . " to " . $driverData['mobileNumber'] . ", ";
+                        $driver->mobileNumber = $driverData['mobileNumber'];
+                    }
+                }
+                if(isset($driverData['iqama']) AND ($driverData['iqama'] === -1 OR $driverData['iqama'] > 0)) {
+                    if ($driverData['iqama'] === -1) {
+                        $action .= "iqama: " . $driver->iqama . " to null, ";
+                        $driver->iqama = null;
+                    } else {
+                        $action .= "iqama: " . $driver->iqama . " to " . $driverData['iqama'] . ", ";
+                        $driver->iqama = $driverData['iqama'];
+                    }
+                }
+
+                if(isset($driverData['accountNumber']) AND ($driverData['accountNumber'] === -1 OR $driverData['accountNumber'] > 0)) {
+                    if ($driverData['accountNumber'] === -1) {
+                        $action .= "accountNumber: " . $driver->accountNumber . " to null, ";
+                        $driver->accountNumber = null;
+                    } else {
+                        $action .= "accountNumber: " . $driver->accountNumber . " to " . $driverData['accountNumber'] . ", ";
+                        $driver->accountNumber = $driverData['accountNumber'];
+                    }
+                }
+
+                if(isset($driverData['account_owner_iqama']) AND ($driverData['account_owner_iqama'] === -1 OR $driverData['account_owner_iqama'] > 0)) {
+                    if ($driverData['account_owner_iqama'] === -1) {
+                        $action .= "account_owner_iqama: " . $driver->account_owner_iqama . " to null, ";
+                        $driver->account_owner_iqama = null;
+                    } else {
+                        $action .= "account_owner_iqama: " . $driver->account_owner_iqama . " to " . $driverData['account_owner_iqama'];
+                        $driver->account_owner_iqama = $driverData['account_owner_iqama'];
+                    }
+                }
+                $driver->updated_at = now();
+                $driver->updated_by_id = Auth::user()->id;
+                $driver->save();
+                $msg = "<b>$made_by</b> updated the driver (".$driverData['driverId'].") with these changes: $action";
+                $log_ids[] = HelperFunctionsController::add_log($msg, '', $driver->job_id);
+            }
+        }
+        if (count($log_ids) > 0) {
+            $log_ids = json_encode($log_ids);
+            $ref_no = Str::random(8);
+            DB::insert("INSERT into tbl_supervisors_triggers (ref_no, log_ids, created_at, created_by) VALUES ('$ref_no', '$log_ids', NOW(), '$user_id')");
+            $result = DB::select("SELECT * from tbl_supervisors_triggers order by id desc");
+            $ref_no = $result[0]->ref_no;
+            $created_at = $result[0]->created_at;
+            generateAndSendPdf($ref_no, $created_at, $request->company, $request->period);
+        }
+        return response()->json(['message' => 'Drivers updated successfully.']);
+    }
     /**
      * Remove the specified resource from storage.
      *

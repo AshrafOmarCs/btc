@@ -188,7 +188,7 @@ class SettlementsController extends Controller
 
         //$data = $Select_db->get();
 
-        return view('Settlements.index')->with(compact('users'))
+        return view('new_porttal.Settlements.index')->with(compact('users'))
             ->with(compact('lkp_company'))->with(compact('warehouse'));
     }
 
@@ -199,7 +199,7 @@ class SettlementsController extends Controller
      */
     public function create()
     {
-        return view('Settlements.create');
+        return view('new_porttal.Settlements.create');
     }
 
     /**
@@ -214,18 +214,18 @@ class SettlementsController extends Controller
             //'amount' => ['required'],
             'journal_date' => ['required'],
         ]);
-        
+
         $driver_id = $request->input('driverId');
-        $date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
         $check_settelement = DB::select("SELECT * from settlements where driverId = '$driver_id' AND journal_date = '$date'");
         if (count($check_settelement) > 0)
-            return redirect('/Settlements')->with('error', 'You have already added Settlement for selected date and driver');
+            return redirect()->back()->with('error', 'You have already added Settlement for selected date and driver');
 
 
         DB::table('settlements')->insert(
             [
                 'driverId' => $request->input('driverId'),
-                'journal_date' => ( empty($request->input('journal_date')))?null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d'),
+                'journal_date' => ( empty($request->input('journal_date')))?null : $request->input('journal_date'),
                 'credit' => $request->input('credit'),
                 'debit' => $request->input('debit'),
                 'note' => $request->input('note'),
@@ -248,7 +248,7 @@ class SettlementsController extends Controller
 
          $Settlements->save();
         */
-        return redirect('/Settlements')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -269,7 +269,7 @@ class SettlementsController extends Controller
             ->where('settlements.id', $id)
             ->first();
 
-        return view('Settlements.show')->with('Settlements', $Settlements);
+        return view('new_porttal.Settlements.show')->with('Settlements', $Settlements);
     }
 
     /**
@@ -283,7 +283,7 @@ class SettlementsController extends Controller
 
 
         $Settlements = DB::table('settlements')
-            ->select('settlements.id as id', 'settlements.driverId', 'fullName', 'fullName_ar',
+            ->select('settlements.id as id', 'settlements.driverId', 'fullName', 'fullName_ar', 'journal_date as journalDate',
                 DB::raw("DATE_FORMAT(journal_date,'%d/%m/%Y') as journal_date"), 'credit', 'debit', 'note',
                 'settlements.created_at as created_at', 'settlements.updated_at as updated_at', DB::raw("ifnull(per_priod,0) as per_priod"), DB::raw("ifnull(cur_priod,0) as cur_priod"),
                 DB::raw("if (period_start<>1,CONCAT(date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m'), '-', LPAD(period_start, 2, '0'),' - ',date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m'),'-', LPAD(period_end, 2, '0')),
@@ -324,7 +324,7 @@ class SettlementsController extends Controller
                 'balance.driverId', '=', 'drivers.id')
             ->where('settlements.id', $id)
             ->first();
-        return view('Settlements.edit')->with(compact('Settlements'));
+        return view('new_porttal.Settlements.edit')->with(compact('Settlements'));
     }
 
     /**
@@ -347,7 +347,7 @@ class SettlementsController extends Controller
             ->where('id', $id)
             ->update([
                 'driverId' => $request->input('driverId'),
-                'journal_date' =>( empty($request->input('journal_date')))?null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d'),
+                'journal_date' =>( empty($request->input('journal_date')))?null : $request->input('journal_date'),
                 'credit' => $request->input('credit'),
                 'debit' => $request->input('debit'),
                 'note' => $request->input('note'),
@@ -368,7 +368,7 @@ class SettlementsController extends Controller
         $Settlements->save();
         */
 
-        return redirect('/Settlements')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -381,10 +381,8 @@ class SettlementsController extends Controller
     public function destroy($id)
     {
         $Settlements = Settlements::find($id);
-
         $Settlements->delete();
-
-        return redirect('/Settlements')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     public function SettlementsPost(Request $request)
@@ -407,7 +405,7 @@ class SettlementsController extends Controller
     where settlements.id in(" . $IDs . ")
      ");
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/Settlements')->with('error', $e->getPrevious()->getMessage());
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
         }
 
         try {
@@ -417,9 +415,9 @@ SET settlements.journal_id = journal.id
 where settlements.id in(" . $IDs . ")
 ");
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/Settlements')->with('error', $e->getPrevious()->getMessage());
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
         }
-        return redirect('/Settlements')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
 
     }
 

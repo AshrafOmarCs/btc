@@ -177,9 +177,9 @@
 								</a>
 							</li>
                             <li>
-								<a href="{{url('New-Portal/DriversSANEDClearing')}}">
+								<a href="{{url('New-Portal/DriversSANEDClearing')}}" class="{{ request()->is('New-Portal/DriversSANEDClearing') ? 'active current-page' : '' }}">
 									<i class="bi bi-calendar4"></i>
-									<span class="menu-text" class="{{ request()->is('New-Portal/DriversSANEDClearing') ? 'current-page' : '' }}">{{__('nav.SANED_clearing')}}</span>
+									<span class="menu-text">{{__('nav.SANED_clearing')}}</span>
 								</a>
 							</li>
 							<li>
@@ -191,6 +191,12 @@
 							<li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">Finance</span>
+							</li>
+                            <li>
+								<a href="{{url('New-Portal/Salary')}}">
+									<i class="bi bi-calendar4"></i>
+									<span class="menu-text">{{__('nav.salary')}}</span>
+								</a>
 							</li>
 							<li class="sidebar-dropdown">
 								<a href="#">
@@ -273,6 +279,29 @@
                                     <a href="{{url('New-Portal/Transaction-History')}}">
                                         <i class="bi bi-calendar4"></i>
                                         <span class="menu-text">{{__('nav.transactions_history')}} </span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(session('Read_18')==1)
+                                <li>
+                                    <a href="{{url('New-Portal/CreditNotes')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.creditNotes')}} </span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if(session('Read_19')==1)
+                                <li>
+                                    <a href="{{url('New-Portal/Settlements')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.settlements')}} </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{url('New-Portal/Landmark')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.landmark')}} </span>
                                     </a>
                                 </li>
                             @endif
@@ -563,6 +592,8 @@
 
         <!-- Custom Data tables -->
         <script src="{{asset('assets/vendor/datatables/custom/custom-datatables.js')}}"></script>
+        <!-- iCheck 1.0.1 -->
+        <script src="{{asset("/AdminLTE/plugins/iCheck/icheck.min.js")}}"></script>
         {{-- !-- Dropify JS --> --}}
         <script type="text/javascript" src="https://jeremyfagis.github.io/dropify/dist/js/dropify.min.js"></script>
         <script>

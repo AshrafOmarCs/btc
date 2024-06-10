@@ -218,7 +218,7 @@ LEFT JOIN
                 }
 
                 $sum = $sum->first();
-                
+
                 return datatables()->of($Select_db)->with('salary_range',
                     '<b><font color="red">' . $from . '    ' . $to . '</font></b>')
                     ->with('Period', str_replace(' - ', '*', $request->filter_Period))
@@ -428,7 +428,7 @@ LEFT JOIN
         } else {
             $to = $P[1];
         }
-        
+
         // dd($to);
 
         $company = DB::select("SELECT TRIM(bank_transaction.amount)+0 as amount,period_start,period_end,companyName,warehouseName,fullName,calculation_method_id from drivers
@@ -442,7 +442,7 @@ LEFT JOIN
         )bank_transaction  ON upper(bank_transaction.job_id) = upper(drivers.job_id)
         where drivers.id=" . $id)[0];
 
-        
+
         //if ($company->period_start == "1") {
         //$from = date('Y-m', strtotime(date('Y-m') . ' -1 MONTH')) . "-01";
         // $to = date('Y-m-d', strtotime('last day of previous month'));
@@ -463,8 +463,8 @@ LEFT JOIN
         sum(IFNULL(credit, 0)) as credit,sum(IFNULL(debit, 0)) as debit,sum(IFNULL(credit, 0))- sum(IFNULL(debit, 0)) as carried_down
         from journal
         WHERE journal_date < '" . $from . "' and driverId=" . $id)[0];
-    //   dd($Carried_Down);
-    
+        //   dd($Carried_Down);
+
         $qq = DB::select("SELECT post_id, journal.createdby_id, journal.note,a.date,DAYNAME(a.date) AS dayname,journal_type,No_of_D AS no_of_deliverd,No_of_TP AS no_of_touch_point,unit_cost,credit,debit,IFNULL(credit,0)-IFNULL(debit,0) AS Carried_Down FROM (
             SELECT date_add('" . $from . "', INTERVAL seq DAY) AS date FROM (
             SELECT @ROW :=@ROW+1 AS seq FROM (
@@ -508,7 +508,7 @@ LEFT JOIN
             SELECT 7 UNION ALL
             SELECT 8 UNION ALL
             SELECT 9) t4,(
-            SELECT @ROW :=-1) r ORDER BY seq) sequence WHERE date_add('" . $from . "', INTERVAL seq DAY) <= '" . $to . "') a LEFT JOIN journal ON journal.journal_date=a.date AND journal.driverId=" . $id . " LEFT JOIN lkp_journal_type ON lkp_journal_type.id=journal.journal_type_id LEFT JOIN packages_report ON packages_report.id=journal.post_id 
+            SELECT @ROW :=-1) r ORDER BY seq) sequence WHERE date_add('" . $from . "', INTERVAL seq DAY) <= '" . $to . "') a LEFT JOIN journal ON journal.journal_date=a.date AND journal.driverId=" . $id . " LEFT JOIN lkp_journal_type ON lkp_journal_type.id=journal.journal_type_id LEFT JOIN packages_report ON packages_report.id=journal.post_id
             AND journal_type_id=6 ORDER BY date,journal_type");
         foreach($qq as $q) {
             $q->created_by = "";
@@ -570,7 +570,7 @@ LEFT JOIN
      * @throws \PHPExcel_Reader_Exception
      * @throws \Illuminate\Validation\ValidationException
      */
-    
+
     public function SalaryPaidSave(Request $request)
     {
         $this->validate($request, [
@@ -578,7 +578,7 @@ LEFT JOIN
         ]);
 
         $user_id = Auth::user()->id;
-        
+
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $tmpfname = $request->file('select_file');
 
@@ -683,7 +683,7 @@ LEFT JOIN
                              " . $worksheet->getCell('H' . $row)->getValue() . ",
                              " . $bank_paid[$i] . ",
                               1),";
-                               
+
                         $journalId = $journal_id;
                     } else {
                         $values .= "(" . $id . ",
@@ -728,7 +728,7 @@ LEFT JOIN
         }
         return $this->SalaryPaid($request)->with('success', 'Done successfully');
     }
-    
+
     public function SalaryPaidSave_bk(Request $request)
     {
         $this->validate($request, [
@@ -875,7 +875,7 @@ LEFT JOIN
         $current_user = [];
         $tem = $this->getPermsionsDetails($request->all(),Auth::user()->id);
         $period = $request->filter_Period;
-        
+
         $Period = explode(' - ', $period);
         $from = $Period[0];
         $to = $Period[1];
@@ -892,41 +892,41 @@ LEFT JOIN
             ['privilege_description','Approve']
         ])->get();
         $DidAllEmpApprovedInvoice = "
-                                    Select approved_records.*,users.name ,users.department from approved_records 
-                                    join users on users.id = approved_records.user_id 
-                                    where approved_records.company_id=".$request->filter_companyId." and approved_records.periodFrom LIKE '%".$from."%' and approved_records.periodTo LIKE '%".$to."%' 
+                                    Select approved_records.*,users.name ,users.department from approved_records
+                                    join users on users.id = approved_records.user_id
+                                    where approved_records.company_id=".$request->filter_companyId." and approved_records.periodFrom LIKE '%".$from."%' and approved_records.periodTo LIKE '%".$to."%'
                                     ";
         // dd(count($DidAllEmpApprovedInvoice));
-         
+
         // dd($sql);
         $DidAllEmpApprovedInvoice = DB::select($DidAllEmpApprovedInvoice);
         $var = $DidAllEmpApprovedInvoice;
-        
+
         if(count($DidAllEmpApprovedInvoice) == count($WhosPrivilageToApprove)){
              $tem['Does_all_approve'] = true;
         }else{
             $tem['Does_all_approve'] = true;
         }
-        
+
         // dd($tem);
         if($tem != NULL){
             $E_Signatures[] = $tem;
         }
-        
-        
+
+
         $usersWhoHavePriveliges = Page_privilege::where([
             ['company_id',$request->filter_companyId],
             ['user_id','!=',Auth::user()->id]
         ])->get();
-       
+
         if(count($usersWhoHavePriveliges)>0){
             foreach($usersWhoHavePriveliges as $usersWhoHavePrivelige){
                 $E_Signatures[] = $this->getPermsionsDetails($request->all(),$usersWhoHavePrivelige->user->id);
                 // dd($E_Signatures);
             }
         }
-        
-        $htmlCode = ""; 
+
+        $htmlCode = "";
         $E_Signatures = array_map("unserialize", array_unique(array_map("serialize", $E_Signatures)));
         // dd($E_Signatures);
         foreach($E_Signatures as $k=>$E_Signature){
@@ -936,8 +936,8 @@ LEFT JOIN
                 // dd($E_Signature);
                 $current_user = $E_Signature;
                 // return $current_user;
-            } 
-            
+            }
+
             // dd('E_Signature');
             if($k%2 == 0){
                 $color = '#fff';
@@ -946,30 +946,30 @@ LEFT JOIN
             }
             // dd($E_Signature['ApprovalDate']);
             if($E_Signature['DidUserApproveThisInvoice'] == true){
-                // APPROVEED INVOICES 
-                // Check who approved it current user 
+                // APPROVEED INVOICES
+                // Check who approved it current user
                 if($E_Signature['IsHavePermissionToExport'] == true){
                     $htmlCode = $htmlCode. "
                     <tr style='max-height: 45px;'>
-                        <td> ".$E_Signature['user_name']." </td> 
+                        <td> ".$E_Signature['user_name']." </td>
                         <td > ".$E_Signature['department']." </td>
-                        <td> ". $E_Signature['ApprovalDate']."  
+                        <td> ". $E_Signature['ApprovalDate']."
                         </td>
                     </tr>
-                "; 
-                    
+                ";
+
                 }else{
                     $htmlCode = $htmlCode. "
                         <tr style='max-height: 45px;'>
                             <td> ".$E_Signature['user_name']." </td>
                              <td > ".$E_Signature['department']." </td>
-                            <td> ". $E_Signature['ApprovalDate']."  
+                            <td> ". $E_Signature['ApprovalDate']."
                             </td>
                         </tr>
-                    "; 
+                    ";
                 }
-            }else{ 
-                
+            }else{
+
                 if($E_Signature['user_id'] == Auth::user()->id){
                     // dd($htmlCode);
                     $htmlCode = $htmlCode."
@@ -979,8 +979,8 @@ LEFT JOIN
                             <td> <a href='".url('Approve-invoice/'.$request->filter_companyId.'/'.$request->filter_Period.'/'.Auth::user()->id.' ')."' class='btn btn-sm btn-info' style='padding: 5px;
                             margin: 8px;'> Approve </a> </td>
                         </tr>
-                    "; 
-                   
+                    ";
+
                 }else{
                     // dd($E_Signature);
                     // dd($E_Signature);
@@ -991,17 +991,17 @@ LEFT JOIN
                         </tr>
                     ";
                     // dd($htmlCode);
-                } 
+                }
                 //  dd($htmlCode);
             }
-        } 
+        }
         // dd($current_user);
        if($current_user == []){
             return response()->json(['status'=>true,"payload"=>$htmlCode,"itemsCount"=>count($E_Signatures)],200);
        }else{
             return response()->json(['status'=>true,"payload"=>$htmlCode,"data"=>$current_user,"itemsCount"=>count($current_user)],200);
        }
-        
+
         // dd($E_Signatures);
     }
     public function getPermsionsDetails($args,$user_id){
@@ -1021,7 +1021,7 @@ LEFT JOIN
             ['user_id',$user_id]
         ])->get();
         // dd($current_user_privilaged_permisions);
-        // check if user has permition 
+        // check if user has permition
         foreach($current_user_privilaged_permisions as $item){
             // dd($item);
             switch ($item->privilege_description) {
@@ -1033,16 +1033,16 @@ LEFT JOIN
                     # code...
                     $export = true;
                     break;
-                
+
                 default:
                     # code...
                     break;
             }
         }
         // dd('20222222');
-        // check if user approve the invoice 
+        // check if user approve the invoice
        $var = '';
-     
+
         if(isset($args['filter_Period'])){
             $Period = explode(' - ',$period);
             $from = $Period[0];
@@ -1057,7 +1057,7 @@ LEFT JOIN
                 $approveDate = $checkIfApproved[0]->created_at;
             }
         }else{
-        } 
+        }
          if($approve == false && $approve == false){
 
          }else{
@@ -1075,8 +1075,8 @@ LEFT JOIN
         if(count($user)){
             return $user;
         }
-       
-        // 
+
+        //
     }
 //****************************************************************************************************************
 //****************************************************************************************************************

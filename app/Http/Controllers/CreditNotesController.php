@@ -212,7 +212,7 @@ class CreditNotesController extends Controller
 
         //$data = $Select_db->get();
 
-        return view('CreditNotes.index')->with(compact('users'))
+        return view('new_porttal.CreditNotes.index')->with(compact('users'))
             ->with(compact('lkp_company'))->with(compact('warehouse'));
     }
 
@@ -223,7 +223,7 @@ class CreditNotesController extends Controller
      */
     public function create()
     {
-        return view('CreditNotes.create');
+        return view('new_porttal.CreditNotes.create');
     }
 
     /**
@@ -240,7 +240,7 @@ class CreditNotesController extends Controller
             'journal_date' => ['required'],
         ]);
         $driver_id = $request->input('driverId');
-        $date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
         $check_creditNote = DB::select("SELECT * from creditnotes where driverId = '$driver_id' AND journal_date = '$date'");
         if (count($check_creditNote) > 0)
             return redirect('/Settlements')->with('error', 'You have already added CreditNote for selected date and driver');
@@ -276,7 +276,7 @@ class CreditNotesController extends Controller
 
         $CreditNotes->save();
 
-        return redirect('/CreditNotes')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
         // } else
         //    return redirect('/CreditNotes')->with('error', 'Please complete company data');
     }
@@ -300,7 +300,7 @@ class CreditNotesController extends Controller
             ->where('creditnotes.id', $id)
             ->first();
 
-        return view('CreditNotes.show')->with('CreditNotes', $CreditNotes);
+        return view('new_porttal.CreditNotes.show')->with('CreditNotes', $CreditNotes);
     }
 
     /**
@@ -314,7 +314,7 @@ class CreditNotesController extends Controller
 
 
         $CreditNotes = DB::table('creditnotes')
-            ->select('creditnotes.id as id', 'creditnotes.driverId', 'fullName', 'fullName_ar',
+            ->select('creditnotes.id as id', 'creditnotes.driverId', 'fullName', 'fullName_ar', 'journal_date as journalDate',
                 DB::raw("DATE_FORMAT(journal_date,'%d/%m/%Y') as journal_date"), 'amount', 'note',
                 'creditnotes.created_at as created_at', 'creditnotes.updated_at as updated_at', DB::raw("ifnull(per_priod,0) as per_priod"), DB::raw("ifnull(cur_priod,0) as cur_priod"),
                 DB::raw("if (period_start<>1,CONCAT(date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m'), '-', LPAD(period_start, 2, '0'),' - ',date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m'),'-', LPAD(period_end, 2, '0')),
@@ -355,7 +355,7 @@ class CreditNotesController extends Controller
                 'balance.driverId', '=', 'drivers.id')
             ->where('creditnotes.id', $id)
             ->first();
-        return view('CreditNotes.edit')->with(compact('CreditNotes'));
+        return view('new_porttal.CreditNotes.edit')->with(compact('CreditNotes'));
     }
 
     /**
@@ -375,7 +375,7 @@ class CreditNotesController extends Controller
 
         $CreditNotes = CreditNotes::find($id);
         $CreditNotes->driverId = $request->input('driverId');
-        $CreditNotes->journal_date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $CreditNotes->journal_date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
         //(empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
         $CreditNotes->amount = $request->input('amount');
         $CreditNotes->note = $request->input('note');
@@ -384,7 +384,7 @@ class CreditNotesController extends Controller
 
         $CreditNotes->save();
 
-        return redirect('/CreditNotes')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -400,7 +400,7 @@ class CreditNotesController extends Controller
 
         $CreditNotes->delete();
 
-        return redirect('/CreditNotes')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     public function CreditNotesPost(Request $request)
@@ -414,37 +414,45 @@ class CreditNotesController extends Controller
 
         $IDs = substr($IDs, 0, strlen($IDs) - 1);
         try {
+        //     echo "insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,
+        //     createdby_id,updatedby_id,created_at,updated_at)
+
+        // select driverId,journal_date,amount,null,note,3,id," . Auth::user()->id . "," . Auth::user()->id . ",
+        // '" . date("Y-m-d H:i:s") . "' as created_at,'" . date("Y-m-d H:i:s") . "' as updated_at
+        // from creditnotes
+        // where creditnotes.id in(" . $IDs . ")";
+        // dd('dd');
             DB::insert("insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,
             createdby_id,updatedby_id,created_at,updated_at)
 
-    select driverId,journal_date,amount,null,note,3,id," . Auth::user()->id . "," . Auth::user()->id . ",
-    '" . date("Y-m-d H:i:s") . "' as created_at,'" . date("Y-m-d H:i:s") . "' as updated_at
-    from creditnotes
-    where creditnotes.id in(" . $IDs . ")
-     ");
-        if(count($IDs) > 0) {
-            $made_by = Auth::user()->name;
-            $user_by = Auth::user()->id;
-            DB::update("UPDATE journal set status = 'Paid', exported_by = '$user_by' WHERE post_id in(" . $IDs . ")");
-            $amp_ids = implode(',', $IDs);
-            $msg = "<b>$made_by</b> posted the CreditNotes ids ('$amp_ids') to Journal";
-            HelperFunctionsController::add_log($msg, '', $IDs);
-        }
+        select driverId,journal_date,amount,null,note,3,id," . Auth::user()->id . "," . Auth::user()->id . ",
+        '" . date("Y-m-d H:i:s") . "' as created_at,'" . date("Y-m-d H:i:s") . "' as updated_at
+        from creditnotes
+        where creditnotes.id in(" . $IDs . ")
+        ");
+        // if(count($IDs) > 0) {
+            // $made_by = Auth::user()->name;
+            // $user_by = Auth::user()->id;
+            // DB::update("UPDATE journal set status = 'Paid', exported_by = '$user_by' WHERE post_id in(" . $IDs . ")");
+            // $amp_ids = implode(',', $IDs);
+            // $msg = "<b>$made_by</b> posted the CreditNotes ids ('$amp_ids') to Journal";
+            // HelperFunctionsController::add_log($msg, '', $IDs);
+        // }
 
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/CreditNotes')->with('error', $e->getPrevious()->getMessage());
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
         }
 
         try {
             DB::update("UPDATE creditnotes
-JOIN journal  ON (creditnotes.id = journal.post_id and journal.journal_type_id=3)
-SET creditnotes.journal_id = journal.id
-where creditnotes.id in(" . $IDs . ")
-");
+            JOIN journal  ON (creditnotes.id = journal.post_id and journal.journal_type_id=3)
+            SET creditnotes.journal_id = journal.id
+            where creditnotes.id in(" . $IDs . ")
+            ");
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect('/CreditNotes')->with('error', $e->getPrevious()->getMessage());
         }
-        return redirect('/CreditNotes')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
 
     }
 
@@ -464,6 +472,6 @@ where creditnotes.id in(" . $IDs . ")
         $Arabic = new I18N_Arabic('Numbers');
         $number_to_text = $Arabic->money2str($CreditNotes->amount, 'SAR', 'ar');
 
-        return view('CreditNotes.print')->with(compact('CreditNotes'))->with(compact('number_to_text'));
+        return view('new_porttal.CreditNotes.print')->with(compact('CreditNotes'))->with(compact('number_to_text'));
     }
 }
