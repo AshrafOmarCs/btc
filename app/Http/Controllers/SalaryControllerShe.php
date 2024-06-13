@@ -1236,13 +1236,14 @@ class SalaryControllerShe extends Controller
            salary_import_paid_details.account_owner_iqama,
            salary_import_paid_details.accountNumber,
            salary_import_paid_details.bank_sum) as sub"))->get();
-        if (isset($success))
-            return view('Salary.SalaryPaidShe')->with(compact('Paid_DB'))->with('success', $success);
-        elseif (isset($error))
-            return view('Salary.SalaryPaidShe')->with(compact('Paid_DB'))->with('error', $error);
-        else
-            return view('Salary.SalaryPaidShe')->with(compact('Paid_DB'));
+        if (isset($success)) {
 
+            return view('new_porttal.Salary.SalaryPaidShe')->with(compact('Paid_DB'))->with('success', $success);
+        } elseif (isset($error)) {
+            return view('new_porttal.Salary.SalaryPaidShe')->with(compact('Paid_DB'))->with('error', $error);
+        } else {
+            return view('new_porttal.Salary.SalaryPaidShe')->with(compact('Paid_DB'));
+        }
     }
     //****************************************************************************************************************
     //****************************************************************************************************************

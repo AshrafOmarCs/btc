@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use DateTime;
 use App\Temporary;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class AutomationController extends Controller
 {
@@ -20,7 +21,7 @@ class AutomationController extends Controller
     }
     function index() {
         $companies = DB::select("SELECT * FROM lkp_company WHERE status = 'active'");
-        return view('Automation.index')->with('companies', $companies);
+        return view('new_porttal.Automation.index')->with('companies', $companies);
     }
     function index_new() {
         $actions = DB::select("SELECT tbl_actions.*, users.name FROM tbl_actions join users on tbl_actions.created_by = users.id");
@@ -36,7 +37,7 @@ class AutomationController extends Controller
             }
             $action->warehouse = $warehouse;
         }
-        return view('Automation.index_new')->with('actions', $actions);
+        return view('new_porttal.Automation.index_new')->with('actions', $actions);
     }
     function rejectSettlement($id) {
         $action = DB::select("SELECT tbl_actions.ids, tbl_actions.jahiz_ids FROM tbl_actions WHERE tbl_actions.id = '$id'");
@@ -53,8 +54,8 @@ class AutomationController extends Controller
         $settlement_ids = $action[0]->ids;
         $jahiz_ids = $action[0]->jahiz_ids;
         $settlements = DB::select("SELECT drivers_saned_settlement.*, warehouse.warehouseName FROM drivers_saned_settlement join drivers ON drivers.job_id = drivers_saned_settlement.AMP_ID JOIN warehouse ON warehouse.id = drivers.warehouseId WHERE drivers_saned_settlement.id in ($settlement_ids) order by drivers.id");
-        $jahizs = DB::select("SELECT cash FROM drivers_jahiz_clearing join drivers ON drivers_jahiz_clearing.driverId = drivers.id WHERE drivers_jahiz_clearing.id in ($jahiz_ids) order by drivers.id");        
-        return view('Automation.getSettlement')->with('action', $action)->with('settlements', $settlements)->with('jahizs', $jahizs);
+        $jahizs = DB::select("SELECT cash FROM drivers_jahiz_clearing join drivers ON drivers_jahiz_clearing.driverId = drivers.id WHERE drivers_jahiz_clearing.id in ($jahiz_ids) order by drivers.id");
+        return view('new_porttal.Automation.getSettlement')->with('action', $action)->with('settlements', $settlements)->with('jahizs', $jahizs);
     }
     function acceptSettlement(Request $request) {
         $id = $request->id;
@@ -90,7 +91,7 @@ class AutomationController extends Controller
     public function download_file(Request $request)
     {
         $download_type = $request->input('download_type');
-        
+
         error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
@@ -112,7 +113,7 @@ class AutomationController extends Controller
             ->setCellValueExplicit('D1', 'Amount')
             ;
         }
-        
+
         // $objPHPExcel->getActiveSheet()->getColumnDimension('Q')->setWidth(37.89);
         $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(24);
 
@@ -138,7 +139,11 @@ class AutomationController extends Controller
 
     function upload_file(Request $request) {
         $user_id = Auth::user()->id;
-        $credit_debbit = $request->credit_debit;
+        $credit_debbit = $request->input('credit_debit');
+
+        if(null == $request->input('credit_debit'))
+            $credit_debbit = $request->input('credit_debbit');
+
         $date = now()->toDateTimeString();
         $status_id = $request->input('status_id');
         $createdby_id = $updatedby_id = 75;
@@ -204,16 +209,15 @@ class AutomationController extends Controller
                     $done = 'deleted';
                 } else {
                     $journal_date = $request->input('journal_date');
-                    
+                    $journal_date = Carbon::parse($journal_date)->format('Y-m-d');
                     $done = 'updated';
-    
                     $safeName = basename($request->input('path'));
                     $filePath = Storage::disk('public')->path('journal/imile/' . $safeName);
                     $excelReader = PHPExcel_IOFactory::createReaderForFile($filePath);
                     $excelObj = $excelReader->load($filePath);
                     $worksheet = $excelObj->getSheet(0);
                     $highestRow = $worksheet->getHighestRow();
-                    
+
                     if($request->ACTION == 'Settlement') {
                         for ($row = 2; $row <= $highestRow; $row++) {
                             $warehouse = $worksheet->getCell('A' . $row)->getValue();
@@ -228,6 +232,8 @@ class AutomationController extends Controller
                                 $credit = $worksheet->getCell('E' . $row)->getValue();
                             if ($credit_debbit == 'debit')
                                 $debit = $worksheet->getCell('E' . $row)->getValue();
+
+                            // dd($credit_debbit);
                             $driver = DB::select("SELECT * FROM drivers WHERE `job_id` = '$job_id'");
                             if (count($driver) > 0) {
                                 $driverId = $driver[0]->id;
@@ -263,6 +269,7 @@ class AutomationController extends Controller
                                         'credit' => $credit,
                                         'debit' => $debit,
                                         'note' => $note,
+                                        'status' => 'Paid',
                                         'post_id' => $settlement_id,
                                         'journal_type_id' => '7',
                                         'createdby_id' => $user_id,
@@ -311,6 +318,9 @@ class AutomationController extends Controller
                                 } else if ($current_balance < 0) {
                                     $expected = $current_balance + $amount;
                                 }
+                                if (round($expected) <= 0) {
+                                    continue;
+                                }
                             }
                             $check_amount = round($expected);
                             $check = DB::select("SELECT driverId FROM loan WHERE driverId = '$driverId' AND journal_date = '$journal_date' AND amount = '$check_amount'");
@@ -346,16 +356,16 @@ class AutomationController extends Controller
                     } else if($request->ACTION == 'CreditNote') {
                         for ($row = 2; $row <= $highestRow; $row++) {
                             $warehouse = $worksheet->getCell('A' . $row)->getValue();
-    
+
                             $data = DB::select("SELECT warehouse.id, companyName FROM lkp_company INNER JOIN warehouse ON lkp_company.id=warehouse.companyId WHERE warehouse.warehouseName = '$warehouse'");
                             $warehouse_id = $data[0]->id;
                             $data = $data[0]->companyName;
-    
+
                             $job_id = $worksheet->getCell('B' . $row)->getValue();
                             $name = $worksheet->getCell('C' . $row)->getValue();
                             $note = $worksheet->getCell('D' . $row)->getValue();
                             $amount = $worksheet->getCell('E' . $row)->getValue();
-    
+
                             $driver = DB::select("SELECT * FROM drivers WHERE `job_id` = '$job_id'");
                             if (count($driver) > 0) {
                                 $driverId = $driver[0]->id;
@@ -370,8 +380,8 @@ class AutomationController extends Controller
                                     'updated_at' => now(),
                                 ]);
                             }
-                            $check = DB::select("SELECT driverId FROM creditnotes WHERE driverId = '$driverId' AND journal_date = '$journal_date' AND amount = '$amount'");
-                            if(count($check) > 0) { } else {
+                            // $check = DB::select("SELECT driverId FROM creditnotes WHERE driverId = '$driverId' AND journal_date = '$journal_date' AND amount = '$amount'");
+                            // if(count($check) > 0) { } else {
 
                                 $creditnote_id = DB::table('creditnotes')->insertGetId([
                                     'driverId' => $driverId,
@@ -390,6 +400,7 @@ class AutomationController extends Controller
                                         'journal_date' => $journal_date,
                                         'debit' => $amount,
                                         'note' => $note,
+                                        'status' => 'Paid',
                                         'post_id' => $creditnote_id,
                                         'journal_type_id' => '3',
                                         'createdby_id' => $user_id,
@@ -399,15 +410,15 @@ class AutomationController extends Controller
                                     ]);
                                     DB::update("UPDATE creditnotes set journal_id = '$journal_id' WHERE id = '$creditnote_id'");
                                 }
-                            }
+                            // }
                         }
                     }
                 }
-                return redirect('automation')->with('success', 'Data '.$done.' successfully.');
+                return redirect('New-Portal/automation')->with('success', 'Data '.$done.' successfully.');
             } catch (\Exception $e) {
                 return redirect()->back()->withErrors(['msg' => $e]);
             }
-        } else { // get records for view of unroll and roll
+        } else { // get records to view in blade(unroll and roll)
             // This section to get the records for verification to unroll
             if(isset($request->READ) AND $request->READ == 'Unroll') {
                 $module = $request->input('module');
@@ -468,7 +479,7 @@ class AutomationController extends Controller
 
                         $respnse .= generate_tr_unroll($model, $job_id, $name, $driver, $amount, $warehouse_id, $warehouse, $formattedDate, $note, $debit, $loan_id);
                     }
-                    
+
                 } else if($module == 'CreditNote') {
                     $company = $respnse = '';
                     $expected = $total_drivers = $new_drivers = $total_amount = 0;
@@ -504,15 +515,15 @@ class AutomationController extends Controller
                     $debit_amount = $amount = 0;
                     if($credit_check == 'credit' AND $debit_check == 'debit') {
                         $SQL = "SELECT settlements.id,settlements.credit,settlements.debit,settlements.note,settlements.driverId,settlements.journal_id,warehouse.id AS warehouse_id,
-                        warehouse.warehouseName,lkp_company.companyName,drivers.job_id,drivers.fullName FROM settlements INNER JOIN drivers ON settlements.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id 
+                        warehouse.warehouseName,lkp_company.companyName,drivers.job_id,drivers.fullName FROM settlements INNER JOIN drivers ON settlements.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id
                         INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE settlements.journal_id is null and $warehouseClause companyId = '$companyId' AND settlements.journal_date between STR_TO_DATE('$journal_date[0]','%d/%m/%Y') AND STR_TO_DATE('$journal_date[1]','%d/%m/%Y')";
                     } else if($credit_check == 'credit') {
                         $SQL = "SELECT settlements.id,settlements.credit,settlements.debit,settlements.note,settlements.driverId,settlements.journal_id,warehouse.id AS warehouse_id,
-                        warehouse.warehouseName,lkp_company.companyName,drivers.job_id,drivers.fullName FROM settlements INNER JOIN drivers ON settlements.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id 
+                        warehouse.warehouseName,lkp_company.companyName,drivers.job_id,drivers.fullName FROM settlements INNER JOIN drivers ON settlements.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id
                         INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE settlements.journal_id is null and settlements.credit > 0 AND $warehouseClause companyId = '$companyId' AND settlements.journal_date between STR_TO_DATE('$journal_date[0]','%d/%m/%Y') AND STR_TO_DATE('$journal_date[1]','%d/%m/%Y')";
                     } else if ($debit_check == 'debit') {
                         $SQL = "SELECT settlements.id,settlements.credit,settlements.debit,settlements.note,settlements.driverId,settlements.journal_id,warehouse.id AS warehouse_id,
-                        warehouse.warehouseName,lkp_company.companyName,drivers.job_id,drivers.fullName FROM settlements INNER JOIN drivers ON settlements.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id 
+                        warehouse.warehouseName,lkp_company.companyName,drivers.job_id,drivers.fullName FROM settlements INNER JOIN drivers ON settlements.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id
                         INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE settlements.journal_id is null and settlements.debit > 0 AND $warehouseClause companyId = '$companyId' AND settlements.journal_date between STR_TO_DATE('$journal_date[0]','%d/%m/%Y') AND STR_TO_DATE('$journal_date[1]','%d/%m/%Y')";
                     } else {
                         return redirect()->back()->withErrors(['msg' => 'Please select atleast one option(Credit or Debit).']);
@@ -537,7 +548,7 @@ class AutomationController extends Controller
                         $respnse .= generate_tr_unroll($model, $job_id, $name, $driver, $amount, $warehouse_id, $warehouse, $formattedDate, $note, $debit_amount, $loan_id);
                     }
                 }
-                return view('Automation.verify_unroll')->with('SQL', $SQL)->with('records', $respnse)->with('model', $model)->with('operation_type', $operation)->with('journal_date', $journal_date[0] . '-' . $journal_date[1])
+                return view('new_porttal.Automation.verify_unroll')->with('SQL', $SQL)->with('records', $respnse)->with('model', $model)->with('operation_type', $operation)->with('journal_date', $journal_date[0] . '-' . $journal_date[1])
                     ->with('amount', $total_amount)->with('new_drivers', $new_drivers)->with('total_drivers', $total_drivers)->with('company', $company)->with('expected', $expected)
                     ->with('note', $note);
             }
@@ -581,7 +592,7 @@ class AutomationController extends Controller
                         $tep->journal_date = date("Y-m-d", strtotime($request->journal_date) );
                         $tep->save();
                     }
-        
+
                     $company = $respnse = '';
                     $expected = $total_drivers = $new_drivers = $total_amount = 0;
                     $model = 'Loans';
@@ -611,7 +622,7 @@ class AutomationController extends Controller
                             $expected += $response_arr[0][1];
                     }
                     $operation_type = "Half-Salary as loans";
-                    return view('Automation.verify')->with('records', $respnse)->with('model', $model)->with('operation_type', $operation_type)->with('journal_date', $journal_date)
+                    return view('new_porttal.Automation.verify')->with('records', $respnse)->with('model', $model)->with('operation_type', $operation_type)->with('journal_date', $journal_date)
                     ->with('amount', $total_amount)->with('new_drivers', $new_drivers)->with('total_drivers', $total_drivers)->with('company', $company)->with('expected', $expected)
                     ->with('note', $note)->with('status_id', $status_id)->with('path', $tep->path)->with('credit_debbit', $credit_debbit);
                 } catch (ValidationException $e) {
@@ -657,7 +668,7 @@ class AutomationController extends Controller
                         $expected += $response_arr[0][1];
                     }
                     $operation_type = "Loans";
-                    return view('Automation.verify')->with('records', $respnse)->with('model', $model)->with('operation_type', $operation_type)->with('journal_date', $journal_date)
+                    return view('new_porttal.Automation.verify')->with('records', $respnse)->with('model', $model)->with('operation_type', $operation_type)->with('journal_date', $journal_date)
                     ->with('amount', $total_amount)->with('new_drivers', $new_drivers)->with('total_drivers', $total_drivers)->with('company', $company)->with('expected', $expected)
                     ->with('note', $note)->with('status_id', $status_id)->with('path', $tep->path)->with('credit_debbit', $credit_debbit);
                 } catch (ValidationException $e) {
@@ -705,7 +716,7 @@ class AutomationController extends Controller
                         $expected += $response_arr[0][1];
                     }
                     $operation_type = "CreditNote";
-                    return view('Automation.verify')->with('records', $respnse)->with('model', $model)->with('operation_type', $operation_type)->with('journal_date', $journal_date)
+                    return view('new_porttal.Automation.verify')->with('records', $respnse)->with('model', $model)->with('operation_type', $operation_type)->with('journal_date', $journal_date)
                     ->with('amount', $total_amount)->with('new_drivers', $new_drivers)->with('total_drivers', $total_drivers)->with('company', $company)->with('expected', $expected)
                     ->with('note', $note)->with('journal_check', $journal_check)->with('path', $tep->path)->with('credit_debbit', $credit_debbit);
                 } catch (ValidationException $e) {
@@ -742,7 +753,7 @@ class AutomationController extends Controller
                             $credit_amount = $worksheet->getCell('E' . $row)->getValue();
                         if ($credit_debbit == 'debit')
                             $debit_amount = $worksheet->getCell('E' . $row)->getValue();
-                            
+
                         $driver = DB::select("SELECT * FROM drivers WHERE `job_id` = '$job_id'");
                         $amount += $credit_amount;
                         $amount += $debit_amount;
@@ -758,7 +769,7 @@ class AutomationController extends Controller
                         $expected += $response_arr[0][1];
                     }
                     $operation_type = "Settlement";
-                    return view('Automation.verify')->with('records', $respnse)->with('model', $model)->with('operation_type', $operation_type)->with('journal_date', $journal_date)
+                    return view('new_porttal.Automation.verify')->with('records', $respnse)->with('model', $model)->with('operation_type', $operation_type)->with('journal_date', $journal_date)
                     ->with('amount', $amount)->with('new_drivers', $new_drivers)->with('total_drivers', $total_drivers)->with('company', $company)->with('expected', $expected)
                     ->with('note', $note)->with('journal_check', $journal_check)->with('path', $tep->path)->with('credit_debbit', $credit_debbit);
                 } catch (ValidationException $e) {
@@ -773,13 +784,9 @@ class AutomationController extends Controller
 
 }
 
-function generate_tr($model, $job_id = '', $name = '', $driver = '', $amount = '', $warehouse_id = '', $warehouse = '', $journal_date = '', $note = '', $debit_amount = '') {   
+function generate_tr($model, $job_id = '', $name = '', $driver = [], $amount = '', $warehouse_id = '', $warehouse = '', $journal_date = '', $note = '', $debit_amount = '') {
     $current_month_credit = $current_month_debit = $current_balance = $carried_down = $expected = $t_credit = $t_debit = 'N/A';
-    if($driver == '') {
-        $registration = '<button type="button" class="btn btn-warning" style="border-radius: 20px; cursor: auto;">New Driver</button>';
-        $expected = $amount;
-        $driverId = 'new';
-    } else {
+    if(count($driver) > 0) {
         // 2024-01-02
         $to = explode("-",$journal_date);
         $month = $to[1];
@@ -818,8 +825,11 @@ function generate_tr($model, $job_id = '', $name = '', $driver = '', $amount = '
                 $expected = $current_balance + $amount;
             }
         }
-
         $registration = '<button type="button" class="btn btn-success" style="border-radius: 20px; cursor: auto;">Registered</button>';
+    } else {
+        $registration = '<button type="button" class="btn btn-warning" style="border-radius: 20px; cursor: auto;">New Driver</button>';
+        $expected = $amount;
+        $driverId = 'new';
     }
     $tr = '<tr>';
     $tr .= '<td>'.$warehouse.'</td>';
@@ -851,7 +861,7 @@ function generate_tr($model, $job_id = '', $name = '', $driver = '', $amount = '
             $tr .= '<input type="hidden" name="amount[]" value="'.$expected.'">';
         }
     }
-        
+
     $tr .= '<input type="hidden" name="job_id[]" value="'.$job_id.'">';
     $tr .= '<input type="hidden" name="fullname[]" value="'.$name.'">';
     $tr .= '<input type="hidden" name="note[]" value="'.$note.'">';
@@ -862,7 +872,7 @@ function generate_tr($model, $job_id = '', $name = '', $driver = '', $amount = '
     return $arr;
 }
 
-function generate_tr_unroll($model, $job_id = '', $name = '', $driver = '', $amount = '', $warehouse_id = '', $warehouse = '', $journal_date = '', $note = '', $debit_amount = '', $loan_id = '') {   
+function generate_tr_unroll($model, $job_id = '', $name = '', $driver = [], $amount = '', $warehouse_id = '', $warehouse = '', $journal_date = '', $note = '', $debit_amount = '', $loan_id = '') {
     $current_month_credit = $current_month_debit = $current_balance = $carried_down = $t_credit = $t_debit = 'N/A';
         // 2024-01-02
         $to = explode("-",$journal_date);

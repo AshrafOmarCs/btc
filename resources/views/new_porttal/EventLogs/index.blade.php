@@ -1,7 +1,11 @@
 @extends('layout2')
 @section('content')
 @section('title', 'System Logs')
-
+<style>
+    .daterangepicker {
+        top: 0 !important;
+    }
+</style>
 <!-- Modal ExportExcel 3 -->
 <div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -100,35 +104,7 @@
 
  <!-- Row start -->
  <div class="row">
-    <div class="col-12" style="display: none" id="edit_btn">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-10">
-                        <div class="custom-btn-group" id="selectedCriteria">
-                            <button type="button" class="btn btn-outline-primary btn-rounded">iMile</button>
-                            <button type="button" class="btn btn-outline-secondary btn-rounded">Riyadh Munesia </button>
-                            <button type="button" class="btn btn-outline-warning btn-rounded">(2024-02-01 - 2024-02-31)</button>
-                            <button type="button" class="btn btn-outline-success btn-rounded">Paid</button>
-                            <button type="button" class="btn btn-outline-danger btn-rounded">Danger</button>
-
-                            <button type="button" class="btn btn-outline-info btn-rounded">Active</button>
-                            <button type="button" class="btn btn-outline-light btn-rounded">Created by Ashraf</button>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <!-- Card start -->
-
-                                <div class="custom-btn-group">
-                                    <button type="button" style="margin: 0 auto;"  class="btn btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#FillterButton">Edit</button>
-                                </div>
-
-                        <!-- Card end -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('new_porttal.partials.edit_btn')
 </div>
 
 <div class="row">
@@ -147,13 +123,11 @@
                         <div class="col-12">
                             <div class="custom-btn-group">
                                 <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
-                                <button type="button" class="btn btn-primary" type="button" onclick="apply();"></i>Apply for Settlement</button>
 
                                 {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

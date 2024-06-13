@@ -52,6 +52,11 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('Salaries', 'SalaryControllerShe@Salaries');
     Route::resource('Salary', 'SalaryControllerShe');
     Route::get('SalaryShow/{id}/{Period}', 'SalaryControllerShe@SalaryShowNew');
+    Route::resource('/Loans', 'LoansSheController');
+    Route::get('automation','AutomationController@index');
+    Route::get('/SANEDPaid', 'SANEDController@SANEDPaid');
+    Route::get('/SalaryPaid', 'SalaryControllerShe@SalaryPaid');
+    Route::get('/LoansPaid', 'LoansController@LoansPaid');
 
 
 
@@ -539,7 +544,7 @@ Route::get('/WarehouseDrivers/{id}/{name}', 'WarehouseDriversController@index');
 Route::post('/WarehouseDrivers', 'WarehouseDriversController@store');
 // Route::resource('/Loans', 'LoansController');
 Route::resource('/Loans', 'LoansSheController');
-Route::get('/LoanPaid/{id}', 'LoansController@updatePaid');
+Route::get('/LoanPaid/{id}', 'LoansSheController@updatePaid');
 Route::PUT('/LoanPaidSave', 'LoansController@updatePaidSave');
 Route::resource('/Journal', 'JournalController');
 Route::resource('/PostPackages', 'PostPackagesController');

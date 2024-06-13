@@ -22,7 +22,7 @@ class SANEDController extends Controller
     //****************************************************************************************************************
     public function SANEDPaid(Request $request)
     {
-        
+
         DB::statement('SET SESSION group_concat_max_len = 5555555');
         $Paid_DB = DB::table(DB::raw("(SELECT
            drivers_saned_import_paid_details.account_owner_iqama,
@@ -56,14 +56,14 @@ class SANEDController extends Controller
            drivers_saned_import_paid_details.account_owner_iqama,
            drivers_saned_import_paid_details.accountNumber,
            drivers_saned_import_paid_details.bank_minus_plus) as sub"))->get();
-           
-           
+
+
         if (isset($success))
-            return view('SANED.SANEDPaid')->with(compact('Paid_DB'))->with('success', $success);
+            return view('new_porttal.SANED.SANEDPaid')->with(compact('Paid_DB'))->with('success', $success);
         elseif (isset($error))
-            return view('SANED.SANEDPaid')->with(compact('Paid_DB'))->with('error', $error);
+            return view('new_porttal.SANED.SANEDPaid')->with(compact('Paid_DB'))->with('error', $error);
         else
-            return view('SANED.SANEDPaid')->with(compact('Paid_DB'));
+            return view('new_porttal.SANED.SANEDPaid')->with(compact('Paid_DB'));
 
     }
     //****************************************************************************************************************
@@ -80,7 +80,7 @@ class SANEDController extends Controller
             'select_file' => 'required|mimes:xls,xlsx'
         ]);
 
-        
+
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $tmpfname = $request->file('select_file');
         $fileSaved = \Storage::putFileAs('public/paid/saned', $tmpfname, $tmpfname->getClientOriginalName());
@@ -88,7 +88,7 @@ class SANEDController extends Controller
         if($fileSaved != true){
             return redirect()->back()->with('error', 'File is not saving properly');
             exit();
-        }    
+        }
         $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
         $excelObj = $excelReader->load($tmpfname);
         $worksheet = $excelObj->getSheet(0);
@@ -135,7 +135,7 @@ class SANEDController extends Controller
             $drivers_jahiz_clearing_IDs = explode("*", $worksheet->getCell('L' . $row)->getValue());
             $AMP_IDs = explode("*", $worksheet->getCell('I' . $row)->getValue());
             $bank_paid = explode("*", $worksheet->getCell('M' . $row)->getValue());
-            
+
             foreach($drivers_saned_settlement_IDs as $settlement_id) {
                 DB::update("Update drivers_saned_settlement set status = 'Paid', exported_by = '$user_id', updated_by = '$user_id', updated_at = NOW() where id = '$settlement_id'");
                 $settlement_ids[] = $settlement_id;
@@ -206,7 +206,7 @@ class SANEDController extends Controller
                   VALUES
                   " . $values);
             } catch (\Illuminate\Database\QueryException $e) {
-                return view('SANED.SANEDPaid')->with('error', $e->getPrevious()->getMessage());
+                return view('new_porttal.SANED.SANEDPaid')->with('error', $e->getPrevious()->getMessage());
             }
         }
         return $this->SANEDPaid($request)->with('success', 'Done successfully');

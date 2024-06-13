@@ -1,103 +1,59 @@
 var options = {
-	chart: {
-		height: 300,
-		type: 'area',
-		stacked: true,
-		toolbar: {
-			show: false,
-		},
-		dropShadow: {
-			enabled: true,
-			opacity: 0.1,
-			blur: 5,
-			left: -10,
-			top: 10
-		},
-		events: {
-			selection: function(chart, e) {
-				console.log(new Date(e.xaxis.min) )
-			}
-		},
-	},
-	dataLabels: {
-		enabled: false
-	},
-	stroke: {
-		curve: 'straight',
-		width: 3
-	},
-	series: [{
-		name: 'Land-mark',
-		data: generateDayWiseTimeSeries(new Date('11 Feb 2019 GMT').getTime(), 20, {
-			min: 10,
-			max: 60
-		})
-	},{
-		name: 'iMile',
-		data: generateDayWiseTimeSeries(new Date('11 Feb 2019 GMT').getTime(), 20, {
-			min: 10,
-			max: 20
-		})
-	},{
-		name: 'Ninja',
-		data: generateDayWiseTimeSeries(new Date('11 Feb 2019 GMT').getTime(), 20, {
-			min: 10,
-			max: 15
-		})
-	}],
-	theme: {
-		monochrome: {
-			enabled: true,
-			colors: ['#435EEF', '#59a2fb', '#8ec0fd', '#c7e0ff'],
-			shadeIntensity: 0.1
-		},
-	},
-	grid: {
-    borderColor: '#ffffff',
-    strokeDashArray: 5,
-    xaxis: {
-      lines: {
-        show: true
-      }
-    },   
-    yaxis: {
-      lines: {
-        show: false,
-      } 
+    series: [
+    {
+      name: 'South',
+      data: generateDayWiseTimeSeries(new Date('11 Feb 2017 GMT').getTime(), 20, {
+        min: 10,
+        max: 60
+      })
     },
-    padding: {
-      top: 0,
-      right: 0,
-      bottom: 20,
-      left: 30
-    }, 
+    {
+      name: 'North',
+      data: generateDayWiseTimeSeries(new Date('11 Feb 2017 GMT').getTime(), 20, {
+        min: 10,
+        max: 20
+      })
+    },
+    {
+      name: 'Central',
+      data: generateDayWiseTimeSeries(new Date('11 Feb 2017 GMT').getTime(), 20, {
+        min: 10,
+        max: 15
+      })
+    }
+  ],
+    chart: {
+    type: 'area',
+    height: 350,
+    stacked: true,
+    events: {
+      selection: function (chart, e) {
+        console.log(new Date(e.xaxis.min))
+      }
+    },
   },
-	legend: {
-		position: 'bottom',
-		horizontalAlign: 'center'
-	},
-	xaxis: {
-		type: 'datetime'
-	},
-}
+  colors: ['#008FFB', '#00E396', '#CED4DC'],
+  dataLabels: {
+    enabled: false
+  },
+  stroke: {
+    curve: 'monotoneCubic'
+  },
+  fill: {
+    type: 'gradient',
+    gradient: {
+      opacityFrom: 0.6,
+      opacityTo: 0.8,
+    }
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left'
+  },
+  xaxis: {
+    type: 'datetime'
+  },
+  };
 
-var chart = new ApexCharts(
-	document.querySelector("#basic-area-stack-graph"),
-	options
-);
-
-chart.render();
-
-function generateDayWiseTimeSeries(baseval, count, yrange) {
-	var i = 0;
-	var series = [];
-	while (i < count) {
-		var x = baseval;
-		var y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-
-		series.push([x, y]);
-		baseval += 86400000;
-		i++;
-	}
-	return series;
-}
+  var chart = new ApexCharts(document.querySelector("#basic-area-stack-graph"), options);
+  chart.render();

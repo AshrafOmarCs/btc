@@ -121,7 +121,7 @@ class CompanyController extends Controller
             ]
         );
 
-        return redirect('/Company')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -196,7 +196,7 @@ class CompanyController extends Controller
                 'updatedby_id' => Auth::user()->id,
                 'updated_at' => date("Y-m-d H:i:s"),
             ]);
-        return redirect('/Company')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -209,7 +209,7 @@ class CompanyController extends Controller
     {
         DB::table('lkp_company')->where('id', $id)->delete();
 
-        return redirect('/Company')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
 
@@ -240,7 +240,7 @@ class CompanyController extends Controller
         //    try {
         //        $path = $request->file('paid_image')->move(base_path() . '/public/doc/paid_image/', $fileNameStore);
         //   } catch (Exception $e) {
-        //       return redirect('/Company')->with('error', $e->getMessage());
+        //       return redirect()->back()->with('error', $e->getMessage());
         //   }
 
         //}

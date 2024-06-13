@@ -702,11 +702,11 @@ class LoansController extends Controller
            loan_import_paid_details.accountNumber,
            loan_import_paid_details.bank_sum) as sub"))->get();
         if (isset($success))
-            return view('Loans.LoansPaid')->with(compact('Paid_DB'))->with('success', $success);
+            return view('new_porttal.Loans.LoansPaid')->with(compact('Paid_DB'))->with('success', $success);
         elseif (isset($error))
-            return view('Loans.LoansPaid')->with(compact('Paid_DB'))->with('error', $error);
+            return view('new_porttal.Loans.LoansPaid')->with(compact('Paid_DB'))->with('error', $error);
         else
-            return view('Loans.LoansPaid')->with(compact('Paid_DB'));
+            return view('new_porttal.Loans.LoansPaid')->with(compact('Paid_DB'));
 
     }
     //****************************************************************************************************************

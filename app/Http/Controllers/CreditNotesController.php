@@ -278,7 +278,7 @@ class CreditNotesController extends Controller
 
         return redirect()->back()->with('success', 'Done successfully');
         // } else
-        //    return redirect('/CreditNotes')->with('error', 'Please complete company data');
+        //    return redirect()->back()->with('error', 'Please complete company data');
     }
 
     /**
@@ -402,8 +402,60 @@ class CreditNotesController extends Controller
 
         return redirect()->back()->with('success', 'Done successfully');
     }
-
     public function CreditNotesPost(Request $request)
+    {
+        // Collect IDs
+        $IDs = [];
+        for ($i = 0; $i < 105; $i++) {
+            if (!empty($request->input('ID_' . $i))) {
+                $IDs[] = $request->input('ID_' . $i);
+            }
+        }
+
+        // If no IDs are found, return an error message
+        if (empty($IDs)) {
+            return redirect()->back()->with('error', 'No IDs provided.');
+        }
+
+        try {
+            // Insert into journal table
+            DB::beginTransaction();
+
+            DB::insert("
+                INSERT INTO journal (
+                    driverId, journal_date, debit, credit, note, journal_type_id, post_id,
+                    createdby_id, updatedby_id, created_at, updated_at
+                )
+                SELECT
+                    driverId, journal_date, amount, NULL, note, 3, id, ?, ?, ?, ?
+                FROM creditnotes
+                WHERE creditnotes.id IN (" . implode(',', array_fill(0, count($IDs), '?')) . ")
+            ", array_merge(
+                [Auth::user()->id, Auth::user()->id, date("Y-m-d H:i:s"), date("Y-m-d H:i:s")],
+                $IDs
+            ));
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
+        }
+
+        try {
+            // Update creditnotes table
+            DB::update("
+                UPDATE creditnotes
+                JOIN journal ON (creditnotes.id = journal.post_id AND journal.journal_type_id = 3)
+                SET creditnotes.journal_id = journal.id
+                WHERE creditnotes.id IN (" . implode(',', array_fill(0, count($IDs), '?')) . ")
+            ", $IDs);
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
+        }
+        DB::commit();
+        return redirect()->back()->with('success', 'Done successfully');
+    }
+    public function CreditNotesPost_old(Request $request)
     {
         $IDs = '';
         for ($i = 0; $i < 105; $i++) {
@@ -450,7 +502,7 @@ class CreditNotesController extends Controller
             where creditnotes.id in(" . $IDs . ")
             ");
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/CreditNotes')->with('error', $e->getPrevious()->getMessage());
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
         }
         return redirect()->back()->with('success', 'Done successfully');
 

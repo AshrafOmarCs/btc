@@ -440,6 +440,36 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="sheet_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Driver </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <span id="response_sheet">
+            </span>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="view_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel"> </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <span id="responsee">
+            </span>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+            </div>
+        </div>
+    </div>
+</div>
 
  <!-- Row start -->
  <div class="row">
@@ -487,35 +517,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12" style="display: none" id="edit_btn">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-10">
-                        <div class="custom-btn-group" id="selectedCriteria">
-                            <button type="button" class="btn btn-outline-primary btn-rounded">iMile</button>
-                            <button type="button" class="btn btn-outline-secondary btn-rounded">Riyadh Munesia </button>
-                            <button type="button" class="btn btn-outline-warning btn-rounded">(2024-02-01 - 2024-02-31)</button>
-                            <button type="button" class="btn btn-outline-success btn-rounded">Paid</button>
-                            <button type="button" class="btn btn-outline-danger btn-rounded">Danger</button>
-
-                            <button type="button" class="btn btn-outline-info btn-rounded">Active</button>
-                            <button type="button" class="btn btn-outline-light btn-rounded">Created by Ashraf</button>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <!-- Card start -->
-
-                                <div class="custom-btn-group">
-                                    <button type="button" style="margin: 0 auto;"  class="btn btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#FillterButton">Edit</button>
-                                </div>
-
-                        <!-- Card end -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('new_porttal.partials.edit_btn')
 </div>
 
 <div class="row">
@@ -1259,8 +1261,18 @@
         }
     }
     function sheet(id, Period) {
-        myWindow1 = window.open("{{URL('/SalaryShow')}}" + "/" + id + "/" + Period, "",
-            "height=1000,width=750,scrollbars=yes,top=1,left=1,status,resizable");
+        $('#sheet_modal').modal('toggle');
+        $.ajax({
+            type: 'GET',
+            url: "{{URL("/SalaryShow")}}" + "/" + id + "/" + Period,
+            contentType: "html",
+            dataType: 'html',
+            success: function (data) {
+                document.getElementById('response_sheet').innerHTML = data;
+            }
+        });
+        // myWindow1 = window.open("{{URL('/SalaryShow')}}" + "/" + id + "/" + Period, "",
+        //     "height=1000,width=750,scrollbars=yes,top=1,left=1,status,resizable");
     }
     function validateForm() {
         if ($("#accountNumber").val() != '' && ($("#accountNumber").val().length != 12 || $("#accountNumber").val().substring(0, 3) != '966')) {
@@ -1298,6 +1310,24 @@
         } else {
             $('#expiry_tr').show();
         }
+    }
+    function show_record(id, type) {
+        document.getElementById('responsee').innerHTML = "Loading...";
+        $('#view_modal').modal('toggle');
+        let urls = '';
+        if(type == 'Loan')
+            urls = "/Loans" + "/" + id;
+        if(type == 'Credit Note')
+            urls = "/CreditNotes" + "/" + id;
+        $.ajax({
+            type: 'GET',
+            url: urls,
+            contentType: "html",
+            dataType: 'html',
+            success: function (data) {
+                document.getElementById('responsee').innerHTML = data;
+            }
+        });
     }
 </script>
 

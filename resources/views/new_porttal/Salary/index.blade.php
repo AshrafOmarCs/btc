@@ -71,7 +71,7 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
                                             <label for="country" class="form-label">E-Signtures </label>
-                                            <a href="#"  id="ApprovalModalBtn" class="btn btn-info btn-md" style=" background-color: #1c6577; border-color: #00acd6; width: 180px;" data-toggle="modal" data-target="#ApprovalModal">Approval List</a>
+                                            <a href="#"  id="ApprovalModalBtn" class="btn btn-info btn-md" style=" background-color: #1c6577; border-color: #00acd6; width: 180px;" data-bs-toggle="modal" data-bs-target="#ApprovalModal">Approval List</a>
                                         </div>
                                     </div>
 
@@ -251,39 +251,54 @@
     </div>
 </div>
 
+<div class="modal fade" id="ApprovalModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">E-Signtures</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="e_signature" style="display:none;">
+                    <table class="table" id="tblEntAttributes" style="width: 97%%;border: 1px solid #d3a45924;    margin-bottom: 15px; margin-top: 15px;  box-shadow: rgb(100 100 111 / 20%) 0px 7px 29px 0px;">
+                        <thead>
+                            <tr style="background-color: #d3a459; text-align: center !important;">
+                                <th scope="col">EMP </th>
+                                <th scope="col">Department </th>
+                                <th scope="col">Signature </th>
+                            </tr>
+                         </thead>
+                         <tbody >
+                         </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSalarySTCShe")}}">
+                    @csrf
+                    <input type="hidden" name="SQL" id="SQL_stc" value="">
+                    <input type="hidden" name="company_Id" id="company_Id">
+                    <input type="hidden" name="companyName" id="companyName">
+                    <input type="hidden" name="PeriodName" id="PeriodName">
+                    <input type="hidden" name="from_to" id="from_to">
+
+                    <button type="submit" name="STC_Report" id="STC_Report" disabled class="btn btn-sm btn-info">STC pay
+                        Excel
+                    </button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- End of Approval Modal -->
+
 <!--End Modal ExportExcel 3 -->
 
  <!-- Row start -->
  <div class="row">
-    <div class="col-12" style="display: none" id="edit_btn">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-10">
-                        <div class="custom-btn-group" id="selectedCriteria">
-                            <button type="button" class="btn btn-outline-primary btn-rounded">iMile</button>
-                            <button type="button" class="btn btn-outline-secondary btn-rounded">Riyadh Munesia </button>
-                            <button type="button" class="btn btn-outline-warning btn-rounded">(2024-02-01 - 2024-02-31)</button>
-                            <button type="button" class="btn btn-outline-success btn-rounded">Paid</button>
-                            <button type="button" class="btn btn-outline-danger btn-rounded">Danger</button>
-
-                            <button type="button" class="btn btn-outline-info btn-rounded">Active</button>
-                            <button type="button" class="btn btn-outline-light btn-rounded">Created by Ashraf</button>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <!-- Card start -->
-
-                                <div class="custom-btn-group">
-                                    <button type="button" style="margin: 0 auto;"  class="btn btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#FillterButton">Edit</button>
-                                </div>
-
-                        <!-- Card end -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('new_porttal.partials.edit_btn')
 </div>
 
 <div class="row">

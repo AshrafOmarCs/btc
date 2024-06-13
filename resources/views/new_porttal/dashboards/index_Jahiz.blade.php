@@ -1,6 +1,7 @@
 @extends('layout2')
 @section('content')
 @section('title', __('drivers.JahizDrivers'))
+
 <style>
     .disabled {
         opacity: 0.5;
@@ -763,35 +764,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12" style="display: none" id="edit_btn">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-10">
-                        <div class="custom-btn-group" id="selectedCriteria">
-                            <button type="button" class="btn btn-outline-primary btn-rounded">iMile</button>
-                            <button type="button" class="btn btn-outline-secondary btn-rounded">Riyadh Munesia </button>
-                            <button type="button" class="btn btn-outline-warning btn-rounded">(2024-02-01 - 2024-02-31)</button>
-                            <button type="button" class="btn btn-outline-success btn-rounded">Paid</button>
-                            <button type="button" class="btn btn-outline-danger btn-rounded">Danger</button>
-
-                            <button type="button" class="btn btn-outline-info btn-rounded">Active</button>
-                            <button type="button" class="btn btn-outline-light btn-rounded">Created by Ashraf</button>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <!-- Card start -->
-
-                                <div class="custom-btn-group">
-                                    <button type="button" style="margin: 0 auto;"  class="btn btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#FillterButton">Edit</button>
-                                </div>
-
-                        <!-- Card end -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('new_porttal.partials.edit_btn')
 </div>
 <!-- Row end -->
 
@@ -1609,7 +1582,7 @@
                             _token: "{{ csrf_token() }}",
                         },
                         success: function (data) {
-                            html = '';
+                        let html = '';
                         if ($('#filter_companyId').val() > 0)
                             html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_companyId option:selected').text()+'</button>';
                         if ($('#filter_warehouseId').val() > 0)
@@ -1632,17 +1605,17 @@
                             html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_driver_type_id option:selected').text()+'</button>';
 
                         if ($('#filter_Image_Identity').val() != '')
-                            html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_Image_Identity option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_Image_Identity option:selected').text()+'</button>';
                         if ($('#filter_Image_Passport').val() != '')
-                            html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+$('#filter_Image_Passport option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+$('#filter_Image_Passport option:selected').text()+'</button>';
                         if ($('#filter_Image_DrivingLicence').val() != '')
-                            html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_Image_DrivingLicence option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_Image_DrivingLicence option:selected').text()+'</button>';
                         if ($('#filter_Image_VehiclesRegistration').val() != '')
-                            html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_Image_VehiclesRegistration option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_Image_VehiclesRegistration option:selected').text()+'</button>';
                         if ($('#filter_Image_JobContract').val() != '')
-                            html += '<button type="button" class="btn btn-outline-dark btn-rounded">'+$('#filter_Image_JobContract option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-dark btn-rounded">'+$('#filter_Image_JobContract option:selected').text()+'</button>';
                         if ($('#filter_Image_PromissoryNote').val() != '')
-                            html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_Image_PromissoryNote option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_Image_PromissoryNote option:selected').text()+'</button>';
                         if ($('#filter_claim_dt').val() != '')
                             html += '<button type="button" class="btn btn-outline-success btn-rounded">Claim date: '+$('#filter_claim_dt').val()+'</button>';
                         if ($('#filter_SANED_SettledDate').val() != '')
@@ -1650,7 +1623,7 @@
                         if ($('#filter_jahiz_clearing_updated_at').val() != '')
                             html += '<button type="button" class="btn btn-outline-warning btn-rounded">Jahiz date: '+$('#filter_jahiz_clearing_updated_at').val()+'</button>';
                         if ($('#filter_collectionAmount').val() != '')
-                            html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_collectionAmount option').val()+'</button>';
+                            html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_collectionAmount option:selected').text()+'</button>';
                         if ($('#filter_created_at').val() != '')
                             html += '<button type="button" class="btn btn-outline-success btn-rounded">Created at: '+$('#filter_created_at').val()+'</button>';
                         if ($('#filter_updated_at').val() != '')

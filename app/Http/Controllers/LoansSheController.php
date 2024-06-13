@@ -173,7 +173,7 @@ class LoansSheController extends Controller
                 DB::update("UPDATE drivers_saned_settlement set drivers_jahiz_clearing_paid_id = null, paid_by_id = null, status = 'Ready', paid_dt = null, exported_by = null, reverse_by = '$user_by' WHERE id = '$drivers_saned_settlement_id'");
                 $msg = "<b>$made_by</b> Reverted the saned from Paid to Ready with this Reason: " . $reason;
                 HelperFunctionsController::add_log($msg, '', $loan_id);
-                return 'Saned reverted successfully';    
+                return 'Saned reverted successfully';
             } else {
                 return 'Thanks for your action.';
             }
@@ -210,11 +210,11 @@ class LoansSheController extends Controller
             DB::delete("DELETE FROM journal WHERE post_id = '$id'");
             $msg = "<b>$made_by</b> Reverted the loan from Paid to Ready with this Reason: " . $reason;
             HelperFunctionsController::add_log($msg, '', $loan_id);
-            return redirect()->back()->with('success', 'Loan reverted successfully');    
+            return redirect()->back()->with('success', 'Loan reverted successfully');
         } else {
             $msg = "<b>$made_by</b> Requested to revert the loan from Paid to Ready with this Reason: " . $reason;
             HelperFunctionsController::add_log($msg, '', $loan_id);
-            
+
             $subject = "Loan Reverse Request";
             $result = DB::select("SELECT drivers.fullName,drivers.job_id,loan.journal_date,warehouse.warehouseName,lkp_company.companyName,loan.amount FROM loan INNER JOIN drivers ON loan.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE loan.id='$id'");
             $yes = url("/approval/loan/" . $reason . "/" . $id . "/1");
@@ -276,7 +276,7 @@ class LoansSheController extends Controller
                     $credit = $loan[0]->amount;
                     $note = $loan[0]->note;
                     if ($loan[0]->status == 'Paid') {
-                        return redirect('/LoansShe')->with('error', "Selected loan(s) already paid");
+                        return redirect()->back()->with('error', "Selected loan(s) already paid");
                         exit();
                     } else {
                         DB::insert("INSERT INTO journal (driverId, journal_date, debit, note, status, journal_type_id, post_id, createdby_id, created_at, updatedby_id, updated_at) VALUES ('$driverId', '$journal_date', '$credit', '$note', 'Paid', '1', '$loan_id', '$user_id', NOW(), '$user_id', NOW())");
@@ -290,7 +290,7 @@ class LoansSheController extends Controller
                     $msg = "<b>$made_by</b> updated the loan with driver amp_ids ('$amp_ids') to Paid";
                     HelperFunctionsController::add_log($msg, '', $loan_ids);
                 }
-                return redirect('/LoansShe')->with('success', "Status updated successfully");
+                return redirect()->back()->with('success', "Status updated successfully");
             } else if($ACTION == 'DELETE') {
                 $amp_ids = array();
                 foreach($loan_ids as $loan_id) {
@@ -298,11 +298,11 @@ class LoansSheController extends Controller
                     $driverId = $loan[0]->driverId;
                     $driver = HelperFunctionsController::getDriverData($driverId);
                     $amp_ids[] = $driver->job_id;
-                    
+
                     $check = DB::select("select id FROM journal WHERE post_id = '$loan_id'");
                     if(count($check) > 0)
                         DB::delete("DELETE from journal WHERE post_id = '$loan_id'");
-                    DB::delete("Delete from loan WHERE id = '$loan_id'");
+                    DB::delete("DELETE from loan WHERE id = '$loan_id'");
                 }
                 if(count($loan_ids) > 0) {
                     $made_by = Auth::user()->name;
@@ -310,18 +310,20 @@ class LoansSheController extends Controller
                     $msg = "<b>$made_by</b> deleted the loan with driver amp_ids ('$amp_ids').";
                     HelperFunctionsController::add_log($msg, '', $loan_ids);
                 }
-                return redirect('/LoansShe')->with('success', "Loan Deleted successfully");
+                return redirect()->back()->with('success', "Loan Deleted successfully");
             } else if($ACTION == 'READY') {
                 $loanids = array();
                 foreach($loan_ids as $loan_id) {
-                    $loan = DB::select("SELECT * FROM loan WHERE id = '$loan_id'");
-                    $driverId = $loan[0]->driverId;
-                    $driver = HelperFunctionsController::getDriverData($driverId);
-                    $loan = DB::select("SELECT status FROM loan WHERE id = '$loan_id'");
-                    if($loan[0]->status == 'Onhold') {
-                        $loanids[] = $loan_id;
-                        $amp_ids[] = $driver->job_id;
-                        DB::update("Update loan set status = 'Ready', exported_by = '0', reverse_by = '$user_id', updated_by = '$user_id', updated_at = NOW() where id = '$loan_id'");    
+                    $loan = DB::select("SELECT * FROM loan WHERE id = '$loan_id' AND exported_by = '$user_id'");
+                    if(count($loan) > 0) {
+                        $driverId = $loan[0]->driverId;
+                        $driver = HelperFunctionsController::getDriverData($driverId);
+                        $loan = DB::select("SELECT status FROM loan WHERE id = '$loan_id'");
+                        if($loan[0]->status == 'Onhold') {
+                            $loanids[] = $loan_id;
+                            $amp_ids[] = $driver->job_id;
+                            DB::update("Update loan set status = 'Ready', exported_by = '0', reverse_by = '$user_id', updated_by = '$user_id', updated_at = NOW() where id = '$loan_id'");
+                        }
                     }
                 }
                 if(count($amp_ids) > 0) {
@@ -330,15 +332,15 @@ class LoansSheController extends Controller
                     $msg = "<b>$made_by</b> updated the loan with driver amp_ids ('$amp_ids') to Ready";
                     HelperFunctionsController::add_log($msg, '', $loanids);
                 }
-                return redirect('/LoansShe')->with('success', "Status updated successfully");
+                return redirect()->back()->with('success', "Status updated successfully");
             }
         } else {
             // Password is incorrect
-            return redirect('/LoansShe')->with('error', "Password is incorrect");
+            return redirect()->back()->with('error', "Password is incorrect");
         }
     }
     public function index(Request $request)
-    { 
+    {
         if (Auth::user()->user_type_id <> 1) {
             $users_privilege = DB::select('SELECT DISTINCT companyId from users_privilege
             INNER JOIN warehouse on warehouse.id=users_privilege.warehouseId where companyId<>6 AND user_id=' . Auth::user()->id);
@@ -352,12 +354,12 @@ class LoansSheController extends Controller
         } else {
             $wher = "where id <> 6 AND lkp_company.status = 'active'";
             $AND = "";
-        } 
+        }
         $lkp_company = DB::select("SELECT * from lkp_company $wher");
         $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
         $lkp_loan_status = DB::select('SELECT * from lkp_loan_status ');
         $users = DB::select('SELECT id,name from users order by name');
-        $lkp_user_type = DB::select('SELECT * from lkp_user_type'); 
+        $lkp_user_type = DB::select('SELECT * from lkp_user_type');
 
         $Select_db = DB::table('loan')
             ->select('loan.export_attempt', 'loan.exported_by','loan.status','loan.id as id','loan.loan_type as loan_type', 'companyName', 'loan.driverId', 'fullName', 'warehouseName', 'job_id',
@@ -420,8 +422,8 @@ class LoansSheController extends Controller
         group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
         group by driverId,per_priod,cur_priod,next_priod
         )balance"),
-                'balance.driverId', '=', 'drivers.id'); 
-                
+                'balance.driverId', '=', 'drivers.id');
+
                 // dd($Select_db);
         $Select_sum = DB::table('loan')
             ->select(DB::raw("sum(amount) as amount"))
@@ -455,7 +457,7 @@ class LoansSheController extends Controller
                 'balance.driverId', '=', 'drivers.id');
 
         $whereIn_array = array();
-       
+
         if (Auth::user()->user_type_id <> 1) {
             $users_privilege = DB::select('SELECT user_id,warehouseId from users_privilege where user_id=' . Auth::user()->id);
             foreach ($users_privilege as $users_privilegee) {
@@ -466,7 +468,7 @@ class LoansSheController extends Controller
             $Select_db->whereIn('warehouseId', $whereIn_array);
             $Select_sum->whereIn('warehouseId', $whereIn_array);
         }
-        
+
         if (request()->ajax()) {
 
             if (!empty($request->filter_companyId)) {
@@ -505,7 +507,7 @@ class LoansSheController extends Controller
                 if($request->filter_Loan_type == 'FL'){
                     $whereIn_array = array();
                     $whereIn_array = ['fuel_loan'];
-                    // $Select_db->where('loan_type', 'fuel_loan'); 
+                    // $Select_db->where('loan_type', 'fuel_loan');
                     $Select_db->whereRaw('loan.loan_type=' . '"fuel_loan"');
                     $Select_sum->whereRaw('loan.loan_type=' . '"fuel_loan"');
 
@@ -514,7 +516,7 @@ class LoansSheController extends Controller
                     $whereIn_array = ['personal_loan'];
                     $Select_db->whereRaw('loan.loan_type=' . '"personal_loan"');
                     $Select_sum->whereRaw('loan.loan_type=' . '"personal_loan"');
-                    // $Select_db->whereIn('loan_type', $whereIn_array); 
+                    // $Select_db->whereIn('loan_type', $whereIn_array);
                 }
             }
             // ashraf condition for fuel loans
@@ -539,7 +541,7 @@ class LoansSheController extends Controller
                 $filter_updated_at = explode(" - ", $request->filter_updated_at);
                 $Select_db->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
                 $Select_sum->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
-            } 
+            }
             if (isset($_REQUEST['search']['value']) && $_REQUEST['search']['value'] <> '') {
                 $options = strtolower($_REQUEST['search']['value']);
                 $Select_sum->whereRaw("(
@@ -566,11 +568,11 @@ class LoansSheController extends Controller
                 OR LOWER(`loan`.`updated_at`) LIKE '%" . $options . "%'
                 OR LOWER(`loan`.`id`) LIKE '%" . $options . "%'
                 )");
-            } 
+            }
             $Select_sum = $Select_sum->first();
             // dd($Select_db->toSql());
             // return $Select_db->toSql();
-             
+
              return  datatables()->of($Select_db)
                 ->with('amount', '<b>' . $Select_sum->amount . '</b>')
                 ->with('SQL', $Select_db->toSql())
@@ -578,9 +580,9 @@ class LoansSheController extends Controller
             // dd($rea);
         }
 
-       
-        
-        return view('Loans.index_she')->with(compact('lkp_loan_status'))
+
+
+        return view('new_porttal.Loans.index')->with(compact('lkp_loan_status'))
             ->with(compact('users'))->with(compact('lkp_user_type'))->with(compact('lkp_company'))->with(compact('warehouse'));
     }
 
@@ -769,13 +771,13 @@ class LoansSheController extends Controller
                 // $totalData = $rows[0]->total_records;
                 // $rows = DB::select("SELECT SUM(amount) AS total_amount FROM loan");
                 // $totalAmount = $rows[0]->total_amount;
-                
+
                 // $rows = DB::select("SELECT COUNT(*) AS total_records FROM loan");
                 // $totalData = $rows[0]->total_records;
                 // $rows = DB::select("SELECT SUM(amount) AS total_amount FROM loan");
                 // $totalAmount = $rows[0]->total_amount;
                 // $payload = DB::select($sql);
-                
+
                 $totalAmount = 0;
                 // foreach ($payload as $row) {
                 //     $totalAmount += $row->amount;
@@ -822,8 +824,8 @@ class LoansSheController extends Controller
         }
         $lkp_loan_status = DB::select("SELECT * from lkp_loan_status where id<>4" . $AND);
 
-        
-        return view('Loans.create')->with(compact('lkp_loan_status'));
+
+        return view('new_porttal.Loans.create')->with(compact('lkp_loan_status'));
     }
 
     /**
@@ -842,14 +844,14 @@ class LoansSheController extends Controller
             'journal_date' => ['required'],
         ]);
         $driver_id = $request->input('driverId');
-        $date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
         $check_loan = DB::select("SELECT * from loan where driverId = '$driver_id' AND journal_date = '$date'");
         if (count($check_loan) > 0)
-            return redirect('/Loans')->with('error', 'You have already added loan for selected date and driver');
+            return redirect()->back()->with('error', 'You have already added loan for selected date and driver');
 
         $Loans = new Loans;
         $Loans->driverId = $request->input('driverId');
-        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
         // ( empty($request->input('journal_date')))?null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
         $Loans->amount = $request->input('amount');
         $Loans->status_id = $request->input('status_id');
@@ -861,7 +863,7 @@ class LoansSheController extends Controller
 
         $Loans->save();
 
-        return redirect('/Loans')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
     /**
@@ -886,7 +888,7 @@ class LoansSheController extends Controller
             ->where('loan.id', $id)
             ->first();
 
-        return view('Loans.show')->with('Loans', $Loans);
+        return view('new_porttal.Loans.show')->with('Loans', $Loans);
     }
 
     /**
@@ -897,10 +899,9 @@ class LoansSheController extends Controller
      */
     public function edit($id)
     {
-
         $lkp_loan_status = DB::select('SELECT * from lkp_loan_status where id<>4');
         $Loans = DB::table('loan')
-            ->select('loan.id as id', 'loan.driverId as driverId', 'fullName', 'fullName_ar',
+            ->select('loan.id as id', 'loan.driverId as driverId', 'fullName', 'fullName_ar', 'journal_date as journalDate',
                 DB::raw("DATE_FORMAT(journal_date,'%d/%m/%Y') as journal_date"), 'amount', 'note', 'loan.status_id as status_id', 'loan_status',
                 'loan.created_at as created_at', 'loan.updated_at as updated_at', DB::raw("ifnull(per_priod,0) as per_priod"), DB::raw("ifnull(cur_priod,0) as cur_priod"),
                 DB::raw("if (period_start<>1,CONCAT(date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m'), '-', LPAD(period_start, 2, '0'),' - ',date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m'),'-', LPAD(period_end, 2, '0')),
@@ -942,7 +943,7 @@ class LoansSheController extends Controller
                 'balance.driverId', '=', 'drivers.id')
             ->where('loan.id', $id)
             ->first();
-        return view('Loans.edit')->with(compact('Loans'))->with(compact('lkp_loan_status'));
+        return view('new_porttal.Loans.edit')->with(compact('Loans'))->with(compact('lkp_loan_status'));
     }
 
     /**
@@ -969,7 +970,7 @@ class LoansSheController extends Controller
         if($Loans->journal_date != $request->input('journal_date') AND $request->input('journal_date') != '') {
             $action .= "journal_date: " . $Loans->journal_date . " to " . $request->input('journal_date') . ", ";
         }
-        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
+        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
         if($Loans->amount != $request->input('amount') AND $request->input('amount') != '') {
             $action .= "amount: " . $Loans->amount . " to " . $request->input('amount') . ", ";
         }
@@ -995,7 +996,7 @@ class LoansSheController extends Controller
             }
         }
 
-        return redirect('/Loans/' . $id . '/edit')->with('success', 'Done successfully');
+        return redirect('/New-Portal/Loans/' . $id . '/edit')->with('success', 'Done successfully');
     }
 
     /**
@@ -1009,7 +1010,7 @@ class LoansSheController extends Controller
         if (Auth::user()->user_type_id == 1) {
             $Loans = Loans::find($id);
             // if(auth()->user()->id !== $Loans->user_id){
-            //    return redirect('/Loans')->with('error','Unauthorized');
+            //    return redirect()->back()->with('error','Unauthorized');
             // }
 
             if ($Loans->logo != 'noImage.jpg') {
@@ -1021,7 +1022,7 @@ class LoansSheController extends Controller
             HelperFunctionsController::add_log($msg);
             $Loans->delete();
         }
-        return redirect('/Loans')->with('success', 'Done successfully');
+        return redirect()->back()->with('success', 'Done successfully');
     }
 
 
@@ -1031,36 +1032,13 @@ class LoansSheController extends Controller
         $loan = DB::select('SELECT fullName from loan
         inner join drivers on drivers.id =loan.driverId
         where loan.id=' . $id)[0];
-        return view('Loans.updatePaid')->with(compact('id'))->with(compact('loan'));
+        return view('new_porttal.Loans.updatePaid')->with(compact('id'))->with(compact('loan'));
     }
 
     public function updatePaidSave(Request $request)
     {
-
-
-        //$this->validate($request, [
-        //
-        //   'paid_image' => 'required|image|mimes:jpeg,png,jpg,',
-        //]);
-
-        //if ($request->hasFile('paid_image')) {
-
-        //    $filenameWithExtention = $request->file('paid_image')->getClientOriginalName();
-        //$fileName = pathinfo($filenameWithExtention,PATHINFO_FILENAME);
-        //    $extension = $request->file('paid_image')->getClientOriginalExtension();
-        //   $fileNameStore = $request->input('loan_id') . '.' . $extension;
-        //    try {
-        //        $path = $request->file('paid_image')->move(base_path() . '/public/doc/paid_image/', $fileNameStore);
-        //   } catch (Exception $e) {
-        //       return redirect('/Loans')->with('error', $e->getMessage());
-        //   }
-
-        //}
-
-
         $Loans = Loans::find($request->input('loan_id'));
         $Loans->status_id = 4;
-        //$Loans->paid_image = $fileNameStore;
         $loan_id = $request->input('loan_id');
         $made_by = Auth::user()->name;
         $msg = "<b>$made_by</b> Updated the loan ($loan_id) status_id from " .$Loans->status_id . " to Paid.";
@@ -1083,7 +1061,7 @@ class LoansSheController extends Controller
         " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
         )");
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
+            return redirect('/New-Portal/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
         }
 
         try {
@@ -1093,11 +1071,11 @@ class LoansSheController extends Controller
     where loan.id =" . $request->input('loan_id')
             );
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
+            return redirect('/New-Portal/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
         }
 
 
-        return redirect('/LoanPaid/' . $request->input('loan_id'))->with('success', 'Done successfully');
+        return redirect('/New-Portal/LoanPaid/' . $request->input('loan_id'))->with('success', 'Done successfully');
     }
     //****************************************************************************************************************
     //****************************************************************************************************************
@@ -1130,11 +1108,11 @@ class LoansSheController extends Controller
            loan_import_paid_details.accountNumber,
            loan_import_paid_details.bank_sum) as sub"))->get();
         if (isset($success))
-            return view('Loans.LoansPaid')->with(compact('Paid_DB'))->with('success', $success);
+            return view('new_porttal.Loans.LoansPaid')->with(compact('Paid_DB'))->with('success', $success);
         elseif (isset($error))
-            return view('Loans.LoansPaid')->with(compact('Paid_DB'))->with('error', $error);
+            return view('new_porttal.Loans.LoansPaid')->with(compact('Paid_DB'))->with('error', $error);
         else
-            return view('Loans.LoansPaid')->with(compact('Paid_DB'));
+            return view('new_porttal.Loans.LoansPaid')->with(compact('Paid_DB'));
 
     }
     //****************************************************************************************************************
@@ -1182,7 +1160,7 @@ class LoansSheController extends Controller
                                     ) as sub"))
                 ->first();
 
-                
+
             $loan_IDs = explode("*", $worksheet->getCell('L' . $row)->getValue());
             $AMP_IDs = explode("*", $worksheet->getCell('I' . $row)->getValue());
             $bank_paid = explode("*", $worksheet->getCell('K' . $row)->getValue());
@@ -1217,7 +1195,7 @@ class LoansSheController extends Controller
 
                             DB::insert("insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,
                              createdby_id,updatedby_id,created_at,updated_at)
-                            values 
+                            values
                             (" . $loan->driverId . ",'" . $loan->journal_date . "'," . $loan->amount . ",null,'" . $loan->note . "',".$journal_type_id."," . $loan->id . ",
                             " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
                             )");
@@ -1229,7 +1207,7 @@ class LoansSheController extends Controller
                         }
 
                     } catch (\Illuminate\Database\QueryException $e) {
-                        return redirect('/LoansPaid')->with('error', $e->getPrevious()->getMessage());
+                        return redirect()->back()->with('error', $e->getPrevious()->getMessage());
                     }
                 }
             } else {

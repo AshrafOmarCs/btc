@@ -1,6 +1,6 @@
 @extends('layout2')
 @section('content')
-@section('title', 'Claims Deduction')
+@section('title', 'Jahiz Claims')
 
 <!-- Modal ExportExcel 3 -->
 <div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -20,31 +20,105 @@
                                 <div class="row">
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Company Name </label>
-                                            <select name="filter_companyId" id="filter_companyId" onchange="WarehouseName()"
-                                                    class="form-control" required>
-                                                <option value=""></option>
-
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <div class="mb-3">
-                                            <label for="country" class="form-label">Warehouse Name </label>
+                                            <label for="country" class="form-label">City </label>
                                             <select id="filter_warehouseId" name="filter_warehouseId" class="form-control">
                                                 <option value=""></option>
+                                                @foreach($warehouse as $warehousee)
+                                                    <option value="{{$warehousee->id}}"> {{$warehousee->warehouseName}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">Period </label>
-                                            <select name="filter_period" id="filter_period"  class="form-control" required>
-
+                                            <label for="country" class="form-label">EMP ID </label>
+                                            <input type="text" class="form-control" name="filter_job_id" id="filter_job_id">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">Driver Type </label>
+                                            <select name="filter_driver_type_id" id="filter_driver_type_id" class="form-control">
+                                                <option value=""></option>
+                                                @foreach($lkp_driver_type as $lkp_driver_typee)
+                                                    <option
+                                                        value="{{$lkp_driver_typee->id}}">{{$lkp_driver_typee->driver_type}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
 
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">Driver </label>
+                                            <span class="d-flex">
+                                                <input name="filter_driverId" id="filter_driverId" type="hidden" value="">
+                                                <input class="form-control" name="filter_driverId_input"
+                                                id="filter_driverId_input" type="text" value="" readonly>
+                                                <button onclick="driver_window();" type="button" class="btn btn-primary btn-xs">
+                                                    Select
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">Claim Date</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="text" class="form-control datepicker-range" id="filter_claim_dt" name="filter_claim_dt">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">Last SettledDate</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="text" class="form-control datepicker-range" id="filter_lastSettlementDate" name="filter_lastSettlementDate">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">Claim Status </label>
+                                            <select id="filter_claim_status_id" name="filter_claim_status_id" placeholder="Select ..." class="form-control">
+                                                <option value=""></option>
+                                                @foreach($lkp_claim_status as $lkp_claim_statuss)
+                                                    <option
+                                                        value="{{$lkp_claim_statuss->id}}">{{$lkp_claim_statuss->status_txt}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">Image PromissoryNote </label>
+                                            <select name="filter_Image_PromissoryNote" id="filter_Image_PromissoryNote" class="form-control">
+                                                <option value=""></option>
+                                                <option value="1">Yes</option>
+                                                <option value="2">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">Created_At</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="text" class="form-control datepicker-range" id="filter_created_at" name="filter_created_at">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <label for="country" class="form-label">Updated_At</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="bi bi-calendar4"></i>
+                                            </span>
+                                            <input type="text" class="form-control datepicker-range" id="filter_updated_at" name="filter_updated_at">
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- Row end -->
 
@@ -190,35 +264,7 @@
 
  <!-- Row start -->
  <div class="row">
-    <div class="col-12" style="display: none" id="edit_btn">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-10">
-                        <div class="custom-btn-group" id="selectedCriteria">
-                            <button type="button" class="btn btn-outline-primary btn-rounded">iMile</button>
-                            <button type="button" class="btn btn-outline-secondary btn-rounded">Riyadh Munesia </button>
-                            <button type="button" class="btn btn-outline-warning btn-rounded">(2024-02-01 - 2024-02-31)</button>
-                            <button type="button" class="btn btn-outline-success btn-rounded">Paid</button>
-                            <button type="button" class="btn btn-outline-danger btn-rounded">Danger</button>
-
-                            <button type="button" class="btn btn-outline-info btn-rounded">Active</button>
-                            <button type="button" class="btn btn-outline-light btn-rounded">Created by Ashraf</button>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <!-- Card start -->
-
-                                <div class="custom-btn-group">
-                                    <button type="button" style="margin: 0 auto;"  class="btn btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#FillterButton">Edit</button>
-                                </div>
-
-                        <!-- Card end -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('new_porttal.partials.edit_btn')
 </div>
 
 <div class="row">
@@ -323,6 +369,23 @@
 
     <script>
         $(document).ready(function () {
+            $('#filter_claim_dt').val('');
+            $('#filter_lastSettlementDate').val('');
+            $('#filter_created_at').val('');
+            $('#filter_updated_at').val('');
+
+            $('#filter_claim_dt').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+            $('#filter_lastSettlementDate').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+            $('#filter_created_at').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+            $('#filter_updated_at').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
             fill_datatable();
             function fill_datatable(filter_warehouseId = '', filter_job_id = '', filter_driver_type_id = '', filter_driverId = '', filter_claim_dt = '', filter_lastSettlementDate = '', filter_claim_status_id = '', filter_Image_PromissoryNote = '', filter_created_at = '', filter_updated_at = '') {
                 var dataTable = $('#customer_data').DataTable({
@@ -543,9 +606,38 @@
 
             $('#filter').click(function () {
                 if ($('#filter_warehouseId').val() != '' || $('#filter_job_id').val() != '' || $('#filter_driver_type_id').val() != '' || $('#filter_driverId').val() != '' || $('#filter_claim_dt').val() != '' || $('#filter_lastSettlementDate').val() != '' || $('#filter_claim_status_id').val() != '' || $('#filter_Image_PromissoryNote').val() != '' || $('#filter_created_at').val() != '' || $('#filter_updated_at').val() != '') {
-                    card_change();
                     $('#customer_data').DataTable().destroy();
                     fill_datatable($('#filter_warehouseId').val(), $('#filter_job_id').val(), $('#filter_driver_type_id').val(), $('#filter_driverId').val(), $('#filter_claim_dt').val(), $('#filter_lastSettlementDate').val(), $('#filter_claim_status_id').val(), $('#filter_Image_PromissoryNote').val(), $('#filter_created_at').val(), $('#filter_updated_at').val());
+                    let html = '';
+                        if ($('#filter_warehouseId').val() > 0)
+                            html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_warehouseId option:selected').text()+'</button>';
+
+                        if ($('#filter_driver_type_id').val() > 0)
+                            html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_driver_type_id option:selected').text()+'</button>';
+                        if ($('#filter_job_id').val() != '')
+                            html += '<button type="button" class="btn btn-outline-dark btn-rounded">'+$('#filter_job_id').val()+'</button>';
+                        if ($('#filter_driverId_input').val() != '')
+                            html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_driverId_input').val()+'</button>';
+                        if ($('#filter_claim_status_id').val() > 0)
+                            html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_claim_status_id option:selected').text()+'</button>';
+
+                        if ($('#filter_claim_dt').val() != '')
+                            html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_claim_dt option').val()+'</button>';
+                        if ($('#filter_lastSettlementDate').val() != '')
+                            html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+$('#filter_lastSettlementDate option').val()+'</button>';
+                        if ($('#filter_created_at').val() != '')
+                            html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_created_at option').val()+'</button>';
+                        if ($('#filter_updated_at').val() != '')
+                            html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_updated_at').val()+'</button>';
+                        if ($('#filter_Image_PromissoryNote').val() != '')
+                            html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_Image_PromissoryNote option:selected').text()+'</button>';
+
+                        if(html != '') {
+                            $('#edit_btn').show();
+                            $('#selectedCriteria').html(html);
+                        } else {
+                            $('#edit_btn').hide();
+                        }
                 } else {
                     alert('Select filter option');
                 }

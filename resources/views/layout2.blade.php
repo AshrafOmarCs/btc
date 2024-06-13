@@ -20,8 +20,8 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
 
 		<!-- Title -->
-        <title>@yield('title')</title>
 
+        <title>@yield('title')</title>
 
 		<!-- *************
 			************ Common Css Files *************
@@ -95,9 +95,11 @@
 										<li>
 											<a href="{{url('/New-Portal')}}" class="{{ request()->is('New-Portal') ? 'current-page' : '' }}">Analytics</a>
 										</li>
-                                        <li>
-											<a href="{{url('/New-Portal/Logs')}}" class="{{ request()->is('New-Portal/Logs') ? 'current-page' : '' }}">{{__('nav.system_logs')}}</a>
-										</li>
+                                        @if(Auth::user()->id == 2 || Auth::user()->id == 73)
+                                            <li>
+                                                <a href="{{url('/New-Portal/Logs')}}" class="{{ request()->is('New-Portal/Logs') ? 'current-page' : '' }}">{{__('nav.system_logs')}}</a>
+                                            </li>
+                                        @endif
 										<li>
 											<a href="reports.html">Reports</a>
 										</li>
@@ -124,81 +126,124 @@
 								</a>
 								<div class="sidebar-submenu">
 									<ul>
-										<li>
-											<a href="{{url('New-Portal/Users')}}">{{__('nav.administration')}}</a>
-										</li>
-										<li>
-											<a href="{{url('New-Portal/Supervisors')}}">{{__('nav.supervisors_areaManager')}} </a>
-										</li>
+                                        @if(session('Read_2')==1)
+                                            <li>
+                                                <a href="{{url('New-Portal/Users')}}">{{__('nav.administration')}}</a>
+                                            </li>
+                                        @endif
+                                        @if(session('Read_3')==1)
+                                            <li>
+                                                <a href="{{url('New-Portal/Supervisors')}}">{{__('nav.supervisors_areaManager')}} </a>
+                                            </li>
+                                        @endif
 										<li>
 											<a href="widgets.html">Employee</a>
 										</li>
 									</ul>
 								</div>
 							</li>
-							<li class="sidebar-dropdown">
-								<a href="#">
-									<i class="bi bi-credit-card-2-front"></i>
-									<span class="menu-text">Co & Warehouses</span>
-								</a>
-								<div class="sidebar-submenu">
-									<ul>
-										<li>
-											<a href="{{URL("New-Portal/Company")}}">{{__('nav.companies')}} </a>
-										</li>
-										<li>
-											<a href="{{URL("New-Portal/Warehouses")}}">{{__('nav.warehouses')}} </a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							<li>
-								<a href="{{url('New-Portal/union')}}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text {{ request()->is('New-Portal/union') ? 'current-page' : '' }}">{{__('nav.union')}}</span>
-								</a>
-							</li>
                             <li>
-								<a href="{{url('New-Portal/Drivers')}}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text {{ request()->is('New-Portal/Drivers') ? 'current-page' : '' }}">{{__('nav.drivers')}}</span>
-								</a>
-							</li>
+                                <a href="{{url('New-Portal/Documents')}}">
+                                    <i class="bi bi-calendar4"></i>
+                                    {{__('nav.documents')}}
+                                </a>
+                            </li>
+                            @if(session('Read_4')==1)
+                                <li class="sidebar-dropdown">
+                                    <a href="#">
+                                        <i class="bi bi-credit-card-2-front"></i>
+                                        <span class="menu-text">Co & Warehouses</span>
+                                    </a>
+                                    <div class="sidebar-submenu">
+                                        <ul>
+                                            <li>
+                                                <a href="{{URL("New-Portal/Company")}}">{{__('nav.companies')}} </a>
+                                            </li>
+                                            <li>
+                                                <a href="{{URL("New-Portal/Warehouses")}}">{{__('nav.warehouses')}} </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            @endif
+                            @if(Auth::user()->id == 73 || Auth::user()->id == 49 || Auth::user()->id == 1 || Auth::user()->id == 2 || Auth::user()->id == 15 || Auth::user()->id == 96 || Auth::user()->id == 104 || Auth::user()->id == 98)
+                                <li>
+                                    <a href="{{url('New-Portal/union')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text {{ request()->is('New-Portal/union') ? 'current-page' : '' }}">{{__('nav.union')}}</span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(session('Read_5')==1)
+                                <li>
+                                    <a href="{{url('New-Portal/Drivers')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text {{ request()->is('New-Portal/Drivers') ? 'current-page' : '' }}">{{__('nav.drivers')}}</span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(Auth::user()->id == 86 || session('Read_6') == 1)
 							<li>
 								<a href="{{url('New-Portal/DriversJahiz')}}">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text" class="{{ request()->is('New-Portal/DriversJahiz') ? 'current-page' : '' }}">{{__('nav.drivers_jahiz')}}</span>
 								</a>
 							</li>
-                            <li>
-								<a href="{{url('New-Portal/DriversJahizClearing')}}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text" class="{{ request()->is('New-Portal/DriversJahizClearing') ? 'current-page' : '' }}">{{__('nav.bander_clearing')}}</span>
-								</a>
-							</li>
-                            <li>
-								<a href="{{url('New-Portal/DriversSANEDClearing')}}" class="{{ request()->is('New-Portal/DriversSANEDClearing') ? 'active current-page' : '' }}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">{{__('nav.SANED_clearing')}}</span>
-								</a>
-							</li>
-							<li>
-								<a href="{{url('New-Portal/DriversJahizClaim')}}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">{{__('nav.jahiz_claim')}}</span>
-								</a>
-							</li>
+                            @endif
+                            @if(session('Read_7')==1)
+                                <li>
+                                    <a href="{{url('New-Portal/DriversJahizClearing')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text" class="{{ request()->is('New-Portal/DriversJahizClearing') ? 'current-page' : '' }}">{{__('nav.bander_clearing')}}</span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(session('Read_29')==1)
+                                <li>
+                                    <a href="{{url('New-Portal/DriversSANEDClearing')}}" class="{{ request()->is('New-Portal/DriversSANEDClearing') ? 'active current-page' : '' }}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.SANED_clearing')}}</span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(session('Read_27')==1)
+                                <li>
+                                    <a href="{{url('New-Portal/DriversJahizClaim')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.jahiz_claim')}}</span>
+                                    </a>
+                                </li>
+                            @endif
 							<li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">Finance</span>
 							</li>
-                            <li>
-								<a href="{{url('New-Portal/Salary')}}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">{{__('nav.salary')}}</span>
-								</a>
-							</li>
-							<li class="sidebar-dropdown">
+                            @if(Auth::user()->user_type_id!=1 AND app('salaries') > 0)
+                                <li>
+                                    <a href="{{url('New-Portal/Salaries')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.salary')}}</span>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(session('Read_15')==1)
+                                <li>
+                                    <a href="{{url('New-Portal/Loans')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.loans')}}</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if(session('Read_17')==1 )
+                                <li>
+                                    <a href="{{url('New-Portal/Salary')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.salary')}}</span>
+                                    </a>
+                                </li>
+                            @endif
+							{{-- <li class="sidebar-dropdown">
 								<a href="#">
 									<i class="bi bi-bank"></i>
 									<span class="menu-text">Money Transfer</span>
@@ -234,7 +279,7 @@
 											<a href="view-cart.html">Jahiz</a>
 										</li>
 								</div>
-							</li>
+							</li> --}}
 							<li class="sidebar-dropdown">
 								<a href="#">
 									<i class="bi bi-check2-circle"></i>
@@ -250,12 +295,14 @@
 										</li>
 								</div>
 							</li>
-							<li>
-								<a href="{{url('New-Portal/Journal')}}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">{{__('nav.journal')}} </span>
-								</a>
-							</li>
+                            @if(session('Read_16')==1)
+                                <li>
+                                    <a href="{{url('New-Portal/Journal')}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.journal')}} </span>
+                                    </a>
+                                </li>
+                            @endif
                             @if(session('Read_17')==1 || Auth::user()->id == 20 || Auth::user()->id == 90)
                                 <li class="sidebar-dropdown">
                                     <a href="#">
@@ -306,57 +353,50 @@
                                 </li>
                             @endif
 
-                            <li>
+                            {{-- <li>
 								<a href="calendar.html">
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Generate Sales.R </span>
 								</a>
-							</li>
-							<li>
-								<a href="calendar.html">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">Transactions History </span>
-								</a>
-							</li>
-							<li class="menu-title">
-								<i class=""> &nbsp;&nbsp;</i>
-								<span data-key="t-components">HR</span>
-							</li>
-							<li>
-								<a href="calendar.html">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">Custody</span>
-								</a>
-							</li>
-							<li>
-								<a href="{{URL("New-Portal/Properties/index")}}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">{{__('nav.properties')}}</span>
-								</a>
-							</li>
-                            <li>
-								<a href="{{URL("New-Portal/ContractsQuotation")}}">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">{{__('nav.contracts_quotations')}}</span>
-								</a>
-							</li>
-							<li class="sidebar-dropdown">
-								<a href="#">
-									<i class="bi bi-collection"></i>
-									<span class="menu-text">Docs & Tutorials</span>
-								</a>
-								<div class="sidebar-submenu">
-									<ul>
-										<li>
-											<a href="{{url('New-Portal/UploadDocuments')}}">{{__('nav.upload_documents')}}</a>
-										</li>
-										<li>
-											<a href="{{url('New-Portal/Documents')}}"> {{__('nav.documents')}} </a>
-										</li>
-									</ul>
-								</div>
-							</li>
-							<li class="menu-title">
+							</li> --}}
+                            @if(Auth::user()->id == 1 || Auth::user()->id == 2 || Auth::user()->id == 73 || Auth::user()->id == 18 || Auth::user()->id == 14 || Auth::user()->id == 98)
+                                <li class="menu-title">
+                                    <i class=""> &nbsp;&nbsp;</i>
+                                    <span data-key="t-components">HR</span>
+                                </li>
+                                {{-- <li>
+                                    <a href="calendar.html">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">Custody</span>
+                                    </a>
+                                </li> --}}
+                                <li>
+                                    <a href="{{URL("New-Portal/Properties/index")}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.properties')}}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{URL("New-Portal/ContractsQuotation")}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.contracts_quotations')}}</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-dropdown">
+                                    <a href="#">
+                                        <i class="bi bi-collection"></i>
+                                        <span class="menu-text">Docs & Tutorials</span>
+                                    </a>
+                                    <div class="sidebar-submenu">
+                                        <ul>
+                                            <li>
+                                                <a href="{{url('New-Portal/UploadDocuments')}}">{{__('nav.upload_documents')}}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            @endif
+							{{-- <li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">Marketing </span>
 							</li>
@@ -381,7 +421,7 @@
 									<i class="bi bi-calendar4"></i>
 									<span class="menu-text">Quotations</span>
 								</a>
-							</li>
+							</li> --}}
 							<li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">Tickets </span>
@@ -396,8 +436,38 @@
 									<span class="menu-text">Closed Tickets</span>
 								</a>
 							</li>
+                            <li class="menu-title">
+								<i class=""> &nbsp;&nbsp;</i>
+								<span data-key="t-components">{{__('nav.SANED')}} </span>
+							</li>
+							<li>
+                                @if(session('Read_30')==1)
+                                    <a href="{{URL("/New-Portal/SANEDPaid")}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.SANED_paid')}}</span>
+                                    </a>
+                                @endif
+                                @if(session('Read_34')==1)
+                                    {{-- <a href="{{URL("/New-Portal/ChefzImportInvoice")}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.chefz_import_invoice')}}</span>
+                                    </a> --}}
+                                @endif
+                                @if(session('Read_37')==1)
+                                    <a href="{{URL("/New-Portal/LoansPaid")}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.loans_paid')}}</span>
+                                    </a>
+                                @endif
+                                @if(session('Read_38')==1)
+                                    <a href="{{URL("/New-Portal/SalaryPaid")}}">
+                                        <i class="bi bi-calendar4"></i>
+                                        <span class="menu-text">{{__('nav.salary_paid')}}</span>
+                                    </a>
+                                @endif
+							</li>
 
-							<li class="menu-title">
+							{{-- <li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">Settings</span>
 							</li>
@@ -419,7 +489,7 @@
 										</li>
 									</ul>
 								</div>
-							</li>
+							</li> --}}
 						</ul>
 					</div>
 				</div>
