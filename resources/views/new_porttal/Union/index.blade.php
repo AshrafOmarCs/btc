@@ -14,6 +14,11 @@
         </div>
     </div>
 </div>
+@php
+$module = "Union";
+@endphp
+@include('new_porttal.partials.delete_modal')
+
 <div class="modal fade" id="delete_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog ">
         <div class="modal-content">
