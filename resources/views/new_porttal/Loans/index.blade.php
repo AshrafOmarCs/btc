@@ -1006,164 +1006,52 @@ $module = "Loan";
 
         }
 
-        var selected = [];
-    function export_excel() {
-        // $('#backButton').hide();
-        $('#exportExcelBtn').prop('disabled', true);
-        // $('.secondList').hide();
-        $('#select_all_second').prop('checked', false);
-        // $('#select_all').prop('checked', false);
-        // $('.select_options').removeClass('active');
-        $('#ExportExcel').modal('toggle');
-    }
-    function check_uncheck() {
-        selected = [];
-        var all_array = @json($array);
-        $('#forwardBtn').removeClass('disabled');
-        $('#reverseBtn').addClass('disabled');
-        if ($('#select_all').prop('checked')) {
-            $(".select_options").addClass("active");
-            let i = 0;
-            all_array.forEach(element => {
-                selected.push({ id: i, name: element });
-                i++;
+        // Export Excel button click event
+        $('#exportExcelBtn').click(function() {
+            var table = $('#customer_data').DataTable();
+            $('#ExportExcel').modal('hide');
+            var selectedColumns = [];
+            console.log(selected);
+            selected.forEach(element => {
+                // if (element['id'] == 7) {
+                //     let id  = element['id'] + 2;
+                //     selectedColumns.push(id);
+                // } else if (element['id'] == 8) {
+                //     let id  = element['id'] + 3;
+                //     selectedColumns.push(id);
+                // } else {
+                    selectedColumns.push(element['id']);
+                // }
             });
-        } else {
-            $(".select_options").removeClass("active");
-        }
-    }
-    function check_uncheckSecond() {
-        selected = [];
-        $('#forwardBtn').addClass('disabled');
-        $('#reverseBtn').removeClass('disabled');
-        var second_array = @json($array);
-        if ($('#select_all_second').prop('checked')) {
-            $(".unselect_options").removeClass("active");
-        } else {
-            let i = 0;
-            second_array.forEach(element => {
-                selected.push({ id: i, name: element });
-                i++;
+            var rowCount = table.rows().count();
+            var headerRow = selected.map(column => {
+                var label = $('#' + column.id).siblings('label').text();
+                return label ? label : column.name;
             });
-            $(".unselect_options").addClass("active");
-        }
-    }
 
-    function selectOption(args, name) {
-        $('#forwardBtn').removeClass('disabled');
-        $('#reverseBtn').addClass('disabled');
-
-        var option_id = 'option' + args;
-        var optionElement = document.getElementById(option_id);
-        if (!optionElement) {
-            console.error('Element not found:', option_id);
-            return;
-        }
-        if (optionElement.classList.contains('active')) {
-            optionElement.classList.remove('active');
-            selected = selected.filter(item => item.name !== name);
-        } else {
-            optionElement.classList.add('active');
-            selected.push({ id: args, name: name });
-        }
-    }
-    function selectOptionSecond(args, name) {
-        $('#forwardBtn').addClass('disabled');
-        $('#reverseBtn').removeClass('disabled');
-
-        var option_id = 'option_' + args;
-        var optionElement = document.getElementById(option_id);
-        if (!optionElement) {
-            console.error('Element not found:', option_id);
-            return;
-        }
-        if (optionElement.classList.contains('active')) {
-            optionElement.classList.remove('active');
-            selected = selected.filter(item => item.name !== name);
-        } else {
-            optionElement.classList.add('active');
-            selected.push({ id: args, name: name });
-        }
-    }
-
-    function pushSelected() {
-        $('#totalSelected').html(selected.length);
-        let html = '';
-        selected.forEach(element => {
-            let id = element['id'];
-
-            $('#option'+id).hide();
-            let name = element['name'];
-            html += `<li class="list-group-item active unselect_options"  id="option_`+id+`" onclick="selectOptionSecond('`+id+`', '`+name+`')" style="cursor: pointer;">`+name+`</li>`;
+            var exportData = [headerRow];
+            var rowCount = table.rows().count();
+            for (var i = 0; i < rowCount; i++) {
+                var rowData = [];
+                selectedColumns.forEach(function(columnId) {
+                    var cellData = table.cell(i, columnId).data();
+                    if (cellData == null) {
+                        rowData.push('');
+                    } else {
+                        rowData.push(cellData); // Or provide a placeholder value
+                    }
+                });
+                exportData.push(rowData);
+            }
+            if (exportData[0].length === 0) {
+                alert('No columns selected for export!');
+                return;
+            }
+            var ws = XLSX.utils.aoa_to_sheet(exportData);
+            var wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            XLSX.writeFile(wb, 'Loans.xlsx');
         });
-        if (html != '') {
-            $('#exportExcelBtn').prop('disabled', false);
-            $('.secondList').show();
-            $('#secondListContent').html(html);
-        } else {
-            $('#exportExcelBtn').prop('disabled', true);
-            $('.secondList').hide();
-            $('#secondListContent').html('');
-        }
-    }
-    function popSelected() {
-        $('#totalSelected').html(selected.length);
-        $('.select_options').removeClass('active');
-        $('.select_options').show();
-        $('.unselect_options').hide();
-
-        selected.forEach(element => {
-            $('#option'+element['id']).addClass('active');
-            $('#option'+element['id']).hide();
-            $('#option_'+element['id']).show();
-        });
-    }
-    // Export Excel button click event
-    $('#exportExcelBtn').click(function() {
-        var table = $('#customer_data').DataTable();
-        $('#ExportExcel').modal('hide');
-        var selectedColumns = [];
-        console.log(selected);
-        selected.forEach(element => {
-            // if (element['id'] == 7) {
-            //     let id  = element['id'] + 2;
-            //     selectedColumns.push(id);
-            // } else if (element['id'] == 8) {
-            //     let id  = element['id'] + 3;
-            //     selectedColumns.push(id);
-            // } else {
-                selectedColumns.push(element['id']);
-            // }
-        });
-        var rowCount = table.rows().count();
-        var headerRow = selected.map(column => {
-            var label = $('#' + column.id).siblings('label').text();
-            return label ? label : column.name;
-        });
-
-        var exportData = [headerRow];
-        var rowCount = table.rows().count();
-        for (var i = 0; i < rowCount; i++) {
-            var rowData = [];
-            selectedColumns.forEach(function(columnId) {
-                var cellData = table.cell(i, columnId).data();
-                if (cellData == null) {
-                    rowData.push('');
-                } else {
-                    rowData.push(cellData); // Or provide a placeholder value
-                }
-            });
-            exportData.push(rowData);
-        }
-        if (exportData[0].length === 0) {
-            alert('No columns selected for export!');
-            return;
-        }
-        var ws = XLSX.utils.aoa_to_sheet(exportData);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-        XLSX.writeFile(wb, 'Loans.xlsx');
-    });
     </script>
 @stop
 @endsection

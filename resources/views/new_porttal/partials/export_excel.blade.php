@@ -14,7 +14,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <table id="table">
+                        <table id="table" style="width: 100%">
                             <tr>
                                 <td>
                                    <input type="checkbox" name="" id="select_all" onclick="check_uncheck()"> Select all

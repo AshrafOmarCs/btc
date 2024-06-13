@@ -615,15 +615,6 @@ $module = "Warehouse";
             });
         }
 
-        // $(function () {
-        //     $('#pakage_date').datepicker({
-        //         format: 'dd/mm/yyyy',
-        //         autoclose: true,
-        //         autoHide: true,
-        //         zIndex: 9999,
-        //     });
-        // });
-
         function selectall() {
             $('.flat-red').each(function () {
                 var str = $(this).attr('name');
