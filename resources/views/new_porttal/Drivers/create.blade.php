@@ -36,7 +36,7 @@
                     <div class="card-body">
                         <div class="m-0">
                             <label class="form-label">{{__('drivers.City')}} <font color="red">*</font></label>
-                            <select name="companyId" class="form-control" id="filtercompanyId" required>
+                            <select name="warehouseId" class="form-control" id="filterwarehouseId" required>
                                 <option value="">Select City</option>
                                 @foreach($warehouse as $warehousee)
                                     <option value="{{$warehousee->id}}"> {{$warehousee->warehouseName}}</option>

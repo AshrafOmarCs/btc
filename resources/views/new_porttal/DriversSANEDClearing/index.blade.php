@@ -205,23 +205,31 @@ $module = "Driver Saned";
                 <div class="card-title">SANED Clearing</div>
             </div>
             <!-- Card start -->
-            <form method="POST" action="{{ URL('/DriversSANEDClearingPostShe')}}">
-                @csrf
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" style="font-size: 16px;"> </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="custom-btn-group">
-                                    <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
-                                    <button type="button" class="btn btn-primary" type="button" onclick="apply();"></i>Apply for Settlement</button>
-
-                                    {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
-                                </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title" style="font-size: 16px;"> </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="custom-btn-group">
+                                <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
+                                <button type="button" class="btn btn-primary" type="button" onclick="apply();"></i>Apply for Settlement</button>
+                                @if(Auth::user()->email == "a.omar@btclogistic.com" || Auth::user()->email == "m.shehroze@btclogistic.com" || Auth::user()->email == "amal.ali@btclogistic.com" || Auth::user()->email == "abdulrahman@btclogistic.com" || Auth::user()->email == "rayah@btclogistic.com" || Auth::user()->email == "s.nimir@btclogistic.com" || Auth::user()->email == "rayan.mohammed@btclogistic.com" || Auth::user()->email == "rawabi@btclogistic.com")
+                                    <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSTCShe")}}">
+                                        @csrf
+                                        <input type="hidden" name="SQL" id="SQL">
+                                        <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">STC pay
+                                            Excel
+                                        </button>
+                                    </form>
+                                @endif
+                                {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
                             </div>
                         </div>
-
                     </div>
+
+                </div>
+                <form method="POST" action="{{ URL('/DriversSANEDClearingPostShe')}}">
+                    @csrf
                     <div class="card-body">
                         <div class="table-responsive">
                             <table id="customer_data" class="table table-bordered">
@@ -303,24 +311,9 @@ $module = "Driver Saned";
                                 </table>
                             @endif
                         </div>
-                        @if(Auth::user()->email == "a.omar@btclogistic.com" || Auth::user()->email == "m.shehroze@btclogistic.com" || Auth::user()->email == "amal.ali@btclogistic.com" || Auth::user()->email == "abdulrahman@btclogistic.com" || Auth::user()->email == "rayah@btclogistic.com" || Auth::user()->email == "s.nimir@btclogistic.com" || Auth::user()->email == "rayan.mohammed@btclogistic.com" || Auth::user()->email == "rawabi@btclogistic.com")
-                            <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSTCShe")}}">
-                                @csrf
-                                <input type="hidden" name="SQL" id="SQL">
-                                <table style="width: 100%">
-                                    <tr>
-                                        <td style="width: 40%">
-                                            <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">STC pay
-                                                Excel
-                                            </button>
-
-                                    </tr>
-                                </table>
-                            </form>
-                        @endif
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
             <!-- Card end -->
         </div>
         <!-- Card end -->
@@ -540,7 +533,7 @@ $module = "Driver Saned";
                             $('#jahiz_ids').val(data[15]);
 
                             let html = '';
-                            if ($('#filter_job_id').val() > 0)
+                            if ($('#filter_job_id').val() != '')
                                 html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_job_id').val()+'</button>';
                             var selectedOptions = $('#filter_warehouseId option:selected');
                             let warehouses = '';
@@ -632,7 +625,7 @@ $module = "Driver Saned";
         function driver_window() {
             $('#filter_driverId').val('');
             $('#filter_driverId_input').val('');
-            myWindow1 = window.open("{{URL("/DriverJahizWindow")}}", "",
+            myWindow1 = window.open("{{URL("/New-Portal/DriverJahizWindow")}}", "",
                 "height=650,width=1000,scrollbars=yes,top=1,left=1,status,resizable");
         }
 

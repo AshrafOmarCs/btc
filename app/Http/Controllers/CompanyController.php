@@ -29,7 +29,7 @@ class CompanyController extends Controller
         $lkp_calculation_method = DB::select('SELECT * from lkp_calculation_method ');
 
         $Select_db = DB::table('lkp_company')
-            ->select('lkp_company.status', 'lkp_company.id as id', 'companyName', 'calculation_method_id', 'calculation_method',
+            ->select('lkp_company.status', 'lkp_company.id as id', 'companyName', 'company_logo', 'calculation_method_id', 'calculation_method',
                 'period_start', 'period_end', 'companyFullName_en', 'companyFullName_ar', 'TaxNumber', 'CreditNote_Letter',
                 'created_users.name as created_users', 'updated_users.name as updated_users', 'lkp_company.created_at', 'lkp_company.updated_at'
             )
@@ -100,7 +100,11 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-
+        $company_logo = '';
+        if($request->hasFile('company_logo')) {
+            $company_logo = time().'.'.$request->company_logo->extension();
+            $request->company_logo->move(storage_path('app/public/images'), $company_logo);
+        }
         DB::table('lkp_company')->insert(
             [
                 'status' => $request->input('status'),
@@ -115,9 +119,9 @@ class CompanyController extends Controller
                 'CreditNote_Letter' => $request->input('CreditNote_Letter'),
                 'updatedby_id' => Auth::user()->id,
                 'createdby_id' => Auth::user()->id,
+                'company_logo' => $company_logo,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => date("Y-m-d H:i:s"),
-
             ]
         );
 
@@ -180,6 +184,16 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $company_logo = '';
+        if($request->hasFile('company_logo')) {
+            $company_logo = time().'.'.$request->company_logo->extension();
+            $request->company_logo->move(storage_path('app/public/images'), $company_logo);
+            DB::table('lkp_company')
+            ->where('id', $id)
+            ->update([
+                'company_logo' => $company_logo
+            ]);
+        }
         DB::table('lkp_company')
             ->where('id', $id)
             ->update([

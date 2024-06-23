@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -93,7 +94,7 @@ class DashoardController extends Controller
         elseif (request()->ajax()) {
 
             $Select_db = DB::table('drivers')
-                ->select('drivers_attachments.Image_Identity', 'drivers_attachments.Image_PromissoryNote', 'drivers_attachments.Image_JobContract', 'drivers.id as id', 'companyName', 'warehouseId', 'warehouseName', 'lkp_city.name_en', 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else','car_plateNumber' ,'nationality_id', 'lkp_country.country_ar',
+                ->select('drivers_attachments.Image_Identity', 'drivers_attachments.Image_PromissoryNote', 'drivers_attachments.Image_JobContract', 'drivers.id as id', 'companyName', 'company_logo', 'warehouseId', 'warehouseName', 'lkp_city.name_en', 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else','car_plateNumber' ,'nationality_id', 'lkp_country.country_ar',
                     'iqama', 'iqamaExpireyDate', 'email_id', 'job_id', 'dob', 'status_id', 'lkp_driver_status.driver_status_en', 'termination_reason_id', 'reason_en',
                     'interview_date', 'start_date', 'licenseExpireyDate', 'passportNo', 'passportExpireyDate', 'bank_id', 'bank_name_en', 'accountNumber', 'account_owner_iqama',
                     'a.yes_no AS under_sopnsorship', 'b.yes_no AS ajeer','bander_car.yes_no AS bander_car', 'collectionAmount', 'openBalance',
@@ -371,9 +372,10 @@ class DashoardController extends Controller
             return datatables()->of($Select_db)->make(true);
         }
         //return $Select_db->toSql();
-        if (Route::getFacadeRoot()->current()->uri() == 'DriverWindow')
+        $users = array();
+        if (Route::getFacadeRoot()->current()->uri() == 'New-Portal/DriverWindow')
             $view = "DriverWindow";
-        if (Route::getFacadeRoot()->current()->uri() == 'DriverJahizWindow')
+        if (Route::getFacadeRoot()->current()->uri() == 'New-Portal/DriverJahizWindow')
             $view = "DriverJahizWindow";
         elseif (Route::getFacadeRoot()->current()->uri() == 'New-Portal/Drivers') {
             $view = "index_drives";

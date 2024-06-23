@@ -57,6 +57,9 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('/SANEDPaid', 'SANEDController@SANEDPaid');
     Route::get('/SalaryPaid', 'SalaryControllerShe@SalaryPaid');
     Route::get('/LoansPaid', 'LoansController@LoansPaid');
+    Route::get('/DriverWindow', 'DashoardController@index_drivers');
+    Route::get('/DriverJahizWindow', 'DashoardController@index_drivers');
+
 
 
 

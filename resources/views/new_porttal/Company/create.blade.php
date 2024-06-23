@@ -1,5 +1,5 @@
 
-<form method="POST" action="{{ route('Company.store')}}">
+<form method="POST" action="{{ route('Company.store')}}" enctype="multipart/form-data">
     @csrf
     <div class="modal-body">
         <div class="row">
@@ -110,6 +110,16 @@
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('companies.logo')}}</label>
+                            <input type="file" class="form-control"  name="company_logo">
                         </div>
                     </div>
                 </div>

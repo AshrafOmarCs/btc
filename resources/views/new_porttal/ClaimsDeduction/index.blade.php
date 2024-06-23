@@ -180,12 +180,6 @@ $module = "Driver Claim";
 
     <script>
         $(document).ready( function () {
-            $(document).ajaxStart(function() {
-                $("#loader").show();
-            });
-            $(document).ajaxStop(function() {
-                $("#loader").hide();
-            });
             call_datatable("Claims of companies except Jahiz");
             function call_datatable(excel_title) {
                 $('#customer_data').DataTable({

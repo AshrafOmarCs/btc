@@ -296,6 +296,17 @@ $module = "Loan";
                                 <button class="btn btn-success" onclick="go_to_paid()" title="Paid"><i class="bi bi-credit-card-2-front-fill"></i> </button>
                                 <button class="btn btn-danger" onclick="delete_loan()" title="Delete"> <i class="bi bi-trash-fill"></i></button>
                                 <a href="javascript:add();" class="btn btn-sm btn-info "><i class="bi bi-plus"></i> {{__('loans.Add_New_Loan')}}</a>
+                                @if(Auth::user()->user_type_id==1 && session('Post_15')==1)
+                                    <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportLoanSheSTC")}}">
+                                        @csrf
+                                        <input type="hidden" name="SQL" id="SQL">
+                                        <input type="hidden" name="companyName" id="companyName">
+                                        <input type="hidden" name="PeriodName" id="PeriodName">
+                                        <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">STC pay
+                                            Excel
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -358,23 +369,6 @@ $module = "Loan";
                             </tfoot>
                         </table>
                     </div>
-                    @if(Auth::user()->user_type_id==1 && session('Post_15')==1)
-                    <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportLoanSheSTC")}}">
-                        @csrf
-                        <input type="hidden" name="SQL" id="SQL">
-                        <input type="hidden" name="companyName" id="companyName">
-                        <input type="hidden" name="PeriodName" id="PeriodName">
-                        <table style="width: 100%">
-                            <tr>
-                                <td style="width: 40%">
-                                    <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">STC pay
-                                        Excel
-                                    </button>
-
-                            </tr>
-                        </table>
-                    </form>
-                    @endif
                 </div>
                 <!-- Card end -->
             </div>
@@ -472,12 +466,6 @@ $module = "Loan";
             }
         }
         $(document).ready(function () {
-            $(document).ajaxStart(function() {
-                $("#loader").show();
-            });
-            $(document).ajaxStop(function() {
-                $("#loader").hide();
-            });
             $('#filter_updated_at').val('');
             $('#filter_created_at').val('');
             $('#filter_journal_date').val('');

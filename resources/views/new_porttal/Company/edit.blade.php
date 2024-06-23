@@ -1,6 +1,6 @@
 
 
-<form method="POST" action="{{ route('Company.update',$Company->id)}}">
+<form method="POST" action="{{ route('Company.update',$Company->id)}}" enctype="multipart/form-data">
     {{method_field("PATCH")}}
     @csrf
     <div class="modal-body">
@@ -112,6 +112,16 @@
                                 <option @if($Company->status == 'active') selected @endif value="active">Active</option>
                                 <option @if($Company->status == 'inactive') selected @endif value="inactive">Inactive</option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">{{__('companies.logo')}}</label>
+                            <input type="file" class="form-control"  name="company_logo">
                         </div>
                     </div>
                 </div>

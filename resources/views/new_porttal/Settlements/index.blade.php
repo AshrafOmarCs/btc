@@ -274,33 +274,34 @@ $module = "Settlement";
                 <div class="card-title">Settlements</div>
             </div>
             <!-- Card start -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title" style="font-size: 16px;"></div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="custom-btn-group">
-                                <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
-                                {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
-                                <button type="button" class="btn btn-info" class="btn btn-info" type="button" onclick="add()"></i>Add New Settlement</button>
-
+            <form method="POST" action="{{ URL('/SettlementsPost')}}">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="font-size: 16px;"></div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="custom-btn-group">
+                                    <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
+                                    {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
+                                    <button type="button" class="btn btn-info" class="btn btn-info" type="button" onclick="add()"></i>Add New Settlement</button>
+                                    @if(Auth::user()->user_type_id==1)
+                                        <button type="submit" name="filter" class="btn btn-sm btn-info" id="filter">Post To Journal</button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                </div>
-                <div class="card-body">
-                    @if(Auth::user()->user_type_id==1)
-                    <table style="width:100%">
-                        <tr>
-                            <td align=right>
-                                <input class="flat-red" type="checkbox" name="select-all" id="select-all"/>&nbsp;&nbsp;Select All
-                            </td>
-                        </tr>
-                    </table>
-                    @endif
-                    <form method="POST" action="{{ URL('/SettlementsPost')}}">
-                        @csrf
+                    <div class="card-body">
+                        @if(Auth::user()->user_type_id==1)
+                        <table style="width:100%">
+                            <tr>
+                                <td align=right>
+                                    <input class="flat-red" type="checkbox" name="select-all" id="select-all"/>&nbsp;&nbsp;Select All
+                                </td>
+                            </tr>
+                        </table>
+                        @endif
+                            @csrf
                         <div class="table-responsive">
                             <table id="customer_data" class="table table-bordered">
                                 <thead>
@@ -331,14 +332,9 @@ $module = "Settlement";
                                 </tfoot>
                             </table>
                         </div>
-                        @if(Auth::user()->user_type_id==1)
-                        <center>
-                            <button type="submit" name="filter" class="btn btn-sm btn-info" id="filter">Post To Journal</button>
-                        </center>
-                        @endif
-                    </form>
+                    </div>
                 </div>
-            </div>
+            </form>
             <!-- Card end -->
         </div>
         <!-- Card end -->
@@ -651,7 +647,7 @@ $module = "Settlement";
         });
 
         function driver_window(){
-          myWindow1 = window.open( "{{URL("/DriverWindow")}}", "",
+          myWindow1 = window.open( "{{URL("/New-Portal/DriverWindow")}}", "",
                                   "height=650,width=1000,scrollbars=yes,top=1,left=1,status,resizable" );
         }
         function driver(id){

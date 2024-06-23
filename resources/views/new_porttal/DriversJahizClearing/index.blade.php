@@ -793,7 +793,7 @@ $module = "Driver Jahiz";
         function driver_window() {
             $('#filter_driverId').val('');
             $('#filter_driverId_input').val('');
-            myWindow1 = window.open("{{URL("/DriverJahizWindow")}}", "",
+            myWindow1 = window.open("{{URL("/New-Portal/DriverJahizWindow")}}", "",
                 "height=650,width=1000,scrollbars=yes,top=1,left=1,status,resizable");
         }
 

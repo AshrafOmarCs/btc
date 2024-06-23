@@ -341,6 +341,19 @@ $(document).ready(function () {
             columns: [
                 {
                     data: 'companyName',
+                    name: 'companyName',
+                    render: function (data, type, row, meta) {
+                        let link = '';
+                        if (row.company_logo == null) {
+                            link = "";
+                        } else {
+                            link = '<img src="/storage/images/' + row.company_logo + '" style="width: 25%; margin-right: 5px">';
+                        }
+                        return link + row.companyName;
+                    }
+                },
+                {
+                    data: 'companyName',
                     name: 'companyName'
                 },
                 {

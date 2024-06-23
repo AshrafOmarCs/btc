@@ -549,13 +549,13 @@ $module = "Driver";
                     } else {
                         var alert = 'success';
                     }
-                    $('#message').html('<div class="alert alert-'+alert+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                    $('#message').html('<div class="alert alert-'+alert+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" onclick="closeAlert()" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
                     $('#driverForm')[0].reset();
                     $('#addNewDriver').modal('hide');
                 },
                 error: function(xhr) {
                     $('#message').html("");
-                    document.getElementById('create_da_from').innerHTML = response;
+                    document.getElementById('create_da_from').innerHTML = xhr;
                 }
             });
         });
@@ -632,15 +632,16 @@ $module = "Driver";
 
                 columns: [
                     {
-                        data: 'companyName',
-                        name: 'lkp_company.companyName',
+                        data: 'company_logo',
+                        name: 'lkp_company.company_logo',
                         render: function (data, type, row, meta) {
-
-                            return '<img src="/dashboard/assets/logos/default_imile_logo.jpg" style="width: 25%; margin-right: 5px">'+row.companyName;
-
-                        //     if (row.Company_Image == 1) {
-                        //         image = `/Attachment/Company_Image/`+row.id+`.jpg`;
-                        //     }
+                            let link = '';
+                            if (row.company_logo == null) {
+                                link = "/dashboard/assets/logos/default_imile_logo.jpg";
+                            } else {
+                                link = "/storage/images/" + row.company_logo;
+                            }
+                            return '<img src="'+link+'" style="width: 25%; margin-right: 5px">'+row.companyName;
                         }
                     },
                     {
@@ -697,7 +698,7 @@ $module = "Driver";
                     {
                         "orderable": false,
                         data: 'app_status',
-                        name: 'driver_status_en',
+                        name: 'lkp_driver_status.driver_status_en',
                         render: function (data, type, row, meta) {
                                 return '<span class="badge badge-warning">Not Yet</span>';
                         }
@@ -949,12 +950,7 @@ $module = "Driver";
         });
 
         $('#filter').click(function () {
-            $(document).ajaxStart(function() {
-                $("#loader").show();
-            });
-            $(document).ajaxStop(function() {
-                $("#loader").hide();
-            });
+
             if ($('#filter_vehicleId').val() != '' || $('#filter_companyId').val() != '' || $('#filter_warehouseId').val() != '' || $('#filter_driver_type_id').val() != '' || $('#filter_fullName').val() != '' || $('#filter_mobileNumber').val() != '' || $('#filter_iqama').val() != '' || $('#filter_email_id').val() != '' || $('#filter_job_id').val() != '' || $('#filter_status_id').val() != '' || $('#filter_account_owner_iqama').val() != '' || $('#filter_accountNumber').val() != '' || $('#filter_created_at').val() != '' || $('#filter_updated_at').val() != '' || $('#filter_bander_car_id').val() != ''|| $('#filter_Image_Identity').val() != '' || $('#filter_Image_Passport').val() != '' || $('#filter_Image_DrivingLicence').val() != '' || $('#filter_Image_VehiclesRegistration').val() != '' || $('#filter_Image_JobContract').val() != '' || $('#filter_Image_PromissoryNote').val() != '') {
                 $('#customer_data').DataTable().destroy();
                 fill_datatable('Drivers', $('#filter_companyId').val(), $('#filter_warehouseId').val(), $('#filter_driver_type_id').val(), $('#filter_fullName').val(), $('#filter_mobileNumber').val(), $('#filter_iqama').val(), $('#filter_email_id').val(), $('#filter_job_id').val(), $('#filter_status_id').val(), $('#filter_account_owner_iqama').val(), $('#filter_accountNumber').val(), $('#filter_created_at').val(), $('#filter_updated_at').val(), $('#filter_bander_car_id').val(), $('#filter_Image_Identity').val(), $('#filter_Image_Passport').val(), $('#filter_Image_DrivingLicence').val(), $('#filter_Image_VehiclesRegistration').val(), $('#filter_Image_JobContract').val(), $('#filter_Image_PromissoryNote').val(), $('#filter_vehicleId').val());

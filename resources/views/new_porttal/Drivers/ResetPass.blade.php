@@ -2,7 +2,7 @@
 </div>
 
 
-<form method="POST" action="{{ URL('/SaveResetPass')}}"    >
+<form method="POST" action="{{ URL('/SaveResetPass')}}">
     @csrf
     <input type="hidden" name="id" value="{{$id}}">
     <div class="modal-body">
@@ -30,7 +30,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('users.Close')}}</button>
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('users.cancel')}}</button>
         <button class="btn btn-success" type="submit">{{__('users.ResetPassword')}}</button>
     </div>
 </form>

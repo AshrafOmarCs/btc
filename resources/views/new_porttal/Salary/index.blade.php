@@ -246,6 +246,17 @@ $array = [
                         <div class="col-12">
                             <div class="custom-btn-group">
                                 <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
+                                <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSalarySTC")}}">
+                                    @csrf
+                                    <input type="hidden" name="SQL" id="SQL" value="">
+                                    <input type="hidden" name="company_Id" id="company_Id">
+                                    <input type="hidden" name="companyName" id="companyName">
+                                    <input type="hidden" name="PeriodName" id="PeriodName">
+                                    <button value="Migrate/Move to journal "  id="migrate" style="float:right; " class="btn btn-sm btn-warning">Migrate Selected to Journal</button>
+                                </form>
+                                <form method="POST" action="{{ route('Salary.store')}}">
+                                    @csrf
+                                    <button type="submit" name="filter" class="btn btn-sm btn-info">Post To Journal</button>
                                 {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
                             </div>
                         </div>
@@ -264,80 +275,62 @@ $array = [
                     <input type="hidden" name="companyId" id="companyId" value="">
                     <input type="hidden" name="Period" id="Period" value="">
                     <div class="table-responsive">
-                        <form method="POST" action="{{ route('Salary.store')}}">
-                            @csrf
-                            <table id="customer_data" class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <TH>Whouse</TH>
-                                        <TH>Driver</TH>
-                                        <TH>ID</TH>
-                                        <TH>Did</TH>
-                                        <TH>Days</TH>
-                                        <TH>Carried Down</TH>
-                                        <TH>Day Loaded</TH>
-                                        <TH>Credit</TH>
-                                        <TH>Debit</TH>
-                                        <TH><input class="" onclick="selectall_status()" type="checkbox" name="select-all-status" id="select-all-status"/> Status</TH>
-                                        <TH>Attempt</TH>
-                                        <TH>Loan</TH>
-                                        <TH>CN</TH>
-                                        <TH>Expected Salary</TH>
-                                        <TH><input class="flat-red" onclick="selectall()" type="checkbox" name="select-all" id="select-all"/> Paid Salary</TH>
-                                        <TH>Brought Down</TH>
-                                        <TH>Action</TH>
-                                        <TH style="display:none;">Bank Name</TH>
-                                        <TH style="display:none;">AccountNumber</TH>
-                                        <TH style="display:none;">DriverId</TH>
-                                        <TH style="display:none;">Account Owner Iqama</TH>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot>
-                                    <tr>
-                                        <TH colspan='3'>Total</TH>
-                                        <TH id="pack_total"></TH>
-                                        <TH id="days_total"></TH>
-                                        <TH id="c_down_total"></TH>
-                                        <TH id="day_load_total" class="Font-Green"></TH>
-                                        <TH id="credit_total" class="Font-Green"></TH>
-                                        <TH id="debit_total" class="Font-Red"></TH>
-                                        <TH><button id="status_button" style="display: none" type="button" class="btn btn-primary btn-small" onclick="go_to_ready()" title="Revert status to Ready">Rev.Status</button></TH>
-                                        <TH></TH>
-                                        <TH id="loan_total"></TH>
-                                        <TH id="cn_total"></TH>
-                                        <TH id="exp_salary_total"></TH>
-                                        <TH id="paid_salary_total"></TH>
-                                        <TH id="brought_total"></TH>
-                                        <TH></TH>
-                                        <TH style="display:none;"></TH>
-                                        <TH style="display:none;"></TH>
-                                        <TH style="display:none;"></TH>
-                                        <TH style="display:none;"></TH>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            <center>
-                                <button type="submit" name="filter" class="btn btn-sm btn-info">Post To Journal</button>
-                            </center>
-                        </form>
-                    </div>
-                    <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSalarySTC")}}">
-                        @csrf
-                        <input type="hidden" name="SQL" id="SQL" value="">
-                        <input type="hidden" name="company_Id" id="company_Id">
-                        <input type="hidden" name="companyName" id="companyName">
-                        <input type="hidden" name="PeriodName" id="PeriodName">
-                        <table style="width: 100%">
-                            <tr>
-                                <td style="width: 40%">
-                            </tr>
-                            <tr>
-                            <button value="Migrate/Move to journal "  id="migrate" style="float:right; " class="btn btn-sm btn-warning">Migrate Selected to Journal</button>
-                            </tr>
+
+                        <table id="customer_data" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <TH>Whouse</TH>
+                                    <TH>Driver</TH>
+                                    <TH>ID</TH>
+                                    <TH>Did</TH>
+                                    <TH>Days</TH>
+                                    <TH>Carried Down</TH>
+                                    <TH>Day Loaded</TH>
+                                    <TH>Credit</TH>
+                                    <TH>Debit</TH>
+                                    <TH><input class="" onclick="selectall_status()" type="checkbox" name="select-all-status" id="select-all-status"/> Status</TH>
+                                    <TH>Attempt</TH>
+                                    <TH>Loan</TH>
+                                    <TH>CN</TH>
+                                    <TH>Expected Salary</TH>
+                                    <TH><input class="flat-red" onclick="selectall()" type="checkbox" name="select-all" id="select-all"/> Paid Salary</TH>
+                                    <TH>Brought Down</TH>
+                                    <TH>Action</TH>
+                                    <TH style="display:none;">Bank Name</TH>
+                                    <TH style="display:none;">AccountNumber</TH>
+                                    <TH style="display:none;">DriverId</TH>
+                                    <TH style="display:none;">Account Owner Iqama</TH>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <TH colspan='3'>Total</TH>
+                                    <TH id="pack_total"></TH>
+                                    <TH id="days_total"></TH>
+                                    <TH id="c_down_total"></TH>
+                                    <TH id="day_load_total" class="Font-Green"></TH>
+                                    <TH id="credit_total" class="Font-Green"></TH>
+                                    <TH id="debit_total" class="Font-Red"></TH>
+                                    <TH><button id="status_button" style="display: none" type="button" class="btn btn-primary btn-small" onclick="go_to_ready()" title="Revert status to Ready">Rev.Status</button></TH>
+                                    <TH></TH>
+                                    <TH id="loan_total"></TH>
+                                    <TH id="cn_total"></TH>
+                                    <TH id="exp_salary_total"></TH>
+                                    <TH id="paid_salary_total"></TH>
+                                    <TH id="brought_total"></TH>
+                                    <TH></TH>
+                                    <TH style="display:none;"></TH>
+                                    <TH style="display:none;"></TH>
+                                    <TH style="display:none;"></TH>
+                                    <TH style="display:none;"></TH>
+                                </tr>
+                            </tfoot>
                         </table>
-                    </form>
+                    </div>
+
                 </div>
+            </form>
                 <!-- Card end -->
             </div>
         <!-- Card end -->
@@ -406,12 +399,7 @@ $array = [
             }
         }
         $(document).ready(function() {
-            $(document).ajaxStart(function() {
-                $("#loader").show();
-            });
-            $(document).ajaxStop(function() {
-                $("#loader").hide();
-            });
+
     	    $('#customer_data').DataTable({
     	    	lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 dom: 'lBfrtip',

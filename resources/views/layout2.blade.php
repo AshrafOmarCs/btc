@@ -52,7 +52,9 @@
         <link rel="stylesheet" href="https://btcdmins.com/AdminLTE/plugins/iCheck/all.css">
 
 	</head>
-
+    @php
+    $array = [];
+    @endphp
 	<body>
 		<!-- Loading wrapper start -->
 		<div id="loading-wrapper">
@@ -280,7 +282,7 @@
 										</li>
 								</div>
 							</li> --}}
-							<li class="sidebar-dropdown">
+							{{-- <li class="sidebar-dropdown">
 								<a href="#">
 									<i class="bi bi-check2-circle"></i>
 									<span class="menu-text">Sett & Deduction  </span>
@@ -294,7 +296,7 @@
 											<a href="products.html">Creditnote</a>
 										</li>
 								</div>
-							</li>
+							</li> --}}
                             @if(session('Read_16')==1)
                                 <li>
                                     <a href="{{url('New-Portal/Journal')}}">
@@ -783,6 +785,15 @@
                     $('#option_'+element['id']).show();
                 });
             }
+            function closeAlert() {
+                $(".alert").alert('close');
+            }
+            $(document).ajaxStart(function() {
+                $("#loader").show();
+            });
+            $(document).ajaxStop(function() {
+                $("#loader").hide();
+            });
         </script>
 		@yield('javascript')
 	</body>

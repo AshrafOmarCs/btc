@@ -2,7 +2,7 @@
   @foreach($errors->all() as $error)
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>Oh  !</strong> {{$error}}  and try submitting again.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <button type="button" class="close" onclick="closeAlert()" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -14,7 +14,7 @@
   @if(session('success'))
 
 <div class="alert alert-dismissible alert-success">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <button type="button" class="close" onclick="closeAlert()" data-dismiss="alert">&times;</button>
   <strong>Well done!</strong>   {{session('success')}}.
 </div>
 
@@ -26,7 +26,7 @@
    @if(session('error'))
 
   <div class="alert alert-dismissible alert-danger">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <button type="button" class="close" onclick="closeAlert()" data-dismiss="alert">&times;</button>
   <strong>Oh  !</strong>   {{session('error')}}  and try submitting again.
 </div>
 

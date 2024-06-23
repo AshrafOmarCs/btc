@@ -210,6 +210,13 @@ $array = [
                         <div class="col-12">
                             <div class="custom-btn-group">
                                 <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
+                                <form method="POST" action="{{URL("/ExportClaim")}}">
+                                    @csrf
+                                    <input type="hidden" name="SQL" id="SQL">
+                                    <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">Claim
+                                        Excel
+                                    </button>
+                                </form>
                                 {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
                             </div>
                         </div>
@@ -265,19 +272,6 @@ $array = [
                             </tfoot>
                         </table>
                     </div>
-                    <form method="POST" action="{{URL("/ExportClaim")}}">
-                        @csrf
-                        <input type="hidden" name="SQL" id="SQL">
-                        <table style="width: 100%">
-                            <tr>
-                                <td style="width: 40%">
-                                    <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">Claim
-                                        Excel
-                                    </button>
-
-                            </tr>
-                        </table>
-                    </form>
                 </div>
                 <!-- Card end -->
             </div>
@@ -610,7 +604,7 @@ $array = [
         function driver_window() {
             $('#filter_driverId').val('');
             $('#filter_driverId_input').val('');
-            myWindow1 = window.open("{{URL("/DriverJahizWindow")}}", "",
+            myWindow1 = window.open("{{URL("/New-Portal/DriverJahizWindow")}}", "",
                 "height=650,width=1000,scrollbars=yes,top=1,left=1,status,resizable");
         }
 

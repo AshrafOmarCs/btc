@@ -48,7 +48,7 @@
 <div class="modal fade" id="AttachmentModal" tabindex="-1" role="dialog" aria-labelledby="AttachmentModal" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-        <form action="{{url('DriversJahiz/storeDocument')}}" method="post">
+        <form action="{{url('DriversJahiz/storeDocument')}}" method="post" enctype="multipart/form-data">
             @csrf
             <div class="modal-header">
                 <h5 class="modal-title" id="AttachmentModal"> {{__('drivers.Issuingdocument')}}</h5>
@@ -600,6 +600,11 @@ $module = "Driver";
 
                 </div>
                 <div class="card-body">
+                    <div id="loader" style="display:none;">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table id="customer_data" class="table table-bordered">
                             <thead>
@@ -765,13 +770,13 @@ $module = "Driver";
                         } else {
                             var alert = 'success';
                         }
-                        $('#message').html('<div class="alert alert-'+alert+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                        $('#message').html('<div class="alert alert-'+alert+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" onclick="closeAlert()" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
                         $('#driverForm')[0].reset();
                         $('#addNewDriver').modal('hide');
                     },
                     error: function(xhr) {
                         $('#message').html("");
-                        document.getElementById('create_da_from').innerHTML = response;
+                        document.getElementById('create_da_from').innerHTML = xhr;
                     }
                 });
             });

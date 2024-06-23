@@ -25,10 +25,12 @@ class Drivers_jahiz_clearing extends Model
         'created_by_id',
         'updated_by_id',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'clearance_type',
+        'proof_file'
     ];
     public function driver(){
         return $this->belongsTo('App\Drivers','driverId','id');
     }
-   
+
 }

@@ -190,12 +190,6 @@ $module = "Transaction";
 
     <script>
         $(document).ready(function() {
-            $(document).ajaxStart(function() {
-                $("#loader").show();
-            });
-            $(document).ajaxStop(function() {
-                $("#loader").hide();
-            });
 
             $('#selected_date').val('');
             $('#selected_date').on('cancel.daterangepicker', function(ev, picker) {

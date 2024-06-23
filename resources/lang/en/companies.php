@@ -28,4 +28,5 @@ return [
     'delete_msg' => 'Are you sure, you want to delete',
     'update' => 'Update',
     'status' => 'Status',
+    'logo' => 'Company Logo',
 ];

@@ -28,22 +28,22 @@ class GeneralController extends Controller
         return 'trancaction_history';
     }
     public function index(){
-    
+
     //$driver = Drivers::findOrFail(1);
     // return response()->json($driver);
 
     // $path = Storage::path('/storage/journal/files/16468295275119.csv');
 
     $CSVfp = fopen('../public/storage/journal/files/16468295275119.csv', "r");
-      
+
     if($CSVfp !== FALSE) {
        //setlocale( 'utf8');
       while (($data = fgetcsv($CSVfp, 1000, ",")) !== FALSE) { // Check opening the file is OK!
         $recored = new Journal();
-       
+
         for ($i = 0; $i < count($data); $i++) { // Loop over the data using $i as index pointer
             // echo $data[$i] . " I is equal to ".$i.  ". <br />\n";
-            // retriving Driver's data than check if the Driver if its Exsist or not yet 
+            // retriving Driver's data than check if the Driver if its Exsist or not yet
             $driver = Drivers::where('job_id',$data[2])->orWhere('fullName', $data[3])->get();
             if(count($driver)>0){
                 $driver =  $driver->first();
@@ -62,7 +62,7 @@ class GeneralController extends Controller
                     // $journal_type_id = 6;
                 }
                 $recored->driverId = $driver_id;
-                $recored->journal_date = $journal_date; //date 
+                $recored->journal_date = $journal_date; //date
                 $recored->debit = '0';
                 $recored->credit = $credit;
                 $recored->journal_type_id = $journal_type_id;
@@ -74,11 +74,11 @@ class GeneralController extends Controller
 
             }else{
                 dd("didn't found the driver in DB Filter was Job_id :".$data[2]." and FullName :".$data[3]);
-                //we have to create an account in driver table than retravining the driver id 
+                //we have to create an account in driver table than retravining the driver id
             }
         }
     }
-    
+
     dd('done');
     fclose($CSVfp);
     }
@@ -111,7 +111,7 @@ class GeneralController extends Controller
         } catch (\Exception $e) {
             return false;
         }
-            
+
     }
     public function convertDate(){
         $date = '13-Mar 12:00 am';
@@ -121,14 +121,14 @@ class GeneralController extends Controller
     public function testQuery()
     {
         # code...
-        //get drivers loans from date - to date - distict journal_reqerds on drivers 
+        //get drivers loans from date - to date - distict journal_reqerds on drivers
         $driver = array();
-        // $allDrivers =  
+        // $allDrivers =
         // $temp;$
 
         $EfferctedDrivers = "SELECT DISTINCT journal.driverId FROM journal join drivers on journal.driverId = drivers.id join warehouse on drivers.warehouseId = warehouse.id JOIN lkp_company ON lkp_company.id = warehouse.companyId WHERE journal_date BETWEEN '2022-02-01' and '2022-02-31' and lkp_company.id = 4";
         $EfferctedDrivers = \DB::select($EfferctedDrivers);
-        
+
         // $eleuc = DB::table('journal')
         // ->join('drivers', 'journal.driverId', '=', 'drivers.id')
         // // ->join('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')
@@ -143,8 +143,8 @@ class GeneralController extends Controller
         // dd($eleuc);
         // exit;
         foreach($EfferctedDrivers as $EfferctedDriver){
-            // getting driverinfo 
-            
+            // getting driverinfo
+
             $select_driver_data = Drivers::findOrFail($EfferctedDriver->driverId);
             // $jornal_daily_load->driverIdsss = 'ss';
             //  dd($select_driver_data);
@@ -162,7 +162,7 @@ class GeneralController extends Controller
                 'internal_ID'=>$select_driver_data->id
             ];
             dd($driver_financial_summary);
-            
+
         }
         // dd($jornal_daily_loads);
     }
@@ -186,11 +186,11 @@ class GeneralController extends Controller
         curl_close($curl);
         $response = json_decode($response, true);
         $payload = $response['aaData'];
-          
+
         foreach($payload as $driver){
             dd($payload);
             $drivers = Drivers::where('job_id',$driver['id'])->get();
-            
+
             if(count($drivers)>0){
                 $drivers[0]->warehouseId = 204;
                 $drivers[0]->save();
@@ -205,7 +205,7 @@ class GeneralController extends Controller
                     $status = 5;
                 }
                 $iqamaNo = (int) filter_var($driver['username'], FILTER_SANITIZE_NUMBER_INT);
-                
+
                 if($driver['mobile'] == 'deactivated'){
                     $newDriver = Drivers::create([
                     'warehouseId'=>204,
@@ -229,10 +229,10 @@ class GeneralController extends Controller
                 }
                 echo ('the driver'.$driver['id'].'  inserted <br>');
             }
-             
+
             // dd($driver['username']);
         }
-        // 
+        //
 
         // return json_encode($response);
 
@@ -259,7 +259,7 @@ class GeneralController extends Controller
         //     "citcValidated": true,
         //     "citcApprovalStatus": "A"
         //   },
-        
+
     }
     public function sanadStore(Request $request)
     {
@@ -373,7 +373,7 @@ class GeneralController extends Controller
                     if (count($check_if_recored_exsist) > 0){
                         // dd($check_if_recored_exsist);
                     } else {
-                        //check if there is a realtion on drivers_jahiz_clearing table 
+                        //check if there is a realtion on drivers_jahiz_clearing table
                         $oprator ;$amoutAfterModifying;
                         $driver_name = Drivers::where('job_id',$data[0])->first();
                         $data[12] = $data[2]-$data[3]-$data[4]-$data[5]-$data[6]+$data[7]-$data[8]-$data[9];
@@ -381,7 +381,7 @@ class GeneralController extends Controller
                             $oprator = 1;
                             $amoutAfterModifying = $data[12];
                         }else{
-                             
+
                             $oprator = 2;
                             $amoutAfterModifying = abs($data[12]);
                         }
@@ -394,11 +394,11 @@ class GeneralController extends Controller
 
                         $date_string = $data[11];
                         $date_string =  strtotime(str_replace("/", "-", $date_string));
-                        
+
                         $new_date = date("Y-m-d  H:m:s", $date_string);
-                         
+
                         if(count($banderClearingData)>0){
-                            
+
                             $banderClearingData = $banderClearingData->first();
                             $banderClearingData->updated_at = $new_date;
                             $banderClearingData->created_at = $new_date;
@@ -452,20 +452,20 @@ class GeneralController extends Controller
                         if(count($check_if_recored_exsist)>0){
                             // dd($check_if_recored_exsist);
                         }else{
-                            
-                            //check if there is a realtion on drivers_jahiz_clearing table 
+
+                            //check if there is a realtion on drivers_jahiz_clearing table
                             $oprator ;$amoutAfterModifying;
                             $driver_name = Drivers::where('job_id',$data[0])->first();
-                            
+
                             if($data[12] > 0 ){
                                 $oprator = 1;
                                 $amoutAfterModifying = $data[12];
                             }else{
-                                 
+
                                 $oprator = 2;
                                 $amoutAfterModifying = abs($data[12]);
                             }
-                             
+
                             //check if the clearness has done by Jahiz_Amount and Jahiz_Amount_Sign and driverId
                             $banderClearingData = Drivers_jahiz_clearing::where([
                                 ['Jahiz_Amount',$amoutAfterModifying],
@@ -473,14 +473,14 @@ class GeneralController extends Controller
                                 ['driverId',$driver_name->id]
                             ])->get();
                             $drivers_jahiz_clearing_paid_id;
-    
+
                             $date_string = $data[11];
                             $date_string =  strtotime(str_replace("/", "-", $date_string));
-                            
+
                             $new_date = date("Y-m-d  H:m:s", $date_string);
-                             
+
                             if(count($banderClearingData)>0){
-                                
+
                                 $banderClearingData = $banderClearingData->first();
                                 $banderClearingData->updated_at = $new_date;
                                 $banderClearingData->created_at = $new_date;
@@ -524,12 +524,12 @@ class GeneralController extends Controller
         return redirect('DriversJahiz/import')->with('success', 'Saned Data Imported successfully');
     }
     function RemoveSpecialChar($str) {
-    
+
         // Using str_replace() function
         // to replace the word
         $res = str_replace( array( '\'', '"',
         ',',';', '<', '>' ), '', $str);
-        
+
         // Returning the result
         return $res;
     }
@@ -542,30 +542,30 @@ class GeneralController extends Controller
         $payload = Drivers::where('id',$driver_id)->get();
         if(count($payload)>0){
             $payload = $payload->first();
-             
+
             if($payload->driver_type_id ==''){
                 return "Update Driver To Countinue ";
             }else{
                 $inputsHtml = "<input type='text' disabled  class='form-control' id='Driver_name1' value='$payload->fullName'><input type='hidden' name='Driver_id' value='$payload->id'><input type='hidden' name='job_id' value='$payload->job_id'><input type='hidden' id='driver_type' value='$payload->driver_type_id'>";
-            } 
+            }
             return $inputsHtml;  //response()->json(['da_id'=>$payload->id,'job_id'=>$payload->job_id,'da_name'=>$payload->fullName],200);
         }else{
             dd('its not there ');
         }
-        
+
     }
     public function storeDocument(Request $request)
     {
         # code...
-        $journal_date = date("Y-d-m"); 
+        $journal_date = date("Y-d-m");
         // dd($request->all());
-        
+
         // $journal_date = $this->checkDate($journal_date,$request->job_id,$request->Driver_id);
         $paylaod = $this->storeJahiz_saned_Document($journal_date,$request);
-        
-        
+
+
         return $paylaod;
-        //SettledDate 2021-06-16 
+        //SettledDate 2021-06-16
     }
     public function get_date($driverId, $journal_date) {
         $journal_date = DateTime::createFromFormat('Y-d-m', $journal_date);
@@ -574,7 +574,7 @@ class GeneralController extends Controller
         $amount = 0.00;
         for ($i = 1; $i < 1000; $i++) {
             $check = DB::select("SELECT id from drivers_jahiz_clearing WHERE clearance_type IN ('Quittance', 'Bond Cancellation', 'Bandar Commission') AND `created_at` LIKE '%$journal_date%' AND `driverId` = '$driverId'");
-            if(count($check) > 0){
+            if(count($check) > 0) {
                 $journal_date = date('Y-m-d', strtotime("-1 days", strtotime($journal_date)));
                 $amount += 0.01;
             } else {
@@ -590,7 +590,7 @@ class GeneralController extends Controller
         # code...
         // dd($request->all());
         $documentTypeName = '';
-        $amount; 
+        $amount;
         $driver_type = Drivers::where('id',$request->Driver_id)->get();
         if(count($driver_type)>0){
             // dd($driver_type[0]);
@@ -600,27 +600,27 @@ class GeneralController extends Controller
             $totalAmount = $request->totalAmount;
             $clearance_type = '';
             switch ($request->documentType) {
-                case 150: 
+                case 150:
                     $documentTypeName = 'مخالصة';
                     $amount = 150;
                     $saned = 0;
                     $admin = 0;
                     $clearance_type = 'Quittance';
                     break;
-                
-                case 75: 
+
+                case 75:
                     $documentTypeName = 'الغاء سند';
                     $amount = 75;
                     $saned = 0;
                     $admin = 0;
                     $clearance_type = 'Bond Cancellation';
                     break;
-                case 'clearing': 
+                case 'clearing':
                     $documentTypeName = 'تصفية مطالبات متأخرة';
                     $amount = $bandar;
                     $clearance_type = 'Claim Clearance';
                     break;
-                case 'bandar': 
+                case 'bandar':
                     $documentTypeName = 'عمولة بندر';
                     $amount = $totalAmount;
                     $saned = 0;
@@ -635,7 +635,7 @@ class GeneralController extends Controller
                 $saned = $response[1];
             }
             // dd($journal_date);
-            
+
             if ($request->documentType != 'clearing') {
                 $Drivers_saned_settlement = Drivers_saned_settlement::create([
                     'AMP_ID'=>$request->job_id,
@@ -648,7 +648,7 @@ class GeneralController extends Controller
                     'SettledDate'=>$journal_date,
                     'NoOfDispatch'=>0,
                     'created_by_id'=>Auth::user()->id
-                ]); 
+                ]);
             }
             $mytime = Carbon::now();
             // dd($admin);
@@ -675,7 +675,7 @@ class GeneralController extends Controller
                 "created_at"=>$journal_date." ".$mytime->toTimeString(),
                 "proof_file"=>$imageName
             ]);
-            
+
             $drivers_jahiz_clearing_id = $drivers_jahiz_clearing->id;
             if($request->documentType == 'bandar' AND $driver_type[0]->driver_type_id == 2) {
                 foreach($jahiz_period_ids as $jahiz_period_id) {
@@ -730,27 +730,27 @@ class GeneralController extends Controller
         }else{
             return "Update Driver Type(Per shipment or subscription)<br>"."الرجاء تعديل نوع المندوب للمتابعة";
         }
-         
-        
+
+
     }
     public function checkDate($date,$job_id,$Driver_id)
     {
-        # code... 
+        # code...
         // dd($date);
         $date = Carbon::createFromFormat('Y-d-m', $date);
         $date_stringDate= $date->toDateString();
-        // dd($date_stringDate); 
+        // dd($date_stringDate);
         $Drivers_saned_settlement = Drivers_saned_settlement::where([
             ['AMP_ID',$job_id],
-            ['SettledDate',$date_stringDate]  
-        ])->get(); 
+            ['SettledDate',$date_stringDate]
+        ])->get();
         $sql = "SELECT * FROM `drivers_jahiz_clearing` WHERE `driverId` = ".$Driver_id." and created_at LIKE '%".$date_stringDate."%'";
-        $drivers_jahiz_clearing = DB::select($sql);  
+        $drivers_jahiz_clearing = DB::select($sql);
         // dd(count($Drivers_saned_settlement)>0 || count($drivers_jahiz_clearing)>0);
         if(count($Drivers_saned_settlement)>0 || count($drivers_jahiz_clearing)>0){
-            $date = $date->addDays(1); 
-            $date_stringDate= $date->toDateString(); 
-            $date_stringDate = Carbon::createFromFormat('Y-m-d', $date_stringDate)->format('Y-d-m'); 
+            $date = $date->addDays(1);
+            $date_stringDate= $date->toDateString();
+            $date_stringDate = Carbon::createFromFormat('Y-m-d', $date_stringDate)->format('Y-d-m');
             $res = $this->checkDate($date_stringDate,$job_id,$Driver_id);
             return $res;
         }else{
@@ -758,5 +758,5 @@ class GeneralController extends Controller
         }
     }
 
-     
+
 }

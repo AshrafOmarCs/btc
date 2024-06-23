@@ -234,12 +234,6 @@ $module = "Journal";
 
     <script>
         $(document).ready(function(){
-            $(document).ajaxStart(function() {
-                $("#loader").show();
-            });
-            $(document).ajaxStop(function() {
-                $("#loader").hide();
-            });
 
             $('#filter_updated_at').val('');
             $('#filter_created_at').val('');
