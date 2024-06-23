@@ -234,27 +234,30 @@
             // myWindow1 = window.open("{{URL("/Attachment")}}" + "/" + name + "/" + {{$Driver->id}} + ".jpg", "mywin2",
             //     "height=900,width=800,scrollbars=yes,top=1,left=1,status,resizable");
             // myWindow1.focus();
-    }
-    function delete_attach(name) {
-        var result = confirm("Are you sure Want to delete?");
-        if (result) {
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $.ajax({
-                type: 'GET',
-                url: "{{URL("/DeleteAttachment")}}" + "/" + name + "/" + {{$Driver->id}},
-                contentType: "html",
-                dataType: 'html',
-                success: function (data) {
-                    location.reload();
-                    // document.getElementById('response').innerHTML = data;
-                }
-            });
         }
-    }
+        function delete_attach(name) {
+            var result = confirm("Are you sure Want to delete?");
+            if (result) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: 'GET',
+                    url: "{{URL("/DeleteAttachment")}}" + "/" + name + "/" + {{$Driver->id}},
+                    contentType: "html",
+                    dataType: 'html',
+                    success: function (data) {
+                        location.reload();
+                        // document.getElementById('response').innerHTML = data;
+                    }
+                });
+            }
+        }
+        function closeAlert() {
+            $(".alert").alert('close');
+        }
     </script>
 </body>
 </html>
