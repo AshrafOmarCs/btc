@@ -55,11 +55,11 @@ class AutomationController extends Controller
         $jahiz_ids = $action[0]->jahiz_ids;
         $settlements = DB::select("SELECT drivers_saned_settlement.*, warehouse.warehouseName FROM drivers_saned_settlement join drivers ON drivers.job_id = drivers_saned_settlement.AMP_ID JOIN warehouse ON warehouse.id = drivers.warehouseId WHERE drivers_saned_settlement.id in ($settlement_ids) order by drivers.id");
         $jahizs = DB::select("SELECT cash FROM drivers_jahiz_clearing join drivers ON drivers_jahiz_clearing.driverId = drivers.id WHERE drivers_jahiz_clearing.id in ($jahiz_ids) order by drivers.id");
-        return view('new_porttal.Automation.getSettlement')->with('action', $action)->with('settlements', $settlements)->with('jahizs', $jahizs);
+        return view('new_porttal.Actions.getSettlement')->with('action', $action)->with('settlements', $settlements)->with('jahizs', $jahizs);
     }
     function acceptSettlement(Request $request) {
         $id = $request->id;
-        DB::update("UPDATE tbl_actions set status = 1 WHERE id = '$id'");
+        DB::update("UPDATE tbl_actions set status = 'Closed' WHERE id = '$id'");
         $action = DB::select("SELECT tbl_actions.ids, tbl_actions.jahiz_ids FROM tbl_actions WHERE tbl_actions.id = '$id'");
         $settlement_ids = explode(",", $action[0]->ids);
         $jahiz_ids = explode(",", $action[0]->jahiz_ids);

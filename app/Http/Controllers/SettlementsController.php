@@ -393,7 +393,9 @@ class SettlementsController extends Controller
                 $IDs .= $request->input('ID_' . $i) . ",";
             }
         }
-
+        if ($IDs == '') {
+            return redirect()->back()->with('error', 'No IDs provided.');
+        }
         $IDs = substr($IDs, 0, strlen($IDs) - 1);
         try {
             DB::insert("insert into journal (driverId,journal_date,debit,credit,note,journal_type_id,post_id,

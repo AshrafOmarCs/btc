@@ -18,10 +18,11 @@
         </div>
     </div>
 </div>
-@include('new_porttal.partials.delete_modal')
 @php
 $module = "BTC Properties";
 @endphp
+@include('new_porttal.partials.delete_modal')
+
 
 <div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -190,10 +191,9 @@ $module = "BTC Properties";
                                 @foreach($devices as $device)
                                 <tr>
                                     <td>{{++$no}}</td>
-                                    <td>
-                                        <center>
+                                    <td class="text-center">
                                         {{$device->user_name}}<br><br>
-                                        <a id="{{$device->user_id}}" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye-fill"></i> </a></center>
+                                        <a id="{{$device->user_id}}" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="bi bi-eye-fill"></i> </a>
                                     </td>
                                     <td>{{$device->branches}}</td>
                                     <td>#{{strtoupper($device->reference_no)}}</td>

@@ -14,6 +14,36 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\HelperFunctionsController;
 use DateTime;
 
+function get_log_table_body($payload)
+{
+    $data = [];
+    $no = 0;
+    foreach ($payload as $k=>$item) {
+        // <li>
+        //     <a id="'.$item->id.'" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view dropdown-item" href="#">View</a>
+        // </li>
+        $action = '<div class="btn-group">
+            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Action
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+            </ul>
+        </div>';
+        $data[] = [
+            'id' => ++$no,
+            'action' => $item->action,
+            'decoded_loan_ids' => $item->decoded_loan_ids,
+            'name' => $item->name,
+            'done_at' => $item->done_at,
+            'actions' => $action,
+        ];
+    }
+    return $data;
+}
 class LogsController extends Controller
 {
 
@@ -21,13 +51,59 @@ class LogsController extends Controller
     {
         $this->middleware('auth');
     }
-    public function index_old(Request $request)
-    {
-        $logs = DB::select("SELECT tbl_events_log.*, users.name from tbl_events_log join users on tbl_events_log.done_by = users.id order by done_at DESC");
-        return view('EventLogs.index')->with('logs', $logs);
-    }
 
     public function index(Request $request)
+    {
+        if (request()->ajax()) {
+            $sql = "SELECT tbl_events_log.*, users.name, JSON_UNQUOTE(tbl_events_log.loan_ids) AS decoded_loan_ids FROM tbl_events_log LEFT JOIN users ON tbl_events_log.done_by = users.id WHERE 1 = 1";
+            if (!empty($request->filter_type)) {
+                $sql .= " AND action LIKE '%" . strtoupper($request->filter_type) . "%'";
+            }
+            if (!empty($request->filter_text)) {
+                $sql .= " AND action LIKE '%" . strtoupper($request->filter_text) . "%'";
+            }
+            if (!empty($request->filter_done_at)) {
+                $filter_done_at = explode(" - ", $request->filter_done_at);
+                $sql .= " AND CAST(done_at as date) between STR_TO_DATE('$filter_done_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_done_at[1]','%d/%m/%Y')";
+            }
+
+            $payload = DB::select($sql);
+            $totalData = count($payload);
+
+            $columns = ['id', 'action', 'loan_ids', 'name', 'done_at'];
+            $limit = $request->input('length');
+            $start = $request->input('start');
+            $order = $columns[$request->input('order.0.column')];
+            $dir = $request->input('order.0.dir');
+            $search = $request->input('search.value');
+            if (!empty($search)) {
+                $search_sql = $sql . " AND (tbl_events_log.action LIKE '%$search%'
+                    OR loan_ids LIKE '%$search%'
+                    OR users.name LIKE '%$search%'
+                    OR tbl_events_log.done_at LIKE '%$search%')";
+                $filtered_payload = DB::select($search_sql);
+                $totalFiltered = count($filtered_payload);
+
+                $search_sql .= " ORDER BY tbl_events_log.id $dir LIMIT $start, $limit";
+                $payload = DB::select($search_sql);
+            } else {
+                $totalFiltered = $totalData;
+                $sql .= " ORDER BY $order $dir LIMIT $start, $limit";
+                $payload = DB::select($sql);
+            }
+            $response = array();
+            $response = get_log_table_body($payload);
+            $jsonResponse = [
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalData,
+                'recordsFiltered' => $totalFiltered,
+                'data' => $response,
+            ];
+            return response()->json($jsonResponse);
+        }
+        return view('new_porttal.EventLogs.index');
+    }
+    public function index_dd(Request $request)
     {
         $Select_db = DB::table('tbl_events_log')
         ->select('tbl_events_log.*', 'users.name', DB::raw('JSON_UNQUOTE(tbl_events_log.loan_ids) as decoded_loan_ids'))
@@ -49,31 +125,6 @@ class LogsController extends Controller
         }
 
         return view('new_porttal.EventLogs.index');
-    }
-
-    public function search(Request $request)
-    {
-        $filter_type = $request->filter_type;
-        $filter_text = $request->filter_text;
-        $filter_done_at = $request->filter_done_at;
-
-        $clause_type = $clause_text = $clause_doneAt = "";
-        if($filter_type != '') {
-            $clause_type = " AND tbl_events_log.action like '%$filter_type%'";
-        }
-        if($filter_text != '') {
-            $clause_text = " AND tbl_events_log.action like '%$filter_text%'";
-        }
-        if($filter_done_at != '') {
-            $dateParts = explode(" - ", $filter_done_at);
-            $startDate = DateTime::createFromFormat('d/m/Y', $dateParts[0])->format('Y-m-d') . " 00:00:00";
-            $endDate = DateTime::createFromFormat('d/m/Y', $dateParts[1])->format('Y-m-d') . " 23:59:59";
-            $clause_doneAt = " AND tbl_events_log.done_at between '$startDate' AND '$endDate'";
-        }
-        $logs = DB::select("SELECT tbl_events_log.*, users.name from tbl_events_log join users on tbl_events_log.done_by = users.id WHERE 1 = 1 $clause_type $clause_text $clause_doneAt order by done_at DESC");
-
-        echo get_logs_table_body($logs);
-        // echo ':::';
     }
 
     public function get(Request $request)
@@ -108,19 +159,3 @@ class LogsController extends Controller
 
 }
 
-function get_logs_table_body($logs) {
-    $no = 0;
-    $response = '';
-    foreach($logs as $log) {
-        $response .= '<tr>
-        <td>'.++$no.'</td>
-        <td>'.$log->action.'</td>
-        <td>'.$log->loan_ids.'</td>
-        <td>'.$log->name.'</td>
-        <td>'.$log->done_at.'</td>
-        <td>
-        </td>
-        </tr>';
-    }
-    return $response;
-}

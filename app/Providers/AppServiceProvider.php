@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('req_actions', function () {
-            $result = DB::select("SELECT id FROM tbl_actions where status <> 1");
+            $result = DB::select("SELECT id FROM tbl_actions where status != 'Closed'");
             return count($result);
         });
         $this->app->bind('salaries', function () {

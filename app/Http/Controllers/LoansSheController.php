@@ -78,12 +78,10 @@ function get_table_body($totalAmount, $data, $SQL_final) {
         if ($row->status_id == "3" || $row->status_id == "5")
             $action .= '&nbsp;<button id=' . $row->id . ' type="button" class="btn btn-primary btn-xs updatePaid">Paid</button>';
         $action .= '</span>';
-        if ($index == sizeof($data)) {
-            $action .= '<input type="hidden" id="total_sum" value="'.$totalAmount.'">';
-            $action .= '<input type="hidden" id="btn_final" value="'.$btn.'">';
-            $action .= '<input type="hidden" id="check_final" value="'.$check.'">';
-            $action .= '<input type="hidden" id="SQL_final" value="'.$SQL_final.'">';
-        }
+        $driverId = $row->driverId;
+        $iqama = $row->iqama;
+        $overall = DB::select("SELECT sum(credit) AS t_credit,sum(debit) AS t_debit FROM journal INNER JOIN drivers ON journal.driverId=drivers.id WHERE iqama='$iqama' AND driverId !='$driverId'");
+        $overall = round($overall[0]->t_credit - $overall[0]->t_debit);
 
         if (Auth::user()->user_type_id == 1) {
             $checkbox = '<span style="text-align: center"><input class="check_status" name="ID_' . $i . '" type="checkbox" value="' . $row->id . '"></span>';
@@ -95,6 +93,7 @@ function get_table_body($totalAmount, $data, $SQL_final) {
                 $createdby_id = '<span>'.$row->name.'</span>';
             }
             $body[] = [
+                'id' => $row->id,
                 'created_at' => $row->created_at,
                 'companyName' => $row->companyName,
                 'warehouseName' => $row->warehouseName,
@@ -114,9 +113,16 @@ function get_table_body($totalAmount, $data, $SQL_final) {
                 'createdby_id' => $createdby_id,
                 'updated_at' => $row->updated_at,
                 'action' => $action,
+                'proof_file' => $row->proof_file,
+                'export_attempt' => $row->export_attempt,
+                'driverId' => $row->driverId,
+                'account_owner_iqama_check' => $row->account_owner_iqama_check,
+                'accountNumber_check' => $row->accountNumber_check,
+                'overall' => $overall
             ];
         } else {
             $body[] = [
+                'id' => $row->id,
                 'created_at' => $row->created_at,
                 'companyName' => $row->companyName,
                 'warehouseName' => $row->warehouseName,
@@ -130,6 +136,14 @@ function get_table_body($totalAmount, $data, $SQL_final) {
                 'account_owner_iqama' => $row->account_owner_iqama,
                 'accountNumber' => $row->accountNumber,
                 'action' => $action,
+                'proof_file' => $row->proof_file,
+                'export_attempt' => $row->export_attempt,
+                'driverId' => $row->driverId,
+                'account_owner_iqama_check' => $row->account_owner_iqama_check,
+                'accountNumber_check' => $row->accountNumber_check,
+                'overall' => $overall
+
+
             ];
         }
     }
@@ -362,7 +376,7 @@ class LoansSheController extends Controller
         $lkp_user_type = DB::select('SELECT * from lkp_user_type');
 
         $Select_db = DB::table('loan')
-            ->select('loan.export_attempt', 'loan.exported_by','loan.status','loan.id as id','loan.loan_type as loan_type', 'companyName', 'loan.driverId', 'fullName', 'warehouseName', 'job_id',
+            ->select('loan.proof_file', 'loan.export_attempt', 'loan.exported_by','loan.status','loan.id as id','loan.loan_type as loan_type', 'companyName', 'loan.driverId', 'fullName', 'warehouseName', 'job_id', 'iqama',
                 DB::raw("iqama, account_owner_iqama,
                 CASE
                     WHEN
@@ -470,33 +484,40 @@ class LoansSheController extends Controller
         }
 
         if (request()->ajax()) {
-
+            $flag = false;
             if (!empty($request->filter_companyId)) {
+                $flag = true;
                 $Select_db->whereRaw('companyId in (' . implode(",", $request->filter_companyId) .')');
                 $Select_sum->whereRaw('companyId in (' . implode(",", $request->filter_companyId) .')');
             }
             if (!empty($request->filter_warehouseId)) {
+                $flag = true;
                 $Select_db->whereRaw('warehouseId in (' . implode(",", $request->filter_warehouseId) .')');
                 $Select_sum->whereRaw('warehouseId in (' . implode(",", $request->filter_warehouseId) .')');
             }
             if (!empty($request->filter_job_id)) {
+                $flag = true;
                 $Select_db->whereRaw("UPPER(job_id) LIKE '%" . strtoupper($request->filter_job_id) . "%'");
                 $Select_sum->whereRaw("UPPER(job_id) LIKE '%" . strtoupper($request->filter_job_id) . "%'");
             }
             if (!empty($request->filter_driverId)) {
+                $flag = true;
                 $Select_db->whereRaw('loan.driverId=' . $request->filter_driverId);
                 $Select_sum->whereRaw('loan.driverId=' . $request->filter_driverId);
             }
             if (!empty($request->filter_journal_date)) {
+                $flag = true;
                 $filter_journal_date = explode(" - ", $request->filter_journal_date);
                 $Select_db->whereRaw("CAST(journal_date as date) between STR_TO_DATE('$filter_journal_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_journal_date[1]','%d/%m/%Y')");
                 $Select_sum->whereRaw("CAST(journal_date as date) between STR_TO_DATE('$filter_journal_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_journal_date[1]','%d/%m/%Y')");
             }
             if (!empty($request->filter_amount)) {
+                $flag = true;
                 $Select_db->whereRaw('amount=' . $request->filter_amount);
                 $Select_sum->whereRaw('amount=' . $request->filter_amount);
             }
             if (!empty($request->filter_status_id)) {
+                $flag = true;
                 $Select_db->whereRaw('loan.status_id=' . $request->filter_status_id);
                 $Select_sum->whereRaw('loan.status_id=' . $request->filter_status_id);
             }
@@ -504,6 +525,7 @@ class LoansSheController extends Controller
             // dd($request->filter_Loan_type);
             // dd($request->all());
             if (!empty($request->filter_Loan_type)) {
+                $flag = true;
                 if($request->filter_Loan_type == 'FL'){
                     $whereIn_array = array();
                     $whereIn_array = ['fuel_loan'];
@@ -521,54 +543,100 @@ class LoansSheController extends Controller
             }
             // ashraf condition for fuel loans
             if (!empty($request->filter_note)) {
+                $flag = true;
                 $Select_db->whereRaw("UPPER(note) LIKE '%" . strtoupper($request->filter_note) . "%'");
                 $Select_sum->whereRaw("UPPER(note) LIKE '%" . strtoupper($request->filter_note) . "%'");
             }
             if (!empty($request->filter_updatedby_id)) {
+                $flag = true;
                 $Select_db->whereRaw('loan.updatedby_id=' . $request->filter_updatedby_id);
                 $Select_sum->whereRaw('loan.updatedby_id=' . $request->filter_updatedby_id);
             }
             if (!empty($request->filter_updated_usertypeid)) {
+                $flag = true;
                 $Select_db->whereRaw('updated_usertypeid=' . $request->filter_updated_usertypeid);
                 $Select_sum->whereRaw('updated_usertypeid=' . $request->filter_updated_usertypeid);
             }
             if (!empty($request->filter_created_at)) {
+                $flag = true;
                 $filter_created_at = explode(" - ", $request->filter_created_at);
                 $Select_db->whereRaw("CAST(loan.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')");
                 $Select_sum->whereRaw("CAST(loan.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')");
             }
             if (!empty($request->filter_updated_at)) {
+                $flag = true;
                 $filter_updated_at = explode(" - ", $request->filter_updated_at);
                 $Select_db->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
                 $Select_sum->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
             }
-            if (isset($_REQUEST['search']['value']) && $_REQUEST['search']['value'] <> '') {
-                $options = strtolower($_REQUEST['search']['value']);
-                $Select_sum->whereRaw("(
-                LOWER(`loan`.`created_at`) LIKE '%" . $options . "%'
-                OR LOWER(
-                    `lkp_company`.`companyName`
-                ) LIKE '%" . $options . "%'
-                OR LOWER(
-                    `warehouse`.`warehouseName`
-                ) LIKE '%" . $options . "%'
-                OR LOWER(`drivers`.`job_id`) LIKE '%" . $options . "%'
-                OR LOWER(`drivers`.`fullName`) LIKE '%" . $options . "%'
-                OR LOWER(`balance`.`per_priod`) LIKE '%" . $options . "%'
-                OR LOWER(`balance`.`cur_priod`) LIKE '%" . $options . "%'
-                OR LOWER(`loan`.`journal_date`) LIKE '%" . $options . "%'
-                OR LOWER(`loan`.`amount`) LIKE '%" . $options . "%'
-                OR LOWER(`loan`.`note`) LIKE '%" . $options . "%'
-                OR LOWER(
-                    `lkp_loan_status`.`loan_status`
-                ) LIKE '%" . $options . "%'
-                OR LOWER(`lkp_bank`.`bank_name_en`) LIKE '%" . $options . "%'
-                OR LOWER(`drivers`.`accountNumber`) LIKE '%" . $options . "%'
-                OR LOWER(`users`.`name`) LIKE '%" . $options . "%'
-                OR LOWER(`loan`.`updated_at`) LIKE '%" . $options . "%'
-                OR LOWER(`loan`.`id`) LIKE '%" . $options . "%'
-                )");
+
+            $sql = $Select_db->toSql();
+            $payload = DB::select($sql);
+            $totalData = count($payload);
+            $columns = ['id', 'created_at', 'companyName', 'warehouseName', 'job_id', 'fullName', 'balance.per_priod', 'balance.cur_priod', 'journal_date', 'journal_date', 'amount', 'note', 'loan_status', 'export_attempt', 'account_owner_iqama', 'accountNumber', 'users.name', 'loan.updated_at', 'drivers.id', 'account_owner_iqama'];
+            $limit = $request->input('length');
+            $start = $request->input('start');
+            $order = $columns[$request->input('order.0.column')];
+            $dir = $request->input('order.0.dir');
+            $search = $request->input('search.value');
+            if (!empty($search)) {
+                if ($flag == false) {
+                    $sql = $sql . " WHERE 1 = 1";
+                }
+                $sql = $sql . " AND (loan.created_at LIKE '%$search%'
+                    OR companyName LIKE '%$search%'
+                    OR warehouseName LIKE '%$search%'
+                    OR job_id LIKE '%$search%'
+                    OR fullName LIKE '%$search%'
+                    OR balance.per_priod LIKE '%$search%'
+                    OR balance.cur_priod LIKE '%$search%'
+                    OR journal_date LIKE '%$search%'
+                    OR amount LIKE '%$search%'
+                    OR note LIKE '%$search%'
+                    OR loan_status LIKE '%$search%'
+                    OR export_attempt LIKE '%$search%'
+                    OR account_owner_iqama LIKE '%$search%'
+                    OR accountNumber LIKE '%$search%'
+                    OR users.name LIKE '%$search%'
+                    OR loan.updated_at LIKE '%$search%'
+                    OR drivers.id LIKE '%$search%'
+                    )";
+                $filtered_payload = DB::select($sql);
+                $totalFiltered = count($filtered_payload);
+                $sql1 = $sql;
+                $sql .= " ORDER BY loan.id $dir LIMIT $start, $limit";
+                $payload = DB::select($sql);
+            } else {
+                $totalFiltered = $totalData;
+                $sql1 = $sql;
+                $sql .= " ORDER BY $order $dir LIMIT $start, $limit";
+                $payload = DB::select($sql);
             }
+            $totalAmount = 0;
+            foreach ($payload as $row) {
+                $totalAmount += $row->amount;
+            }
+            $responses = get_table_body($totalAmount, $payload, $sql);
+            $response = array();
+            $response = $responses[0];
+            $amount_total = $responses[1];
+            $btn = $responses[2];
+            $check = $responses[3];
+
+            // $response = get_loan_table_body($payload);
+            $jsonResponse = [
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalData,
+                'amount' => $totalAmount,
+                'SQL' => $sql1,
+                'recordsFiltered' => $totalFiltered,
+                'data' => $response,
+            ];
+            return response()->json($jsonResponse);
+            exit();
+
+
+
             $Select_sum = $Select_sum->first();
             // dd($Select_db->toSql());
             // return $Select_db->toSql();

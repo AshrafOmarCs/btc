@@ -23,23 +23,22 @@
           autocomplete="off">
         @csrf
         <input type="hidden" name="drivers_jahiz_claim_id" value="{{$Driver->drivers_jahiz_claim_id}}">
-
-        <table class="show_table" style="width:auto!important;">
-            <tr>
-                <td>
-                    <div class="input-group date">
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
+        <div class="modal-body">
+            <table>
+                <tr>
+                    <td>
+                        <div class="input-group date">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="date" class="form-control pull-right" name="claim_dt"
+                                placeholder="yyyy-mm-dd" id="claim_dt" value="{{$drivers_jahiz_claim->claim_dt}}" required>
                         </div>
-                        <input type="date" class="form-control pull-right" name="claim_dt"
-                               placeholder="yyyy-mm-dd" id="claim_dt" value="{{$drivers_jahiz_claim->claim_dt}}" required>
-                    </div>
-                </td>
-                <TH>موعد السداد</TH>
-            </tr>
-
-        </table>
-
+                    </td>
+                    <TH>موعد السداد</TH>
+                </tr>
+            </table>
+        </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
             <button class="btn btn-success" type="submit">Update</button>

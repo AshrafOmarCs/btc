@@ -22,20 +22,17 @@
     <form id="contact_form" method="POST" onsubmit="return validateForm()" action="{{ URL('/DriversClaimBagSave')}}"
           autocomplete="off">
         @csrf
-        <input type="hidden" name="drivers_jahiz_claim_id" value="{{$Driver->drivers_jahiz_claim_id}}">
+        <div class="modal-body">
+            <input type="hidden" name="drivers_jahiz_claim_id" value="{{$Driver->drivers_jahiz_claim_id}}">
+            <table>
+                <tr>
+                    <td><input type="number" class="form-control" name="bag_fee"
+                            value="{{$drivers_jahiz_claim->bag_fee}}" required></td>
+                    <TH>رسوم الشنطة</TH>
+                </tr>
 
-        <table class="show_table" style="width:auto!important;">
-
-
-            <tr>
-
-                <td><input type="text" class="form-control" name="bag_fee"
-                           value="{{$drivers_jahiz_claim->bag_fee}}" required></td>
-                <TH>رسوم الشنطة</TH>
-            </tr>
-
-        </table>
-
+            </table>
+        </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
             <button class="btn btn-success" type="submit">Update</button>

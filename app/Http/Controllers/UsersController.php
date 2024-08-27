@@ -26,6 +26,15 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function updateProfilePic(Request $request) {
+        $profile_pic = AUTH::user()->id.'.'.$request->profile_pic->extension();
+        $request->profile_pic->move(storage_path('app/public/images'), $profile_pic);
+        User::where('id', AUTH::user()->id)
+       ->update([
+            'profile_pic' => $profile_pic
+        ]);
+        return redirect()->back()->with('success', 'Profile Pic updated successfully');
+    }
     public function get_warehouses($id, $name)
     {
         $results = DB::select("SELECT lkp_company.companyName,warehouse.warehouseName,lkp_city.name_en,warehouse.id,users.allowed_warehouse_attendance FROM users_privilege JOIN warehouse ON warehouse.id=users_privilege.warehouseId JOIN lkp_company ON lkp_company.id=warehouse.companyId INNER JOIN lkp_city ON warehouse.cityId=lkp_city.id INNER JOIN users ON users_privilege.user_id=users.id WHERE users_privilege.user_id='$id' AND lkp_company.id<> 6");

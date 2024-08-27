@@ -126,7 +126,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
                     data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>

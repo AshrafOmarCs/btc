@@ -154,7 +154,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" class="btn btn-dark" id="reset" data-bs-dismiss="modal">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
                     data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
@@ -292,6 +292,11 @@ $module = "Settlement";
                         </div>
                     </div>
                     <div class="card-body">
+                        <div id="loader" style="display:none;">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
                         @if(Auth::user()->user_type_id==1)
                         <table style="width:100%">
                             <tr>
@@ -626,10 +631,11 @@ $module = "Settlement";
             });
 
             $('#reset').click(function(){
+                $('#edit_btn').hide();
                 $('#filter_companyId').val('');
                 $('#filter_warehouseId').val('');
                 $('#filter_job_id').val('');
-               $('#filter_driverId').val('');
+                $('#filter_driverId').val('');
                 $('#filter_driverId_input').val('');
                 $('#filter_journal_date').val('');
                 $('#filter_credit').val('');

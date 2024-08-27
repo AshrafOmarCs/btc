@@ -6,6 +6,7 @@ return [
     'user' => 'User',
     'supervisorsAndAreamanger' => 'Supervisors & Area Manager',
     'supervisors' => 'Supervisors',
+    'supervisor' => 'Supervisor',
     'areaManagers' => 'Area Managers',
     'users_des' => 'By using this module, you can perform CRUD operations for Bander users.',
     'super_des' => 'By using this module, you can perform CRUD operations for Supervisors/AreaManagers.',

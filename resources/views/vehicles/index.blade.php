@@ -1,39 +1,31 @@
 @extends('AdminLTE')
-@section('content')  
+@section('content')
+@section('title', 'Vehicles')
+
 <link rel="stylesheet" href="{{asset('dropAndDrag/src/style.css')}}">
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <div class="modal-header" style="background-color: #7CCBDC">
+          <h5 class="modal-title" id="exampleModalLabel">Vehicle Accessories</h5>
           <button type="button" style="margin-bottom: 16px;"  class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-         
-        <div class="modal-body">
-            <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Utility Name</th>
-                    <th scope="col">Status</th> 
-                  </tr>
-                </thead>
-                <tbody> 
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td> 
-                    </tr>  
-                </tbody>
-              </table>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
+         <form method="POST" action="{{ url('vehicles/utilities/update')}}">
+             @csrf
+            <div class="modal-body">
+                <input type="hidden" name="vehicle_id" id="vehicleId" value="">
+                <span id="utilities_div">
+
+                </span>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
       </div>
     </div>
   </div>
@@ -50,9 +42,9 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-    <form action="{{url('vehicles/update-vehicle-checkup')}}" method="post"  enctype="multipart/form-data" >     
+    <form action="{{url('vehicles/update-vehicle-checkup')}}" method="post"  enctype="multipart/form-data" >
         <div class="modal-body">
-            
+
                 @csrf
 
                 <div class="form-group">
@@ -70,53 +62,53 @@
                     <label for="exampleFormControlSelect1">Delegation Type</label>
                     <select class="form-control" required name="delegationType">
                       <option value="vehicle_receipt">Vehicle receipt</option>
-                      <option value="vehicle_return">Vehicle return</option> 
+                      <option value="vehicle_return">Vehicle return</option>
                     </select>
                   </div>
-                  <div class="form-group">  
+                  <div class="form-group">
                     <label >Left side image </label>
                     <div class="drop-zone" style="background-image: url('{{url('/images/vehicleSides/Image2.png')}}'); background-size: contain; background-repeat: no-repeat;max-width: 39%;color: #dd4b39;">
                         <span class="drop-zone__prompt">Drop vehicel's Left side image here or click to upload</span>
                         <input type="file" requried accept=".gif,.jpg,.jpeg,.png" name="left" class="drop-zone__input" style="display:none">
-                    </div>  
+                    </div>
                   </div>
-                  <div class="form-group">  
+                  <div class="form-group">
                     <label >Right side image </label>
                     <div class="drop-zone" style="background-image: url('{{url('/images/vehicleSides/Image3.png')}}'); background-size: contain; background-repeat: no-repeat;max-width: 39%;color: #dd4b39;">
                         <span class="drop-zone__prompt">Drop vehicel's Right side image here or click to upload</span>
                         <input type="file" requried accept=".gif,.jpg,.jpeg,.png"  name="right" class="drop-zone__input" style="display:none">
-                    </div>  
+                    </div>
                   </div>
 
-                  <div class="form-group">  
+                  <div class="form-group">
                     <label >Front side image </label>
                     <div class="drop-zone" style="background-image: url('{{url('/images/vehicleSides/Image4.png')}}'); background-size: contain; background-repeat: no-repeat;max-width: 39%;color: #dd4b39;">
                         <span class="drop-zone__prompt">Drop vehicel's Front side image here or click to upload</span>
                         <input type="file" requried accept=".gif,.jpg,.jpeg,.png"  name="front" class="drop-zone__input" style="display:none">
-                    </div>  
+                    </div>
                   </div>
 
-                  <div class="form-group">  
+                  <div class="form-group">
                     <label >Rear side image </label>
                     <div class="drop-zone" style="background-image: url('{{url('/images/vehicleSides/Image5.png')}}'); background-size: contain; background-repeat: no-repeat;max-width: 39%;color: #dd4b39;">
                         <span class="drop-zone__prompt">Drop vehicel's Rear side image here or click</span>
                         <input type="file" requried accept=".gif,.jpg,.jpeg,.png"  name="rear" class="drop-zone__input" style="display:none">
-                    </div>  
+                    </div>
                   </div>
 
-                  <div class="form-group">  
+                  <div class="form-group">
                     <label >Interior side image </label>
                     <div class="drop-zone" style="background-image: url('{{url('/images/vehicleSides/Image6.png')}}'); background-size: contain; background-repeat: no-repeat;max-width: 39%;color: #dd4b39;">
                         <span class="drop-zone__prompt">Drop vehicel's Interior image here or click to upload</span>
                         <input type="file" requried accept=".gif,.jpg,.jpeg,.png"  name="interior" class="drop-zone__input" style="display:none">
-                    </div>  
-                  </div>  
-              
+                    </div>
+                  </div>
+
         </div>
-        <div class="modal-footer"> 
+        <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <input type="submit" value="Confirm" class="btn btn-primary"> 
-        </div> 
+          <input type="submit" value="Confirm" class="btn btn-primary">
+        </div>
     </form>
       </div>
     </div>
@@ -137,14 +129,14 @@
             <button class="w3-bar-item w3-button" onclick="openCity('Paris')" style="border-left: #ffffff 1px solid;">Vehicle Images </button>
             <button class="w3-bar-item w3-button" onclick="openCity('Tokyo')">Summery</button>
           </div>
-          
+
         </div>
 
         <div class="modal-body">
-            
+
             <div id="London" class="city">
                 <table class="table table-striped">
-                    <tbody> 
+                    <tbody>
                         <tr>
                             <th >Plate</th>
                             <td id="plate"> </td>
@@ -157,14 +149,14 @@
                             <td id="city"> </td>
                             <th >Manufacturer</th>
                             <td id="manufacturer"></td>
-                        </tr> 
+                        </tr>
 
                         <tr>
                             <th >Manufacturer year</th>
                             <td id="manufacturer_year"></td>
                             <th >Opreater company</th>
                             <td id="opreaterCompany"></td>
-                        </tr> 
+                        </tr>
 
                         <tr>
                             <th >Serial Number</th>
@@ -173,29 +165,29 @@
                             <td id="bodyNumber"></td>
                         </tr>
 
-                        
 
-                        <tr> 
+
+                        <tr>
                             <th >free Extra Otometer</th>
                             <td id="freeExtraOtometer"></td>
                             <th >Extra Otometer rate  </th>
                             <td id="extraOtometerRate"></td>
                         </tr>
-                        
+
 
                         <tr>
                             <th >Vehicle Otometer</th>
                             <td id="Otometer"></td>
                             <th  >Vehicle accessories</th>
                             <td >
-                                <ul id="accessories"> 
-                                        
+                                <ul id="accessories">
+
                                 </ul>
                             </td>
                         </tr>
 
                         <tr>
-                            
+
                         </tr>
 
                         <tr>
@@ -203,7 +195,7 @@
                             <td id="registertion_type"></td>
                             <th >Vehicle status</th>
                             <td id="status"></td>
-                        </tr> 
+                        </tr>
                         <tr>
                             <th >Cololr</th>
                             <td id="color"></td>
@@ -213,102 +205,101 @@
                     </tbody>
                 </table>
             </div>
-              
+
             <div id="Paris" class="city" style="display:none">
-                <table style="width: 100%; margin-bottom: 15px; background-color: #a95d21; color: white;  border: 2px solid white;">
-                    <tbody>
-                        <tr>
-                            <th style="text-align: center;">Submitted by </th>
-                            <th style="text-align: center;" colspan="3" >Reviewed by </th>
-                            <th style="text-align: center;">Timestamp  </th>
-                        </tr>
-                        <tr style="text-align: center;">
-                            <td colspan="2" id="front_image_submittedBy"> </td>
-                            <td colspan="2"  id="front_image_reviedBy"></td>
-                            <td colspan="2"  id="front_image_timeStamp">Timestamp :</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!--<table style="width: 100%; margin-bottom: 15px; background-color: #a95d21; color: white;  border: 2px solid white;">-->
+                <!--    <tbody>-->
+                <!--        <tr>-->
+                <!--            <th style="text-align: center;">Submitted by </th>-->
+                <!--            <th style="text-align: center;" colspan="3" >Reviewed by </th>-->
+                <!--            <th style="text-align: center;">Timestamp  </th>-->
+                <!--        </tr>-->
+                <!--        <tr style="text-align: center;">-->
+                <!--            <td colspan="2" id="front_image_submittedBy"> </td>-->
+                <!--            <td colspan="2"  id="front_image_reviedBy"></td>-->
+                <!--            <td colspan="2"  id="front_image_timeStamp">Timestamp :</td>-->
+                <!--        </tr>-->
+                <!--    </tbody>-->
+                <!--</table>-->
                 <table class="table table-striped">
-                    <tbody> 
+                    <tbody>
                         <tr>
                             <th>Side Description</th>
                             <th colspan="3">Image</th>
-                            <th>Approvel Status</th>
-                        </tr> 
+                            <!--<th>Approvel Status</th>-->
+                        </tr>
                         <tr>
                             <th >Left side Images</th>
-                            <td colspan="3" style="text-align: center;"><a id="front_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image2.png")}}" style="max-width: 413px; max-height: 243px;" alt="LastCheckup_FrontImage" id="left_image" srcset=""> </a></td> 
-                            <td><span style="color:#dd4b39" id="left_status"> </span></td>
-                        </tr> 
+                            <td colspan="3" style="text-align: center;"><a id="front_image_a" href="#"><img src="{{asset("images/no_imag.jpg")}}" style="max-width: 413px; max-height: 243px;" alt="LastCheckup_FrontImage" id="left_image" srcset=""> </a></td>
+                            <!--<td><span style="color:#dd4b39" id="left_status"> </span></td>-->
+                        </tr>
                         <tr>
                             <th >Right side Images</th>
-                            <td colspan="3" style="text-align: center;"><a id="right_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image3.png")}}" id="right_image" style="max-width: 413px; max-height: 243px;" alt="LastCheckup_FrontImage" srcset=""></td> 
-                                <td><span style="color:#dd4b39" id="right_status"> </span></td>
-                        </tr> 
+                            <td colspan="3" style="text-align: center;"><a id="right_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image3.png")}}" id="right_image" style="max-width: 413px; max-height: 243px;" alt="LastCheckup_FrontImage" srcset=""></td>
+                                <!--<td><span style="color:#dd4b39" id="right_status"> </span></td>-->
+                        </tr>
                         <tr>
                             <th >Front side Images</th>
-                            <td colspan="3" style="text-align: center;"><a id="front_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image4.png")}}"  id="front_image" style="max-width: 413px; max-height: 243px;" alt="LastCheckup_RearImage" srcset=""></td> 
-                                <td><span style="color:#dd4b39" id="front_status"> </span></td>
+                            <td colspan="3" style="text-align: center;"><a id="front_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image4.png")}}"  id="front_image" style="max-width: 413px; max-height: 243px;" alt="LastCheckup_RearImage" srcset=""></td>
+                                <!--<td><span style="color:#dd4b39" id="front_status"> </span></td>-->
                         </tr>
                         <tr>
                             <th >Rear side Images</th>
-                            <td colspan="3" style="text-align: center;"><a id="rear_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image5.png")}}" id="rear_image" style="max-width: 413px; max-height: 243px;"  alt="LastCheckup_LeftImage" srcset=""></td> 
-                            <td><span style="color:#dd4b39" id="rear_status"> </span></td>
+                            <td colspan="3" style="text-align: center;"><a id="rear_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image5.png")}}" id="rear_image" style="max-width: 413px; max-height: 243px;"  alt="LastCheckup_LeftImage" srcset=""></td>
+                            <!--<td><span style="color:#dd4b39" id="rear_status"> </span></td>-->
                         </tr>
                         <tr>
                             <th >Interior Images</th>
-                            <td colspan="3" style="text-align: center;"><a id="drivingWheel_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image6.png")}}" id="drivingWheel_image" style="max-width: 413px; max-height: 243px;"  alt="LastCheckup_RightImage" srcset=""></td> 
-                            <td><span style="color:#dd4b39" id="Interior_status"> </span></td>
+                            <td colspan="3" style="text-align: center;"><a id="drivingWheel_image_a" href="#"><img src="{{asset("/images/vehicleSides/Image6.png")}}" id="drivingWheel_image" style="max-width: 413px; max-height: 243px;"  alt="LastCheckup_RightImage" srcset=""></td>
+                            <!--<td><span style="color:#dd4b39" id="Interior_status"> </span></td>-->
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <div id="Tokyo" class="city" style="display:none">
-            <table class="table table-striped">
-                <tbody> 
-                    <tr>
-                        <th >Vehicle registration expire in </th>
-                        <td >10 Day/s</td> 
-                    </tr> 
-                    <tr>
-                        <th >Valid delegation expires in </th>
-                        <td >118 Day/s</td> 
-                    </tr> 
-                    <tr>
-                        <th >Delegations quntity</th>
-                        <td >12</td> 
-                    </tr> 
-                    <tr>
-                        <th>Utilities quntity</th>
-                        <td colspan="3"> 3 </td> 
-                    </tr> 
-                    <tr>
-                        <th>Woking Days</th>
-                        <td colspan="3"> 165 Day </td> 
-                    </tr>
-                    <tr>
-                        <th >Maintenance days </th>
-                        <td colspan="3"> 6 </td> 
-                    </tr>
-                    <tr>
-                        <th >Maintenance costs </th>
-                        <td colspan="3">
-                            <ul>
-                                <li>1820.00 SAR On 23-02-2023 at <span style="color:blue">AlJaber Maintenance</span></li>
-                                <li>280.00 SAR On 18-12-2022 at <span style="color:blue">Abdulrahman Sinayaa</span></li>
-                            </ul>
-                        </td> 
-                    </tr>
-                    
-                </tbody>
-            </table>
-            </div> 
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th >Vehicle registration expire in </th>
+                            <td >10 Day/s</td>
+                        </tr>
+                        <tr>
+                            <th >Valid delegation expires in </th>
+                            <td >118 Day/s</td>
+                        </tr>
+                        <tr>
+                            <th >Delegations quntity</th>
+                            <td >12</td>
+                        </tr>
+                        <tr>
+                            <th>Utilities quntity</th>
+                            <td colspan="3"> 3 </td>
+                        </tr>
+                        <tr>
+                            <th>Woking Days</th>
+                            <td colspan="3"> 165 Day </td>
+                        </tr>
+                        <tr>
+                            <th >Maintenance days </th>
+                            <td colspan="3"> 6 </td>
+                        </tr>
+                        <tr>
+                            <th >Maintenance costs </th>
+                            <td colspan="3">
+                                <ul>
+                                    <li>1820.00 SAR On 23-02-2023 at <span style="color:blue">AlJaber Maintenance</span></li>
+                                    <li>280.00 SAR On 18-12-2022 at <span style="color:blue">Abdulrahman Sinayaa</span></li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <!--<button type="button" class="btn btn-primary">Save changes</button>-->
         </div>
       </div>
     </div>
@@ -331,7 +322,12 @@
         </div>
         @if(Auth::user()->user_type_id==1||session('Session_DriversCarrefour')=='yes')
             <div style="float:right;">
-                <h2><a href="javascript:add();" class="btn btn-sm btn-info "><i class="fa fa-plus"></i> Bulk Upload</a>
+                <h2 style="display: flex">
+                    <a href="javascript:add();" class="btn btn-sm btn-info "><i class="fa fa-plus"></i> Bulk Upload</a>
+                    <form method="POST" action="{{ url('Vehicles/download_vehicles_report')}}">
+                        @csrf
+                        &nbsp;<button type="submit" style="padding: 10px" class="btn btn-sm btn-info "> <i class="fa fa-download"></i> Download Report</button>
+                    </form>
                 </h2>
             </div>
         @endif
@@ -359,205 +355,98 @@
             <div id="box-body" class="box-body table-responsive">
                 <table class="table m-0 search_table" style="width:10px!important;">
                     <tr>
-                        <TH>Company Name</TH>
+                        <TH>Company</TH>
                         <td>
-                            <select name="filter_companyId" id="filter_companyId" onchange="WarehouseName()"
-                                    class="form-control" style="width:200px;" required>
+                            <select name="filter_companyId" id="filter_companyId"
+                                    class="form-control" style="width:200px;" onchange="WarehouseName()">
+                                <option value="">Select Company</option>
+                                @foreach($companies as $company)
+                                <option value="{{$company->id}}">{{$company->companyName}}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <TH>Warehouse</TH>
+                        <td>
+                            <select id="filter_warehouseId" name="filter_warehouseId" class="form-control" style="width:200px;">
                                 <option value=""></option>
-                                
                             </select>
-                        </td> 
-                        <TH>Warehouse Name</TH>
+                        </td>
+                        <TH>City</TH>
                         <td>
-                            <select id="filter_warehouseId" name="filter_warehouseId" class="form-control"
-                                    style="width:180px;"> 
-                                <option value=""></option> 
+                            <select name="filter_cityId" id="filter_cityId"
+                                    class="form-control" style="width:200px;" required>
+                                <option value="">Select City</option>
+                                @foreach($cities as $city)
+                                <option value="{{$city->id}}">{{$city->name_en}}</option>
+                                @endforeach
                             </select>
                         </td>
-                        <TH>full Name</TH>
-                        <td><input type="text" class="form-control" style="width:180px;" id="filter_fullName"
-                                   name="filter_fullName"></td>
-                    </tr>
-                    <tr> 
-                        <TH>Mobile</TH>
-                        <td><input type="text" class="form-control" name="filter_mobileNumber" id="filter_mobileNumber">
-                        </td>
-                        <TH>Iqama</TH>
-                        <td><input type="text" class="form-control" name="filter_iqama" id="filter_iqama"></td>
-
-                        <TH>Email ID</TH>
-                        <td><input type="text" class="form-control" name="filter_email_id" id="filter_email_id"></td>
-
-                    </tr>
-
-                    <tr>
-                        <TH>Job ID</TH>
-                        <td><input type="text" class="form-control" name="filter_job_id" id="filter_job_id"></td>
-
                         <TH>Status</TH>
                         <td>
-                            <select name="filter_status_id" id="filter_status_id" onchange="status()"
-                                    class="form-control">
-                                <option value=""></option>
-
-                               
+                            <select id="filter_status" name="filter_status" class="form-control"
+                                    style="width:200px;">
+                                <option value="">Select Status</option>
+                                <option value="availabe">Available</option>
+                                <option value="damaged">damaged</option>
+                                <option value="delegeted">Delegated</option>
+                                <option value="maintenance">Maintenance</option>
                             </select>
                         </td>
-                        <TH>Account_Owner_Iqama</TH>
-                        <td><input type="text" class="form-control" name="filter_account_owner_iqama"
-                                   id="filter_account_owner_iqama">
-                        </td>
-
                     </tr>
-
 
                     <tr>
-
-                        <TH>accountNumber</TH>
-                        <td><input type="text" class="form-control" name="filter_accountNumber"
-                                   id="filter_accountNumber"></td>
-                        <TH>Driver Type</TH>
+                        <TH>Vehicle Operator</TH>
                         <td>
-                            <select name="filter_driver_type_id" id="filter_driver_type_id" class="form-control">
-                                <option value=""></option>
-                                
+                            <select name="filter_vehicle_opreaterId" id="filter_vehicle_opreaterId"
+                                    class="form-control" style="width:200px;" required>
+                                <option value="">Select Vehicle Operator</option>
+                                @foreach($operators as $operator)
+                                <option value="{{$operator->id}}">{{$operator->name_en}}</option>
+                                @endforeach
                             </select>
                         </td>
-
-                        <TH>Bander Car</TH>
+                        <TH>Vehicle Manufecturer</TH>
                         <td>
-                            <select name="filter_bander_car_id" id="filter_bander_car_id" class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
+                            <select name="filter_vehicle_manufecturerId" id="filter_vehicle_manufecturerId"
+                                    class="form-control" style="width:200px;" required>
+                                <option value="">Select Vehicle Manufecturer</option>
+                                @foreach($manufacturers as $manufacturer)
+                                <option value="{{$manufacturer->id}}">{{$manufacturer->name_en}}</option>
+                                @endforeach
                             </select>
                         </td>
-                    </tr>
-                    <tr>
-                        <TH>Image Identity</TH>
+                        <TH>Vehicle Model</TH>
                         <td>
-                            <select name="filter_Image_Identity" id="filter_Image_Identity" class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
+                            <select name="filter_modelId" id="filter_modelId"
+                                    class="form-control" style="width:200px;" required>
+                                <option value="">Select Vehicle Model</option>
+                                @foreach($models as $model)
+                                <option value="{{$model->id}}">{{$model->name_en}} {{$model->manufacturer_date}}</option>
+                                @endforeach
                             </select>
                         </td>
-                        <TH>Image Passport</TH>
-                        <td>
-                            <select name="filter_Image_Passport" id="filter_Image_Passport" class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
+                        <TH>Vehicle Otometer</TH>
+                        <td style="display: flex">
+                            <select name="filter_otometer" id="filter_otometer"
+                                    class="form-control" style="width:100px;" required>
+                                <option value="">Select Otometer</option>
+                                <option value="=">=</option>
+                                <option value=">">></option>
+                                <option value="<"><</option>
                             </select>
-                        </td>
-                        <TH>Image DrivingLicence</TH>
-                        <td>
-                            <select name="filter_Image_DrivingLicence" id="filter_Image_DrivingLicence"
-                                    class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
-                            </select>
+                            <input type="number" name="filter_otometer_val" id="filter_otometer_val"
+                                    class="form-control" style="width:100px;" value="" required>
                         </td>
 
                     </tr>
-                    <tr>
-                        <TH>Image VehiclesRegistration</TH>
-                        <td>
-                            <select name="filter_Image_VehiclesRegistration" id="filter_Image_VehiclesRegistration"
-                                    class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
-                            </select>
-                        </td>
-                        <TH>Image JobContract</TH>
-                        <td>
-                            <select name="filter_Image_JobContract" id="filter_Image_JobContract" class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
-                            </select>
-                        </td>
-                        <TH>Image PromissoryNote</TH>
-                        <td>
-                            <select name="filter_Image_PromissoryNote" id="filter_Image_PromissoryNote"
-                                    class="form-control"
-                                    style="width:180px;">
-                                <option value=""></option>
-                                <option value="1">Yes</option>
-                                <option value="2">No</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <TH>Created_At</TH>
-                        <td>
-                            <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input class="form-control" name="filter_created_at" id="filter_created_at" type="text">
-                                <script>
-                                    $(function () {
-                                        $('input[name="filter_created_at"]').daterangepicker({
-                                            autoUpdateInput: false,
-                                            opens: 'left',
-                                            locale: {
-                                                cancelLabel: 'Cancel'
-                                            }
-                                        });
-                                        $('input[name="filter_created_at"]').on('apply.daterangepicker', function (ev, picker) {
-                                            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-                                        });
-                                        $('input[name="filter_created_at"]').on('cancel.daterangepicker', function (ev, picker) {
-                                            $(this).val('');
-                                        });
-                                    });
 
-                                </script>
-                            </div>
-                        </td>
-                        <TH>Updated_At</TH>
-                        <td>
-                            <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input class="form-control" id="filter_updated_at" name="filter_updated_at" type="text">
-                                <script>
-                                    $(function () {
-                                        $('input[name="filter_updated_at"]').daterangepicker({
-                                            autoUpdateInput: false,
-                                            opens: 'left',
-                                            locale: {
-                                                cancelLabel: 'Cancel'
-                                            }
-                                        });
-                                        $('input[name="filter_updated_at"]').on('apply.daterangepicker', function (ev, picker) {
-                                            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-                                        });
-                                        $('input[name="filter_updated_at"]').on('cancel.daterangepicker', function (ev, picker) {
-                                            $(this).val('');
-                                        });
-                                    });
-
-                                </script>
-                            </div>
-                        </td>
-                    </tr>
                 </table>
                 <div class="card-footer" align="center">
                     <button type="button" name="filter" id="filter" class="btn btn-sm btn-info">Filter</button>
-
-                    <button type="button" name="reset" id="reset" class="btn btn-sm btn-default">Reset</button>
+                    <button type="button" name="reset" id="reset" class="btn btn-sm btn-default" onclick="reset_records()">Reset</button>
                 </div>
+                <span id="reminder" style="color: red; display: none">The following vehicles are delegated vehicles because you have selected the city</span>
+
             </div>
             <!-- /.box-body -->
         </div>
@@ -567,230 +456,381 @@
 
 
     <div class="table-responsive" style="width: 100%;">
+        <div class="row form-group" id="pre_loader" style="display: none;">
+            <div class="col-md-12  text-center">
+                <img src="https://btcdmins.com/storage/images/preloader.gif" loading="lazy">
+            </div>
+        </div>
 
+        <div style="width:100%;clear:both;" class="response">
+
+        </div>
         <table id="customer_data" class="table table-bordered table-striped table-responsive">
             <thead>
-                <TH>#</TH>
-                <TH >Plate</TH>
-                <TH >City</TH>
-                <th scope="col">Manufacturer </th>
-                <th scope="col">Vehicle model </th> 
-                <th scope="col">Opreater company  </th> 
-                <th scope="col">Cololr </th>
-                <th scope="col">Vehicel registeration Expiry </th> 
-                <th scope="col">Vehicle accessories </th>  
-                <th scope="col">Vehicle Otometer </th> 
-                <th scope="col">Registertion type </th>  
-                <th scope="col">Vehicle status </th>   
-                <th scope="col">Additional data </th>
-                <th scope="col">Operations</th>  
-            </thead>
-            <tbody>
-                @foreach ($payload as $k=>$item) 
-                    <tr>
-                        <td scope="col">#</td>
-                        <td scope="col">{{$item->plate}} </td>
-                        <td scope="col">{{$item->name_en}} </td>
-                        <td scope="col">{{$item->vehicle_manufacturer}} </td>
-                        <td scope="col">{{$item->vehicle_model}}, {{$item->manufacturer_date}}</td> 
-                        <td scope="col">{{$item->vehicle_opreator}} </td> 
-                        <td scope="col">{{$item->color}} </td> 
-                        <td scope="col">{{$item->vehicle_registration_expire_date}} </td>  
-                        <td scope="col"> 
-                            <ul>
-                               {!!$item->vehicle_utilities_html!!}
-                            </ul> 
-                        </td>  
-                        <td scope="col">{{$item->otometer}} </td> 
-                        <td scope="col"> {{$item->registertion_type}} </td> 
-                        <td scope="col"> {{$item->current_status}}  </td>   
-                        <td scope="col"> Additional data </td>
-                        <td scope="col">
-                            <a onclick="vehicleExtraInfo({{$k}})"  data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>
-                            <a id="" data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"> <i class="fa fa-pencil"></i> </a>
-                            <a data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view"><i class="fa fa-history" aria-hidden="true"></i> </a> 
-                            <!-- only if new added vehicle  -->
-                             
-                            @if($item->checkup_id == '')
-                                <a onclick="addVehicleCheckup({{$k}})" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view"><i class="fa fa-check-square" aria-hidden="true"></i> </a>
-                            @else
-                                @php   
-                                    if($item->vehicle_utilities =='')  {
-                                        echo '<a href="'.url('/Vehicles/vehicle-checkup-utilities/'.$item->checkup_id).'" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view">Set vehicle accessories </a>';
-                                    }else{
-                                         
-                                    }
-                                @endphp 
-                               
-                            @endif
-                            <!-- only if new added vehicle  --> 
-                        </td>
-                        
-                    </tr>
-                @endforeach
-            </tbody>
-            <thead class="thead-dark">
                 <tr>
-                    <th scope="col" style="border-left: 1px solid #08c !important;">#</th>
-                    <th scope="col">Plate </th>
-                    <th scope="col">City </th> 
-                    <th scope="col">Manufacturer </th>
-                    <th scope="col">Vehicle model </th> 
-                    <th scope="col">Opreater company  </th> 
-                    <th scope="col">Cololr </th>
-                    <th scope="col">Vehicel registeration Expiry </th> 
-                    <th scope="col">Vehicle accessories </th>  
-                    <th scope="col">Vehicle Otometer </th> 
-                    <th scope="col">Registertion type </th>  
-                    <th scope="col">Vehicle status </th>   
-                    <th scope="col">Additional data </th>
-                    <th scope="col">Operations</th>
+                    <TH>#</TH>
+                    <TH >Plate</TH>
+                    <th >Fuel Price </th>
+                    <th >Oil Price </th>
+                    <th >Expiry Days </th>
+                    <TH >City</TH>
+                    <th >Manufacturer </th>
+                    <th >Vehicle model </th>
+                    <th >Opreater company  </th>
+                    <th >Cololr </th>
+                    <th >Vehicel registeration Expiry </th>
+                    <th >Vehicle accessories </th>
+                    <th >Vehicle Otometer </th>
+                    <th >Registertion type </th>
+                    <th >Vehicle status </th>
+                    <th >Delegation status </th>
+                    <th >Maintenance Location </th>
+                    <th >Additional data </th>
+                    <th >Operations</th>
                 </tr>
-        </thead>
+            </thead>
+
+            <tfoot class="thead-dark">
+                <tr>
+                    <th  style="border-left: 1px solid #08c !important;">#</th>
+                    <th >Plate </th>
+                    <th >Fuel Price </th>
+                    <th >Oil Price </th>
+                    <th >Expiry Days </th>
+                    <th >City </th>
+                    <th >Manufacturer </th>
+                    <th >Vehicle model </th>
+                    <th >Opreater company  </th>
+                    <th >Cololr </th>
+                    <th >Vehicel registeration Expiry </th>
+                    <th >Vehicle accessories </th>
+                    <th >Vehicle Otometer </th>
+                    <th >Registertion type </th>
+                    <th >Vehicle status </th>
+                    <th >Delegation status </th>
+                    <th >Maintenance Location </th>
+                    <th >Additional data </th>
+                    <th >Operations</th>
+                </tr>
+            </tfoot>
         </table>
+
+    </div>
+
+
+    <div id="edit_modal" class="w3-modal" style="padding-top: 10px !important;">
+        <div class="w3-modal-content w3-card-8 w3-animate-zoom" style="max-width:850px">
+            <div class="w3-center"><br>
+                <span onclick="document.getElementById('edit_modal').style.display='none'"
+                    class="w3-closebtn w3-hover-red w3-container w3-padding-8 w3-display-topright"
+                    title="Close Modal">&times;
+                </span>
+            </div>
+
+            <div style="width:100%;clear:both;" id="response">
+
+            </div>
+        </div>
     </div>
 
     <script>
-        var payload = <?php echo json_encode($payload);?>;
-        function vehicleExtraInfo(index){
-            
-            console.log(payload[index].images)
-            if(payload[index].images != ''){
-                $('#left_image').attr("src", payload[index].images['left_image']);
-                $('#right_image').attr("src", payload[index].images['right_image']);
-                $('#rear_image').attr("src", payload[index].images['rear_image']);
-                $('#front_image').attr("src", payload[index].images['front_image']);
-                $('#drivingWheel_image').attr("src", payload[index].images['drivingWheel_image']);
+        function WarehouseName() {
 
-                $('#front_image_a').attr("href", payload[index].images['drivingWheel_image']);
-                $('#right_image_a').attr("href", payload[index].images['drivingWheel_image']);
-                $('#front_image_a').attr("href", payload[index].images['drivingWheel_image']);
-                $('#rear_image_a').attr("href", payload[index].images['drivingWheel_image']);
-                $('#drivingWheel_image_a').attr("href", payload[index].images['drivingWheel_image']); 
+            var filter_companyId = document.getElementById('filter_companyId').value;
 
-                // front_image_submittedBy
-                $("#front_image_submittedBy").empty();
-                $('#front_image_submittedBy').append(payload[index].images['uploadedBy']); 
-                $("#front_image_reviedBy").empty();
-                $('#front_image_reviedBy').text(payload[index].images['ApprovedBy'])
-                $("#front_image_timeStamp").empty();
-                $('#front_image_timeStamp').text(payload[index].images['created_at'])
+            $('#filter_warehouseId').empty();
 
-                if(payload[index].images['left_image_approve'] == null){ 
-                    $("#left_status").empty();
-                    $('#left_status').append('NULL')
-                }else{
-                    $("#left_status").empty();
-                    $('#left_status').append('Approved')
-                }
-                if(payload[index].images['right_image_approve'] == null){ 
-                    $("#right_status").empty();
-                    $('#right_status').append('NULL')
-                } else{
-                    $("#right_status").empty();
-                    $('#right_status').append('Approved')
-                }
-                if(payload[index].images['front_image_approve'] == null){
-                    console.log('left_image_approve NULL');
-                    $("#front_status").empty();
-                    $('#front_status').append('NULL')
-                } else{
-                    $("#front_status").empty();
-                    $('#front_status').append('Approved')
-                }
-                if(payload[index].images['rear_image_approve'] == null){
-                    console.log('left_image_approve NULL');
-                    $("#rear_status").empty();
-                    $('#rear_status').append('NULL')
-                } else{
-                    $("#rear_status").empty();
-                    $('#rear_status').append('Approved')
-                }
-                if(payload[index].images['interior_image_approve'] == null){ 
-                    $("#Interior_status").empty();
-                    $('#Interior_status').append('NULL')
-                } else{
-                    $("#Interior_status").empty();
-                    $('#Interior_status').append('Approved')
-                }
+            $.getJSON("getWarehouseName" + "/" + filter_companyId, function (json) {
+                $('#filter_warehouseId').empty();
+                $('#filter_warehouseId').append($('<option>').text("Select ....").attr('value', ''));
+                $.each(json, function (i, obj) {
+                    $('#filter_warehouseId').append($('<option>').text(obj.name).attr('value', obj.id));
+                });
+            });
 
-            }else{
-                $('#front_image_reviedBy').text('NONE')
-                $('#front_image_submittedBy').text('NONE')
-                $('#front_image_timeStamp').text('NONE')
-                $('#left_image').attr("src", '/images/vehicleSides/Image2.png');
-                $('#right_image').attr("src", '/images/vehicleSides/Image3.png');
-                $('#rear_image').attr("src", '/images/vehicleSides/Image5.png');
-                $('#front_image').attr("src",'/images/vehicleSides/Image4.png');
-                $('#drivingWheel_image').attr("src", '/images/vehicleSides/Image6.png');
+        }
+        function vehicleEdit(vehicle_id) {
+            document.getElementById('edit_modal').style.display = 'block';
+            document.getElementById('response').innerHTML = loader;
+            $.ajax({
+                type: 'POST',
+                url: "{{url('Vehicles/EditVehicle')}}",
+                cache: false,
+                data: {
+                    vehicle_id: vehicle_id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function (data) {
+                    document.getElementById('response').innerHTML = data;
+                }
+            });
+        }
+        function validateUpdateForm() {
 
-                $('#front_image_a').attr("href", '#');
-                $('#right_image_a').attr("href", '#');
-                $('#front_image_a').attr("href", '#');
-                $('#rear_image_a').attr("href", '#');
-                $('#drivingWheel_image_a').attr("href", '#'); 
+            if ($("#edit_current_status").val() == '' ) {
+                alert('Please select current status')
+                return false;
+            }
+            if ($("#edit_plate").val() == '' ) {
+                alert('Please Enter Plate Number')
+                return false;
             }
 
-            $('#plate').text(payload[index].plate);
-            $('#city').text(payload[index].name_en);
-            $('#manufacturer').text(payload[index].vehicle_manufacturer);
-            $('#manufacturer_year').text(payload[index].manufacturer_date);
-            $('#vehcile_model').text(payload[index].vehicle_model);
-            $('#opreaterCompany').text(payload[index].vehicle_opreator);
-            $('#srNo').text(payload[index].SNno);
-            $('#bodyNumber').text(payload[index].body_number);
-            if(payload[index].freeExtraOtometer == null){
-                $('#freeExtraOtometer').text('NULL');
+            $("#edit_city_id").prop("disabled", false);
+
+            var postData = $("#contact_form").serializeArray();
+            document.getElementById('response').innerHTML = loader;
+            $.ajax({
+               url: "{{url('Vehicles/UpdateVehicle')}}",
+                type: "POST",
+                cache: false,
+                data: postData,
+                success: function (data) {
+                    document.getElementById('response').innerHTML = data;
+                },
+                error: function (jqXHR, status, error) {
+                    document.getElementById('response').innerHTML = "<br><br><br>" + error + "<br><br><br>";
+                    alert(status + ": " + error);
+                }
+            });
+
+
+            return false;
+        }
+        function vehicleExtraInfo(images, plate, name_en, vehicle_manufacturer, manufacturer_date, vehicle_model, vehicle_opreator, SNno, body_number, freeExtraOtometer, extraOtometerRate, extraOtometerCharge, otometer, registertion_type, current_status, color, vehicle_registration_expire_date, vehicle_utilities_html='')
+        {
+            if(images != '') {
+                let img_arr = images.split(":::");
+                $('#left_image').attr("src", img_arr[0]);
+                $('#right_image').attr("src", img_arr[1]);
+                $('#rear_image').attr("src", img_arr[2]);
+                $('#front_image').attr("src", img_arr[3]);
+                $('#drivingWheel_image').attr("src", img_arr[4]);
+            } else {
+                $('#left_image').attr("src", '/images/no_imag.jpg');
+                $('#right_image').attr("src", '/images/no_imag.jpg');
+                $('#rear_image').attr("src", '/images/no_imag.jpg');
+                $('#front_image').attr("src",'/images/no_imag.jpg');
+                $('#drivingWheel_image').attr("src", '/images/no_imag.jpg');
+            }
+            // if(images != ''){
+            //     $('#left_image').attr("src", images['left_image']);
+            //     $('#right_image').attr("src", images['right_image']);
+            //     $('#rear_image').attr("src", images['rear_image']);
+            //     $('#front_image').attr("src", front_image);
+            //     $('#drivingWheel_image').attr("src", images['drivingWheel_image']);
+
+            //     $('#front_image_a').attr("href", images['drivingWheel_image']);
+            //     $('#right_image_a').attr("href", images['drivingWheel_image']);
+            //     $('#rear_image_a').attr("href", images['drivingWheel_image']);
+            //     $('#drivingWheel_image_a').attr("href", images['drivingWheel_image']);
+
+            //     // front_image_submittedBy
+            //     $("#front_image_submittedBy").empty();
+            //     $('#front_image_submittedBy').append(images['uploadedBy']);
+            //     $("#front_image_reviedBy").empty();
+            //     $('#front_image_reviedBy').text(images['ApprovedBy'])
+            //     $("#front_image_timeStamp").empty();
+            //     $('#front_image_timeStamp').text(images['created_at'])
+
+            //     if(images['left_image_approve'] == null){
+            //             $("#left_status").empty();
+            //             $('#left_status').append('NULL')
+            //     }else{
+            //             $("#left_status").empty();
+            //             $('#left_status').append('Approved')
+            //     }
+            //     if(images['right_image_approve'] == null){
+            //             $("#right_status").empty();
+            //             $('#right_status').append('NULL')
+            //     } else{
+            //             $("#right_status").empty();
+            //             $('#right_status').append('Approved')
+            //     }
+            //     if(images['front_image_approve'] == null){
+            //             console.log('left_image_approve NULL');
+            //             $("#front_status").empty();
+            //             $('#front_status').append('NULL')
+            //     } else{
+            //             $("#front_status").empty();
+            //             $('#front_status').append('Approved')
+            //     }
+            //     if(images['rear_image_approve'] == null){
+            //             console.log('left_image_approve NULL');
+            //             $("#rear_status").empty();
+            //             $('#rear_status').append('NULL')
+            //     } else{
+            //             $("#rear_status").empty();
+            //             $('#rear_status').append('Approved')
+            //     }
+            //     if(images['interior_image_approve'] == null){
+            //             $("#Interior_status").empty();
+            //             $('#Interior_status').append('NULL')
+            //     } else{
+            //             $("#Interior_status").empty();
+            //             $('#Interior_status').append('Approved')
+            //     }
+
+            // } else {
+            //     $('#front_image_reviedBy').text('NONE');
+            //     $('#front_image_submittedBy').text('NONE');
+            //     $('#front_image_timeStamp').text('NONE');
+
+            //     $('#front_image_a').attr("href", '#');
+            //     $('#right_image_a').attr("href", '#');
+            //     $('#front_image_a').attr("href", '#');
+            //     $('#rear_image_a').attr("href", '#');
+            //     $('#drivingWheel_image_a').attr("href", '#');
+            // }
+
+            $('#plate').text(plate);
+            $('#city').text(name_en);
+            $('#manufacturer').text(vehicle_manufacturer);
+            $('#manufacturer_year').text(manufacturer_date);
+            $('#vehcile_model').text(vehicle_model);
+            $('#opreaterCompany').text(vehicle_opreator);
+            $('#srNo').text(SNno);
+            $('#bodyNumber').text(body_number);
+            if(freeExtraOtometer == null){
+                    $('#freeExtraOtometer').text('NULL');
             }else{
-                $('#freeExtraOtometer').text(payload[index].freeExtraOtometer);
+                    $('#freeExtraOtometer').text(freeExtraOtometer);
             }
 
-            if(payload[index].extraOtometerRate == null){
+            if(extraOtometerRate == null){
                 $('#extraOtometerRate').text('NULL');
             }else{
-                $('#extraOtometerRate').text(payload[index].extraOtometerCharge);
-            } 
-            $('#Otometer').text(payload[index].otometer+ ' k/m');
-            $('#registertion_type').text(payload[index].registertion_type);
-            $('#status').text(payload[index].current_status);
-            $('#color').text(payload[index].color);
-            $('#vehicle_registration_expire_date').text(payload[index].vehicle_registration_expire_date);
+                $('#extraOtometerRate').text(extraOtometerCharge);
+            }
+            $('#Otometer').text(otometer+ ' k/m');
+            $('#registertion_type').text(registertion_type);
+            $('#status').text(current_status);
+            $('#color').text(color);
+            $('#vehicle_registration_expire_date').text(vehicle_registration_expire_date);
             $("#accessories").empty();
-            $('#accessories').append(payload[index].vehicle_utilities_html); 
+            $('#accessories').append(vehicle_utilities_html);
             $('#VehicleExtraDataModal').modal('toggle');
         }
-        function addVehicleCheckup(index) {
-            // selectedVehicle
-            console.log(payload[index])
-            var selectedVehicle = payload[index].vehicle_manufacturer+','+payload[index].vehicle_model+'('+payload[index].manufacturer_date+'), '+payload[index].plate;
+
+        function addVehicleCheckup(vehicle_id, vehicle_manufacturer, vehicle_model, manufacturer_date, plate, SNno) {
+            var selectedVehicle = vehicle_manufacturer+','+vehicle_model+'('+manufacturer_date+'), '+plate;
             $('#selectedVehicle').val(selectedVehicle)
-            $('#vehicle_id').val(payload[index].vehicle_id)
-            $('#serialNumber').val(payload[index].SNno)
+            $('#vehicle_id').val(vehicle_id)
+            $('#serialNumber').val(SNno)
             $('#CreateCheckupModal').modal('toggle');
         }
-        function editAccessories(index){ 
+
+
+        function editAccessories(index){
             $('#VehicleExtraDataModal').modal('hide');
             sendPost(index);
-            console.log(payload[index]);
+            $('#vehicleId').val(index);
             $('#exampleModal').modal('toggle');
-            alert(index);
+            // alert(index);
         }
-        function addAccessories(index){
-            console.log(payload[index].vehicle_id);
-            $('#exampleModal').modal('toggle');
-            alert(index);
-        }
-        $(document).ready( function () {
-            $('#customer_data').DataTable();
+        $(document).ready(function () {
+            fill_datatable();
+            function fill_datatable(filter_companyId = '', filter_warehouseId = '', filter_cityId = '', filter_status = '', filter_vehicle_opreaterId = '', filter_vehicle_manufecturerId = '', filter_modelId = '', filter_otometer = '', filter_otometer_val = '') {
+                $('#pre_loader').show();
+                var dataTable = $('#customer_data').DataTable({
+                lengthMenu: [[10, 25, 50, 100, 10000], [10, 25, 50, 100, "All"]],
+                processing: true,
+                serverSide: true,
+                // paging: false,
+                // pageLength: 10,
+                order: [1, 'asc'],
+                ajax: {
+                    url: "{{ route('Vehicles/Search') }}",
+                    data: {
+                        filter_companyId: filter_companyId,
+                        filter_warehouseId: filter_warehouseId,
+                        filter_cityId: filter_cityId,
+                        filter_status: filter_status,
+                        filter_vehicle_opreaterId: filter_vehicle_opreaterId,
+                        filter_vehicle_manufecturerId: filter_vehicle_manufecturerId,
+                        filter_modelId: filter_modelId,
+                        filter_otometer: filter_otometer,
+                        filter_otometer_value: filter_otometer_val,
+                    }
+                },
+                columns: [
+                    { data: 'no', name: 'vehicle_id', orderable: false },
+                    {
+                        data: 'plate',
+                        name: 'plate',
+                        "render": function (data, type, row, meta) {
+                            let numbersPart = row.plate.match(/\d+/g).join('');
+                            let remainingPart = row.plate.replace(numbersPart, '').trim();
+                            return `<table><tr><td style='border: 1px solid;'>`+numbersPart+`</td><td style='border: 1px solid;'>`+remainingPart+`</td></tr></table>`;
+                        }
+                    },
+                    { data: 'fuel_data', name: 'fuel_data', orderable: false },
+                    { data: 'oil_data', name: 'oil_data', orderable: false },
+                    { data: 'vehicle_expiry_date', name: 'vehicle_expiry_date' },
+                    { data: 'name_en', name: 'name_en' },
+                    { data: 'vehicle_manufacturer', name: 'vehicle_manufacturer' },
+                    { data: 'vehicle_model', name: 'vehicle_model' },
+                    { data: 'vehicle_opreator', name: 'vehicle_opreator' },
+                    { data: 'color', name: 'color' },
+                    { data: 'vehicle_registration_expire_date', name: 'vehicle_registration_expire_date' },
+                    { data: 'vehicle_utilities_html', name: 'vehicle_utilities_html', orderable: false },
+                    { data: 'otometer', name: 'otometer' },
+                    { data: 'registertion_type', name: 'registertion_type' },
+                    { data: 'current_status', name: 'current_status' },
+                    { data: 'delegation_status', name: 'delegation_status' },
+
+                    { data: 'maintenance_location', name: 'maintenance_location' },
+                    { data: 'response1', name: 'response1', orderable: false },
+                    { data: 'response2', name: 'response2', orderable: false },
+
+                    ],
+                });
+                $('#pre_loader').hide();
+            }
+            $('#filter').click(function () {
+                var filter_companyId = filter_warehouseId = filter_cityId = filter_status = filter_vehicle_opreaterId = filter_vehicle_manufecturerId = filter_modelId = filter_otometer = filter_otometer_val = '';
+                filter_companyId = $('#filter_companyId').val();
+                filter_warehouseId = $('#filter_warehouseId').val();
+                filter_cityId = $('#filter_cityId').val();
+                filter_status = $('#filter_status').val();
+                filter_vehicle_opreaterId = $('#filter_vehicle_opreaterId').val();
+                filter_vehicle_manufecturerId = $('#filter_vehicle_manufecturerId').val();
+                filter_modelId = $('#filter_modelId').val();
+                filter_otometer = $('#filter_otometer').val();
+                filter_otometer_val = $('#filter_otometer_val').val();
+                $('#customer_data').DataTable().destroy();
+                if(filter_companyId > 0)
+                    $('#reminder').show();
+                else
+                    $('#reminder').hide();
+                fill_datatable(filter_companyId, filter_warehouseId, filter_cityId, filter_status, filter_vehicle_opreaterId, filter_vehicle_manufecturerId, filter_modelId, filter_otometer, filter_otometer_val)
+
+
+            });
+
         });
+
         function sendPost(index){
             $.ajax({
                     type: 'post',
                     url: "{{URL('/vehicles/utilities')}}",
                     headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
-                    data:{"_token": "{{ csrf_token() }}",'vehcile_id':payload[index].vehicle_id}, 
+                    data:{"_token": "{{ csrf_token() }}",'vehcile_id': index},
                     success: function (data) {
-                         console.log(data);
+                        $('#utilities_div').html(data);
+                        // $('#ac_condition').val(data[0].utlity_condition);
+                        // $('#radio_condition').val(data[1].utlity_condition);
+                        // $('#interioirScreen_condition').val(data[2].utlity_condition);
+                        // $('#speedoMeter_condition').val(data[3].utlity_condition);
+                        // $('#interioirUpholstery_condition').val(data[4].utlity_condition);
+                        // $('#spareTireEquipment_condition').val(data[5].utlity_condition);
+                        // $('#wheels_condition').val(data[6].utlity_condition);
+                        // $('#spareWheel_condition').val(data[7].utlity_condition);
+                        // $('#fistAidKit_condition').val(data[8].utlity_condition);
+                        // $('#key_condition').val(data[9].utlity_condition);
+                        // $('#fistExtinguisher_condition').val(data[10].utlity_condition);
+                        // $('#availabilityofTriangle_condition').val(data[11].utlity_condition);
+
                     }
                 });
         }
@@ -802,6 +842,60 @@
             }
             document.getElementById(cityName).style.display = "block";
         }
+
+        function confirmSearch(){
+            // $('#pre_loader').show();
+            var filter_companyId = filter_warehouseId = filter_cityId = filter_status = filter_vehicle_opreaterId = filter_vehicle_manufecturerId = filter_modelId = filter_otometer = filter_otometer_val = '';
+            filter_companyId = $('#filter_companyId').val();
+            filter_warehouseId = $('#filter_warehouseId').val();
+            filter_cityId = $('#filter_cityId').val();
+            filter_status = $('#filter_status').val();
+            filter_vehicle_opreaterId = $('#filter_vehicle_opreaterId').val();
+            filter_vehicle_manufecturerId = $('#filter_vehicle_manufecturerId').val();
+            filter_modelId = $('#filter_modelId').val();
+            filter_otometer = $('#filter_otometer').val();
+            filter_otometer_val = $('#filter_otometer_val').val();
+            $('#customer_data').DataTable().destroy();
+
+            fill_datatable(filter_companyId, filter_warehouseId, filter_cityId, filter_status, filter_vehicle_opreaterId, filter_vehicle_manufecturerId, filter_modelId, filter_otometer, filter_otometer_val)
+        }
+        function reset_records() {
+            $('#filter_companyId').val('');
+            $('#filter_warehouseId').val('');
+            $('#filter_cityId').val('');
+            $('#filter_status').val('');
+            $('#filter_vehicle_opreaterId').val('');
+            $('#filter_vehicle_manufecturerId').val('');
+            $('#filter_modelId').val('');
+            $('#filter_operatorId').val('');
+            $('#filter_otometer').val('');
+            $('#filter_otometer_val').val('');
+
+        }
+        function change_rent_type_text(value) {
+            if(value == '0') {
+                $('.individual_div').show();
+                $('.company_div').hide();
+                $('#rent_company_id').val('');
+            } else if(value == '1') {
+                $('.individual_div').hide();
+                $('.company_div').show();
+                $('#rent_individual').val('');
+            }
+        }
+        function show_rent(value) {
+            if(value == '5') {
+                $('.rent_div').show();
+            } else {
+                $('.rent_div').hide();
+                $("input[name='rent_type'][value='0']").prop('checked', false);
+                $("input[name='rent_type'][value='1']").prop('checked', false);
+                // $('#rent_type').val('');
+                $('#rent_individual').val('');
+                $('#rent_company_id').val('');
+
+            }
+        }
     </script>
-    <script src="{{asset('dropAndDrag/src/script.js')}}"></script> 
+    <script src="{{asset('dropAndDrag/src/script.js')}}"></script>
 @endsection

@@ -120,7 +120,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal" id="reset">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
                     data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
@@ -211,7 +211,7 @@ $array = [
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">{{__('users.user')}} </h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('users.supervisor')}} </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <span id="response">
@@ -227,7 +227,7 @@ $array = [
     <div class="modal-dialog ">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">{{__('users.user')}}</h5>
+                <h5 class="modal-title" id="staticBackdropLabel">{{__('users.supervisor')}}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form class="w3-container" action="" method="POST" id="delete_form">
@@ -300,6 +300,11 @@ $array = [
 
                 </div>
                 <div class="card-body">
+                    <div id="loader" style="display:none;">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table id="customer_data" class="table table-bordered">
                             <thead>
@@ -338,9 +343,10 @@ $array = [
     <script src="{{asset('assets/js/main.js')}}"></script>
     <script>
         $(document).ready(function () {
-            var supervisors = areamanager = 0;
+
             fill_datatable();
             function fill_datatable(filter_user_type = '', filter_user_name = '', filter_phone = '', filter_email = '', filter_identityNo = '', filter_role_name = '', filter_status = '', filter_created_at = '', filter_updated_at = '') {
+                var supervisors = areamanager = 0;
                 var dataTable = $('#customer_data').DataTable({
                     responsive: true,
                     processing: true,
@@ -620,6 +626,19 @@ $array = [
                     alert('Select filter option');
                 }
             });
+            $('#reset').click(function () {
+                $('#filter_user_name').val('');
+                $('#filter_phone').val('');
+                $('#filter_email').val('');
+                $('#filter_identityNo').val('');
+                $('#filter_user_type').val('');
+                $('#filter_role_name').val('');
+                $('#filter_status').val('');
+                $('#filter_created_at').val('');
+                $('#filter_updated_at').val('');
+                $('#customer_data').DataTable().destroy();
+                fill_datatable();
+            });
         });
 
         function add() {
@@ -710,75 +729,6 @@ $array = [
         }
     }
 
-    function selectOption(args, name) {
-        $('#forwardBtn').removeClass('disabled');
-        $('#reverseBtn').addClass('disabled');
-
-        var option_id = 'option' + args;
-        var optionElement = document.getElementById(option_id);
-        if (!optionElement) {
-            console.error('Element not found:', option_id);
-            return;
-        }
-        if (optionElement.classList.contains('active')) {
-            optionElement.classList.remove('active');
-            selected = selected.filter(item => item.name !== name);
-        } else {
-            optionElement.classList.add('active');
-            selected.push({ id: args, name: name });
-        }
-    }
-    function selectOptionSecond(args, name) {
-        $('#forwardBtn').addClass('disabled');
-        $('#reverseBtn').removeClass('disabled');
-
-        var option_id = 'option_' + args;
-        var optionElement = document.getElementById(option_id);
-        if (!optionElement) {
-            console.error('Element not found:', option_id);
-            return;
-        }
-        if (optionElement.classList.contains('active')) {
-            optionElement.classList.remove('active');
-            selected = selected.filter(item => item.name !== name);
-        } else {
-            optionElement.classList.add('active');
-            selected.push({ id: args, name: name });
-        }
-    }
-
-    function pushSelected() {
-        $('#totalSelected').html(selected.length);
-        let html = '';
-        selected.forEach(element => {
-            let id = element['id'];
-
-            $('#option'+id).hide();
-            let name = element['name'];
-            html += `<li class="list-group-item active unselect_options"  id="option_`+id+`" onclick="selectOptionSecond('`+id+`', '`+name+`')" style="cursor: pointer;">`+name+`</li>`;
-        });
-        if (html != '') {
-            $('#exportExcelBtn').prop('disabled', false);
-            $('.secondList').show();
-            $('#secondListContent').html(html);
-        } else {
-            $('#exportExcelBtn').prop('disabled', true);
-            $('.secondList').hide();
-            $('#secondListContent').html('');
-        }
-    }
-    function popSelected() {
-        $('#totalSelected').html(selected.length);
-        $('.select_options').removeClass('active');
-        $('.select_options').show();
-        $('.unselect_options').hide();
-
-        selected.forEach(element => {
-            $('#option'+element['id']).addClass('active');
-            $('#option'+element['id']).hide();
-            $('#option_'+element['id']).show();
-        });
-    }
     // Export Excel button click event
     $('#exportExcelBtn').click(function() {
         var table = $('#customer_data').DataTable();
@@ -797,7 +747,11 @@ $array = [
             // }
         });
         var rowCount = table.rows().count();
-        var exportData = [selectedColumns.map(columnId => $('#' + columnId).siblings('label').text())];
+        var headerRow = selected.map(obj => {
+            var label = obj['name'];
+            return label ? label : '';
+        });
+        var exportData = [headerRow];
         var rowCount = table.rows().count();
         for (var i = 0; i < rowCount; i++) {
             var rowData = [];

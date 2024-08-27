@@ -141,7 +141,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal" id="reset">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
                     data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
@@ -279,6 +279,11 @@ $module = "User";
 
                 </div>
                 <div class="card-body">
+                    <div id="loader" style="display:none;">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table id="customer_data" class="table table-bordered">
                             <thead>
@@ -582,6 +587,19 @@ $module = "User";
                     alert('Select filter option');
                 }
             });
+            $('#reset').click(function () {
+                $('#filter_user_name').val('');
+                $('#filter_phone').val('');
+                $('#filter_email').val('');
+                $('#filter_identityNo').val('');
+                $('#filter_user_type').val('');
+                $('#filter_role_name').val('');
+                $('#filter_status').val('');
+                $('#filter_created_at').val('');
+                $('#filter_updated_at').val('');
+                $('#customer_data').DataTable().destroy();
+                fill_datatable();
+            });
         });
 
         function add() {
@@ -600,11 +618,9 @@ $module = "User";
         }
         function validateForm() {
             //alert($("#contact_form").serializeArray());
-
             //e.preventDefault();
             //document.getElementById('response').innerHTML = loader;
             //$('#edit_modal').modal('toggle');
-
             var postData = $("#contact_form").serializeArray();
             //alert(postData);
             var formURL = $("#contact_form").attr("action");
@@ -616,17 +632,46 @@ $module = "User";
                 data: postData,
                 success: function (data) {
                     document.getElementById('response').innerHTML = data;
-
-
                 },
                 error: function (jqXHR, status, error) {
                     document.getElementById('response').innerHTML ="<br><br><br>"+error+"<br><br><br>";
                     alert(status + ": " + error);
                 }
             });
-
-
             return false;
+        }
+
+        function check_uncheck() {
+            selected = [];
+            var all_array = @json($array);
+            $('#forwardBtn').removeClass('disabled');
+            $('#reverseBtn').addClass('disabled');
+            if ($('#select_all').prop('checked')) {
+                $(".select_options").addClass("active");
+                let i = 0;
+                all_array.forEach(element => {
+                    selected.push({ id: i, name: element });
+                    i++;
+                });
+            } else {
+                $(".select_options").removeClass("active");
+            }
+        }
+        function check_uncheckSecond() {
+            selected = [];
+            $('#forwardBtn').addClass('disabled');
+            $('#reverseBtn').removeClass('disabled');
+            var second_array = @json($array);
+            if ($('#select_all_second').prop('checked')) {
+                $(".unselect_options").removeClass("active");
+            } else {
+                let i = 0;
+                second_array.forEach(element => {
+                    selected.push({ id: i, name: element });
+                    i++;
+                });
+                $(".unselect_options").addClass("active");
+            }
         }
 
     // Export Excel button click event
@@ -648,12 +693,12 @@ $module = "User";
         });
         var rowCount = table.rows().count();
         var rowCount = table.rows().count();
-            var headerRow = selected.map(column => {
-                var label = $('#' + column.id).siblings('label').text();
-                return label ? label : column.name;
-            });
+        var headerRow = selected.map(obj => {
+            var label = obj['name'];
+            return label ? label : '';
+        });
 
-            var exportData = [headerRow];
+        var exportData = [headerRow];
         var rowCount = table.rows().count();
         for (var i = 0; i < rowCount; i++) {
             var rowData = [];

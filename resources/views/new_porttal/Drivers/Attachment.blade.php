@@ -62,7 +62,11 @@
                                         }
                                     ?>
                                 </label>
-                                <input type="file" accept=".jpg" id="Image_Identity" name="Image_Identity" class="dropify" data-height="150" />
+                                <input type="file" accept=".jpg" id="Image_Identity" name="Image_Identity" class="dropify" data-height="150"
+                                    <?php if(isset($drivers_attachments->Image_Identity) && $drivers_attachments->Image_Identity == '1'){?>
+                                        data-default-file='{{asset("/Attachment/Image_Identity/".$Driver->id.".jpg")}}'
+                                    <?php } ?>
+                                />
                             </div>
                         </div>
                     </div>
@@ -91,7 +95,11 @@
                                         }
                                     ?>
                                 </label>
-                                <input type="file" accept=".jpg" id="Image_Passport" name="Image_Passport" class="dropify" data-height="150" />
+                                <input type="file" accept=".jpg" id="Image_Passport" name="Image_Passport" class="dropify" data-height="150"
+                                <?php if(isset($drivers_attachments->Image_Passport) && $drivers_attachments->Image_Passport == '1'){?>
+                                    data-default-file='{{asset("/Attachment/Image_Passport/".$Driver->id.".jpg")}}'
+                                <?php } ?>
+                                />
                             </div>
                         </div>
                     </div>
@@ -119,7 +127,11 @@
                                         }
                                     ?>
                                 </label>
-                                <input type="file" accept=".jpg" id="Image_DrivingLicence" name="Image_DrivingLicence" class="dropify" data-height="150" />
+                                <input type="file" accept=".jpg" id="Image_DrivingLicence" name="Image_DrivingLicence" class="dropify" data-height="150"
+                                    <?php if(isset($drivers_attachments->Image_DrivingLicence) && $drivers_attachments->Image_DrivingLicence == '1'){?>
+                                        data-default-file='{{asset("/Attachment/Image_DrivingLicence/".$Driver->id.".jpg")}}'
+                                    <?php } ?>
+                                />
                             </div>
                         </div>
                     </div>
@@ -147,7 +159,11 @@
                                         }
                                     ?>
                                 </label>
-                                <input type="file" accept=".jpg" id="Image_VehiclesRegistration" name="Image_VehiclesRegistration" class="dropify" data-height="150" />
+                                <input type="file" accept=".jpg" id="Image_VehiclesRegistration" name="Image_VehiclesRegistration" class="dropify" data-height="150"
+                                <?php if(isset($drivers_attachments->Image_VehiclesRegistration) && $drivers_attachments->Image_VehiclesRegistration == '1'){?>
+                                    data-default-file='{{asset("/Attachment/Image_VehiclesRegistration/".$Driver->id.".jpg")}}'
+                                <?php } ?>
+                                />
                             </div>
                         </div>
                     </div>
@@ -175,7 +191,11 @@
                                         }
                                     ?>
                                 </label>
-                                <input type="file" accept=".jpg" id="Image_JobContract" name="Image_JobContract" class="dropify" data-height="150" />
+                                <input type="file" accept=".jpg" id="Image_JobContract" name="Image_JobContract" class="dropify" data-height="150"
+                                <?php if(isset($drivers_attachments->Image_JobContract) && $drivers_attachments->Image_JobContract == '1'){?>
+                                    data-default-file='{{asset("/Attachment/Image_JobContract/".$Driver->id.".jpg")}}'
+                                <?php } ?>
+                                />
                             </div>
                         </div>
                     </div>
@@ -203,7 +223,11 @@
                                         }
                                     ?>
                                 </label>
-                                <input type="file" accept=".jpg" id="Image_PromissoryNote" name="Image_PromissoryNote" class="dropify" data-height="150" />
+                                <input type="file" accept=".jpg" id="Image_PromissoryNote" name="Image_PromissoryNote" class="dropify" data-height="150"
+                                <?php if(isset($drivers_attachments->Image_PromissoryNote) && $drivers_attachments->Image_PromissoryNote == '1'){?>
+                                    data-default-file='{{asset("/Attachment/Image_PromissoryNote/".$Driver->id.".jpg")}}'
+                                <?php } ?>
+                                />
                             </div>
                         </div>
                     </div>

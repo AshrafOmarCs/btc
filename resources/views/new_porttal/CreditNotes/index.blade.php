@@ -154,7 +154,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" class="btn btn-dark" id="reset" data-bs-dismiss="modal">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
                     data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
@@ -273,33 +273,42 @@ $module = "CreditNote";
                 <div class="card-title">Credit Notes</div>
             </div>
             <!-- Card start -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title" style="font-size: 16px;"></div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="custom-btn-group">
-                                <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
-                                {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
-                                <button type="button" class="btn btn-info" class="btn btn-info" type="button" onclick="add()"></i>Add New CreditNote</button>
-
+            <form method="POST" action="{{ URL('/CreditNotesPost')}}">
+                @csrf
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="font-size: 16px;"></div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="custom-btn-group">
+                                    <button type="button" class="btn btn-light" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
+                                    {{-- <button type="button" class="btn btn-success" class="btn btn-info" data-bs-toggle="modal" type="button" onclick="export_excel()" data-bs-target="#ExportExcel"></i>{{__('drivers.ExportExcel')}}</button> --}}
+                                    <button type="button" class="btn btn-info" class="btn btn-info" type="button" onclick="add()"></i>Add New CreditNote</button>
+                                    @if(Auth::user()->user_type_id==1)
+                                        <button type="submit" name="filter" class="btn btn-sm btn-info">Post To Journal</button>
+                                        <button type="submit" name="delete" value="delete" class="btn btn-sm btn-danger">Delete</button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                </div>
-                <div class="card-body">
-                    @if(Auth::user()->user_type_id==1)
-                    <table style="width:100%">
-                        <tr>
-                            <td align=right>
-                                <input class="flat-red" type="checkbox" name="select-all" id="select-all"/>&nbsp;&nbsp;Select All
-                            </td>
-                        </tr>
-                    </table>
-                    @endif
-                    <form method="POST" action="{{ URL('/CreditNotesPost')}}">
-                        @csrf
+                    </div>
+                    <div class="card-body">
+                        <div id="loader" style="display:none;">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                        @if(Auth::user()->user_type_id==1)
+                        <table style="width:100%">
+                            <tr>
+                                <td align=right>
+                                    <input class="flat-red" type="checkbox" name="select-all" id="select-all"/>&nbsp;&nbsp;Select All
+                                </td>
+                            </tr>
+                        </table>
+                        @endif
+
                         <div class="table-responsive">
                             <table id="customer_data" class="table table-bordered">
                                 <thead>
@@ -346,14 +355,9 @@ $module = "CreditNote";
                                 </tfoot>
                             </table>
                         </div>
-                        @if(Auth::user()->user_type_id==1)
-                        <center>
-                            <button type="submit" name="filter" class="btn btn-sm btn-info" id="filter">Post To Journal</button>
-                        </center>
-                        @endif
-                    </form>
+                    </div>
                 </div>
-            </div>
+            </form>
             <!-- Card end -->
         </div>
         <!-- Card end -->
@@ -573,7 +577,6 @@ $module = "CreditNote";
 
             $('#customer_data tbody').on('click', '.view', function (e) {
                 e.preventDefault();
-                // document.getElementById('response').innerHTML = loader;
                 $('#edit_modal').modal('toggle');
 
                 var id = $(this).attr('id');
@@ -591,7 +594,6 @@ $module = "CreditNote";
             });
             $('#customer_data tbody').on('click', '.edit', function (e) {
                 e.preventDefault();
-                // document.getElementById('response').innerHTML = loader;
                 $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
@@ -666,6 +668,7 @@ $module = "CreditNote";
             });
 
             $('#reset').click(function () {
+                $('#edit_btn').hide();
                 $('#filter_companyId').val('');
                 $('#filter_warehouseId').val('');
                 $('#filter_job_id').val('');
@@ -679,7 +682,6 @@ $module = "CreditNote";
                 $('#filter_updated_at').val('');
                 $('#filter_post').val('');
 
-
                 $('#customer_data').DataTable().destroy();
                 fill_datatable();
             });
@@ -688,7 +690,7 @@ $module = "CreditNote";
         });
 
         function driver_window() {
-            myWindow1 = window.open("{{URL("/DriverWindow")}}", "",
+            myWindow1 = window.open("{{URL("/New-Portal/DriverWindow")}}", "",
                 "height=650,width=1000,scrollbars=yes,top=1,left=1,status,resizable");
         }
 
@@ -700,15 +702,12 @@ $module = "CreditNote";
                 contentType: "html",
                 dataType: 'html',
                 success: function (data) {
-
                     document.getElementById('response').innerHTML = data;
-
                 }
             });
         }
 
         function add() {
-            // document.getElementById('response').innerHTML = loader;
             $('#edit_modal').modal('toggle');
             $.ajax({
                 type: 'GET',
@@ -716,14 +715,12 @@ $module = "CreditNote";
                 contentType: "html",
                 dataType: 'html',
                 success: function (data) {
-
                     document.getElementById('response').innerHTML = data;
                 }
             });
         }
 
         function WarehouseName() {
-
             var filter_companyId = document.getElementById('filter_companyId').value;
             if (filter_companyId == "")
                 $('#filter_warehouseId').empty();

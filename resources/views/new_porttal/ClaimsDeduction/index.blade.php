@@ -57,7 +57,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal" onclick="reset_records()">{{__('drivers.Close')}}</button>
+                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal" onclick="reset_records()">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
                     data-bs-dismiss="modal" id="filter" onclick="confirmSearch()">{{__('drivers.Search')}}</button>
             </div>
@@ -328,8 +328,43 @@ $module = "Driver Claim";
             $('#filter_companyId').val('');
             $('#filter_warehouseId').html('');
             $('#filter_period').val('');
+            $('#total_amount').html('');
+            $('#edit_btn').hide();
+            $('#customer_data').DataTable().clear();
+            $('#customer_data').DataTable().rows.add('').draw();
         }
-
+        function check_uncheck() {
+            selected = [];
+            var all_array = @json($array);
+            $('#forwardBtn').removeClass('disabled');
+            $('#reverseBtn').addClass('disabled');
+            if ($('#select_all').prop('checked')) {
+                $(".select_options").addClass("active");
+                let i = 0;
+                all_array.forEach(element => {
+                    selected.push({ id: i, name: element });
+                    i++;
+                });
+            } else {
+                $(".select_options").removeClass("active");
+            }
+        }
+        function check_uncheckSecond() {
+            selected = [];
+            $('#forwardBtn').addClass('disabled');
+            $('#reverseBtn').removeClass('disabled');
+            var second_array = @json($array);
+            if ($('#select_all_second').prop('checked')) {
+                $(".unselect_options").removeClass("active");
+            } else {
+                let i = 0;
+                second_array.forEach(element => {
+                    selected.push({ id: i, name: element });
+                    i++;
+                });
+                $(".unselect_options").addClass("active");
+            }
+        }
         // Export Excel button click event
         $('#exportExcelBtn').click(function() {
             var table = $('#customer_data').DataTable();
@@ -347,9 +382,9 @@ $module = "Driver Claim";
                 // }
             });
             var rowCount = table.rows().count();
-            var headerRow = selected.map(column => {
-                var label = $('#' + column.id).siblings('label').text();
-                return label ? label : column.name;
+            var headerRow = selected.map(obj => {
+                var label = obj['name'];
+                return label ? label : '';
             });
 
             var exportData = [headerRow];

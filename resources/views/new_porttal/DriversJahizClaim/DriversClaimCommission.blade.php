@@ -20,22 +20,18 @@
 @include('pages.messages2')
 <center>
     <form id="contact_form" method="POST" onsubmit="return validateForm()" action="{{ URL('/DriversClaimCommissionSave')}}"
-          autocomplete="off">
+        autocomplete="off">
         @csrf
         <input type="hidden" name="drivers_jahiz_claim_id" value="{{$Driver->drivers_jahiz_claim_id}}">
-
-        <table class="show_table" style="width:auto!important;">
-
-
-            <tr>
-
-                <td><input type="text" class="form-control" name="Bander_Commission"
-                           value="{{$drivers_jahiz_claim->Bander_Commission}}" required></td>
-                <TH>عمولة بندر</TH>
-            </tr>
-
-        </table>
-
+        <div class="modal-body">
+            <table>
+                <tr>
+                    <td><input type="text" class="form-control" name="Bander_Commission"
+                            value="{{$drivers_jahiz_claim->Bander_Commission}}" required></td>
+                    <TH>عمولة بندر</TH>
+                </tr>
+            </table>
+        </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
             <button class="btn btn-success" type="submit">Update</button>

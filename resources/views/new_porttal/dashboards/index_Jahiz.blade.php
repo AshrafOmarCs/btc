@@ -390,7 +390,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal" id="reset">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
                     data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
@@ -1317,7 +1317,7 @@ $module = "Driver";
             });
 
             $('#reset').click(function () {
-
+                $('#edit_btn').hide();
                 $('#filter_warehouseId').val('');
                 $('#filter_fullName').val('');
                 $('#filter_mobileNumber').val('');
@@ -1339,8 +1339,6 @@ $module = "Driver";
                 $('#filter_Image_VehiclesRegistration').val('');
                 $('#filter_Image_JobContract').val('');
                 $('#filter_Image_PromissoryNote').val('');
-
-
                 $('#customer_data').DataTable().destroy();
                 fill_datatable();
             });
@@ -1625,13 +1623,43 @@ $module = "Driver";
             $('#create_da_from').hide();
         }
     }
-
+    function check_uncheck() {
+        selected = [];
+        var all_array = @json($array);
+        $('#forwardBtn').removeClass('disabled');
+        $('#reverseBtn').addClass('disabled');
+        if ($('#select_all').prop('checked')) {
+            $(".select_options").addClass("active");
+            let i = 0;
+            all_array.forEach(element => {
+                selected.push({ id: i, name: element });
+                i++;
+            });
+        } else {
+            $(".select_options").removeClass("active");
+        }
+    }
+    function check_uncheckSecond() {
+        selected = [];
+        $('#forwardBtn').addClass('disabled');
+        $('#reverseBtn').removeClass('disabled');
+        var second_array = @json($array);
+        if ($('#select_all_second').prop('checked')) {
+            $(".unselect_options").removeClass("active");
+        } else {
+            let i = 0;
+            second_array.forEach(element => {
+                selected.push({ id: i, name: element });
+                i++;
+            });
+            $(".unselect_options").addClass("active");
+        }
+    }
     // Export Excel button click event
     $('#exportExcelBtn').click(function() {
         var table = $('#customer_data').DataTable();
         $('#ExportExcel').modal('hide');
         var selectedColumns = [];
-        console.log(selected);
         selected.forEach(element => {
             // if (element['id'] == 7) {
             //     let id  = element['id'] + 2;
@@ -1644,8 +1672,8 @@ $module = "Driver";
             // }
         });
         var rowCount = table.rows().count();
-        var headerRow = selectedColumns.map(columnId => {
-            var label = $('#' + columnId).siblings('label').text();
+        var headerRow = selected.map(obj => {
+            var label = obj['name'];
             return label ? label : '';
         });
         var exportData = [headerRow];

@@ -416,41 +416,43 @@ class CreditNotesController extends Controller
         if (empty($IDs)) {
             return redirect()->back()->with('error', 'No IDs provided.');
         }
+        // Insert into journal table
+        DB::beginTransaction();
+        if (isset($request->delete)) {
+            DB::delete("DELETE FROM creditnotes WHERE id IN (" . implode(',', array_fill(0, count($IDs), '?')) . ")", $IDs);
+        } else {
+            try {
+                DB::insert("
+                    INSERT INTO journal (
+                        driverId, journal_date, debit, credit, note, journal_type_id, post_id,
+                        createdby_id, updatedby_id, created_at, updated_at
+                    )
+                    SELECT
+                        driverId, journal_date, amount, NULL, note, 3, id, ?, ?, ?, ?
+                    FROM creditnotes
+                    WHERE creditnotes.id IN (" . implode(',', array_fill(0, count($IDs), '?')) . ")
+                ", array_merge(
+                    [Auth::user()->id, Auth::user()->id, date("Y-m-d H:i:s"), date("Y-m-d H:i:s")],
+                    $IDs
+                ));
 
-        try {
-            // Insert into journal table
-            DB::beginTransaction();
+            } catch (\Illuminate\Database\QueryException $e) {
+                DB::rollback();
+                return redirect()->back()->with('error', $e->getPrevious()->getMessage());
+            }
 
-            DB::insert("
-                INSERT INTO journal (
-                    driverId, journal_date, debit, credit, note, journal_type_id, post_id,
-                    createdby_id, updatedby_id, created_at, updated_at
-                )
-                SELECT
-                    driverId, journal_date, amount, NULL, note, 3, id, ?, ?, ?, ?
-                FROM creditnotes
-                WHERE creditnotes.id IN (" . implode(',', array_fill(0, count($IDs), '?')) . ")
-            ", array_merge(
-                [Auth::user()->id, Auth::user()->id, date("Y-m-d H:i:s"), date("Y-m-d H:i:s")],
-                $IDs
-            ));
-
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollback();
-            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
-        }
-
-        try {
-            // Update creditnotes table
-            DB::update("
-                UPDATE creditnotes
-                JOIN journal ON (creditnotes.id = journal.post_id AND journal.journal_type_id = 3)
-                SET creditnotes.journal_id = journal.id
-                WHERE creditnotes.id IN (" . implode(',', array_fill(0, count($IDs), '?')) . ")
-            ", $IDs);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollback();
-            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
+            try {
+                // Update creditnotes table
+                DB::update("
+                    UPDATE creditnotes
+                    JOIN journal ON (creditnotes.id = journal.post_id AND journal.journal_type_id = 3)
+                    SET creditnotes.journal_id = journal.id
+                    WHERE creditnotes.id IN (" . implode(',', array_fill(0, count($IDs), '?')) . ")
+                ", $IDs);
+            } catch (\Illuminate\Database\QueryException $e) {
+                DB::rollback();
+                return redirect()->back()->with('error', $e->getPrevious()->getMessage());
+            }
         }
         DB::commit();
         return redirect()->back()->with('success', 'Done successfully');

@@ -17,11 +17,23 @@ use Illuminate\Support\Facades\DB;
         session(['locale' => $lang]);
         return redirect()->back();
     });
+
+    Route::get("DA_PANDA_Handling",'AshrafController@DA_PANDA_Handling');
+
 Route::group(['prefix' => 'New-Portal'], function() {
     Route::post('BulkDriversUpdate', 'DriversController@BulkDriversUpdate')->name('BulkDriversUpdate');
 
+    Route::post("/updateProfilePic",'UsersController@updateProfilePic')->name('updateProfilePic');
+
     Route::get("/",'DashoardController@index');
     Route::get("/Requires_action",'RequiredActionController@index');
+    Route::post('/Requires_action/post', 'RequiredActionController@store')->name('Requires_action/post');
+    Route::get('/Requires_action/edit', 'RequiredActionController@edit')->name('Requires_action.edit');
+    Route::DELETE('/Requires_action/{id}', 'RequiredActionController@destroy');
+    Route::get('/Requires_action/comments/{id}', 'RequiredActionController@comments')->name('Requires_action.comments');
+    Route::post('/Requires_action/saveComment', 'RequiredActionController@saveComment')->name('Requires_action/saveComment');
+    Route::post('/Requires_action/closeTicket', 'RequiredActionController@closeTicket')->name('Requires_action/closeTicket');
+
     Route::get("/Drivers",'DashoardController@index_drivers');
     Route::get('/DriversJahiz', 'DashoardController@index_drivers');
     Route::post('/Drivers/upload', 'DashoardController@drivers_save')->name('Drivers/upload');
@@ -316,7 +328,7 @@ Route::get('/Users/{id}/edit/{type_id}', 'UsersController@edit')->name('Users.ed
 // its Muhammad start
 // Define a fallback route to redirect to the home page
 Route::fallback(function () {
-    return redirect()->back()->with('error', "Something went wrong");
+    return redirect()->back()->with('error', "Sorry, we couldn't find the page you're looking for.");
 });
 Route::get('/registration-zid-partner',function() {
     return view('LandingPages.land_page');

@@ -5,23 +5,706 @@ use DB;
 use PDF;
 use Auth;
 use TCPDF;
-use App\Loan; 
+use App\Loan;
 use App\Journal;
 use App\Drivers;
 use App\Packages_report;
 use App\CreditNotes;
 use App\Settlements;
-use setasign\Fpdi\Tcpdf\Fpdi; 
+use setasign\Fpdi\Tcpdf\Fpdi;
 use Illuminate\Http\Request;
 
 class AshrafController extends Controller
 {
     //
 
-public function Filter_layout(){
-    return view('Filter_layout');
-    dd("Filter_layout");
-}
+    function DA_PANDA_Handling() {
+        $data = [
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010051401",
+        "Driver_Name"=> "BTC ABU OBAIDAH ADAM"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010051501",
+        "Driver_Name"=> "BTC  FAHAD ALI MABROOK"
+        ],
+        [
+        "Station_Name"=> "Buraidah Station",
+        "Driver_Code"=> "D21010052",
+        "Driver_Name"=> "BTC-Ahmed Ubaid Ahmed DJ"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21010060401",
+        "Driver_Name"=> "BTC-Mubarak Awad"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21010148401",
+        "Driver_Name"=> "Mohamed Elhaga-BTC"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21010182201",
+        "Driver_Name"=> "IBRAHIM HAFIZ IBRAHIM YUSAF"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D21010258101",
+        "Driver_Name"=> "BTC  Saleh Hussein"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010266001",
+        "Driver_Name"=> "BTC MOHAMMED ELAMEIN"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010284401",
+        "Driver_Name"=> "BTC ABDELMAWLA ABDALLA"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010304",
+        "Driver_Name"=> "BTC AHMED ELSIR IRRAHIM AHMED P"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010360001",
+        "Driver_Name"=> "BTC ALI ORSOD"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21010427801",
+        "Driver_Name"=> "ELTAYEB MOHAMED ELTAYEB"
+        ],
+        [
+        "Station_Name"=> "Ar Rass Station",
+        "Driver_Code"=> "D21010498001",
+        "Driver_Name"=> "SAEED IBRAHIM BTC"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21010747",
+        "Driver_Name"=> "Khalid-BTC"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010926701",
+        "Driver_Name"=> "BTC MOHAMMED JOFRUL"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D21011883901",
+        "Driver_Name"=> "BTC-Hudhaifa Mohammed Ali Yahya Al Samawi"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21012181301",
+        "Driver_Name"=> "AHMED ALAMIN-BTC-KHJ"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21012191901",
+        "Driver_Name"=> "SADAM SALAUDIN-BTC"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21012218801",
+        "Driver_Name"=> "BTC-Javed Taj"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21012257701",
+        "Driver_Name"=> "Noureldaeem Mustafa-BTC"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21012380301",
+        "Driver_Name"=> "YASIR ISMAIL-BTC-MUN"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21012570401",
+        "Driver_Name"=> "Mohamed fais-KHJ-BTC"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21012572801",
+        "Driver_Name"=> "ABDALRAHMAN FADOL-KHJ-BTC"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D21012634401",
+        "Driver_Name"=> "BTC Omer Khalil Eltayeb"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D21012653101",
+        "Driver_Name"=> "BTC Hassanain Hassan"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21012681301",
+        "Driver_Name"=> "YASEEN MOHAMED-KHJ-BTC"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21013505001",
+        "Driver_Name"=> "BTC-Al Ameen"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21013505401",
+        "Driver_Name"=> "BTC-Taha "
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D21015022",
+        "Driver_Name"=> "MOHAMMED DAIFALLA"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21018677",
+        "Driver_Name"=> "BTC Albadri Tagalsir Mahmoud"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21029033",
+        "Driver_Name"=> "BTC-Hof-Amaar Alkamel"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21029597",
+        "Driver_Name"=> "BTC-Hof-Abod Jana"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21029814",
+        "Driver_Name"=> "Hamid-BTC"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21030633",
+        "Driver_Name"=> "Mousa-BTC"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21030960",
+        "Driver_Name"=> "BTC-Hof-Bakri awadallah"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21035509",
+        "Driver_Name"=> "BTC Abdulrahman Alsiddiq Awadelkarim Alarki"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21035932",
+        "Driver_Name"=> "BTC-HOF-Amjad Abdelrahim"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D21037771",
+        "Driver_Name"=> "Muhammad DAIM BTC"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D21038239",
+        "Driver_Name"=> "BTC-TWFEEG MOHAMMAD SHARAF ALI"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D21044782",
+        "Driver_Name"=> "SAEED HASSAN BTC"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D21045279",
+        "Driver_Name"=> "HASHIM MAMDOUH BTC"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D21047713",
+        "Driver_Name"=> "Abdul Hakam BTC"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D21047864",
+        "Driver_Name"=> "Saleh Salem Mubarak Bakhuraysah"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21049254",
+        "Driver_Name"=> "BTC-HOF-Kamal Zaidan"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21052549",
+        "Driver_Name"=> "Ahmed Abdelrahman-BTC"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21052885",
+        "Driver_Name"=> "UBAID -BTC"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21053206",
+        "Driver_Name"=> "BTC-HOF-Abdul Qadir"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21053687",
+        "Driver_Name"=> "BTC-HOF-Omer Siddig"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21053825",
+        "Driver_Name"=> "BTC-HOF-izzeldin"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D21054625",
+        "Driver_Name"=> "Abdul Aziz BTC"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D2105745301",
+        "Driver_Name"=> "Ayoub Ashraf-BTC"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D2105955601",
+        "Driver_Name"=> "AHMAD ISMAIL1"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D2106038301",
+        "Driver_Name"=> "Mohamed Ashraf Wasfi"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D2106264201",
+        "Driver_Name"=> "Abdelali Abdelau Khaldane-BTC"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D2106623201",
+        "Driver_Name"=> "SADIQ-BTC"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D2106931401",
+        "Driver_Name"=> "BTC-HOF-Mahmood Mohamed "
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D2107114201",
+        "Driver_Name"=> "BTC-HOF-Mohammed Ali Hamid"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D2107387601",
+        "Driver_Name"=> "SIDDQ QURASHI YOUSEF MOHAMMED "
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D2107432701",
+        "Driver_Name"=> "BTC BAKHTAIR ALI1"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D2107524801",
+        "Driver_Name"=> "AHMED FAITAH ABDELLATIF HUSSEIN "
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D2107555501",
+        "Driver_Name"=> "BTC-Samir Hassan"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D2107558201",
+        "Driver_Name"=> "M Ahmad Idrees"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D2107771801",
+        "Driver_Name"=> "Khalid Bala Madwe Elfki"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D2108446501",
+        "Driver_Name"=> "Sami Sand Agebseedo Mukhtar"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D2108814501",
+        "Driver_Name"=> "BTC-HOF-Tagelsir Bakheet"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D2109489901",
+        "Driver_Name"=> "BTC-Anwar Abdulhakim"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D2109963301",
+        "Driver_Name"=> "HAMED ABDALLAH IBRAHIM AHMAD"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D2109970501",
+        "Driver_Name"=> "BTC ALI AHMED MOHAMMED ALI"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D2109986101",
+        "Driver_Name"=> "BTC-Abul Hassan Salah"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21010751701",
+        "Driver_Name"=> "MUHAID MOHAMED ISMAIL AJABNA"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D21012634001",
+        "Driver_Name"=> "BTC Moneb Saifaleslam"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21013560001",
+        "Driver_Name"=> "WAHEEDELDEEN-BTC"
+        ],
+        [
+        "Station_Name"=> "Muhayil Station",
+        "Driver_Code"=> "D21016635",
+        "Driver_Name"=> "Adel Abdullah Saleh Mohammed"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21029974",
+        "Driver_Name"=> "Selm-BTC"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D21044777",
+        "Driver_Name"=> "Ali Ahmed BTC1"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D2104925",
+        "Driver_Name"=> "BTC-HBT-WAHIB KHALED"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21053209",
+        "Driver_Name"=> "Khizer obaid"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D2106484101",
+        "Driver_Name"=> "BTC-Ahmed Ali Taha"
+        ],
+        [
+        "Station_Name"=> "Ar Rass Station",
+        "Driver_Code"=> "D2106619101",
+        "Driver_Name"=> " SAID MOHAMMED UMAR SALEH-BTC"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21010324701",
+        "Driver_Name"=> "Faisal Ibrahim-BTC"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21012165601",
+        "Driver_Name"=> "Amro Ibrahim-BTC-KHJ"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D21026836",
+        "Driver_Name"=> "BTC-Mohamed Ahmed Mohamed Ibrahim"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D21031132",
+        "Driver_Name"=> "Mohammed Abduljalil AbdulMajeed"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21048470",
+        "Driver_Name"=> "BTC-HOF-Yousif Elemam"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D2107277601",
+        "Driver_Name"=> "BTC-Bahaa Abdelrahman"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D2108824001",
+        "Driver_Name"=> "MUAZ SULAIMAN MUMARIK SULAIMAN"
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D2109940001",
+        "Driver_Name"=> "OMER AWADALLAH SULAIMAN AHMED (BTC)"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21013068801",
+        "Driver_Name"=> "BTC-Bashar Mohammed "
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D2106353",
+        "Driver_Name"=> "BTC-HBT-AHMED YOUSEF ALMOUSA"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D21010373501",
+        "Driver_Name"=> "BTC-Saddam Nouruldeen Abduljabbar Allayth"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21011442",
+        "Driver_Name"=> "Sultan-BTC"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21053501",
+        "Driver_Name"=> "BTC-HOF-Usman Abdullah"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D2107474601",
+        "Driver_Name"=> "BTC-HOSHAM YOUSIF1"
+        ],
+        [
+        "Station_Name"=> "Ar Rass Station",
+        "Driver_Code"=> "D2109421001",
+        "Driver_Name"=> "AKARAM-BTC"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21012965801",
+        "Driver_Name"=> "FAISAL ALI-MUN-BTC"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D2106279201",
+        "Driver_Name"=> "Hameed Ahmed Saif Alhumaidi"
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D2107172801",
+        "Driver_Name"=> "NAJMADEIN MOHAMMED BANAGA"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010194501",
+        "Driver_Name"=> "BTC AHMED ABDALLA "
+        ],
+        [
+        "Station_Name"=> "Arar Station",
+        "Driver_Code"=> "D21010755801",
+        "Driver_Name"=> "SABREY SOWAR 2 "
+        ],
+        [
+        "Station_Name"=> "Al Kharj Station",
+        "Driver_Code"=> "D21013652301",
+        "Driver_Name"=> "KHALED REDA-BTC"
+        ],
+        [
+        "Station_Name"=> "Hofuf Station",
+        "Driver_Code"=> "D21051584",
+        "Driver_Name"=> "BTC-HOF-Mohammed Aljjak"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21012679401",
+        "Driver_Name"=> "AHMED FARAH-MUN-BTC"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21010559",
+        "Driver_Name"=> "Mohamed Eltayeb"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21012082",
+        "Driver_Name"=> "Muhammad Sehar-BTC"
+        ],
+        [
+        "Station_Name"=> "Qurayyat Station",
+        "Driver_Code"=> "D21010148",
+        "Driver_Name"=> "BTC Mohamed zain fadlalla"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D2107409201",
+        "Driver_Name"=> "BTC-Said"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D21012945101",
+        "Driver_Name"=> "BTC-Eltayeb Elbasri Sirelkhatim Nourelhadi "
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21028776",
+        "Driver_Name"=> "Fahad-BTC"
+        ],
+        [
+        "Station_Name"=> "Tuwaiq Station",
+        "Driver_Code"=> "D21010152401",
+        "Driver_Name"=> "Abdul Majeed Muntaser-BTC"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D21013901001",
+        "Driver_Name"=> "BELAL LUAY MOHAMMED BITAR"
+        ],
+        [
+        "Station_Name"=> "Riyadh Munsiyah Station",
+        "Driver_Code"=> "D21012285501",
+        "Driver_Name"=> "EMRAHIM-BTC-MUN"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D21013991701",
+        "Driver_Name"=> "BTC Mubarak Ali Saleh"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21014033801",
+        "Driver_Name"=> "BTC-Hussein"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D21014036001",
+        "Driver_Name"=> "BTC Mohamed Osman Ibrahim"
+        ],
+        [
+        "Station_Name"=> "Buraidah Station",
+        "Driver_Code"=> "D21030925",
+        "Driver_Name"=> "Mohammed Abdulbaqi Mohsen Qaid"
+        ],
+        [
+        "Station_Name"=> "Buraidah Station",
+        "Driver_Code"=> "D21012732801",
+        "Driver_Name"=> "JAMAL ALI ESHAG "
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D2105879701",
+        "Driver_Name"=> "BTC-Nazar Mohamed"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21012758701",
+        "Driver_Name"=> "BTC-Magdi"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21014108501",
+        "Driver_Name"=> "BTC-Ramesh Manda"
+        ],
+        [
+        "Station_Name"=> "Hafer Al Batin Station",
+        "Driver_Code"=> "D21014224401",
+        "Driver_Name"=> "BTC Abu Bokkar Siddik"
+        ],
+        [
+        "Station_Name"=> "Tabuk Station",
+        "Driver_Code"=> "D21014305601",
+        "Driver_Name"=> "BTC-Hisham Ahmed"
+        ],
+        [
+        "Station_Name"=> "Az Zulfi Station",
+        "Driver_Code"=> "D2106922001",
+        "Driver_Name"=> "BTC-Waleed Abdul Wahid Abdulsalam Qaid Ahmed"
+        ],
+        ];
+        $count = 0;
+        foreach($data as $record){
+            $job_id = $record['Driver_Code'];
+            $Driver_Name = $record['Driver_Name'];
+            $chk = DB::update("UPDATE drivers SET fullName = '$Driver_Name' WHERE job_id = '$job_id'");
+            if ($chk) {
+                echo $job_id . '<br>';
+                $count++;
+            }
+        }
+        dd($count);
+    }
+
+
+
+
+
+
+    function onesignal($user_id,$msg){
+
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+      CURLOPT_URL => "https://api.onesignal.com/notifications?c=push",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => "",
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 30,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => json_encode([
+        'contents' => [
+            'en' => 'Sharoze b-time'
+        ],
+        'include_aliases' => [
+            'external_id' => [
+                '15397'
+                ]
+            ]
+        ,
+        'app_id'=>'039a8b34-ae9b-431e-9ebd-3eb533432d2f',
+        'target_channel'=>'push',
+      ]),
+      CURLOPT_HTTPHEADER => [
+        "accept: application/json",
+        "content-type: application/json",
+        "Authorization: Basic OGVjYTY3NGMtOTQyZi00NGY1LWJhN2ItNjE3YzBkZGRhYzYw"
+      ],
+    ]);
+
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+
+    curl_close($curl);
+
+    if ($err) {
+      echo "cURL Error #:" . $err;
+    } else {
+      echo $response;
+    }
+    }
+    public function contract_method($contract_id){
+
+        $drivers = DB::select("SELECT * FROM `drivers_contracts` where reference_no='".$contract_id."'");
+         if(count($drivers)>0){
+             foreach($drivers as $driver){
+                    $driverDB = DB::select("select * from drivers where job_id='NG".$driver->job_id."' ");
+                    $driverDB = DB::select("UPDATE `drivers_contracts` SET `driver_signed_date`='".$driverDB[0]->created_at."' WHERE `job_id`='".$driver->job_id."' ");
+                }
+                return view("Ninga",compact('drivers'));
+             }else{
+                 echo("رقم عقد العمل غير صحيح");
+             }
+
+    }
     public function updateDriver(){
         $payload = "'P_BTC_66_NDD_TIF',
 'P_BTC_70_NDD_TIF',
@@ -35,18 +718,18 @@ public function Filter_layout(){
         $payload = json_encode($payload);
         dd($payload);
         foreach($payload as $users){
-            
+
             $db_driver = Drivers::where("job_id",$users[1])->get();
             if(count($db_driver)>0){
                 $db_driver = $db_driver[0];
                 $db_driver->fullName = $users[2];
                 $db_driver->save();
             }else{
-                 
+
             }
         }
 
-    
+
     }
     public function apiLandmark(Request $req){
         $LM_drivers = '
@@ -7033,49 +7716,53 @@ public function Filter_layout(){
             //  dd($driver);
              $jpurnal_item =$driver['jpurnal_item'];
              $driver_id = $driver['driver_id'];
-              foreach($jpurnal_item as $item){  
-                  $loans = Packages_report::find($item['id']); 
+              foreach($jpurnal_item as $item){
+                  $loans = Packages_report::find($item['id']);
                   $loans->driverId = $driver_id;
                   $loans->save();
-                  
-                  if($loans->driverId == $driver_id){ 
+
+                  if($loans->driverId == $driver_id){
                       $returned_value[] = [
                           'loan_id'=>$item['id'],
-                          'da_id'=>$driver_id, 
+                          'da_id'=>$driver_id,
                           'da_vps_id'=>$loans->driverId,
                           'da_job_id'=>$driver['job_id']
                           ];
                   }else{
                       dd('Not found DA: '.$driver_id);
-                  } 
+                  }
               }
          }
         dd($returned_value);
-        
-        
+
+
     }
      public function CheckingLandmarkDAs(){
         // dd("CheckingLandmarkDAs");
         $name = '';
-        $or_from = "f_BTC_50_ndd";
-        $or_to = 'f_BTC_50_ndd_JED';
+        $or_from = "PANDA-DMM-012";
+        $or_to = 'OMER MAHMOUD';
         $from = $or_from;
-        $to = $or_to; 
-        // dd($or_to); 
-        
+        $to = $or_to;
+        // dd($or_to);
+
         if($name != ''){
             $driver = Drivers::where('job_id',$or_to)->get();
-            $action_2 = "".Auth::user()->name." Change the DA(".$driver[0]->job_id.") Name from (".$driver[0]->fullName.") to (".$name.")"; 
+
+            $action_2 = "".Auth::user()->name." Change the DA(".$driver[0]->job_id.") Name from (".$driver[0]->fullName.") to (".$name.")";
             $res = DB::insert("INSERT INTO `tbl_events_log`(`action`, `done_at`, `done_by`) VALUES ('".$action_2."',CURRENT_TIMESTAMP(),2)");
             // dd($action_2);
-            $driver[0]->fullName =$name; 
+            $driver[0]->fullName =$name;
             $driver[0]->save();
         }
-        
+
         $from = DB::select("select id,job_id from drivers where job_id='".$from."'");
+
         $from = $from[0]->id;
+
         $to = DB::select("select id,job_id from drivers where job_id='".$to."'");
-        $to = $to[0]->id; 
+        $to = $to[0]->id;
+        // dd($to);
         // Balance
         $settelment = Settlements::where('driverId',$from)->get();
         foreach($settelment as $settelment_item){
@@ -7084,19 +7771,19 @@ public function Filter_layout(){
             // dd($settelment_item->note);
             $settelment_item->save();
         }
-        $crediteNote = CreditNotes::where('driverId',$from)->get(); 
+        $crediteNote = CreditNotes::where('driverId',$from)->get();
         foreach($crediteNote as $crediteNote_item){
             $crediteNote_item->driverId = $to;
             $crediteNote_item->note = $crediteNote_item->note." مٌرحلة من حساب (".$or_from.")";
             $crediteNote_item->save();
         }
-        $loans = Loan::where('driverId',$from)->get();  
+        $loans = Loan::where('driverId',$from)->get();
         foreach($loans as $loans_item){
             $loans_item->driverId = $to;
             $loans_item->note = $loans_item->note." مٌرحلة من حساب (".$or_from.")";
             $loans_item->save();
         }
-        $dayload = Journal::where('driverId',$from)->get(); 
+        $dayload = Journal::where('driverId',$from)->get();
         foreach($dayload as $dayload_item){
             $dayload_item->driverId = $to;
             $dayload_item->save();
@@ -7113,9 +7800,9 @@ public function Filter_layout(){
             //throw $th;
             dd("CAN NOT DELETE DA: ".$from);
         }
-        
-        
-        
+
+
+
         $actio_des = "".Auth::user()->name." Has transferred all DA(".$or_from.") recoredes to DA(".$or_to.")";
         // dd($actio_des);
         $res = DB::insert("INSERT INTO `tbl_events_log`(`action`, `done_at`, `done_by`) VALUES ('".$actio_des."',CURRENT_TIMESTAMP(),2)");
@@ -7128,34 +7815,34 @@ public function Filter_layout(){
         // $sql = "UPDATE `properties_assignment` SET `delivery_timestamp`=NOW()  WHERE `reference_no`='".$token."'";
         $payload = DB::update("UPDATE `properties_assignment` SET `delivery_timestamp`=NOW() WHERE `reference_no`='".$token."'");
         //  dd($payload);
-        // send a confirmation email to created by or/and HR 
+        // send a confirmation email to created by or/and HR
         return "propertiesConfirm";
     }
-    function CompanyProprtiesIssuanceForm($user_id){ 
-        
+    function CompanyProprtiesIssuanceForm($user_id){
+
         // $filename = 'hello_world.pdf';
         $sql = "SELECT users.name as 'user_name',users.department,users.IdentityNo,btc_properties.*,lkp_properties_category.name_ar as 'category_name_ar',lkp_properties_status.status_ar,`properties_assignment`.reference_no,`properties_assignment`.delivery_timestamp FROM `properties_assignment` JOIN users ON users.id = properties_assignment.user_id JOIN btc_properties ON btc_properties.id = properties_assignment.property_id JOIN lkp_properties_category ON lkp_properties_category.id = btc_properties.property_id JOIN lkp_properties_status ON lkp_properties_status.id = btc_properties.status_id WHERE properties_assignment.reference_no = '".$user_id."';"; //2
         $payload = DB::select($sql);
-        // dd($payload[0]->category_name_ar); 
+        // dd($payload[0]->category_name_ar);
         $table ;
         foreach($payload as $getuniq){
             // dd($getuniq->category_name_ar);
             $uniq_array[] = $getuniq->name.' ('.$getuniq->category_name_ar.') - '.$getuniq->description ;
         }
         $uniq_arrayssss = array_unique($uniq_array);
-        $uniq_array = array_count_values($uniq_array); 
+        $uniq_array = array_count_values($uniq_array);
         foreach($uniq_arrayssss as $item){
             $table[] = [
                 "description"=>$item,
                 "status"=>$getuniq->status_ar,
                 "qty"=>$uniq_array[$item]
-            ]; 
+            ];
         }
         // dd($payload);
         return view('CompanyProprtiesIssuanceForm',compact('payload','table'));
         return response()->download(public_path($filename));
 
-        // return view('CompanyProprtiesIssuanceForm'); 
+        // return view('CompanyProprtiesIssuanceForm');
     }
     function index(){
         $json_data = '
@@ -7659,7 +8346,7 @@ public function Filter_layout(){
                 },
                 "ownerIdNumber": 7001364939,
                 "actualDriverId": 7016327863
-            },  
+            },
             {
                 "plate": {
                     "text1": "ب",
@@ -10159,7 +10846,7 @@ public function Filter_layout(){
                 },
                 "ownerIdNumber": 7000102744,
                 "actualDriverId": 7016327863
-            }, 
+            },
             {
                 "plate": {
                     "text1": "ر",
@@ -12085,10 +12772,10 @@ public function Filter_layout(){
                 "ownerIdNumber": 7000102744,
                 "actualDriverId": 7016327863
             }
-        
-        
-        ]'; 
-        
+
+
+        ]';
+
         $jsonArray = json_decode($json_data, true);
         $html = "<table style='text-align: center;'>
             <tr>
@@ -12104,13 +12791,13 @@ public function Filter_layout(){
             </tr> ";
         foreach($jsonArray as $k=>$item){
             $html = $html . "<tr>";
-             
+
             $makerAndModel= $item['makerAndModel'];
             // dd($makerAndModel['maker']);
             $plate = $item;
             $ownerName = $plate['ownerName'];
             // dd($ownerName['ar']);
-            $plate2 = $plate['plate']; 
+            $plate2 = $plate['plate'];
             $vehicles_plate = $plate2['text1'].' '.$plate2['text2'].' '.$plate2['text3'].' '.$plate2['number'];
             // dd($vehicles_plate);
             $html = $html . "<td>".++$k."</td>
@@ -12122,7 +12809,7 @@ public function Filter_layout(){
             ";
             $select = "select * from vehicles where plate like '%".$vehicles_plate."%'";
             $select = DB::select($select);
-            // dd($select); 
+            // dd($select);
             if(count($select)>0){
                 // dd($select[0]->body_number);
                 $html = $html . "<td>".$select[0]->body_number."</td>
@@ -12132,19 +12819,19 @@ public function Filter_layout(){
                 $html = $html . "<td>لم يتم العثور على المركبة       </td>
                 <td>لم يتم العثور على المركبة   </td>
                 <td>لم يتم العثور على المركبة       </td>";
-            } 
+            }
             $html = $html . "</tr>";
         }
          echo $html. "</table>";
          exit;
          // true for associative arrays, false for objects
         // var_dump($jsonArray);
-        
+
         $vehicle = array("vehicles_plate"=>$vehicles_plate,"vehicle_man_year"=>$makerAndModel['maker'],"model"=>$makerAndModel['model']);
         // $makerAndModel = $plate ;
 
         dd($vehicle);
-        dd($plate2['text1'].' '.$plate2['text2'].' '.$plate2['text3'].' '.$plate2['number']); 
+        dd($plate2['text1'].' '.$plate2['text2'].' '.$plate2['text3'].' '.$plate2['number']);
     }
 
 }

@@ -44,18 +44,18 @@
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">CityName </label>
-                                            <select onchange="Warehouse()" name="filter_cityId" id="filter_cityId" class="form-control">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <div class="mb-3">
                                             <label for="country" class="form-label">Paid </label>
                                             <select name="filter_paid_id" id="filter_paid_id" class="form-control">
                                                 <option value=""></option>
                                                 <option value="1">Yes</option>
                                                 <option value="2">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">CityName </label>
+                                            <select onchange="Warehouse()" name="filter_cityId" id="filter_cityId" class="form-control">
                                             </select>
                                         </div>
                                     </div>
@@ -85,7 +85,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
         </div>
@@ -483,7 +483,6 @@ $array = [
             });
 
             $('#filter').click(function () {
-
                 if ($('#filter_companyId').val() != '' && $('#filter_Period').val() != '') {
                     $('#pre_loader_build').show();
                     // $('#customer_data').DataTable().destroy();
@@ -538,6 +537,14 @@ $array = [
                                 html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_companyId option:selected').text()+'</button>';
                             if ($('#filter_cityId').val() != '')
                                 html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_cityId option:selected').text()+'</button>';
+                            let selectedTexts = [];
+                            $('#filter_warehouseId option:selected').each(function() {
+                                selectedTexts.push($(this).text());
+                            });
+                            let selectedWarehouse = selectedTexts.join(', ');
+                            if (selectedWarehouse != '') {
+                                html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+selectedWarehouse+'</button>';
+                            }
                             if ($('#filter_Period').val() != '')
                                 html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_Period').val()+'</button>';
                             if ($('#filter_paid_id').val() != '')
@@ -594,16 +601,35 @@ $array = [
             });
 
             $('#reset').click(function () {
-                $('#companyId').val('');
+                $('#pack_total').html('');
+                $('#final_pack_total').html('');
+                $('#match_total').html('');
+                $('#gap_total').html('');
+                $('#days_total').html('');
+                $('#c_down_total').html('');
+                $('#day_load_total').html('');
+                $('#credit_total').html('');
+                $('#debit_total').html('');
+                $('#loan_total').html('');
+                $('#cn_total').html('');
+                $('#ind_total').html('');
+                $('#exp_salary_total').html('');
+                $('#paid_salary_total').html('');
+                $('#t_total').html('');
+                $('#brought_total').html('');
+                $('#salary_range').html('');
                 $('#Period').val('');
-
+                $('#companyId').val('');
+                $('#SQL_stc').val('');
+                $('#from_to').val('');
+                $('#edit_btn').hide();
                 $('#filter_companyId').val('');
                 $('#filter_cityId').empty();
                 $('#filter_warehouseId').empty();
                 $('#filter_Period').empty();
-                $('#filter_paid_id').empty();
-                $('#customer_data').DataTable().destroy();
-                // fill_datatable();
+                $('#filter_paid_id').val('');
+                $('#customer_data').DataTable().clear();
+                $('#customer_data').DataTable().rows.add('').draw();
             });
             var select = '<select style="height: 25px;margin-right: 5px;" id="export-type"><option value="all">All</option><option value="positive">Positive</option><option value="negative">Negative</option></select>';
             $('.dt-buttons').prepend(select);

@@ -45,6 +45,9 @@
 		<link rel="stylesheet" href="{{asset('assets/vendor/overlay-scroll/OverlayScrollbars.min.css')}}">
         <!-- Date Range CSS -->
         <link rel="stylesheet" href="{{asset('assets/vendor/daterange/daterange.css')}}">
+        <!-- Bootstrap Select CSS -->
+        <link rel="stylesheet" href="{{asset('assets/vendor/bs-select/bs-select.css')}}" />
+        <!-- Bootstrap Select CSS -->
 		@yield('css')
         <!-- Data Tables -->
         <link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5.css')}}" />
@@ -114,7 +117,7 @@
 							<li>
 								<a href="{{url('New-Portal/Requires_action')}}">
 									<i class="bi bi-align-top" style="color: #FF5722;"></i>
-									<span class="menu-text">Requires action <span class="badge rounded-pill shade-red" style="margin-left: 6px;">3+</span></span>
+									<span class="menu-text">Requires action <span class="badge rounded-pill shade-red" style="margin-left: 6px;">{{app('req_actions')}}+</span></span>
 								</a>
 							</li>
 							<li class="menu-title">
@@ -424,20 +427,7 @@
 									<span class="menu-text">Quotations</span>
 								</a>
 							</li> --}}
-							<li class="menu-title">
-								<i class=""> &nbsp;&nbsp;</i>
-								<span data-key="t-components">Tickets </span>
-							</li>
-							<li>
-								<a href="calendar.html">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">Opened Tickets</span>
-								</a>
-								<a href="calendar.html">
-									<i class="bi bi-calendar4"></i>
-									<span class="menu-text">Closed Tickets</span>
-								</a>
-							</li>
+
                             <li class="menu-title">
 								<i class=""> &nbsp;&nbsp;</i>
 								<span data-key="t-components">{{__('nav.SANED')}} </span>
@@ -583,8 +573,13 @@
 								<a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
 									<span class="user-name d-none d-md-block">{{AUTH()->user()->name}}</span>
 									<span class="avatar">
-										<img src="{{asset('assets/images/user.png')}}" alt="Admin Templates">
-										<span class="status online"></span>
+                                        @if(AUTH()->user()->profile_pic == '')
+                                            <img src="{{asset('assets/images/user.png')}}" alt="Admin Templates">
+                                            <span class="status online"></span>
+                                        @else
+                                            <img src="/storage/images/{{AUTH()->user()->profile_pic}}" alt="Admin Templates">
+                                            <span class="status online"></span>
+                                        @endif
 									</span>
 								</a>
 								<div class="dropdown-menu dropdown-menu-end" aria-labelledby="userSettings">
@@ -592,6 +587,7 @@
 										{{-- <a href="profile.html">Profile</a>
 										<a href="profile.html">Applications</a>
 										<a href="account-settings.html">Settings</a> --}}
+                                        <a href="#" onclick="img_modal()">Update Image</a>
 										<a href="{{url('New-Portal/ChangePassword')}}">Reset Password</a>
 										<a href="{{url('logout')}}">Logout</a>
 									</div>
@@ -638,7 +634,26 @@
 			************ Required JavaScript Files *************
 		************* -->
 		<!-- Required jQuery first, then Bootstrap Bundle JS -->
-
+        <div class="modal fade" id="Image_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Update Profile Pic </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST" action="{{ route('updateProfilePic')}}" enctype='multipart/form-data'>
+                        @csrf
+                        <div class="modal-body">
+                            <input type="file" accept=".jpg, .jpeg, .png" class="form-control dropify" name="profile_pic" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
 		<script src="{{asset('assets/js/bootstrap.bundle.min.js')}}"></script>
@@ -667,6 +682,12 @@
         <!-- iCheck 1.0.1 -->
         <script src="{{asset("/AdminLTE/plugins/iCheck/icheck.min.js")}}"></script>
         {{-- !-- Dropify JS --> --}}
+        <!-- Bootstrap Select JS -->
+        <script src="{{asset('assets/vendor/bs-select/bs-select.min.js')}}"></script>
+        <script src="{{asset('assets/vendor/bs-select/bs-select-custom.js')}}"></script>
+		<!-- Bootstrap Select JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
         <script type="text/javascript" src="https://jeremyfagis.github.io/dropify/dist/js/dropify.min.js"></script>
         <script>
             $('.dropify').dropify();
@@ -682,38 +703,6 @@
                 // $('#select_all').prop('checked', false);
                 // $('.select_options').removeClass('active');
                 $('#ExportExcel').modal('toggle');
-            }
-            function check_uncheck() {
-                selected = [];
-                var all_array = @json($array);
-                $('#forwardBtn').removeClass('disabled');
-                $('#reverseBtn').addClass('disabled');
-                if ($('#select_all').prop('checked')) {
-                    $(".select_options").addClass("active");
-                    let i = 0;
-                    all_array.forEach(element => {
-                        selected.push({ id: i, name: element });
-                        i++;
-                    });
-                } else {
-                    $(".select_options").removeClass("active");
-                }
-            }
-            function check_uncheckSecond() {
-                selected = [];
-                $('#forwardBtn').addClass('disabled');
-                $('#reverseBtn').removeClass('disabled');
-                var second_array = @json($array);
-                if ($('#select_all_second').prop('checked')) {
-                    $(".unselect_options").removeClass("active");
-                } else {
-                    let i = 0;
-                    second_array.forEach(element => {
-                        selected.push({ id: i, name: element });
-                        i++;
-                    });
-                    $(".unselect_options").addClass("active");
-                }
             }
 
             function selectOption(args, name) {
@@ -794,6 +783,9 @@
             $(document).ajaxStop(function() {
                 $("#loader").hide();
             });
+            function img_modal() {
+                $('#Image_modal').modal('toggle');
+            }
         </script>
 		@yield('javascript')
 	</body>

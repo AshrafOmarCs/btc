@@ -460,11 +460,11 @@ class DriversJahizClaimController extends Controller
     public function DriversClaimDate($id)
     {
         $Driver = DB::select('SELECT drivers.id,fullName,warehouseName,driver_type_id,job_id,
-       drivers_jahiz_claim.id as drivers_jahiz_claim_id
-       from drivers
+        drivers_jahiz_claim.id as drivers_jahiz_claim_id
+        from drivers
         inner join drivers_jahiz_claim on drivers_jahiz_claim.driverId=drivers.id
-         left join warehouse on warehouse.id=drivers.warehouseId
-         where drivers_jahiz_claim.id=' . $id)[0];
+        left join warehouse on warehouse.id=drivers.warehouseId
+        where drivers_jahiz_claim.id=' . $id)[0];
         $drivers_jahiz_claim = DB::select('SELECT claim_dt
             from drivers_jahiz_claim
             where id=' . $id)[0];
@@ -483,7 +483,7 @@ class DriversJahizClaimController extends Controller
     public function DriversClaimDateSave(Request $request)
     {
         $drivers_jahiz_claim_id = $request->input('drivers_jahiz_claim_id');
-//return  $drivers_jahiz_claim_id;
+        //return  $drivers_jahiz_claim_id;
         try {
             DB::update("update drivers_jahiz_claim set claim_dt='" . $request->input('claim_dt') . "' where id=" . $request->input('drivers_jahiz_claim_id'));
         } catch (Exception $e) {

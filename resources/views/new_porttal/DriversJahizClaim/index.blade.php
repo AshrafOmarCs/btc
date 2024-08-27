@@ -129,9 +129,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal" onclick="reset_records()">{{__('drivers.Close')}}</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal" id="reset">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
-                    data-bs-dismiss="modal" id="filter" onclick="confirmSearch()">{{__('drivers.Search')}}</button>
+                    data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
         </div>
     </div>

@@ -127,7 +127,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal" id="reset">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success"
                     data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
@@ -263,6 +263,11 @@ $module = "Company";
 
                 </div>
                 <div class="card-body">
+                    <div id="loader" style="display:none;">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table id="customer_data" class="table table-bordered">
                             <thead>
@@ -351,10 +356,6 @@ $(document).ready(function () {
                         }
                         return link + row.companyName;
                     }
-                },
-                {
-                    data: 'companyName',
-                    name: 'companyName'
                 },
                 {
                     data: 'calculation_method',
@@ -542,7 +543,6 @@ $(document).ready(function () {
     });
 
     $('#reset').click(function () {
-
         $('#filter_companyName').val('');
         $('#filter_calculation_method_id').val('');
         $('#filter_period_start').val('');
@@ -554,14 +554,12 @@ $(document).ready(function () {
         $('#filter_CreditNote_Letter').val('');
         $('#filter_created_at').val('');
         $('#filter_updated_at').val('');
-
-
         $('#customer_data').DataTable().destroy();
         fill_datatable();
     });
 
 
-    });
+});
 
 
     function add() {
