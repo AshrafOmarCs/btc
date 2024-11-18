@@ -311,12 +311,12 @@ class DriversController extends Controller
         elseif (request()->ajax()) {
 
             $Select_db = DB::table('drivers')
-                ->select('drivers_attachments.Image_Identity', 'drivers_attachments.Image_PromissoryNote', 'drivers_attachments.Image_JobContract', 'drivers.id as id', 'companyName', 'company_logo', 'warehouseId', 'warehouseName', 'lkp_city.name_en', 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else','car_plateNumber' ,'nationality_id', 'lkp_country.country_ar',
-                    'iqama', 'iqamaExpireyDate', 'email_id', 'job_id', 'dob', 'status_id', 'lkp_driver_status.driver_status_en', 'termination_reason_id', 'reason_en',
-                    'interview_date', 'start_date', 'licenseExpireyDate', 'passportNo', 'passportExpireyDate', 'bank_id', 'bank_name_en', 'accountNumber', 'account_owner_iqama',
-                    'a.yes_no AS under_sopnsorship', 'b.yes_no AS ajeer','bander_car.yes_no AS bander_car', 'collectionAmount', 'openBalance',
-                    'onhold_date', DB::raw("DATE_FORMAT(drivers.created_at, '%Y-%m-%d') as created_at"), 'drivers.updated_at as updated_at',
-                    'driver_type_id', 'driver_type');
+                ->select('benName', 'benIqama', 'benIBAN', 'lkp_company.id as companyId', 'notificationEnabled', 'driver_data', 'drivers.id as id', 'companyName', 'warehouseId', 'warehouseName', 'lkp_city.name_en',
+                'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else','car_plateNumber' ,'nationality_id', 'lkp_country.country_ar', 'iqama', 'iqamaExpireyDate', 'email_id', 'job_id',
+                'dob', 'status_id', 'lkp_driver_status.driver_status_en', 'termination_reason_id', 'reason_en', 'interview_date', 'start_date', 'licenseExpireyDate', 'passportNo', 'passportExpireyDate', 'bank_id',
+                'bank_name_en', 'accountNumber', 'account_owner_iqama', 'a.yes_no AS under_sopnsorship', 'b.yes_no AS ajeer','bander_car.yes_no AS bander_car', 'collectionAmount', 'openBalance', 'onhold_date',
+                DB::raw("DATE_FORMAT(drivers.created_at, '%Y-%m-%d') as created_at"), 'drivers.updated_at as updated_at',
+                'driver_type_id', 'driver_type');
             if ($request->filter_screenId == 'Jahiz') {
                 $Select_db->selectRaw("NULLIF(IFNULL(Monthly_Salary.p_month,0)+IFNULL(Per_Shipment.p_month,0),0) as per_priod,
                                                 NULLIF(IFNULL(Monthly_Salary.c_month,0)+IFNULL(Per_Shipment.c_month,0),0) as cur_priod,
@@ -661,12 +661,57 @@ class DriversController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        //$this->validate($request, [
-        //    'driversName' => ['required', 'string', 'max:255'],
-        //   'companyId' => ['required'],
-        //   'cityId' => ['required'],
-        //   ]);
+        if ($request->bank_id > 0) {
+            if ($request->benName == '' OR $request->benIBAN == '' OR $request->benIqama == '') {
+                return response()->json(['status' => 420, 'message' => 'Beneficary Name, IBAN and Iqama cannot be empty.']);
+            }
+            $validator = Validator::make($request->all(), [
+                'benName' => [
+                    'required',
+                    'string',
+                ],
+                'benIBAN' => [
+                    'required',
+                    'string',
+                    'size:24', // IBAN length for Saudi Arabia
+                ],
+                'benIqama' => [
+                    'required',
+                    'digits:10',
+                ],
+            ]);
+
+            if ($validator->fails()) {
+                $str = "";
+                foreach ($validator->errors()->all() as $err) {
+                    $str .= $err . " ";
+                }
+                return response()->json(['status' => 420, 'message' => $str]);
+            }
+
+            if ($request->benName == '' OR $request->benIBAN == '' OR $request->benIqama == '') {
+                return response()->json(['status' => 420, 'message' => 'Beneficary Name, IBAN and Iqama cannot be empty.']);
+            }
+        }
+
+        $validator = Validator::make($request->all(), [
+            'Image_Identity' => [
+                'required',
+                'mimes:jpeg,jpg',
+            ],
+            'Image_DrivingLicence' => [
+                'required',
+                'mimes:jpeg,jpg',
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            $str = "";
+            foreach ($validator->errors()->all() as $err) {
+                $str .= $err . " ";
+            }
+            return response()->json(['status' => 420, 'message' => $str]);
+        }
         try {
             $Drivers = new Drivers;
             $Drivers->warehouseId = $request->input('warehouseId');
@@ -727,6 +772,22 @@ class DriversController extends Controller
             $Drivers->updated_by_id = Auth::user()->id;
             $Drivers->vehicle_id = $request->input('vehicle_id');
             $success = $Drivers->save();
+            if ($request->hasFile('Image_Identity')) {
+                $request->file('Image_Identity')->move('Attachment/Image_Identity/', $Drivers->id . '.jpg');
+                DB::table('drivers_attachments')
+                    ->updateOrInsert(
+                        ['driverId' => $Drivers->id],
+                        ['Image_Identity' => '1']
+                    );
+            }
+            if ($request->hasFile('Image_DrivingLicence')) {
+                $request->file('Image_DrivingLicence')->move('Attachment/Image_DrivingLicence/', $Drivers->id . '.jpg');
+                DB::table('drivers_attachments')
+                    ->updateOrInsert(
+                        ['driverId' => $Drivers->id],
+                        ['Image_DrivingLicence' => '1']
+                    );
+            }
             if($success) {
                 $driver_job_id = $Drivers->job_id;
                 $made_by = Auth::user()->name;
@@ -741,7 +802,7 @@ class DriversController extends Controller
                 return response()->json(['status' => 200, 'message' => 'Driver Added successfully. With AMPID: ' . $Drivers->job_id]);
             }
         } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json(['status' => 420, 'message' => $e->errorInfo]);
+            return response()->json(['status' => 420, 'message' => $e->errorInfo[2]]);
         }
 
     }
@@ -755,7 +816,7 @@ class DriversController extends Controller
     public function show($id)
     {
         $Drivers = DB::table('drivers')
-            ->select('drivers.id as id', 'companyId', 'warehouseId', 'warehouseName', 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else', 'nationality_id', 'country_en',
+            ->select('benIqama', 'benIBAN', 'benName', 'drivers.id as id', 'companyId', 'warehouseId', 'warehouseName', 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else', 'nationality_id', 'country_en',
                 'iqama', 'iqamaExpireyDate', 'email_id', 'job_id', 'dob', 'status_id', 'driver_status_en', 'termination_reason_id', 'reason_en',
                 'interview_date', 'start_date', 'licenseExpireyDate', 'passportNo', 'passportExpireyDate', 'drivers.bank_id', 'bank_name_en', 'accountNumber', 'account_owner_iqama',
                 'sopnsorship.yes_no as sopnsorship', 'ajeer.yes_no as ajeer','bander_car.yes_no as bander_car', 'collectionAmount', 'numberOfDispatch', 'lastSettlementDate',

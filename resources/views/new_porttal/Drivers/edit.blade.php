@@ -1,14 +1,18 @@
 
 
 @include('pages.messages2')
-
+@if(Auth::user()->user_type_id==1)
+    <div class="row" style="margin-left: 10px">
+        <b><a href="#" onclick="driverInfoChange('personal')">Personal info </a> | <a href="#" onclick="driverInfoChange('financial')">Financial info </a></b>
+    </div>
+@endif
 <form id="contact_form" method="POST" onsubmit="return validateForm()"
         action="{{ route('Drivers.update',$Drivers->id)}}">
         {{method_field("PATCH")}}
         @csrf
     <div class="modal-body">
         <input type="hidden" name="type_id" value="{{$type_id}}">
-        <div class="row">
+        <div class="row personal">
             <div class="col-sm-4 col-12">
                 <div class="card">
                     <div class="card-body">
@@ -91,18 +95,6 @@
                             <label class="form-label">{{__('drivers.ActualName')}}</label>
                             <input type="text" class="form-control" name="actualName"
                                 value="{{$Drivers->actualName}}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4 col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="m-0">
-                            <label class="form-label">{{__('drivers.Mobile')}}</label>
-                            <input type="text" class="form-control" name="mobileNumber"
-                            @if($Drivers->mobileNumber != '' AND (Auth::user()->user_type_id == 2 OR Auth::user()->user_type_id == 3)) readonly @endif
-                            value="{{$Drivers->mobileNumber}}">
                         </div>
                     </div>
                 </div>
@@ -471,6 +463,26 @@
                     </div>
                 </div>
             </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">Driver Iqama </label>
+                            <input type="file" class="form-control" name="Image_Identity" id="Image_Identity" accept=".jpeg, .jpg" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">Driver Licence </label>
+                            <input type="file" class="form-control" name="Image_DrivingLicence" id="Image_DrivingLicence" accept=".jpeg, .jpg" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-sm-4 col-12" style="display: {{$Drivers->vehicle_id == '' ? 'none' : ''}}" id="expiry_tr">
                 <div class="card">
                     <div class="card-body">
@@ -489,6 +501,55 @@
                 </div>
             </div>
 
+        </div>
+        <div class="row financial" style="display: none">
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">Beneficery Bank</label>
+                            <select name="bank_id" id="bank_id" class="form-control" onchange="bankChange()">
+                                <option value=''>Select Bank</option>
+                                @foreach($lkp_bank as $bank)
+                                    <option
+                                    @if ($Drivers->bank_id==$bank->id){{"  selected " }}:{{""}} @endif
+                                    value="{{$bank->id}}">{{$bank->bank_name_en}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">Beneficery Name</label>
+                            <input type="text" class="form-control" name="benName" id="benName" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">Beneficery IBAN</label>
+                            <input type="text" class="form-control" name="benIBAN" id="benIBAN" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-0">
+                            <label class="form-label">Beneficery ID/Iqama</label>
+                            <input type="text" class="form-control" name="benIqama" id="benIqama" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <span id="Termination_Reason" <?php if ($Drivers->status_id <> "3") echo 'style="display:none;"';?> >
             <TH>{{__('drivers.Termination_Reason')}}</TH>

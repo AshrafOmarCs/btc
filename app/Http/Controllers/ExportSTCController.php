@@ -29,9 +29,9 @@ class ExportSTCController extends Controller
 
     public function index(Request $request)
     {
-       
+
         //  return $request->all();
-        
+
         error_reporting(E_ALL);
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
@@ -92,7 +92,7 @@ class ExportSTCController extends Controller
 
 
         $Select_db = DB::select($request->SQL);
-        
+
 
         $txtFile = '';
         $i = 0;
@@ -107,12 +107,12 @@ class ExportSTCController extends Controller
               <td>" . $Select_dbdb->SANED_amount . "</td>
               <td>" . $Select_dbdb->SettledDate . "</td>
               </tr>";
-              
+
             }
             //   echo $Select_dbdb.' $txtFile'.'<br>';
             // dd($Select_dbdb);
-        }   
-        
+        }
+
         if ($txtFile == "") {
 
 
@@ -139,7 +139,7 @@ class ExportSTCController extends Controller
                     GROUP BY account_owner_iqama,accountNumber
                     having SUM(IFNULL(bank_minus,0)-IFNULL(bank_plus,0))>0");
             $rowCount = 2;
-           
+
             foreach ($Select_db as $Select_dbdb) {
                 $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValueExplicit('A' . $rowCount, $Select_dbdb->account_owner_iqama, PHPExcel_Cell_DataType::TYPE_STRING)
@@ -177,8 +177,8 @@ class ExportSTCController extends Controller
                 $rowCount++;
 
             }
- 
-             
+
+
             $objPHPExcel->setActiveSheetIndex(0);
             $date = date("Y-m-d H-i-s");
             $fileName = 'JAHIZ'.'_STCPayExcel_' . $date . '-' . Auth::user()->id . '.xlsx';
@@ -200,16 +200,16 @@ class ExportSTCController extends Controller
 
             //return(public_path() . '/SANEDSettledExcel/' . $fileName);
             $objWriter->save('php://output');
-            
+
              DB::table('drivers_saned_export_excel')->insert(
                 ['user_id' => Auth::user()->id,
                     'fileName' => $fileName,
                     'create_at' => date("Y-m-d H:i:s")
                 ]
             );
-            
+
             exit;
-            
+
             // end Test code
             // $fileName = 'STC Pay Excel_' . $date . '-' . Auth::user()->id . '.xlsx';
             // // Redirect output to a client’s web browser (Excel2007)
@@ -227,7 +227,7 @@ class ExportSTCController extends Controller
 
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 
-           
+
             // dd('HHHHHH HHHH');
             // $objWriter->save(public_path() . '/SANEDSettledExcel/' . $fileName);
 
@@ -235,7 +235,7 @@ class ExportSTCController extends Controller
             $objWriter->save('php://output');
             exit;
         } else {
-          
+
             $txtFile = "
          <style>
 
@@ -275,11 +275,11 @@ class ExportSTCController extends Controller
 //return $txtFile;
             print($txtFile);
         }
-        
+
     exit;
     }
-    
-    
+
+
     public function ExportSTCShe(Request $request)
     {
         error_reporting(E_ALL);
@@ -342,7 +342,7 @@ class ExportSTCController extends Controller
 
 
         $Select_db = DB::select($request->SQL);
-        
+
 
         $txtFile = '';
         $i = 0;
@@ -357,9 +357,9 @@ class ExportSTCController extends Controller
               <td>" . $Select_dbdb->SANED_amount . "</td>
               <td>" . $Select_dbdb->SettledDate . "</td>
               </tr>";
-              
+
             }
-        }   
+        }
         $settlementids = array();
         if ($txtFile == "") {
 
@@ -429,7 +429,7 @@ class ExportSTCController extends Controller
                 $rowCount++;
 
             }
-             
+
             $objPHPExcel->setActiveSheetIndex(0);
             $date = date("Y-m-d H-i-s");
             $fileName = 'JAHIZ'.'_STCPayExcel_' . $date . '-' . Auth::user()->id . '.xlsx';
@@ -448,21 +448,21 @@ class ExportSTCController extends Controller
 
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
             $objWriter->save('php://output');
-            
+
              DB::table('drivers_saned_export_excel')->insert(
                 ['user_id' => Auth::user()->id,
                     'fileName' => $fileName,
                     'create_at' => date("Y-m-d H:i:s")
                 ]
             );
-            
+
             exit;
 
             $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
             $objWriter->save('php://output');
             exit;
         } else {
-          
+
             $txtFile = "
             <style>
                 .show_table th {
@@ -477,7 +477,7 @@ class ExportSTCController extends Controller
                     font-weight: 400;
                     font-size: 12px !important;
                 }
-            
+
                 .show_table td {
                     white-space: nowrap;
                     padding: 0.0rem 0.3rem !important;
@@ -509,68 +509,74 @@ class ExportSTCController extends Controller
 //*************************************************************************************************************************
     public function ExportSalarySTCShe(Request $request)
     {
+        dd($request);
         $user_id = Auth::user()->id;
+        DB::beginTransaction();
+        $type = $request->paid_type;
         error_reporting(E_ALL);
-        $notNullFile = false;
         ini_set('display_errors', TRUE);
         ini_set('display_startup_errors', TRUE);
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $objPHPExcel = new PHPExcel();
-        
-        $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValueExplicit('A1', 'Reference Number')
-            ->setCellValueExplicit('B1', 'Telephone Number')
-            ->setCellValue('C1', 'Amount')
-            ->setCellValue('E2', 'Total Amount')
-            ->setCellValue('F2', '=SUM(C:C)');
-        
-        $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(21.67);
-        $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(37.89);
-        $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(24.89);
-        $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
-        $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(11);
-        $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(37);
-
-        $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(24);
-
-        $objPHPExcel->getActiveSheet()->getStyle("E2:F2")->applyFromArray(
-            array(
-                'borders' => array(
-                    'allborders' => array(
-                        'style' => PHPExcel_Style_Border::BORDER_THIN,
-                        'color' => array('rgb' => '000000')
+        if ($type == 'stc') {
+            $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValueExplicit('A1', 'Reference Number')
+                ->setCellValueExplicit('B1', 'Telephone Number')
+                ->setCellValue('C1', 'Amount')
+                ->setCellValue('E2', 'Total Amount')
+                ->setCellValue('F2', '=SUM(C:C)');
+            $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(21.67);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(37.89);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(24.89);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(11);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(37);
+            $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(24);
+            $objPHPExcel->getActiveSheet()->getStyle("E2:F2")->applyFromArray(
+                array(
+                    'borders' => array(
+                        'allborders' => array(
+                            'style' => PHPExcel_Style_Border::BORDER_THIN,
+                            'color' => array('rgb' => '000000')
+                        )
+                    ),
+                    'alignment' => array(
+                        'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
                     )
-                ),
-                'alignment' => array(
-                    'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
                 )
-            )
-        );
-
-        $objPHPExcel->getActiveSheet()->getStyle("A1:B1")
-            ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-        $objPHPExcel->getActiveSheet()->getStyle("C1")
-            ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-
-        $objPHPExcel->getActiveSheet()->getStyle('A1:S1')->applyFromArray(
-            array(
-                'fill' => array(
-                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                    'color' => array('rgb' => '000000')
-                ),
-                'font' => array(
-                    'color' => array('rgb' => 'FFFFFF'),
-                ),
-                'alignment' => array(
-                    'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+            );
+            $objPHPExcel->getActiveSheet()->getStyle("A1:B1")
+                ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+            $objPHPExcel->getActiveSheet()->getStyle("C1")
+                ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+            $objPHPExcel->getActiveSheet()->getStyle('A1:S1')->applyFromArray(
+                array(
+                    'fill' => array(
+                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                        'color' => array('rgb' => '000000')
+                    ),
+                    'font' => array(
+                        'color' => array('rgb' => 'FFFFFF'),
+                    ),
+                    'alignment' => array(
+                        'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                    )
                 )
-            )
-        );
-
+            );
+        } else {
+            $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A1', 'البنك')
+                ->setCellValue('B1', 'رقم الحساب')
+                ->setCellValue('C1', 'اجمالي المبلغ')
+                ->setCellValue('D1', 'ملاحظات')
+                ->setCellValue('E1', 'اسم المستفيد')
+                ->setCellValue('F1', 'رقم الهوية أو الاقامة')
+                ->setCellValue('G1', 'عنوان المستفيد')
+                ;
+        }
         $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(24);
-
-    
         DB::statement('SET SESSION group_concat_max_len = 5555555');
+        if ($type == 'stc') {
             $Select_db = DB::select("
             SELECT
                 account_owner_iqama,
@@ -598,129 +604,245 @@ class ExportSTCController extends Controller
                 AND SUBSTR(accountNumber, 1, 3) =('966')
                 AND edit_salary>0
                 GROUP BY account_owner_iqama,accountNumber");
-                
-                // SELECT
-                // account_owner_iqama,
-                // accountNumber,
-                // SUM(edit_salary) as edit_salary,
-                // GROUP_CONCAT(edit_salary SEPARATOR '*') as bank_paid,
-                // count(*) AS CO,
-                // GROUP_CONCAT(driverId SEPARATOR '*') as drivers_IDs,
-                // GROUP_CONCAT(job_id SEPARATOR '*') as job_ids,
-                // GROUP_CONCAT(fullName SEPARATOR '*') as DriverNames
-                // FROM
-                // (" . $request->SQL . "
-                //                 ) a
-                // WHERE account_owner_iqama IS NOT NULL
-                // AND accountNumber IS NOT NULL
-                // AND account_owner_iqama REGEXP '^[0-9]+$'
-                // AND accountNumber REGEXP '^[0-9]+$'
-                // AND LENGTH(account_owner_iqama) = 10
-                // AND LENGTH(accountNumber) = 12
-                // AND SUBSTR(account_owner_iqama, 1, 1) in('1','2')
-                // AND SUBSTR(accountNumber, 1, 3) =('966')
-                // AND edit_salary>0
-                // GROUP BY account_owner_iqama,accountNumber");
-            
-            $rowCount = 2;
-            
-            $Period = explode(' - ', $request->from_to);
-            $from = $Period[0];
-            $to = $Period[1];
-            $amp_ids = $salaryids = array();
-            foreach ($Select_db as $Select_dbdb) {
-                 if($Select_dbdb->edit_salary < 1)
+        } else {
+            $Select_db = DB::select("
+            SELECT
+                benIqama,
+                benIBAN,
+                SUM(edit_salary) as edit_salary,
+                GROUP_CONCAT(edit_salary SEPARATOR '*') as bank_paid,
+                count(*) AS CO,
+                GROUP_CONCAT(driverId SEPARATOR '*') as drivers_IDs,
+                GROUP_CONCAT(job_id SEPARATOR '*') as job_ids,
+                GROUP_CONCAT(fullName SEPARATOR '*') as DriverNames
+                FROM
+                (" . $request->SQL . "
+                                ) a
+                WHERE benIqama IS NOT NULL
+                AND iqama IS NOT NULL
+                AND benIBAN IS NOT NULL
+                AND LENGTH(benIqama) = 10
+                AND LENGTH(iqama) = 10
+                AND LENGTH(benIBAN) = 24
+                AND SUBSTR(benIqama, 1, 1) in('1','2')
+                AND SUBSTR(iqama, 1, 1) in('1','2')
+                AND SUBSTR(benIBAN, 1, 2) =('SA')
+                GROUP BY benIqama,benIBAN");
+        }
+        $rowCount = 2;
+        $Period = explode(' - ', $request->from_to);
+        $from = $Period[0];
+        $to = $Period[1];
+        $amp_ids = $salaryids = array();
+        foreach ($Select_db as $Select_dbdb) {
+            if($Select_dbdb->edit_salary < 1)
+                continue;
+            $DriverNames = explode("*",$Select_dbdb->DriverNames);
+            $job_ids = explode("*",$Select_dbdb->job_ids);
+            $driver_ids = explode("*",$Select_dbdb->drivers_IDs);
+            $bank_paids = explode("*",$Select_dbdb->bank_paid);
+            $total = $i = 0;
+            $drivers_IDs_arr = $job_ids_arr = $DriverNames_arr = $bank_paid_arr = array();
+            $bank_name_en = $benIqama = $benIBAN = $benName = '';
+            foreach($driver_ids as $driver_id) {
+                $salary = DB::select("SELECT id from journal where status = 'Onhold' AND driverId = '$driver_id' AND journal_date BETWEEN '$from' AND '$to' AND journal_type_id = '6'"); //
+
+                if(count($salary) > 0) {
+                    $i++;
                     continue;
-                $driver_ids = $Select_dbdb->drivers_IDs;
-                $driver_ids = explode("*",$driver_ids);
-                foreach($driver_ids as $driver_id) {
-                    $salary = DB::select("SELECT id, export_attempt from journal where driverId = '$driver_id' AND journal_date BETWEEN '$from' AND '$to'");
+                }
+                $driver = HelperFunctionsController::getDriverData($driver_id);
+                if ($benName == '')
+                    $benName = $driver->benName;
+                if ($benIBAN == '')
+                    $benIBAN = $driver->benIBAN;
+                if ($benIqama == '')
+                    $benIqama = $driver->benIqama;
+                if ($bank_name_en == '')
+                    $bank_name_en = $driver->bank_code;
+
+                if ($type == 'bank' AND ($benName == '' OR $benIBAN == '' OR $benIqama == '')) {
+                    $i++;
+                    continue;
+                }
+
+                $salary = DB::select("SELECT id, export_attempt from journal where driverId = '$driver_id' AND journal_date BETWEEN '$from' AND '$to'");
+                if(count($salary) > 0) {
                     $export_attempt = $salary[0]->export_attempt;
                     $export_attempt += 1;
+                } else {
+                    $export_attempt = 1;
+                }
+                if(count($salary) > 0) {
                     DB::update("Update journal set export_attempt = '$export_attempt', status = 'Onhold', exported_by = '$user_id', updatedby_id = '$user_id', updated_at = NOW() where driverId = '$driver_id' AND journal_date BETWEEN '$from' AND '$to'");
                     $salaryids[] = $salary[0]->id;
-                    $driver = HelperFunctionsController::getDriverData($driver_id);
-                    $amp_ids[] = $driver->job_id;
                 }
 
-                Exported_record::create([
-                    'account_owner_iqama'=>$Select_dbdb->account_owner_iqama,
-                    'accountNumber'=>$Select_dbdb->accountNumber,
-                    'edit_salary'=>(int)$Select_dbdb->edit_salary,
-                    'bank_paid'=>$Select_dbdb->bank_paid,
-                    'CO'=>$Select_dbdb->CO,
-                    'drivers_IDs'=>$Select_dbdb->drivers_IDs,
-                    'job_ids'=>$Select_dbdb->job_ids,
-                    'DriverNames'=>$Select_dbdb->DriverNames,
-                    'PeriodName'=>$request->PeriodName,
-                    'company_Id'=>$request->company_Id,
-                    'created_by'=>Auth::user()->id
-                ]);
-
-                    $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValueExplicit('A' . $rowCount, $Select_dbdb->account_owner_iqama, PHPExcel_Cell_DataType::TYPE_STRING)
-                    ->setCellValueExplicit('B' . $rowCount, $Select_dbdb->accountNumber, PHPExcel_Cell_DataType::TYPE_STRING)
-                    ->SetCellValue('C' . $rowCount, (int)$Select_dbdb->edit_salary)
-                    ->SetCellValue('H' . $rowCount, $Select_dbdb->CO)
-                    ->SetCellValue('I' . $rowCount, $Select_dbdb->job_ids)
-                    ->SetCellValue('J' . $rowCount, $Select_dbdb->DriverNames)
-                    ->SetCellValue('K' . $rowCount, $Select_dbdb->bank_paid);
-                
-                    $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:C$rowCount")->getFont()->setSize(14);
-
-                    $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:B$rowCount")
-                        ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-                    $objPHPExcel->getActiveSheet()->getStyle("C$rowCount")
-                        ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-                    
-                    $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:C$rowCount")->applyFromArray(
-                        array(
-                            'borders' => array(
-                                'allborders' => array(
-                                    'style' => PHPExcel_Style_Border::BORDER_THIN,
-                                    'color' => array('rgb' => '000000')
-                                )
-                            ),
-                            'alignment' => array(
-                                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
-                            )
-                        )
-                    );
-                    $objPHPExcel->getActiveSheet()->getRowDimension($rowCount)->setRowHeight(24);
-                    $rowCount++;
+                $amp_ids[] = $driver->job_id;
+                $iqama = $driver->iqama;
+                $overall = DB::select("SELECT sum(credit) AS t_credit,sum(debit) AS t_debit FROM journal INNER JOIN drivers ON journal.driverId=drivers.id WHERE iqama='$iqama' AND driverId !='$driver_id'");
+                $overAllBalance = round($overall[0]->t_credit - $overall[0]->t_debit);
+                if($overAllBalance < 0) {
+                    $bank_paid = $bank_paids[$i] + $overAllBalance;
+                    if ($bank_paid < 1) {
+                        $i++;
+                        continue;
+                    }
+                    $bank_paid_arr[$i] =  $bank_paid;
+                    $total += $bank_paid;
+                    // manage other * things
+                    $drivers_IDs_arr[$i] = $driver_id;
+                    $job_ids_arr[$i] = $job_ids[$i];
+                    $DriverNames_arr[$i] = $DriverNames[$i];
+                } else {
+                    $bank_paid_arr[$i] =  $bank_paids[$i];
+                    $total += $bank_paids[$i];
+                    // manage other * things
+                    $drivers_IDs_arr[$i] = $driver_id;
+                    $job_ids_arr[$i] = $job_ids[$i];
+                    $DriverNames_arr[$i] = $DriverNames[$i];
                 }
-            
-            $objPHPExcel->setActiveSheetIndex(0);
-            $date = date("Y-m-d H-i-s");
-            $fileName = $request->companyName.'_'.$request->company_Id.'_'.$request->PeriodName.'_STCPayExcel_' . $date . '-' . Auth::user()->id . '.xlsx';
-            // Redirect output to a client’s web browser (Excel2007)
-            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment;filename="' . $fileName . '"');
-            header('Cache-Control: max-age=0');
-            // If you're serving to IE 9, then the following may be needed
-            header('Cache-Control: max-age=1');
+                $fuelInfo = HelperFunctionsController::getFuelInfo($driver->job_id, $from, $to);
 
-            // If you're serving to IE over SSL, then the following may be needed
-            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-            header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-            header('Pragma: public'); // HTTP/1.0
-
-            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-
-            //return(public_path() . '/SANEDSettledExcel/' . $fileName);
-            $objWriter->save('php://output');
-            if(count($amp_ids) > 0) {
-                $made_by = Auth::user()->name;
-                $amp_ids = implode(',', $amp_ids);
-                $msg = "<b>$made_by</b> updated(exported) the journal(salary) with driver amp_ids ('$amp_ids') to Onhold";
-                HelperFunctionsController::add_log($msg, '', $salaryids);
+                if(isset($fuelInfo[0]) AND $fuelInfo[0] > 0) {
+                    $fuelPrice = $fuelInfo[1];
+                    $fuel_per_day = $fuelInfo[2];
+                    $daycount = DB::select("SELECT count(id) as daycount from journal WHERE `journal_type_id` = '6' AND driverId = '$driver_id' AND `journal_date` BETWEEN '$from' AND '$to'");
+                    $fuel_gap = 0;
+                    if (count($daycount) > 0)
+                        $fuel_gap = ($daycount[0]->daycount * $fuel_per_day) - $fuelPrice;
+                    if($fuel_gap < 0) {
+                        $bank_paid = $bank_paid_arr[$i] + $fuel_gap;
+                        if ($bank_paid < 1) {
+                            $i++;
+                            continue;
+                        }
+                        $bank_paid_arr[$i] =  $bank_paid;
+                        $total += $fuel_gap;
+                        // manage other * things
+                        $drivers_IDs_arr[$i] = $driver_id;
+                        $job_ids_arr[$i] = $job_ids[$i];
+                        $DriverNames_arr[$i] = $DriverNames[$i];
+                    }
+                }
+                $i++;
             }
-            exit;
+            // dd($total);
+            if ($total < 1)
+                continue;
 
+            $Select_dbdb->DriverNames = implode("*",$DriverNames_arr);
+            $Select_dbdb->job_ids = implode("*",$job_ids_arr);
+            $Select_dbdb->drivers_IDs = implode("*",$drivers_IDs_arr);
+            $Select_dbdb->bank_paid = implode("*",$bank_paid_arr);
+            $Select_dbdb->edit_salary = $total;
+            if ($type == 'stc') {
+                $accountNumber = $Select_dbdb->accountNumber;
+                $account_owner_iqama = $Select_dbdb->account_owner_iqama;
+            } else {
+                $accountNumber = $benIBAN;
+                $account_owner_iqama = $benIqama;
+            }
+            Exported_record::create([
+                'account_owner_iqama'=>$account_owner_iqama,
+                'accountNumber'=>$accountNumber,
+                'edit_salary'=>(int)$Select_dbdb->edit_salary,
+                'bank_paid'=>$Select_dbdb->bank_paid,
+                'CO'=>$Select_dbdb->CO,
+                'drivers_IDs'=>$Select_dbdb->drivers_IDs,
+                'job_ids'=>$Select_dbdb->job_ids,
+                'DriverNames'=>$Select_dbdb->DriverNames,
+                'PeriodName'=>$request->PeriodName,
+                'company_Id'=>$request->company_Id,
+                'created_by'=>Auth::user()->id
+            ]);
+            if ($type == 'stc') {
+                $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValueExplicit('A' . $rowCount, $Select_dbdb->account_owner_iqama, PHPExcel_Cell_DataType::TYPE_STRING)
+                ->setCellValueExplicit('B' . $rowCount, $Select_dbdb->accountNumber, PHPExcel_Cell_DataType::TYPE_STRING)
+                ->SetCellValue('C' . $rowCount, (int)$Select_dbdb->edit_salary)
+                ->SetCellValue('H' . $rowCount, $Select_dbdb->CO)
+                ->SetCellValue('I' . $rowCount, $Select_dbdb->job_ids)
+                ->SetCellValue('J' . $rowCount, $Select_dbdb->DriverNames)
+                ->SetCellValue('K' . $rowCount, $Select_dbdb->bank_paid);
+                $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:C$rowCount")->getFont()->setSize(14);
+                $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:B$rowCount")
+                    ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+                $objPHPExcel->getActiveSheet()->getStyle("C$rowCount")
+                    ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+                $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:C$rowCount")->applyFromArray(
+                    array(
+                        'borders' => array(
+                            'allborders' => array(
+                                'style' => PHPExcel_Style_Border::BORDER_THIN,
+                                'color' => array('rgb' => '000000')
+                            )
+                        ),
+                        'alignment' => array(
+                            'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER
+                        )
+                    )
+                );
+                $objPHPExcel->getActiveSheet()->getRowDimension($rowCount)->setRowHeight(24);
+            } else {
+                $ref_data = $Select_dbdb->CO . ':::' . $Select_dbdb->job_ids . ':::' . $Select_dbdb->DriverNames . ':::' . $Select_dbdb->bank_paid;
+                $file_id = DB::table('tbl_bank_file_ref')->insertGetId([
+                    'ref_data' => $ref_data,
+                    'added_by' => $user_id,
+                    'added_on' => DB::raw('NOW()'),
+                ]);
+                if ($file_id > 0) {
+                    $ref_no = date('Ymd') . $file_id;
+                    DB::table('tbl_bank_file_ref')->where('id', $file_id)->update(['reference_no' => $ref_no]);
+                } else {
+                    DB::rollback();
+                    dd("Oh! Issue in generating Reference code!");
+                }
+                $objPHPExcel->setActiveSheetIndex(0)
+                ->SetCellValue('A' . $rowCount, $bank_name_en)
+                ->SetCellValue('B' . $rowCount, $benIBAN)
+                ->SetCellValue('C' . $rowCount, (int)$Select_dbdb->edit_salary)
+                ->SetCellValue('D' . $rowCount, $ref_no)
+                ->SetCellValue('E' . $rowCount, $benName)
+                ->SetCellValue('F' . $rowCount, $benIqama)
+                ->SetCellValue('G' . $rowCount, $driver->warehouseName);
+            }
+            $rowCount++;
+        }
+        $objPHPExcel->setActiveSheetIndex(0);
+        $date = date("Y-m-d H-i-s");
+        if ($type == 'stc')
+            $fileName = $request->companyName.'_'.$request->company_Id.'_'.$request->PeriodName.'_STCPayExcel_' . $date . '-' . Auth::user()->id . '.xlsx';
+        else
+            $fileName = $request->companyName.'_'.$request->company_Id.'_'.$request->PeriodName.'_BANKPayExcel_' . $date . '-' . Auth::user()->id . '.xlsx';
+        // Redirect output to a client’s web browser (Excel2007)
+        DB::commit();
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+
+        //return(public_path() . '/SANEDSettledExcel/' . $fileName);
+        $objWriter->save('php://output');
+        if(count($amp_ids) > 0) {
+            $made_by = Auth::user()->name;
+            $amp_ids = implode(',', $amp_ids);
+            $msg = "<b>$made_by</b> updated(exported) the journal(salary) with driver amp_ids ('$amp_ids') to Onhold";
+            HelperFunctionsController::add_log($msg, '', $salaryids);
+        }
+        exit;
     }
-    
-    
+
+
     public function ExportSalarySTC(Request $request)
     {
         // dd($request->PeriodName());
@@ -730,14 +852,14 @@ class ExportSTCController extends Controller
         ini_set('display_startup_errors', TRUE);
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $objPHPExcel = new PHPExcel();
-        
+
         $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValueExplicit('A1', 'Reference Number')
             ->setCellValueExplicit('B1', 'Telephone Number')
             ->setCellValue('C1', 'Amount')
             ->setCellValue('E2', 'Total Amount')
             ->setCellValue('F2', '=SUM(C:C)');
-        
+
         $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(21.67);
         $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(37.89);
         $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(24.89);
@@ -783,7 +905,7 @@ class ExportSTCController extends Controller
 
         $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(24);
 
-    
+
         DB::statement('SET SESSION group_concat_max_len = 5555555');
             $Select_db = DB::select("
             SELECT
@@ -808,9 +930,9 @@ class ExportSTCController extends Controller
                 AND SUBSTR(accountNumber, 1, 3) =('966')
                 AND edit_salary>0
                 GROUP BY account_owner_iqama,accountNumber");
-            
+
             $rowCount = 2;
-            
+
             foreach ($Select_db as $Select_dbdb) {
                  if($Select_dbdb->edit_salary < 1)
                     continue;
@@ -824,8 +946,8 @@ class ExportSTCController extends Controller
                     ['drivers_IDs',$Select_dbdb->drivers_IDs],
                     ['job_ids',$Select_dbdb->job_ids],
                     ['DriverNames',$Select_dbdb->DriverNames]
-                ])->get(); 
-                
+                ])->get();
+
                 // if(count($check_if_exported_before)>0){
 
                 // }else{
@@ -852,14 +974,14 @@ class ExportSTCController extends Controller
                     ->SetCellValue('I' . $rowCount, $Select_dbdb->job_ids)
                     ->SetCellValue('J' . $rowCount, $Select_dbdb->DriverNames)
                     ->SetCellValue('K' . $rowCount, $Select_dbdb->bank_paid);
-                
+
                     $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:C$rowCount")->getFont()->setSize(14);
 
                     $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:B$rowCount")
                         ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
                     $objPHPExcel->getActiveSheet()->getStyle("C$rowCount")
                         ->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
-                    
+
                     $objPHPExcel->getActiveSheet()->getStyle("A$rowCount:C$rowCount")->applyFromArray(
                         array(
                             'borders' => array(
@@ -876,14 +998,14 @@ class ExportSTCController extends Controller
                     $objPHPExcel->getActiveSheet()->getRowDimension($rowCount)->setRowHeight(24);
                     $rowCount++;
                 }
-               
+
             // }
-            
+
             $objPHPExcel->setActiveSheetIndex(0);
             $date = date("Y-m-d H-i-s");
             //  if($notNullFile == true){
-                
-             
+
+
                 $fileName = $request->companyName.'_'.$request->company_Id.'_'.$request->PeriodName.'_STCPayExcel_' . $date . '-' . Auth::user()->id . '.xlsx';
                 // Redirect output to a client’s web browser (Excel2007)
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -1210,7 +1332,7 @@ class ExportSTCController extends Controller
         exit;
 
     }
-    
+
     public function ExportLoanSheSTC(Request $request)
     {
         error_reporting(E_ALL);

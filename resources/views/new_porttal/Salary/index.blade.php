@@ -203,20 +203,38 @@ $array = [
                 </div>
             </div>
             <div class="modal-footer">
-                <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSalarySTCShe")}}">
-                    @csrf
-                    <input type="hidden" name="SQL" id="SQL_stc" value="">
-                    <input type="hidden" name="company_Id" id="company_Id">
-                    <input type="hidden" name="companyName" id="companyName">
-                    <input type="hidden" name="PeriodName" id="PeriodName">
-                    <input type="hidden" name="from_to" id="from_to">
-
-                    <button type="submit" name="STC_Report" id="STC_Report" disabled class="btn btn-sm btn-info">STC pay
-                        Excel
-                    </button>
-                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
-                </form>
+                <button name="STC_Report" id="STC_Report" disabled class="btn btn-sm btn-info" onclick="chooseType()">Export</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="typeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Export Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportSalarySTCShe")}}">
+                @csrf
+                <input type="hidden" name="SQL" id="SQL_stc" value="">
+                <input type="hidden" name="company_Id" id="company_Id">
+                <input type="hidden" name="companyName" id="companyName">
+                <input type="hidden" name="PeriodName" id="PeriodName">
+                <input type="hidden" name="from_to" id="from_to">
+                <div class="modal-body">
+                    <label>Please select type:</label>
+                    <select id="paid_type" name="paid_type" class="form-control">
+                        <option value="stc">STC Pay</option>
+                        <option value="bank">Local Bank</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">Excel</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                </div>
         </div>
     </div>
 </div>
@@ -779,6 +797,26 @@ $array = [
                     document.getElementById('responsee').innerHTML = data;
                 }
             });
+        }
+        function chooseType() {
+            if ($('#filter_companyId').val() == '') {
+                alert('Select Company');
+                return false;
+            }
+            if ($('#filter_Period').val() == '') {
+                alert('Select Period');
+                return false;
+            }
+            if ($('#filter_paid_id').val() != '2') {
+                alert('Select Paid Typeا');
+                return false;
+            }
+            if ($('#SQL_stc').val().indexOf("TRIM(ROUND(paid_salary,2))+0 =0") == -1) {
+                alert('First you have to click on Filter button');
+                return false;
+            }
+            $('#typeModal').modal('show');
+
         }
     </script>
 @stop

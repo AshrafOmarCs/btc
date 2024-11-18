@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\DB;
     Route::get("DA_PANDA_Handling",'AshrafController@DA_PANDA_Handling');
 
 Route::group(['prefix' => 'New-Portal'], function() {
+    Route::get('Vehicles','VehiclesController@index');
+    Route::get('delegatedVehicles','VehiclesController@delegatedVehicles')->name('delegatedVehicles');
+    Route::GET('Vehicles/VehicleFuelSave', 'VehiclesController@VehicleFuel');
+
     Route::post('BulkDriversUpdate', 'DriversController@BulkDriversUpdate')->name('BulkDriversUpdate');
 
     Route::post("/updateProfilePic",'UsersController@updateProfilePic')->name('updateProfilePic');
@@ -83,6 +87,14 @@ Route::group(['prefix' => 'New-Portal'], function() {
 
 
 });
+Route::POST('Vehicles/VehicleReport', 'VehiclesController@VehicleReport');
+Route::post('Vehicles/historyVehicle','VehiclesController@historyVehicle');
+Route::post('Vehicles/historyVehicleDrivers','VehiclesController@historyVehicleDrivers');
+Route::post('Vehicles/updateDelegation','VehiclesController@updateDelegation');
+Route::POST('/VehicleFuelSave', 'VehiclesController@VehicleFuelSave');
+Route::POST('Vehicles/Vehicles', 'VehiclesController@Vehicles');
+Route::POST('vehicles/fuel/link', 'VehiclesController@fuelLink');
+
 Route::get("CheckingLandmarkDAs",'AshrafController@CheckingLandmarkDAs');
 Route::get('/getJournalPeriod/{companyId}', 'ClaimsDeductionController@getJournalPeriod');
 

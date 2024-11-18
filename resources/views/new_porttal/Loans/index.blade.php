@@ -176,6 +176,45 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="typeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Export Type</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+          <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportLoanSheSTC")}}">
+              @csrf
+              <input type="hidden" name="SQL" id="SQL">
+              <input type="hidden" name="companyName" id="companyName">
+              <input type="hidden" name="PeriodName" id="PeriodName">
+            <div class="modal-body">
+                 <div>
+                      <label>Please select type:</label>
+                      <select id="paid_type" name="paid_type" class="form-control">
+                          <option value="stc">STC Pay</option>
+                          <option value="bank">Local Bank</option>
+                      </select>
+                  </div>
+            </div>
+            <div class="modal-footer">
+              <table style="width: 100%">
+                  <tr>
+                      <td style="width: 40%">
+                              <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">
+                                  Excel
+                              </button>
+                          </span>
+                          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                      </td>
+                  </tr>
+
+              </table>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
 <!-- Modal ExportExcel 3 -->
 @php
 $array = [
@@ -298,15 +337,9 @@ $module = "Loan";
                                 <button class="btn btn-danger" onclick="delete_loan()" title="Delete"> <i class="bi bi-trash-fill"></i></button>
                                 <a href="javascript:add();" class="btn btn-sm btn-info "><i class="bi bi-plus"></i> {{__('loans.Add_New_Loan')}}</a>
                                 @if(Auth::user()->user_type_id==1 && session('Post_15')==1)
-                                    <form method="POST" onsubmit="return validateForm()" action="{{URL("/ExportLoanSheSTC")}}">
-                                        @csrf
-                                        <input type="hidden" name="SQL" id="SQL">
-                                        <input type="hidden" name="companyName" id="companyName">
-                                        <input type="hidden" name="PeriodName" id="PeriodName">
-                                        <button type="submit" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">STC pay
-                                            Excel
-                                        </button>
-                                    </form>
+                                    <button type="button" name="STC_Report" id="STC_Report" class="btn btn-sm btn-info" onclick="chooseType()">
+                                        Export
+                                    </button>
                                 @endif
                             </div>
                         </div>
@@ -331,7 +364,7 @@ $module = "Loan";
                                 <TH>Job ID</TH>
                                 <TH>Driver</TH>
                                 @if(Auth::user()->user_type_id==1)
-                                    <TH>Previous Balance</TH>
+                                    <TH>previous Balance</TH>
                                     <TH>Current Balance</TH>
                                 @endif
                                 <TH>Journal Date</TH>
@@ -342,6 +375,7 @@ $module = "Loan";
                                 <TH>OverAll Balance</TH>
                                 <TH>Note</TH>
                                 <TH>Status</TH>
+                                <TH>Exporting Status</TH>
                                 <TH>Attempt</TH>
                                 <TH>Iqama</TH>
                                 <TH>STC No</TH>
@@ -352,6 +386,8 @@ $module = "Loan";
                                 <TH>Action</TH>
                                 <TH style="display:none;">DriverId</TH>
                                 <TH style="display:none;">Account Owner Iqama</TH>
+                                <TH style="display:none;">Ben Iqama</TH>
+                                <TH style="display:none;">Ben IBAN</TH>
                             </thead>
                             <tbody></tbody>
                             <tfoot>
@@ -363,9 +399,9 @@ $module = "Loan";
                                     @endif
                                     <TH></TH>
                                     @if(Auth::user()->user_type_id==1)
-                                        <TH colspan='9'></TH>
+                                        <TH colspan='12'></TH>
                                     @else
-                                        <TH colspan='7'></TH>
+                                        <TH colspan='10'></TH>
                                     @endif
                                 </tr>
                             </tfoot>
@@ -387,6 +423,9 @@ $module = "Loan";
         <!-- Main Js Required -->
         <script src="{{asset('assets/js/main.js')}}"></script>
         <script>
+            function chooseType() {
+                $('#typeModal').modal('show');
+            }
             function revert_status(id, name, job_id, amount)
             {
                 $('#reverse_modal').modal('toggle');
@@ -484,221 +523,309 @@ $module = "Loan";
                 var checkboxCounter = 0;
                 fill_datatable();
                 function fill_datatable(filter_companyId = '', filter_warehouseId = '', filter_job_id = '', filter_driverId = '', filter_journal_date = '', filter_amount = '', filter_status_id = '', filter_note = '', filter_updatedby_id = '', filter_updated_usertypeid = '', filter_created_at = '', filter_updated_at = '',filter_Loan_type = '') {
-                    var filter_Loan_type = document.getElementById('filter_Loan_type').value;
-                    // alert(filter_Loan_type);
-                    var dataTable = $('#customer_data').DataTable({
-                        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-                        dom: 'lBfrtip',
-                        "buttons": [
-                            {
-                                extend: 'excel',
-                                text: 'Export to Excel',
-                                exportOptions: {
-                                    modifier: {
-                                        search: 'applied',
-                                        order: 'applied'
-                                    }
+                var filter_Loan_type = document.getElementById('filter_Loan_type').value;
+                var dataTable = $('#customer_data').DataTable({
+                    lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                    dom: 'lBfrtip',
+                    "buttons": [
+                        {
+                            extend: 'excel',
+                            text: 'Export to Excel',
+                            exportOptions: {
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
                                 }
                             }
-                        ],
-                        //searching: false,
-                        responsive: true,
-                        processing: true,
-                        serverSide: true,
-                        @if(Auth::user()->user_type_id==1)
-                        "order": [[18, "desc"]],
-                        @else
-                        "order": [[0, "desc"]],
-                        @endif
-                        "pagingType": "full_numbers",
-                        "autoWidth": false,
-                        "fnDrawCallback": function (settings) {
-                            $('[data-toggle="tooltip"]').tooltip();
-                            var api = this.api()
-                            var json = api.ajax.json();
-                            if (json && json.data && json.data.length > 0) {
-                                // json.data[0].accountNumber = 966539529559;
-                                // console.log(json.data[0].accountNumber);
-                                @if(Auth::user()->user_type_id==1)
-                                    $(api.column(10).footer()).html(json.amount);
-                                @else
-                                    $(api.column(6).footer()).html(json.amount);
-                                @endif
-                                $('#SQL').val(json.SQL + " and loan.status = 'Ready'");
-                            } else {
-                                @if(Auth::user()->user_type_id==1)
-                                    $(api.column(10).footer()).html('');
-                                @else
-                                    $(api.column(6).footer()).html('');
-                                @endif
-                                $('#SQL').val("");
-                                console.log("JSON data is empty or undefined.");
-                            }
-                        },
-                        "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
-                        //alert(aData['account_owner_iqama_check']);
+                        }
+                    ],
+                    //searching: false,
+                    responsive: true,
+                    processing: true,
+                    serverSide: true,
+                    @if(Auth::user()->user_type_id==1)
+                    "order": [[1, "desc"]],
+                    @else
+                    "order": [[0, "desc"]],
+                    @endif
+                    "pagingType": "full_numbers",
+                    "autoWidth": false,
+                    "fnDrawCallback": function (settings) {
+                        $('[data-toggle="tooltip"]').tooltip();
+                        var api = this.api()
+                        var json = api.ajax.json();
+                        if (json && json.data && json.data.length > 0) {
+                            // json.data[0].accountNumber = 966539529559;
+                            // console.log(json.data[0].accountNumber);
                             @if(Auth::user()->user_type_id==1)
-                            if(aData['account_owner_iqama_check']=='No'){
-                                $(nRow).find('td:eq(15)').css('background-color', 'red');
-                            }
-                            if(aData['accountNumber_check']=='No'){
-                                $(nRow).find('td:eq(16)').css('background-color', 'red');
-                            }
+                                $(api.column(10).footer()).html(json.amount);
                             @else
-                            if(aData['account_owner_iqama_check']=='No'){
-                                $(nRow).find('td:eq(10)').css('background-color', 'red');
-                            }
-                            if(aData['accountNumber_check']=='No'){
-                                $(nRow).find('td:eq(11)').css('background-color', 'red');
-                            }
+                                $(api.column(6).footer()).html(json.amount);
                             @endif
+                            $('#SQL').val(json.SQL + " and loan.status = 'Ready'");
+                        } else {
+                            @if(Auth::user()->user_type_id==1)
+                                $(api.column(10).footer()).html('');
+                            @else
+                                $(api.column(6).footer()).html('');
+                            @endif
+                            $('#SQL').val("");
+                            console.log("JSON data is empty or undefined.");
+                        }
+                    },
+                    "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+                     //alert(aData['account_owner_iqama_check']);
+                        @if(Auth::user()->user_type_id==1)
+                        if(aData['account_owner_iqama_check']=='No'){
+                            $(nRow).find('td:eq(16)').css('background-color', 'red');
+                        }
+                        if(aData['accountNumber_check']=='No'){
+                            $(nRow).find('td:eq(17)').css('background-color', 'red');
+                        }
+                        @else
+                        if(aData['account_owner_iqama_check']=='No'){
+                            $(nRow).find('td:eq(11)').css('background-color', 'red');
+                        }
+                        if(aData['accountNumber_check']=='No'){
+                            $(nRow).find('td:eq(12)').css('background-color', 'red');
+                        }
+                        @endif
+
+                    },
+                    ajax: {
+                        url: "{{ route('Loans/index') }}",
+                        data: {
+                            filter_companyId: filter_companyId,
+                            filter_warehouseId: filter_warehouseId,
+                            filter_job_id: filter_job_id,
+                            filter_Loan_type:filter_Loan_type,
+                            filter_driverId: filter_driverId,
+                            filter_journal_date: filter_journal_date,
+                            filter_amount: filter_amount,
+                            filter_status_id: filter_status_id,
+                            filter_note: filter_note,
+                            filter_updatedby_id: filter_updatedby_id,
+                            filter_updated_usertypeid: filter_updated_usertypeid,
+                            filter_created_at: filter_created_at,
+                            filter_updated_at: filter_updated_at,
+                        }
+                    },
+                    columns: [
+                        @if (Auth::user()->user_type_id == 1)
+                        {
+                            orderable: false,
+                            data: 'id',
+                            name: 'id',
+                            render: function (data, type, row, meta) {
+                                let checkbox = '';
+                                return checkbox = '<span style="text-align: center"><input class="check_status" name="ID_' + checkboxCounter + '" type="checkbox" value="' + row.id + '"></span>';
+                            }
+                        },
+                        @endif
+                        {
+                            data: 'created_at',
+                            name: 'created_at',
+                            render: function (data, type, row, meta) {
+                                return row.created_at;
+                            }
+                        },
+                        {
+                            data: 'companyName',
+                            name: 'lkp_company.companyName'
+                        },
+                        {
+                            data: 'warehouseName',
+                            name: 'warehouse.warehouseName'
+                        },
+                        {
+                            data: 'job_id',
+                            name: 'drivers.job_id'
+                        },
+                        {
+                            data: 'fullName',
+                            name: 'drivers.fullName',
+                            render: function (data, type, row, meta) {
+                                return '<a href="javascript:driver(' + row.driverId + ')">' + data + '</a>';
+                            }
 
                         },
-                        ajax: {
-                            url: "{{ route('Loans/index') }}",
-                            data: {
-                                filter_companyId: filter_companyId,
-                                filter_warehouseId: filter_warehouseId,
-                                filter_job_id: filter_job_id,
-                                filter_Loan_type:filter_Loan_type,
-                                filter_driverId: filter_driverId,
-                                filter_journal_date: filter_journal_date,
-                                filter_amount: filter_amount,
-                                filter_status_id: filter_status_id,
-                                filter_note: filter_note,
-                                filter_updatedby_id: filter_updatedby_id,
-                                filter_updated_usertypeid: filter_updated_usertypeid,
-                                filter_created_at: filter_created_at,
-                                filter_updated_at: filter_updated_at,
-                            }
+                            @if(Auth::user()->user_type_id==1)
+                        {
+                            data: 'per_priod',
+                            name: 'balance.per_priod'
                         },
-
-                        columns: [
-                            @if (Auth::user()->user_type_id == 1)
-                            {
-                                orderable: false,
-                                data: 'checkbox',
-                                name: 'id',
-                            },
+                        {
+                            data: 'cur_priod',
+                            name: 'balance.cur_priod'
+                        },
                             @endif
-                            {
-                                data: 'created_at',
-                                name: 'created_at',
-                                render: function (data, type, row, meta) {
-                                    return row.created_at;
+                        {
+                            data: 'journal_date',
+                            name: 'journal_date'
+                        },
+                            @if(Auth::user()->user_type_id==1)
+                        {
+                            data: 'journal_period',
+                            name: 'journal_period',
+                            bSearchable: false
+                        },
+                            @endif
+                        {
+                            data: 'amount',
+                            name: 'amount'
+                        },
+                        {
+                            data: 'overall',
+                            name: 'overall',
+                            bSearchable: false
+                        },
+                        {
+                            data: 'note',
+                            name: 'note',
+                            render: function (data, type, row, meta) {
+                                if(row.proof_file == null) {
+                                    return row.note;
+                                } else {
+                                    return row.note + ' <a title="Proof File" target="_blank" href="/storage/images/' + row.proof_file + '"> <i class="fa fa-eye"></i></a>';
                                 }
-                            },
-                            {
-                                data: 'companyName',
-                                name: 'lkp_company.companyName'
-                            },
-                            {
-                                data: 'warehouseName',
-                                name: 'warehouse.warehouseName'
-                            },
-                            {
-                                data: 'job_id',
-                                name: 'drivers.job_id'
-                            },
-                            {
-                                data: 'fullName',
-                                name: 'drivers.fullName',
+                            }
 
-                            },
-                                @if(Auth::user()->user_type_id==1)
-                            {
-                                data: 'per_priod',
-                                name: 'balance.per_priod'
-                            },
-                            {
-                                data: 'cur_priod',
-                                name: 'balance.cur_priod'
-                            },
-                                @endif
-                            {
-                                data: 'journal_date',
-                                name: 'journal_date'
-                            },
-                                @if(Auth::user()->user_type_id==1)
-                            {
-                                data: 'journal_period',
-                                name: 'journal_date',
-                                bSearchable: false
-                            },
-                                @endif
-                            {
-                                data: 'amount',
-                                name: 'amount'
-                            },
-                            {
-                                data: 'overall',
-                                name: 'amount'
-                            },
-                            {
-                                data: 'note',
-                                name: 'note',
+                        },
+                        {
+                            data: 'loan_status',
+                            name: 'lkp_loan_status.loan_status',
+                            render: function (data, type, row, meta) {
+                                let status = '';
+                                let color = '';
+                                let disabled = '';
+                                let class_ = '';
+                                if (row.status_id == "1") {
+                                    status += '<center><span class="label label-warning">' + row.loan_status + '</span></center>';
+                                } else if (row.status_id == "2") {
+                                    status += '<center><span class="label label-danger">' + row.loan_status + '</span></center>';
+                                } else if (row.status_id == "3") {
+                                    status += '<center><span class="label label-primary">' + row.loan_status + '</span></center>';
+                                } else if (row.status_id == "4") {
+                                    status += '<center><span class="label label-success">' + row.loan_status + '</span></center>';
+                                } else if (row.status_id == "5") {
+                                    status += '<center><span class="label label-info">' + row.loan_status + '</span></center>';
+                                }
+                                if(row.status == 'Ready') {
+                                    color = 'green';
+                                    disabled = 'disabled';
+                                    class_ = '';
+                                } else if(row.status == 'Onhold') {
+                                    color = 'orange';
+                                    disabled = '';
+                                    class_ = 'check-status';
+                                } else if(row.status == 'Paid') {
+                                    color = 'Blue';
+                                    disabled = 'disabled';
+                                    class_ = '';
+                                }
+                                let exported_by = '';
+                                if (row.user_name != null)
+                                    exported_by = '(' + row.user_name + ')';
+
+                                status += '<span style="text-align: center; display: block;color:'+color+';">'+row.status +'</span><center><span style="color: black !important">'+exported_by+'</span></center>';
+                                return status;
+                            }
+                        },
+                        {
+                                data: 'export_ticket',
+                                name: 'export_ticket',
                                 render: function (data, type, row, meta) {
-                                    if(row.proof_file == null) {
-                                        return row.note;
+                                    if (row.export_ticket == null && row.overall < 0) {
+                                        return '<center><a href="#" onlclick="unlock('+row.id+')"><i class="fa fa-lg fa-unlock"></i></a></center>';
                                     } else {
-                                        return row.note + ' <a title="Proof File" target="_blank" href="/storage/images/' + row.proof_file + '"> <i class="fa fa-eye"></i></a>';
+                                        return '<center><i class="fa fa-lg fa-unlock"></i></center>';
                                     }
                                 }
+                        },
+                        {
+                            data: 'export_attempt',
+                            name: 'export_attempt',
+                            render: function (data, type, row, meta) {
+                                    return '<center><div class="circle">'+row.export_attempt+'</div></center>';
+                            }
+                        },
+                        {
 
-                            },
-                            {
-                                data: 'loan_status',
-                                name: 'lkp_loan_status.loan_status',
-                            },
-                            {
-                                data: 'export_attempt',
-                                name: 'export_attempt',
-                                render: function (data, type, row, meta) {
-                                        return '<center><div class="circle">'+row.export_attempt+'</div></center>';
+                            data: 'account_owner_iqama',
+                            name: 'drivers.account_owner_iqama',
+                        },
+
+                        {
+                            data: 'accountNumber',
+                            name: 'drivers.accountNumber'
+                        },
+                            @if(Auth::user()->user_type_id==1)
+                        {
+                            data: 'name',
+                            name: 'users.name',
+                            render: function (data, type, row, meta) {
+                                if (row.updated_usertypeid == "4") {
+                                    return '';
+                                } else {
+                                    return row.name;
                                 }
-                            },
-                            {
-
-                                data: 'account_owner_iqama',
-                                name: 'drivers.account_owner_iqama',
-                            },
-
-                            {
-                                data: 'accountNumber',
-                                name: 'drivers.accountNumber'
-                            },
+                            }
+                        },
+                        {
+                            data: 'updated_at',
+                            name: 'updated_at'
+                        },
+                            @endif
+                        {
+                            "orderable": false,
+                            className: "dt-nowrap",
+                            "targets": -1,
+                            data: 'id',
+                            "render": function (data, type, row, meta) {
+                                checkboxCounter++;
+                                var i = '';
+                                if (row.status_id != "4") {
+                                    @if(Auth::user()->user_type_id==1)
+                                        i = i + '<a id=' + row.id + ' data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"> <i class="fa fa-pencil"></i> </a>';
+                                    i = i + '&nbsp;<a id=' + row.id + ' data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete"> <i class="fa fa-times"></i> </a>';
+                                    @endif
+                                } else {
+                                    i = i +'&nbsp;<a onclick="revert_status(\'' +row.id + '\', \'' +row.fullName + '\', \'' +row.job_id + '\', \'' +row.amount + '\')" data-original-title="revert" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow revert"> <i class="fa fa-undo"></i> </a>';
+                                }
+                                i = i + '&nbsp;<a id=' + row.id + ' data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>';
                                 @if(Auth::user()->user_type_id==1)
-                            {
-                                data: 'createdby_id',
-                                name: 'users.name',
-                            },
-                            {
-                                data: 'updated_at',
-                                name: 'updated_at'
-                            },
+                                if (row.status_id == "3" || row.status_id == "5")
+                                    i = i + '&nbsp;<button id=' + row.id + ' type="button" class="btn btn-primary btn-xs updatePaid">Paid</button>';
                                 @endif
-                            {
-                                "orderable": false,
-                                className: "dt-nowrap",
-                                "targets": -1,
-                                data: 'action',
-                            },
-                            {
-                                visible: false,
-                                data: 'driverId',
-                                name: 'loan.driverId',
-                            },
-                            {
-                                visible: false,
-                                data: 'account_owner_iqama',
-                                name: 'drivers.account_owner_iqama',
-                            },
-
-                        ]
-                    });
+                                    return i
 
 
-                }
+                            }
+                            //onclick=\"document.getElementById('row_id').value='"+data+"'\"
+                        },
+                        {
+                            visible: false,
+                            data: 'driverId',
+                            name: 'loan.driverId',
+                        },
+                        {
+                            visible: false,
+                            data: 'account_owner_iqama',
+                            name: 'drivers.account_owner_iqama',
+                        },
+                        {
+                            visible: false,
+                            data: 'benIqama',
+                            name: 'drivers.benIqama',
+                        },
+                        {
+                            visible: false,
+                            data: 'benIBAN',
+                            name: 'drivers.benIBAN',
+                        },
+                    ]
+                });
+            }
 
                 $('#customer_data tbody').on('click', '.view', function (e) {
                     e.preventDefault();

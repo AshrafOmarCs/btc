@@ -259,7 +259,7 @@
                         </div>
                      </div>
                 </div>
-                <form id="driverForm">
+                <form id="driverForm" enctype="multipart/form-data">
                     @csrf
                     <div id="create_da_from" style="display: none">
                         <h5>{{__('drivers.select_method')}}: </h5>
@@ -477,7 +477,8 @@ $module = "Driver";
                                         <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Iqama')}}</TH>
                                         <TH class="text-center" style="vertical-align: middle;">{{__('drivers.JobId')}}</TH>
                                         <th class="text-center" style="vertical-align: middle;">{{__('drivers.DriverDocs')}}</th>
-                                        <TH class="text-center" style="vertical-align: middle;">{{__('drivers.AppStatus')}}</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">Driver Data</TH>
+                                        <TH class="text-center" style="vertical-align: middle;">Notifications</TH>
                                         <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Status')}}</TH>
                                         @if(Auth::user()->user_type_id==1)
                                             {{-- <TH class="text-center" style="vertical-align: middle;">{{__('drivers.OnHold')}} --}}
@@ -495,6 +496,9 @@ $module = "Driver";
 
                                         <TH class="text-center" style="vertical-align: middle; display:none;">{{__('drivers.AccountNumber')}}</TH>
                                         <TH class="text-center" style="vertical-align: middle; display:none;">{{__('drivers.Account_Owner_Iqama')}}</TH>
+                                        <TH style="display:none;">Ben Name</TH>
+                                        <TH style="display:none;">Ben Iqama</TH>
+                                        <TH style="display:none;">Ben IBAN</TH>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -545,17 +549,21 @@ $module = "Driver";
                 contentType: false,
                 success: function(response) {
                     if (response.status == 420) {
-                        var alert = 'danger';
+                        var alrt = 'danger';
+                        alert(response.message);
                     } else {
-                        var alert = 'success';
+                        var alrt = 'success';
+                        $('#message').html('<div class="alert alert-'+alrt+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" onclick="closeAlert()" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                        $('#driverForm')[0].reset();
+                        $('#addNewDriver').modal('hide');
                     }
-                    $('#message').html('<div class="alert alert-'+alert+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" onclick="closeAlert()" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-                    $('#driverForm')[0].reset();
-                    $('#addNewDriver').modal('hide');
+
                 },
                 error: function(xhr) {
-                    $('#message').html("");
-                    document.getElementById('create_da_from').innerHTML = xhr;
+                    alert(response.message);
+
+                    // $('#message').html("");
+                    // document.getElementById('create_da_from').innerHTML = xhr;
                 }
             });
         });
@@ -632,8 +640,8 @@ $module = "Driver";
 
                 columns: [
                     {
-                        data: 'company_logo',
-                        name: 'lkp_company.company_logo',
+                        data: 'companyName',
+                        name: 'lkp_company.companyName',
                         render: function (data, type, row, meta) {
                             let link = '';
                             if (row.company_logo == null) {
@@ -691,16 +699,31 @@ $module = "Driver";
                                 contract = '<a target="_blank" href="/Attachment/Image_JobContract/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="view" style="color: green; margin-right: 5px"></i></a>';
                             }
                             return `<table class="inner-table">
-                                <thead><tr><th style="color: white">IDENTITY</th><td class="text-center" style="">`+identity+`</td></tr><tr><th style="color: white">PROMISSORY NOTE</th><td class="text-center" style="">`+promise_note+`</td></tr><tr><th style="color: white">CONTRACT</th><td class="text-center" style="display: flex;">`+contract+` | <a target="_blank" href="/Attachment/Image_JobContract/'+row.id+'.jpg"><i class="bi bi-eye-fill" title="E-Contract" style="color: green; margin-left: 5px"></i></a> </td></tr></thead>
+                                <thead><tr><th style="color: white">IDENTITY</th><td class="text-center" style="">`+identity+`</td></tr><tr><th style="color: white">PROMISSORY NOTE</th><td class="text-center" style="">`+promise_note+`</td></tr><tr><th style="color: white">CONTRACT</th><td class="text-center" style="display: flex;">`+contract+` | <a target="_blank" href="/DA-Conctrats/` + row.job_id + `"><i class="bi bi-eye-fill" title="E-Contract" style="color: green; margin-left: 5px"></i></a> </td></tr></thead>
                                 </table>`;
                         }
                     },
                     {
-                        "orderable": false,
-                        data: 'app_status',
-                        name: 'lkp_driver_status.driver_status_en',
+                        name: 'driver_data',
+                        "className": "text-center",
                         render: function (data, type, row, meta) {
-                                return '<span class="badge badge-warning">Not Yet</span>';
+                            if (row.driver_data == 'applied') {
+                                return '<button type="button" class="btn btn-primary btn-sm" onclick="setRequestIdAndOpenModal(0,' + row.id + ',0)">Approve</button>';
+                            } else if (row.driver_data == 'approved') {
+                                return '<a class="btn btn-success btn-sm" title="approved"><i class="bi bi-hand-thumbs-up"></i></a>';
+                            } else {
+                                return '<a class="btn-warning btn-sm" title="pending"><i class="bi bi-hourglass-bottom"></i></a>'
+                            }
+                        }
+                    },
+                    {
+                        name: 'notificationEnabled',
+                        "className": "text-center",
+                        render: function (data, type, row, meta) {
+                            if (row.notificationEnabled == 1)
+                                return '<a class="btn btn-success btn-sm">On</a>';
+                            else
+                                return '<a class="btn btn-warning btn-sm">Off</a>';
                         }
                     },
                     {
@@ -786,14 +809,14 @@ $module = "Driver";
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a id=` + row.id + ` data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view dropdown-item" href="#">`+view+`</a>
+                                        <a id=` + row.id + ` data-original-title="view" data-toggle="tooltip" data-placement="top" class="    view dropdown-item" href="#">`+view+`</a>
                                     </li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
                                     <li>
                                         <input type="hidden" id="IDs_all_` + meta.row + `" name="IDs_all_` + meta.row + `" value="` + row.id + `">` + `
-                                        <a id=` + row.id + ` data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit dropdown-item" href="#">`+edit+`</a>
+                                        <a id=` + row.id + ` data-original-title="edit" data-toggle="tooltip" data-placement="top" class="    edit dropdown-item" href="#">`+edit+`</a>
                                     </li>
                                     <li>
                                         <hr class="dropdown-divider">
@@ -804,7 +827,7 @@ $module = "Driver";
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue Attachment dropdown-item" href="#">`+attachment+`</a></li>
+                                <li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class=" Attachment dropdown-item" href="#">`+attachment+`</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -813,13 +836,13 @@ $module = "Driver";
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a id=` + row.id + ` data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement">`+statement+` </a></li>
+                                <li><a id=` + row.id + ` href="#" data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="dropdown-item statement">`+statement+` </a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
                                 `;
                                 @if(Auth::user()->user_type_id==1)
-                                    html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">`+deletee+`</span></a></li>
+                                    html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="delete dropdown-item" href="#"><span style="color:red">`+deletee+`</span></a></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>`;
@@ -830,9 +853,6 @@ $module = "Driver";
                                 return html;
                         }
                     },
-                            //     if(Auth::user()->user_type_id==1)
-                            //         '&nbsp;<a id=' + row.id + ' data-original-title="Clearance" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-black vd_black Clearance"> C </a>' +
-                            //     endif
                     {
                         visible: false,
                         data: 'accountNumber',
@@ -843,8 +863,21 @@ $module = "Driver";
                         data: 'account_owner_iqama',
                         name: 'account_owner_iqama',
                     },
-
-
+                    {
+                        visible: false,
+                        data: 'benName',
+                        name: 'benName',
+                    },
+                    {
+                        visible: false,
+                        data: 'benIqama',
+                        name: 'benIqama',
+                    },
+                    {
+                        visible: false,
+                        data: 'benIBAN',
+                        name: 'benIBAN',
+                    }
                 ]
             });
         }
@@ -1237,6 +1270,127 @@ $module = "Driver";
             }
         });
     }
+    function bankChange() {
+        $("#benName").val('');
+        $("#benIBAN").val('');
+        $("#benIqama").val('');
+    }
+    var selectedDriverToApprove = '';
+    function setRequestIdAndOpenModal(args,driver_id,supporvisor_identity_approve){
+        $('#driving_licence').width('120px');
+        $('#identity_file').width('120px');
+        $('#driving_licence').attr("src", '{{asset('images/loading.gif')}}');
+        $('#identity_file').attr("src", '{{asset('images/loading.gif')}}');
+        $('#driver_id').val(driver_id)
+        selectedDriverToApprove = driver_id;
+        $.ajax({
+            type: 'GET',
+            url: "{{URL("/Drivers/approval-review")}}" + "/" + driver_id,
+            contentType: "html",
+            dataType: 'html',
+            success: function (data) {
+                let payload = JSON.parse(data);
+                console.log(payload.payload.companyName)
+                console.log(payload.payload)
+                if(payload.status == true){
+                    $('#project_name').text(payload.payload.companyName)
+                    $('#hub_name').text(payload.payload.warehouseName)
+                    $('#driver_name').text(payload.payload.fullName)
+                    $('#driver_id').text(payload.payload.job_id)
+                    $('#absher_no').html('<input type="number" id="dMobileNumber" value="'+payload.payload.mobileNumber+'">');
+                    $('#driver_dob').html('<input type="date" id="dDob" value="'+payload.payload.dob+'">');
+                    $('#email_dob').html('<input type="text" id="dEmail" value="'+payload.payload.email_id+'">');
+                    $('#driver_iqama').html('<input type="text" id="dIqama" value="'+payload.payload.iqama+'">');
+                    if(payload.payload.iqama == null){
+                        $('#driver_identity_no').text("NULL")
+                        $('#driver_identity_no').css("color:red");
+                    }else{
+                        $('#driver_identity_no').text(payload.payload.iqama)
+                    }
+                        const timeElapsed = Date.now();
+                        console.log(timeElapsed);
+                        $('#driving_licence').width('300px');
+                        $('#driving_licence').attr("src", '/Attachment/Image_DrivingLicence/'+payload.payload['id']+'.jpg?v='+timeElapsed);
+
+
+
+                        $('#identity_file').width('300px');
+                        $('#identity_file').attr("src", '/Attachment/Image_Identity/'+payload.payload['id']+'.jpg?v='+timeElapsed);
+
+                    if(payload.payload['driver_data'] == 'pending'){
+                        $('#status_text').text('Waiting Approval')
+                        $('#approveBtn').prop('disabled', false);
+                    }else{
+                            console.log('supporvisor_identity_approve')
+                        console.log(supporvisor_identity_approve)
+                        if(supporvisor_identity_approve == 1){
+                            $('#status_text').text('Approved At 28-02-2023')
+                            $('#approveBtn').prop('disabled', true);
+                        }else{
+                            $('#status_text').text('Waiting Approval ')
+                            $('#approveBtn').prop('disabled', false);
+                        }
+                    }
+                }
+            }
+        });
+        // End of fill modal Data
+        $('#DAIdentityApproveModal').modal('toggle')
+
+    }
+    function approveIdentity(){
+        let request_id = selectedDriverToApprove;
+        let mobileNumber = $('#dMobileNumber').val();
+        let dob = $('#dDob').val();
+        let email = $('#dEmail').val();
+        let iqama = $('#dIqama').val();
+        if (mobileNumber == '') {
+            alert('Please enter Driver mobile number!')
+        } else if (dob == '') {
+            alert('Please enter Driver DOB date!')
+        } else if (email == '') {
+            alert('Please enter Driver email account!')
+        } else if (iqama == '') {
+            alert('Please enter Driver iqama number!')
+        } else {
+            $.ajax({
+                type: 'GET',
+                url: "{{URL("Drivers/Approve")}}" + "/" + request_id  + "/" + mobileNumber  + "/" + dob  + "/" + email  + "/" + iqama,
+                contentType: "html",
+                dataType: 'html',
+                success: function (data) {
+                    let payload = JSON.parse(data);
+                    if(payload.status){
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+    function rejectIdentity(){
+        var result = confirm("Are you sure Want to reject?");
+        if (result) {
+            let request_id = selectedDriverToApprove;
+            console.log(request_id);
+            $.ajax({
+                type: 'GET',
+                url: "{{URL("Drivers/Reject")}}" + "/" + request_id,
+                contentType: "html",
+                dataType: 'html',
+                success: function (data) {
+                    let payload = JSON.parse(data);
+                    if(payload.status){
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+    function driverInfoChange(type) {
+        $('.personal').hide();
+        $('.financial').hide();
+        $('.'+type).show();
+    }
 </script>
 
 <script>
@@ -1279,10 +1433,10 @@ $module = "Driver";
             var selectedColumns = [];
             selected.forEach(element => {
                 if (element['id'] == 7) {
-                    let id  = element['id'] + 2;
+                    let id  = element['id'] + 3;
                     selectedColumns.push(id);
                 } else if (element['id'] == 8) {
-                    let id  = element['id'] + 3;
+                    let id  = element['id'] + 4;
                     selectedColumns.push(id);
                 } else {
                     selectedColumns.push(element['id']);

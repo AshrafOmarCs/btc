@@ -20,7 +20,8 @@ class HelperFunctionsController extends Controller
         $records = array();
         fgetcsv($CSVfp);
         while (($data = fgetcsv($CSVfp, 1000, ",")) !== FALSE) {
-            $records[] = $data;
+            if (array_filter($data))
+                $records[] = $data;
         }
         fclose($CSVfp);
         return $records;
@@ -29,11 +30,15 @@ class HelperFunctionsController extends Controller
     public static function readExcelData($filePath, $numCells)
     {
         // $filePath = Storage::disk('public')->path('importSANAD/files/' . $safeName);
+
+
         require_once(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $excelReader = PHPExcel_IOFactory::createReaderForFile($filePath);
+
         $excelObj = $excelReader->load($filePath);
         $worksheet = $excelObj->getActiveSheet();
         $highestRow = $worksheet->getHighestRow();
+
         for ($row = $highestRow; $row >= 1; $row--) {
             $cellValue = $worksheet->getCell('A' . $row)->getValue(); // Assuming column A contains data
             if (!empty($cellValue)) {
@@ -53,6 +58,10 @@ class HelperFunctionsController extends Controller
             $data[] = $rowData;
         }
         return $data;
+    }
+    public static function excelDateToPhpDate($serialNumber) {
+        $unixDate = ($serialNumber - 25569) * 86400;
+        return date('Y-m-d', $unixDate);
     }
     // Function to evaluate a mathematical expression
     public static function evaluateExpression($expression, $rowData) {
@@ -76,9 +85,34 @@ class HelperFunctionsController extends Controller
         return $result;
     }
 
-
+    public static function getFuelInfo($job_id, $from, $to) {
+        $pieces = explode("-", $from);
+        $fromYear = $pieces[0];
+        $fromMonth = $fromMonth = ltrim($pieces[1], '0');
+        $fromDay = ltrim($pieces[2], '0');
+        $pieces = explode("-", $to);
+        $toYear = $pieces[0];
+        $toMonth = ltrim($pieces[1], '0');
+        $toDay = ltrim($pieces[2], '0');
+        $response = array();
+        $total = 0;
+        $data = DB::select("SELECT * FROM vehicles_fuel
+              WHERE driver_id = '$job_id' AND ((year = '$fromYear' AND month = '$fromMonth' AND day >= '$fromDay')
+              OR (year = '$toYear' AND month = '$toMonth' AND day <= '$toDay'))");
+        if (count($data) > 0) {
+            $response[0] = count($data);
+            foreach ($data as $row) {
+                $total += $row->fuel_price;
+            }
+            $response[1] = $total;
+            $data = DB::select("SELECT fuel_per_day from drivers WHERE job_id = '$job_id'");
+            if (count($data) > 0)
+                $response[2] = $data[0]->fuel_per_day;
+        }
+        return $response;
+    }
     public static function getDriverData($driverId) {
-        $driver = DB::select("SELECT * FROM drivers WHERE id = '$driverId'");
+        $driver = DB::select("SELECT drivers.*,warehouse.warehouseName,lkp_bank.bank_code FROM drivers left JOIN lkp_bank ON drivers.bank_id=lkp_bank.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id WHERE drivers.id = '$driverId'");
         return $driver[0];
     }
     public static function getInfo($table, $column = '', $id = '') {
@@ -133,6 +167,12 @@ class HelperFunctionsController extends Controller
         $oneYearLater = new \DateTime($date);
         $oneYearLater->add(new DateInterval('P1Y'));
         return $oneYearLater->format('Y-m-d');
+    }
+    public static function today_to_future($date) {
+        $today = new \DateTime();
+        $date1 = new \DateTime($date);
+        $interval = $date1->diff($today);
+        return $interval->format('%a') + 1;
     }
     public static function generateOTP($digits) {
         $otp = '';

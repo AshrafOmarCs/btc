@@ -51,10 +51,7 @@ function get_table_body($totalAmount, $data, $SQL_final) {
         }
 
         $amount_total += $row->amount;
-        if ($disabled == 'disabled')
-            $exported_name = '<span style="color:'.$color.';"><input '.$disabled.' class="'.$class.'" name="ID_' . $i . '" type="checkbox" value="">&nbsp;'.$status .'<span style="color: black !important">'.$exported_name.'</span></span>';
-        else
-            $exported_name = '<span style="color:'.$color.';"><input '.$disabled.' class="'.$class.'" name="ID_' . $i . '" type="checkbox" value="' . $row->id . '">&nbsp;'.$status .'<span style="color: black !important">'.$exported_name.'</span></span>';
+        $exported_name = $status .'<br><span style="color: black !important">'.$exported_name.'</span>';
 
         if ($row->status_id == "1") {
             $loan_status = '<span class="label label-warning">' . $row->loan_status . '</span>';
@@ -80,8 +77,8 @@ function get_table_body($totalAmount, $data, $SQL_final) {
         $action .= '</span>';
         $driverId = $row->driverId;
         $iqama = $row->iqama;
-        $overall = DB::select("SELECT sum(credit) AS t_credit,sum(debit) AS t_debit FROM journal INNER JOIN drivers ON journal.driverId=drivers.id WHERE iqama='$iqama' AND driverId !='$driverId'");
-        $overall = round($overall[0]->t_credit - $overall[0]->t_debit);
+        // $overall = DB::select("SELECT sum(credit) AS t_credit,sum(debit) AS t_debit FROM journal INNER JOIN drivers ON journal.driverId=drivers.id WHERE iqama='$iqama' AND driverId !='$driverId'");
+        // $overall = round($overall[0]->t_credit - $overall[0]->t_debit);
 
         if (Auth::user()->user_type_id == 1) {
             $checkbox = '<span style="text-align: center"><input class="check_status" name="ID_' . $i . '" type="checkbox" value="' . $row->id . '"></span>';
@@ -107,7 +104,6 @@ function get_table_body($totalAmount, $data, $SQL_final) {
                 'amount' => $row->amount,
                 'exported_by' => $exported_name,
                 'note' => $row->note,
-                'loan_status' => $loan_status,
                 'account_owner_iqama' => $row->account_owner_iqama,
                 'accountNumber' => $row->accountNumber,
                 'createdby_id' => $createdby_id,
@@ -118,7 +114,13 @@ function get_table_body($totalAmount, $data, $SQL_final) {
                 'driverId' => $row->driverId,
                 'account_owner_iqama_check' => $row->account_owner_iqama_check,
                 'accountNumber_check' => $row->accountNumber_check,
-                'overall' => $overall
+                'overall' => $row->overall,
+                'status_id' => $row->status_id,
+                'loan_status' => $row->loan_status,
+                'status' => $row->status,
+                'user_name' => $row->user_name,
+                'benIqama' => $row->benIqama,
+                'benIBAN' => $row->benIBAN,
             ];
         } else {
             $body[] = [
@@ -132,7 +134,6 @@ function get_table_body($totalAmount, $data, $SQL_final) {
                 'amount' => $row->amount,
                 'exported_by' => $exported_name,
                 'note' => $row->note,
-                'loan_status' => $loan_status,
                 'account_owner_iqama' => $row->account_owner_iqama,
                 'accountNumber' => $row->accountNumber,
                 'action' => $action,
@@ -141,16 +142,19 @@ function get_table_body($totalAmount, $data, $SQL_final) {
                 'driverId' => $row->driverId,
                 'account_owner_iqama_check' => $row->account_owner_iqama_check,
                 'accountNumber_check' => $row->accountNumber_check,
-                'overall' => $overall
-
+                'overall' => $row->overall,
+                'status_id' => $row->status_id,
+                'loan_status' => $row->loan_status,
+                'status' => $row->status,
+                'user_name' => $row->user_name,
+                'benIqama' => $row->benIqama,
+                'benIBAN' => $row->benIBAN,
 
             ];
         }
     }
     return array($body, $amount_total, $btn, $check);
 }
-
-
 class LoansSheController extends Controller
 {
 
@@ -164,7 +168,7 @@ class LoansSheController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-     public function approval($type, $reason, $id, $check) {
+    public function approval($type, $reason, $id, $check) {
         $loan_id = array();
         $loan_id[] = $id;
         $made_by = Auth::user()->name;
@@ -213,7 +217,7 @@ class LoansSheController extends Controller
             }
         }
      }
-     public function loansRevert(Request $request) {
+    public function loansRevert(Request $request) {
         $loan_id = array();
         $id = $loan_id[] = $request->loan_id;
         $reason = $request->reason;
@@ -271,7 +275,7 @@ class LoansSheController extends Controller
                 return redirect()->back()->with('success', 'Notification to Finance Manager sent successfully');
             }
         }
-     }
+    }
     public function goToReady(Request $request) {
         $ACTION = $request->ACTION;
         $ready_statuss = $request->ready_statuss;
@@ -290,7 +294,7 @@ class LoansSheController extends Controller
                     $credit = $loan[0]->amount;
                     $note = $loan[0]->note;
                     if ($loan[0]->status == 'Paid') {
-                        return redirect()->back()->with('error', "Selected loan(s) already paid");
+                        return redirect('/New-Portal/Loans')->with('error', "Selected loan(s) already paid");
                         exit();
                     } else {
                         DB::insert("INSERT INTO journal (driverId, journal_date, debit, note, status, journal_type_id, post_id, createdby_id, created_at, updatedby_id, updated_at) VALUES ('$driverId', '$journal_date', '$credit', '$note', 'Paid', '1', '$loan_id', '$user_id', NOW(), '$user_id', NOW())");
@@ -304,7 +308,7 @@ class LoansSheController extends Controller
                     $msg = "<b>$made_by</b> updated the loan with driver amp_ids ('$amp_ids') to Paid";
                     HelperFunctionsController::add_log($msg, '', $loan_ids);
                 }
-                return redirect()->back()->with('success', "Status updated successfully");
+                return redirect('/New-Portal/Loans')->with('success', "Status updated successfully");
             } else if($ACTION == 'DELETE') {
                 $amp_ids = array();
                 foreach($loan_ids as $loan_id) {
@@ -316,7 +320,7 @@ class LoansSheController extends Controller
                     $check = DB::select("select id FROM journal WHERE post_id = '$loan_id'");
                     if(count($check) > 0)
                         DB::delete("DELETE from journal WHERE post_id = '$loan_id'");
-                    DB::delete("DELETE from loan WHERE id = '$loan_id'");
+                    DB::delete("Delete from loan WHERE id = '$loan_id'");
                 }
                 if(count($loan_ids) > 0) {
                     $made_by = Auth::user()->name;
@@ -324,7 +328,7 @@ class LoansSheController extends Controller
                     $msg = "<b>$made_by</b> deleted the loan with driver amp_ids ('$amp_ids').";
                     HelperFunctionsController::add_log($msg, '', $loan_ids);
                 }
-                return redirect()->back()->with('success', "Loan Deleted successfully");
+                return redirect('/New-Portal/Loans')->with('success', "Loan Deleted successfully");
             } else if($ACTION == 'READY') {
                 $loanids = array();
                 foreach($loan_ids as $loan_id) {
@@ -346,11 +350,11 @@ class LoansSheController extends Controller
                     $msg = "<b>$made_by</b> updated the loan with driver amp_ids ('$amp_ids') to Ready";
                     HelperFunctionsController::add_log($msg, '', $loanids);
                 }
-                return redirect()->back()->with('success', "Status updated successfully");
+                return redirect('/New-Portal/Loans')->with('success', "Status updated successfully");
             }
         } else {
             // Password is incorrect
-            return redirect()->back()->with('error', "Password is incorrect");
+            return redirect('/New-Portal/Loans')->with('error', "Password is incorrect");
         }
     }
     public function index(Request $request)
@@ -376,7 +380,7 @@ class LoansSheController extends Controller
         $lkp_user_type = DB::select('SELECT * from lkp_user_type');
 
         $Select_db = DB::table('loan')
-            ->select('loan.proof_file', 'loan.export_attempt', 'loan.exported_by','loan.status','loan.id as id','loan.loan_type as loan_type', 'companyName', 'loan.driverId', 'fullName', 'warehouseName', 'job_id', 'iqama',
+            ->select('export_ticket', 'bank_code', 'benName', 'benIqama', 'benIBAN', 'loan.export_attempt', 'proof_file', 'loan.exported_by','loan.status','loan.id as id','loan.loan_type as loan_type', 'companyName', 'loan.driverId', 'fullName', 'warehouseName', 'job_id',
                 DB::raw("iqama, account_owner_iqama,
                 CASE
                     WHEN
@@ -401,6 +405,12 @@ class LoansSheController extends Controller
                 'loan.updatedby_id', 'export.name AS user_name', 'users.name', 'updated_usertypeid', 'user_type',
                 'loan.created_at as created_at', 'loan.updated_at as updated_at', 'per_priod', 'cur_priod',
                 DB::raw("
+                (
+                   SELECT ROUND(SUM(credit) - SUM(debit), 2)
+                   FROM journal
+                   INNER JOIN drivers AS d2 ON journal.driverId = d2.id
+                   WHERE d2.iqama = drivers.iqama
+                ) AS overall,
                 if (period_start<>1,
                     CONCAT(date_format(journal_date - interval period_start-1 day, '%Y-%m'), '-', LPAD(period_start, 2, '0'),
                     ' - ',date_format(journal_date - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m'),'-', LPAD(period_end, 2, '0')),
@@ -479,8 +489,233 @@ class LoansSheController extends Controller
                 $whereIn_array[] = $users_privilegee->warehouseId;
             }
             if (count($whereIn_array) == 0) $whereIn_array[] = 0;
-            $Select_db->whereIn('warehouseId', $whereIn_array);
-            $Select_sum->whereIn('warehouseId', $whereIn_array);
+            $Select_db->whereRaw('warehouseId in (' . implode(",", $whereIn_array) .')');
+            $Select_sum->whereRaw('warehouseId in (' . implode(",", $whereIn_array) .')');
+        }
+
+        if (request()->ajax()) {
+
+            if (!empty($request->filter_companyId)) {
+                $Select_db->whereRaw('companyId in (' . implode(",", $request->filter_companyId) .')');
+                $Select_sum->whereRaw('companyId in (' . implode(",", $request->filter_companyId) .')');
+            }
+            if (!empty($request->filter_warehouseId)) {
+                $Select_db->whereRaw('warehouseId in (' . implode(",", $request->filter_warehouseId) .')');
+                $Select_sum->whereRaw('warehouseId in (' . implode(",", $request->filter_warehouseId) .')');
+            }
+            if (!empty($request->filter_job_id)) {
+                $Select_db->whereRaw("UPPER(job_id) LIKE '%" . strtoupper($request->filter_job_id) . "%'");
+                $Select_sum->whereRaw("UPPER(job_id) LIKE '%" . strtoupper($request->filter_job_id) . "%'");
+            }
+            if (!empty($request->filter_driverId)) {
+                $Select_db->whereRaw('loan.driverId=' . $request->filter_driverId);
+                $Select_sum->whereRaw('loan.driverId=' . $request->filter_driverId);
+            }
+            if (!empty($request->filter_journal_date)) {
+                $filter_journal_date = explode(" - ", $request->filter_journal_date);
+                $Select_db->whereRaw("CAST(journal_date as date) between STR_TO_DATE('$filter_journal_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_journal_date[1]','%d/%m/%Y')");
+                $Select_sum->whereRaw("CAST(journal_date as date) between STR_TO_DATE('$filter_journal_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_journal_date[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_amount)) {
+                $Select_db->whereRaw('amount=' . $request->filter_amount);
+                $Select_sum->whereRaw('amount=' . $request->filter_amount);
+            }
+            if (!empty($request->filter_status_id)) {
+                $Select_db->whereRaw('loan.status_id=' . $request->filter_status_id);
+                $Select_sum->whereRaw('loan.status_id=' . $request->filter_status_id);
+            }
+            // ashraf condition for fuel loans
+            // dd($request->filter_Loan_type);
+            // dd($request->all());
+            if (!empty($request->filter_Loan_type)) {
+                if($request->filter_Loan_type == 'FL'){
+                    $whereIn_array = array();
+                    $whereIn_array = ['fuel_loan'];
+                    // $Select_db->where('loan_type', 'fuel_loan');
+                    $Select_db->whereRaw('loan.loan_type=' . '"fuel_loan"');
+                    $Select_sum->whereRaw('loan.loan_type=' . '"fuel_loan"');
+
+                }elseif($request->filter_Loan_type == 'PL'){
+                    $whereIn_array = array();
+                    $whereIn_array = ['personal_loan'];
+                    $Select_db->whereRaw('loan.loan_type=' . '"personal_loan"');
+                    $Select_sum->whereRaw('loan.loan_type=' . '"personal_loan"');
+                    // $Select_db->whereIn('loan_type', $whereIn_array);
+                }
+            }
+            // ashraf condition for fuel loans
+            if (!empty($request->filter_note)) {
+                $Select_db->whereRaw("UPPER(note) LIKE '%" . strtoupper($request->filter_note) . "%'");
+                $Select_sum->whereRaw("UPPER(note) LIKE '%" . strtoupper($request->filter_note) . "%'");
+            }
+            if (!empty($request->filter_updatedby_id)) {
+                $Select_db->whereRaw('loan.updatedby_id=' . $request->filter_updatedby_id);
+                $Select_sum->whereRaw('loan.updatedby_id=' . $request->filter_updatedby_id);
+            }
+            if (!empty($request->filter_updated_usertypeid)) {
+                $Select_db->whereRaw('updated_usertypeid=' . $request->filter_updated_usertypeid);
+                $Select_sum->whereRaw('updated_usertypeid=' . $request->filter_updated_usertypeid);
+            }
+            if (!empty($request->filter_created_at)) {
+                $filter_created_at = explode(" - ", $request->filter_created_at);
+                $Select_db->whereRaw("CAST(loan.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')");
+                $Select_sum->whereRaw("CAST(loan.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')");
+            }
+            if (!empty($request->filter_updated_at)) {
+                $filter_updated_at = explode(" - ", $request->filter_updated_at);
+                $Select_db->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
+                $Select_sum->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
+            }
+
+            $Select_sum = $Select_sum->first();
+            // dd($Select_db->toSql());
+            return $Select_db->toSql();
+
+             return  datatables()->of($Select_db)
+                ->with('amount', '<b>' . $Select_sum->amount . '</b>')
+                ->with('SQL', $Select_db->toSql())
+                ->make(true);
+            // dd($rea);
+        }
+        return view('new_porttal.Loans.index')->with(compact('lkp_loan_status'))
+            ->with(compact('users'))->with(compact('lkp_user_type'))->with(compact('lkp_company'))->with(compact('warehouse'));
+    }
+
+    public function search(Request $request) {
+        if (Auth::user()->user_type_id <> 1) {
+            $users_privilege = DB::select('SELECT DISTINCT companyId from users_privilege
+            INNER JOIN warehouse on warehouse.id=users_privilege.warehouseId where companyId<>6 AND user_id=' . Auth::user()->id);
+            foreach ($users_privilege as $users_privilegee) {
+                //echo $users_privilegee->warehouseId;
+                $whereIn_array[] = $users_privilegee->companyId;
+            }
+            if (count($whereIn_array) == 0) $whereIn_array[] = 0;
+            $wher = " where lkp_company.status = 'active' AND lkp_company.id in(" . implode(",", $whereIn_array) . ")";
+            $AND = " AND lkp_company.status = 'active' AND lkp_company.id in(" . implode(",", $whereIn_array) . ")";
+        } else {
+            $wher = "where id <> 6 AND lkp_company.status = 'active'";
+            $AND = "";
+        }
+        $lkp_company = DB::select("SELECT * from lkp_company $wher");
+        $warehouse = DB::select('SELECT * from warehouse order by warehouseName');
+        $lkp_loan_status = DB::select('SELECT * from lkp_loan_status ');
+        $users = DB::select('SELECT id,name from users order by name');
+        $lkp_user_type = DB::select('SELECT * from lkp_user_type');
+
+        $Select_db = DB::table('loan')
+            ->select('bank_code', 'benName', 'benIqama', 'benIBAN', 'loan.proof_file', 'loan.export_attempt', 'loan.exported_by','loan.status','loan.id as id','loan.loan_type as loan_type', 'companyName', 'loan.driverId', 'fullName', 'warehouseName', 'job_id',
+                DB::raw("iqama, account_owner_iqama,
+                CASE
+                    WHEN
+                    account_owner_iqama IS NOT NULL
+                    AND account_owner_iqama REGEXP '^[0-9]+$'
+                    AND LENGTH(account_owner_iqama) = 10
+                    AND SUBSTR(account_owner_iqama, 1, 1) in('1','2')
+                    THEN 'Yes'
+                    ELSE 'No'
+                END AS account_owner_iqama_check,
+                CASE
+                    WHEN
+                    accountNumber IS NOT NULL
+                    AND accountNumber REGEXP '^[0-9]+$'
+                    AND LENGTH(accountNumber) = 12
+                    AND SUBSTR(accountNumber, 1, 3) =('966')
+                    THEN 'Yes'
+                    ELSE 'No'
+                END AS accountNumber_check
+                "), 'journal_date',
+                'amount', 'note', 'loan.status_id as status_id', 'loan_status', 'bank_name_en', 'accountNumber',
+                'loan.updatedby_id', 'export.name AS user_name', 'users.name', 'updated_usertypeid', 'user_type',
+                'loan.created_at as created_at', 'loan.updated_at as updated_at', 'per_priod', 'cur_priod',
+                DB::raw("
+                    (
+                       SELECT ROUND(SUM(credit) - SUM(debit), 2)
+                       FROM journal
+                       INNER JOIN drivers AS d2 ON journal.driverId = d2.id
+                       WHERE d2.iqama = drivers.iqama
+                       AND journal.driverId != drivers.id
+                   ) AS overall,
+                if (period_start<>1,
+                    CONCAT(date_format(journal_date - interval period_start-1 day, '%Y-%m'), '-', LPAD(period_start, 2, '0'),
+                    ' - ',date_format(journal_date - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m'),'-', LPAD(period_end, 2, '0')),
+                    CONCAT(date_format(journal_date - interval period_start-1 day, '%Y-%m'), '-', LPAD(period_start, 2, '0'),
+                    ' - ',date_format(journal_date - interval period_start-1 day, '%Y-%m'),'-', LPAD(period_end, 2, '0')))
+                    as journal_period")
+            )
+            ->leftJoin('drivers', 'loan.driverId', '=', 'drivers.id')
+            ->leftJoin('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')
+            ->leftJoin('lkp_company', 'warehouse.companyId', '=', 'lkp_company.id')
+            ->leftJoin('lkp_bank', 'drivers.bank_id', '=', 'lkp_bank.id')
+            ->leftJoin('lkp_loan_status', 'loan.status_id', '=', 'lkp_loan_status.id')
+            ->leftJoin('users', 'loan.createdby_id', '=', 'users.id')
+            ->leftJoin('lkp_user_type', 'loan.createdby_id', '=', 'lkp_user_type.id')
+            ->leftJoin('users as export', 'loan.exported_by', '=', 'export.id')
+            ->leftJoin(DB::raw("(SELECT
+            driverId,
+            TRIM(sum( if( month_logged <= per_priod, credit-debit, 0 ) ))+0 AS per_priod,
+            TRIM(sum( if( month_logged >= cur_priod, credit-debit, 0 ) ))+0 AS cur_priod
+
+
+           from
+
+        (select driverId,period_start,period_end,sum(IFNULL(credit,0)) as credit,sum(IFNULL(debit,0)) as debit,
+               date_format(journal_date - interval period_start-1 day, '%Y-%m') AS month_logged,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m') AS per_priod,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m') AS cur_priod,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m') AS next_priod
+        from journal
+        inner join drivers on drivers.id=journal.driverId
+        inner join warehouse on warehouse.id=drivers.warehouseId
+        inner join lkp_company on lkp_company.id=warehouse.companyId
+        group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
+        group by driverId,per_priod,cur_priod,next_priod
+        )balance"),
+                'balance.driverId', '=', 'drivers.id');
+
+                // dd($Select_db);
+        $Select_sum = DB::table('loan')
+            ->select(DB::raw("sum(amount) as amount, count(loan.id) as loan_count"))
+            ->leftJoin('drivers', 'loan.driverId', '=', 'drivers.id')
+            ->leftJoin('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')
+            ->leftJoin('lkp_company', 'warehouse.companyId', '=', 'lkp_company.id')
+            ->leftJoin('lkp_bank', 'drivers.bank_id', '=', 'lkp_bank.id')
+            ->leftJoin('lkp_loan_status', 'loan.status_id', '=', 'lkp_loan_status.id')
+            ->leftJoin('users', 'loan.updatedby_id', '=', 'users.id')
+            ->leftJoin('lkp_user_type', 'loan.updated_usertypeid', '=', 'lkp_user_type.id')
+            ->leftJoin(DB::raw("(SELECT
+            driverId,
+            TRIM(sum( if( month_logged <= per_priod, credit-debit, 0 ) ))+0 AS per_priod,
+            TRIM(sum( if( month_logged >= cur_priod, credit-debit, 0 ) ))+0 AS cur_priod
+
+
+           from
+
+        (select driverId,period_start,period_end,sum(IFNULL(credit,0)) as credit,sum(IFNULL(debit,0)) as debit,
+               date_format(journal_date - interval period_start-1 day, '%Y-%m') AS month_logged,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m') AS per_priod,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m') AS cur_priod,
+               date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m') AS next_priod
+        from journal
+        inner join drivers on drivers.id=journal.driverId
+        inner join warehouse on warehouse.id=drivers.warehouseId
+        inner join lkp_company on lkp_company.id=warehouse.companyId
+        group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
+        group by driverId,per_priod,cur_priod,next_priod
+        )balance"),
+                'balance.driverId', '=', 'drivers.id');
+
+        $whereIn_array = array();
+
+        if (Auth::user()->user_type_id <> 1) {
+            $users_privilege = DB::select('SELECT user_id,warehouseId from users_privilege where user_id=' . Auth::user()->id);
+            foreach ($users_privilege as $users_privilegee) {
+                //echo $users_privilegee->warehouseId;
+                $whereIn_array[] = $users_privilegee->warehouseId;
+            }
+            if (count($whereIn_array) == 0) $whereIn_array[] = 0;
+
+            $Select_db->whereRaw('warehouseId in (' . implode(",", $whereIn_array) .')');
+            $Select_sum->whereRaw('warehouseId in (' . implode(",", $whereIn_array) .')');
         }
 
         if (request()->ajax()) {
@@ -570,15 +805,19 @@ class LoansSheController extends Controller
                 $Select_sum->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
             }
 
+            DB::statement('SET SESSION wait_timeout = 2228800');
+            DB::statement('SET SESSION max_execution_time = 1000000');
+
             $sql = $Select_db->toSql();
-            $payload = DB::select($sql);
-            $totalData = count($payload);
-            $columns = ['id', 'created_at', 'companyName', 'warehouseName', 'job_id', 'fullName', 'balance.per_priod', 'balance.cur_priod', 'journal_date', 'journal_date', 'amount', 'note', 'loan_status', 'export_attempt', 'account_owner_iqama', 'accountNumber', 'users.name', 'loan.updated_at', 'drivers.id', 'account_owner_iqama'];
+            // $payload = DB::select($sql);
+            // $totalData = count($payload);
+            $columns = ['id', 'created_at', 'companyName', 'warehouseName', 'job_id', 'fullName', 'balance.per_priod', 'balance.cur_priod', 'journal_date', 'journal_date', 'amount', 'overall', 'note', 'loan_status', 'export_attempt', 'account_owner_iqama', 'accountNumber', 'users.name', 'loan.updated_at', 'drivers.id', 'account_owner_iqama'];
             $limit = $request->input('length');
             $start = $request->input('start');
             $order = $columns[$request->input('order.0.column')];
             $dir = $request->input('order.0.dir');
             $search = $request->input('search.value');
+            $Select_sum = $Select_sum->first();
             if (!empty($search)) {
                 if ($flag == false) {
                     $sql = $sql . " WHERE 1 = 1";
@@ -600,22 +839,22 @@ class LoansSheController extends Controller
                     OR users.name LIKE '%$search%'
                     OR loan.updated_at LIKE '%$search%'
                     OR drivers.id LIKE '%$search%'
+                    OR drivers.benIqama LIKE '%$search%'
+                    OR drivers.benIBAN LIKE '%$search%'
                     )";
                 $filtered_payload = DB::select($sql);
                 $totalFiltered = count($filtered_payload);
                 $sql1 = $sql;
-                $sql .= " ORDER BY loan.id $dir LIMIT $start, $limit";
+                $sql .= " ORDER BY $order $dir LIMIT $start, $limit";
                 $payload = DB::select($sql);
             } else {
-                $totalFiltered = $totalData;
+                $totalFiltered = $Select_sum->loan_count;
                 $sql1 = $sql;
                 $sql .= " ORDER BY $order $dir LIMIT $start, $limit";
                 $payload = DB::select($sql);
             }
             $totalAmount = 0;
-            foreach ($payload as $row) {
-                $totalAmount += $row->amount;
-            }
+
             $responses = get_table_body($totalAmount, $payload, $sql);
             $response = array();
             $response = $responses[0];
@@ -623,11 +862,10 @@ class LoansSheController extends Controller
             $btn = $responses[2];
             $check = $responses[3];
 
-            // $response = get_loan_table_body($payload);
             $jsonResponse = [
                 'draw' => intval($request->input('draw')),
-                'recordsTotal' => $totalData,
-                'amount' => $totalAmount,
+                'recordsTotal' => $Select_sum->loan_count,
+                'amount' => '<b>' . $Select_sum->amount . '</b>',
                 'SQL' => $sql1,
                 'recordsFiltered' => $totalFiltered,
                 'data' => $response,
@@ -650,231 +888,8 @@ class LoansSheController extends Controller
 
 
 
-        return view('new_porttal.Loans.index')->with(compact('lkp_loan_status'))
+        return view('new_porttal.Loans.loansIndex')->with(compact('lkp_loan_status'))
             ->with(compact('users'))->with(compact('lkp_user_type'))->with(compact('lkp_company'))->with(compact('warehouse'));
-    }
-
-    public function search(Request $request)
-    {
-            $Select_db = DB::table('loan')
-            ->select('loan.exported_by','loan.status','loan.id as id','loan.loan_type as loan_type', 'companyName', 'loan.driverId', 'fullName', 'warehouseName', 'job_id',
-                DB::raw("account_owner_iqama,
-                CASE
-                    WHEN
-                    account_owner_iqama IS NOT NULL
-                    AND account_owner_iqama REGEXP '^[0-9]+$'
-                    AND LENGTH(account_owner_iqama) = 10
-                    AND SUBSTR(account_owner_iqama, 1, 1) in('1','2')
-                    THEN 'Yes'
-                    ELSE 'No'
-                END AS account_owner_iqama_check,
-                CASE
-                    WHEN
-                    accountNumber IS NOT NULL
-                    AND accountNumber REGEXP '^[0-9]+$'
-                    AND LENGTH(accountNumber) = 12
-                    AND SUBSTR(accountNumber, 1, 3) =('966')
-                    THEN 'Yes'
-                    ELSE 'No'
-                END AS accountNumber_check
-                "), 'journal_date',
-                'amount', 'note', 'loan.status_id as status_id', 'loan_status', 'bank_name_en', 'accountNumber',
-                'loan.updatedby_id', 'name', 'updated_usertypeid', 'user_type',
-                'loan.created_at as created_at', 'loan.updated_at as updated_at', 'per_priod', 'cur_priod',
-                DB::raw("
-                if (period_start<>1,
-                    CONCAT(date_format(journal_date - interval period_start-1 day, '%Y-%m'), '-', LPAD(period_start, 2, '0'),
-                    ' - ',date_format(journal_date - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m'),'-', LPAD(period_end, 2, '0')),
-                    CONCAT(date_format(journal_date - interval period_start-1 day, '%Y-%m'), '-', LPAD(period_start, 2, '0'),
-                    ' - ',date_format(journal_date - interval period_start-1 day, '%Y-%m'),'-', LPAD(period_end, 2, '0')))
-                    as journal_period")
-            )
-            ->leftJoin('drivers', 'loan.driverId', '=', 'drivers.id')
-            ->leftJoin('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')
-            ->leftJoin('lkp_company', 'warehouse.companyId', '=', 'lkp_company.id')
-            ->leftJoin('lkp_bank', 'drivers.bank_id', '=', 'lkp_bank.id')
-            ->leftJoin('lkp_loan_status', 'loan.status_id', '=', 'lkp_loan_status.id')
-            ->leftJoin('users', 'loan.createdby_id', '=', 'users.id')
-            ->leftJoin('lkp_user_type', 'loan.createdby_id', '=', 'lkp_user_type.id')
-            ->leftJoin(DB::raw("(SELECT
-            driverId,
-            TRIM(sum( if( month_logged <= per_priod, credit-debit, 0 ) ))+0 AS per_priod,
-            TRIM(sum( if( month_logged >= cur_priod, credit-debit, 0 ) ))+0 AS cur_priod
-
-
-           from
-
-            (select driverId,period_start,period_end,sum(IFNULL(credit,0)) as credit,sum(IFNULL(debit,0)) as debit,
-                   date_format(journal_date - interval period_start-1 day, '%Y-%m') AS month_logged,
-                   date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m') AS per_priod,
-                   date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m') AS cur_priod,
-                   date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m') AS next_priod
-            from journal
-            inner join drivers on drivers.id=journal.driverId
-            inner join warehouse on warehouse.id=drivers.warehouseId
-            inner join lkp_company on lkp_company.id=warehouse.companyId
-            group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
-            group by driverId,per_priod,cur_priod,next_priod
-            )balance"),
-                    'balance.driverId', '=', 'drivers.id');
-
-            $whereIn_array = array();
-
-            // if (Auth::user()->user_type_id != 1) {
-            //     $users_privilege = DB::select('SELECT user_id, warehouseId FROM users_privilege WHERE user_id = ?', [Auth::user()->id]);
-            //     $whereIn_array = [];
-            //     foreach ($users_privilege as $users_privilegee) {
-            //         $whereIn_array[] = $users_privilegee->warehouseId;
-            //     }
-            //     if (empty($whereIn_array)) {
-            //         $whereIn_array[] = 0;
-            //     }
-            //     $Select_db = $Select_db->whereIn('warehouseId', $whereIn_array);
-            // }
-
-
-            if (!empty($request->filter_companyId)) {
-                $Select_db->whereRaw('companyId=' . $request->filter_companyId);
-            }
-            if (is_array($request->filter_warehouseId) > 0) {
-                $Select_db->whereRaw('warehouseId in(' . implode(",", $request->filter_warehouseId) .')');
-            } else {
-                if (Auth::user()->user_type_id != 1) {
-                    $users_privilege = DB::select('SELECT user_id, warehouseId FROM users_privilege WHERE user_id = ?', [Auth::user()->id]);
-                    $whereIn_array = [];
-                    foreach ($users_privilege as $users_privilegee) {
-                        $whereIn_array[] = $users_privilegee->warehouseId;
-                    }
-                    if (empty($whereIn_array)) {
-                        $whereIn_array[] = 0;
-                    }
-                    $Select_db->whereRaw('warehouseId in(' . implode(",", $whereIn_array) .')');
-                }
-            }
-            if (!empty($request->filter_job_id)) {
-                $Select_db->whereRaw("UPPER(job_id) LIKE '%" . strtoupper($request->filter_job_id) . "%'");
-            }
-            if (!empty($request->filter_driverId)) {
-                $Select_db->whereRaw('loan.driverId=' . $request->filter_driverId);
-            }
-            if (!empty($request->filter_journal_date)) {
-                $filter_journal_date = explode(" - ", $request->filter_journal_date);
-                $Select_db->whereRaw("CAST(journal_date as date) between STR_TO_DATE('$filter_journal_date[0]','%d/%m/%Y') and STR_TO_DATE('$filter_journal_date[1]','%d/%m/%Y')");
-            }
-            if (!empty($request->filter_amount)) {
-                $Select_db->whereRaw('amount=' . $request->filter_amount);
-            }
-            if (!empty($request->filter_status_id)) {
-                $Select_db->whereRaw('loan.status_id=' . $request->filter_status_id);
-            }
-            if (!empty($request->filter_Loan_type)) {
-                if($request->filter_Loan_type == 'FL'){
-                    $whereIn_array = array();
-                    $whereIn_array = ['fuel_loan'];
-                    // $Select_db->where('loan_type', 'fuel_loan');
-                    $Select_db->whereRaw('loan.loan_type=' . '"fuel_loan"');
-
-                }elseif($request->filter_Loan_type == 'PL'){
-                    $whereIn_array = array();
-                    $whereIn_array = ['personal_loan'];
-                    $Select_db->whereRaw('loan.loan_type=' . '"personal_loan"');
-                    // $Select_db->whereIn('loan_type', $whereIn_array);
-                }
-            }
-            // ashraf condition for fuel loans
-            if (!empty($request->filter_note)) {
-                $Select_db->whereRaw("UPPER(note) LIKE '%" . strtoupper($request->filter_note) . "%'");
-                $Select_sum->whereRaw("UPPER(note) LIKE '%" . strtoupper($request->filter_note) . "%'");
-            }
-            if (!empty($request->filter_updatedby_id)) {
-                $Select_db->whereRaw('loan.updatedby_id=' . $request->filter_updatedby_id);
-            }
-            if (!empty($request->filter_updated_usertypeid)) {
-                $Select_db->whereRaw('updated_usertypeid=' . $request->filter_updated_usertypeid);
-            }
-            if (!empty($request->filter_created_at)) {
-                $filter_created_at = explode(" - ", $request->filter_created_at);
-                $Select_db->whereRaw("CAST(loan.created_at as date) between STR_TO_DATE('$filter_created_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_created_at[1]','%d/%m/%Y')");
-            }
-            if (!empty($request->filter_updated_at)) {
-                $filter_updated_at = explode(" - ", $request->filter_updated_at);
-                $Select_db->whereRaw("CAST(loan.updated_at as date) between STR_TO_DATE('$filter_updated_at[0]','%d/%m/%Y') and STR_TO_DATE('$filter_updated_at[1]','%d/%m/%Y')");
-            }
-            // dd("till here its fine ");
-            $Select_dbb = clone $Select_db;
-            if(Auth::user()->user_type_id==1)
-                $columns = ['created_at', 'companyName', 'warehouseName', 'job_id', 'fullName', 'checkbox', 'per_priod', 'cur_priod', 'journal_date', 'journal_period', 'amount', 'exported_by', 'note', 'loan_status', 'account_owner_iqama', 'accountNumber', 'createdby_id', 'updated_at', 'action'];
-            else
-                $columns = ['created_at', 'companyName', 'warehouseName', 'job_id', 'fullName', 'journal_date', 'amount', 'exported_by', 'note', 'loan_status', 'account_owner_iqama', 'accountNumber', 'action'];
-
-            $limit = $request->input('length');
-            $start = $request->input('start');
-            $order = $columns[$request->input('order.0.column')];
-            $dir = $request->input('order.0.dir');
-            $Select_db = $Select_db->orderBy($order, $dir);
-
-            $search = $request->input('search.value');
-            if (!empty($search)) {
-                $Select_db->orwhereRaw("companyName LIKE '%" . $search . "%'");
-                $Select_db->orwhereRaw("warehouseName LIKE '%" . $search . "%'");
-                $Select_db->orwhereRaw("fullName LIKE '%" . $search . "%'");
-                $Select_db->orwhereRaw("journal_date LIKE '%" . $search . "%'");
-                $Select_db->orwhereRaw("loan.note LIKE '%" . $search . "%'");
-                $Select_db->orwhereRaw("account_owner_iqama LIKE '%" . $search . "%'");
-                $Select_db->orwhereRaw("accountNumber LIKE '%" . $search . "%'");
-                $Select_db->orwhereRaw("job_id LIKE '%" . $search . "%'");
-
-                $sql = $Select_db->toSql();
-                $payload = DB::select($sql);
-                $totalAmount = 0;
-                foreach ($payload as $row) {
-                    $totalAmount += $row->amount;
-                }
-                $totalData = count($payload);
-                $sql .= " LIMIT $start, $limit";
-                $payload = DB::select($sql);
-                $totalFiltered = $totalData;
-            } else {
-                // $rows = DB::select("SELECT COUNT(*) AS total_records FROM loan");
-                // $totalData = $rows[0]->total_records;
-                // $rows = DB::select("SELECT SUM(amount) AS total_amount FROM loan");
-                // $totalAmount = $rows[0]->total_amount;
-
-                // $rows = DB::select("SELECT COUNT(*) AS total_records FROM loan");
-                // $totalData = $rows[0]->total_records;
-                // $rows = DB::select("SELECT SUM(amount) AS total_amount FROM loan");
-                // $totalAmount = $rows[0]->total_amount;
-                // $payload = DB::select($sql);
-
-                $totalAmount = 0;
-                // foreach ($payload as $row) {
-                //     $totalAmount += $row->amount;
-                // }
-
-                $sql = $Select_db->toSql();
-
-                $sql .= " LIMIT 0, 1000";
-                $payload = DB::select($sql);
-                foreach ($payload as $row) {
-                    $totalAmount += $row->amount;
-                }
-                $totalData = count($payload);
-                $totalFiltered = $totalData;
-            }
-            $response = array();
-            $responses = get_table_body($totalAmount, $payload, $Select_dbb->toSql());
-            $response = $responses[0];
-            $amount_total = $responses[1];
-            $btn = $responses[2];
-            $check = $responses[3];
-            $jsonResponse = [
-                'draw' => intval($request->input('draw')),
-                'recordsTotal' => $totalData,
-                'recordsFiltered' => $totalFiltered,
-                'data' => $response,
-            ];
-
-            return response()->json($jsonResponse);
     }
 
     /**
@@ -884,15 +899,12 @@ class LoansSheController extends Controller
      */
     public function create()
     {
-
         if (Auth::user()->user_type_id <> 1) {
             $AND = " AND id=5 ";
         } else {
             $AND = "";
         }
         $lkp_loan_status = DB::select("SELECT * from lkp_loan_status where id<>4" . $AND);
-
-
         return view('new_porttal.Loans.create')->with(compact('lkp_loan_status'));
     }
 
@@ -904,7 +916,6 @@ class LoansSheController extends Controller
      */
     public function store(Request $request)
     {
-
         //return ( empty($request->input('journal_date')))?null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
         $this->validate($request, [
             'driverId' => ['required'],
@@ -912,14 +923,14 @@ class LoansSheController extends Controller
             'journal_date' => ['required'],
         ]);
         $driver_id = $request->input('driverId');
-        $date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
+        $date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
         $check_loan = DB::select("SELECT * from loan where driverId = '$driver_id' AND journal_date = '$date'");
         if (count($check_loan) > 0)
-            return redirect()->back()->with('error', 'You have already added loan for selected date and driver');
+            return redirect('/New-portal/Loans')->with('error', 'You have already added loan for selected date and driver');
 
         $Loans = new Loans;
         $Loans->driverId = $request->input('driverId');
-        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
+        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
         // ( empty($request->input('journal_date')))?null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
         $Loans->amount = $request->input('amount');
         $Loans->status_id = $request->input('status_id');
@@ -930,8 +941,15 @@ class LoansSheController extends Controller
         $Loans->updated_usertypeid = Auth::user()->user_type_id;
 
         $Loans->save();
+        if ($request->hasFile('proof_file')) {
+            $newId = $Loans->id;
+            $imageName = $newId .'_loan.' . $request->proof_file->extension();
+            $request->proof_file->move(storage_path('app/public/images'), $imageName);
+            $Loans->proof_file = $imageName;
+            $Loans->save();
+        }
 
-        return redirect()->back()->with('success', 'Done successfully');
+        return redirect('/new_porttal/Loans')->with('success', 'Done successfully');
     }
 
     /**
@@ -942,7 +960,6 @@ class LoansSheController extends Controller
      */
     public function show($id)
     {
-
         $Loans = DB::table('loan')
             ->select('loan.id as id', 'driverId', 'fullName', 'fullName_ar', 'journal_date',
                 'amount', 'note', 'loan.status_id as status_id', 'loan_status',
@@ -969,7 +986,7 @@ class LoansSheController extends Controller
     {
         $lkp_loan_status = DB::select('SELECT * from lkp_loan_status where id<>4');
         $Loans = DB::table('loan')
-            ->select('loan.id as id', 'loan.driverId as driverId', 'fullName', 'fullName_ar', 'journal_date as journalDate',
+            ->select('loan.id as id', 'loan.driverId as driverId', 'fullName', 'fullName_ar',
                 DB::raw("DATE_FORMAT(journal_date,'%d/%m/%Y') as journal_date"), 'amount', 'note', 'loan.status_id as status_id', 'loan_status',
                 'loan.created_at as created_at', 'loan.updated_at as updated_at', DB::raw("ifnull(per_priod,0) as per_priod"), DB::raw("ifnull(cur_priod,0) as cur_priod"),
                 DB::raw("if (period_start<>1,CONCAT(date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m'), '-', LPAD(period_start, 2, '0'),' - ',date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m'),'-', LPAD(period_end, 2, '0')),
@@ -996,18 +1013,18 @@ class LoansSheController extends Controller
 
        from
 
-    (select driverId,period_start,period_end,sum(IFNULL(credit,0)) as credit,sum(IFNULL(debit,0)) as debit,
-           date_format(journal_date - interval period_start-1 day, '%Y-%m') AS month_logged,
-           date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m') AS per_priod,
-           date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m') AS cur_priod,
-           date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m') AS next_priod
-    from journal
-    inner join drivers on drivers.id=journal.driverId
-    inner join warehouse on warehouse.id=drivers.warehouseId
-    inner join lkp_company on lkp_company.id=warehouse.companyId
-    group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
-    group by driverId,per_priod,cur_priod,next_priod
-    )balance"),
+        (select driverId,period_start,period_end,sum(IFNULL(credit,0)) as credit,sum(IFNULL(debit,0)) as debit,
+            date_format(journal_date - interval period_start-1 day, '%Y-%m') AS month_logged,
+            date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day - INTERVAL 1 MONTH, '%Y-%m') AS per_priod,
+            date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day , '%Y-%m') AS cur_priod,
+            date_format('" . date("Y-m-d H:i:s") . "' - interval period_start-1 day + INTERVAL 1 MONTH, '%Y-%m') AS next_priod
+        from journal
+        inner join drivers on drivers.id=journal.driverId
+        inner join warehouse on warehouse.id=drivers.warehouseId
+        inner join lkp_company on lkp_company.id=warehouse.companyId
+        group by driverId,month_logged,cur_priod,next_priod,period_start,period_end)a
+        group by driverId,per_priod,cur_priod,next_priod
+        )balance"),
                 'balance.driverId', '=', 'drivers.id')
             ->where('loan.id', $id)
             ->first();
@@ -1031,6 +1048,11 @@ class LoansSheController extends Controller
         $action = '';
         $Loans = Loans::find($id);
         // $Loans->warehouseId = $request->input('warehouseId');
+        if ($request->hasFile('proof_file')) {
+            $imageName = $id .'_loan.'.$request->proof_file->extension();
+            $request->proof_file->move(storage_path('app/public/images'), $imageName);
+            $Loans->proof_file = $imageName;
+        }
         if($Loans->driverId != $request->input('driverId') AND $request->input('driverId') != '') {
             $action .= "driverId: " . $Loans->driverId . " to " . $request->input('driverId') . ", ";
         }
@@ -1038,7 +1060,7 @@ class LoansSheController extends Controller
         if($Loans->journal_date != $request->input('journal_date') AND $request->input('journal_date') != '') {
             $action .= "journal_date: " . $Loans->journal_date . " to " . $request->input('journal_date') . ", ";
         }
-        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : $request->input('journal_date');
+        $Loans->journal_date = (empty($request->input('journal_date'))) ? null : \DateTime::createFromFormat('d/m/Y', $request->input('journal_date'))->format('Y-m-d');
         if($Loans->amount != $request->input('amount') AND $request->input('amount') != '') {
             $action .= "amount: " . $Loans->amount . " to " . $request->input('amount') . ", ";
         }
@@ -1055,6 +1077,7 @@ class LoansSheController extends Controller
         $Loans->updated_usertypeid = Auth::user()->user_type_id;
 
         $success = $Loans->save();
+
         if($success) {
             if ($action != '') {
                 $loan_id = $Loans->id;
@@ -1078,7 +1101,7 @@ class LoansSheController extends Controller
         if (Auth::user()->user_type_id == 1) {
             $Loans = Loans::find($id);
             // if(auth()->user()->id !== $Loans->user_id){
-            //    return redirect()->back()->with('error','Unauthorized');
+            //    return redirect('/Loans')->with('error','Unauthorized');
             // }
 
             if ($Loans->logo != 'noImage.jpg') {
@@ -1090,7 +1113,7 @@ class LoansSheController extends Controller
             HelperFunctionsController::add_log($msg);
             $Loans->delete();
         }
-        return redirect()->back()->with('success', 'Done successfully');
+        return redirect('/New-Portal/Loans')->with('success', 'Done successfully');
     }
 
 
@@ -1105,8 +1128,31 @@ class LoansSheController extends Controller
 
     public function updatePaidSave(Request $request)
     {
+
+
+        //$this->validate($request, [
+        //
+        //   'paid_image' => 'required|image|mimes:jpeg,png,jpg,',
+        //]);
+
+        //if ($request->hasFile('paid_image')) {
+
+        //    $filenameWithExtention = $request->file('paid_image')->getClientOriginalName();
+        //$fileName = pathinfo($filenameWithExtention,PATHINFO_FILENAME);
+        //    $extension = $request->file('paid_image')->getClientOriginalExtension();
+        //   $fileNameStore = $request->input('loan_id') . '.' . $extension;
+        //    try {
+        //        $path = $request->file('paid_image')->move(base_path() . '/public/doc/paid_image/', $fileNameStore);
+        //   } catch (Exception $e) {
+        //       return redirect('/Loans')->with('error', $e->getMessage());
+        //   }
+
+        //}
+
+
         $Loans = Loans::find($request->input('loan_id'));
         $Loans->status_id = 4;
+        //$Loans->paid_image = $fileNameStore;
         $loan_id = $request->input('loan_id');
         $made_by = Auth::user()->name;
         $msg = "<b>$made_by</b> Updated the loan ($loan_id) status_id from " .$Loans->status_id . " to Paid.";
@@ -1129,21 +1175,21 @@ class LoansSheController extends Controller
         " . Auth::user()->id . "," . Auth::user()->id . ",'" . date("Y-m-d H:i:s") . "','" . date("Y-m-d H:i:s") . "'
         )");
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/New-Portal/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
+            return redirect('New-Portal/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
         }
 
         try {
             DB::update("UPDATE loan
-    JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1)
-    SET loan.status = 'Paid', loan.journal_id = journal.id
-    where loan.id =" . $request->input('loan_id')
+        JOIN journal  ON (loan.id = journal.post_id and journal.journal_type_id=1)
+        SET loan.status = 'Paid', loan.journal_id = journal.id
+        where loan.id =" . $request->input('loan_id')
             );
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect('/New-Portal/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
+            return redirect('/New-portal/LoanPaid/' . $request->input('loan_id'))->with('error', $e->getPrevious()->getMessage());
         }
 
 
-        return redirect('/New-Portal/LoanPaid/' . $request->input('loan_id'))->with('success', 'Done successfully');
+        return redirect('/New-portal/LoanPaid/' . $request->input('loan_id'))->with('success', 'Done successfully');
     }
     //****************************************************************************************************************
     //****************************************************************************************************************
@@ -1275,7 +1321,7 @@ class LoansSheController extends Controller
                         }
 
                     } catch (\Illuminate\Database\QueryException $e) {
-                        return redirect()->back()->with('error', $e->getPrevious()->getMessage());
+                        return redirect('/New-Portal/LoansPaid')->with('error', $e->getPrevious()->getMessage());
                     }
                 }
             } else {
@@ -1307,7 +1353,7 @@ class LoansSheController extends Controller
                   VALUES
                   " . $values);
             } catch (\Illuminate\Database\QueryException $e) {
-                return view('Loans.LoansPaid')->with('error', $e->getPrevious()->getMessage());
+                return view('new_porttal.Loans.LoansPaid')->with('error', $e->getPrevious()->getMessage());
             }
         }
         if(count($loans_arr) > 0) {
@@ -1321,5 +1367,4 @@ class LoansSheController extends Controller
 //****************************************************************************************************************
 //****************************************************************************************************************
 }
-
 

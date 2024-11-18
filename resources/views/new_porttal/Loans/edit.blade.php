@@ -76,6 +76,10 @@
                     </select>
                 </td>
             </tr>
+            <tr>
+                <TH>Proof File</TH>
+                <td><input type="file" class="form-control" name="proof_file"></td>
+            </tr>
         </table>
     </div>
     <div class="modal-footer">

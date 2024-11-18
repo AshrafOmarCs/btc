@@ -766,20 +766,25 @@ $module = "Driver";
                     contentType: false,
                     success: function(response) {
                         if (response.status == 420) {
-                            var alert = 'danger';
+                            var alrt = 'danger';
+                            alert(response.message);
                         } else {
-                            var alert = 'success';
+                            var alrt = 'success';
+                            $('#message').html('<div class="alert alert-'+alrt+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" onclick="closeAlert()" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                            $('#driverForm')[0].reset();
+                            $('#addNewDriver').modal('hide');
                         }
-                        $('#message').html('<div class="alert alert-'+alert+' alert-dismissible fade show" role="alert">' + response.message + '<button type="button" onclick="closeAlert()" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-                        $('#driverForm')[0].reset();
-                        $('#addNewDriver').modal('hide');
+
                     },
                     error: function(xhr) {
-                        $('#message').html("");
-                        document.getElementById('create_da_from').innerHTML = xhr;
+                        alert(response.message);
+
+                        // $('#message').html("");
+                        // document.getElementById('create_da_from').innerHTML = xhr;
                     }
                 });
             });
+
             $('#filter_claim_dt').val('');
             $('#filter_SANED_SettledDate').val('');
             $('#filter_jahiz_clearing_updated_at').val('');
@@ -1222,8 +1227,8 @@ $module = "Driver";
                     $('#customer_data').DataTable().destroy();
                     fill_datatable('Jahiz', $('#filter_companyId').val(), $('#filter_warehouseId').val(), $('#filter_driver_type_id').val(), $('#filter_fullName').val(), $('#filter_mobileNumber').val(), $('#filter_iqama').val(), $('#filter_job_id').val(), $('#filter_status_id').val(), $('#filter_account_owner_iqama').val(), $('#filter_accountNumber').val(), $('#filter_claim_dt').val(), $('#filter_SANED_SettledDate').val(), $('#filter_jahiz_clearing_updated_at').val(), $('#filter_collectionAmount').val(), $('#filter_created_at').val(), $('#filter_updated_at').val(), $('#filter_Image_Identity').val(), $('#filter_Image_Passport').val(), $('#filter_Image_DrivingLicence').val(), $('#filter_Image_VehiclesRegistration').val(), $('#filter_Image_JobContract').val(), $('#filter_Image_PromissoryNote').val());
                     $.ajax({
-                        type: 'POST',
-                        url: "{{URL("/New-Portal/DriverDetails")}}",
+                        type: 'GET',
+                        url: "{{URL("/New-Portal/DriversJahiz")}}",
                         cache: false,
                         data : {
                             filter_screenId: 'Jahiz',
@@ -1701,6 +1706,16 @@ $module = "Driver";
         XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
         XLSX.writeFile(wb, 'Drivers.xlsx');
     });
+    function bankChange() {
+        $("#benName").val('');
+        $("#benIBAN").val('');
+        $("#benIqama").val('');
+    }
+    function driverInfoChange(type) {
+        $('.personal').hide();
+        $('.financial').hide();
+        $('.'+type).show();
+    }
 </script>
 @stop
 @endsection

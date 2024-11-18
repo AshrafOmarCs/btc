@@ -1,7 +1,11 @@
 @include('pages.messages2')
-
+    @if(Auth::user()->user_type_id==1)
+        <tr>
+            <td><b><a href="#" onclick="driverInfoChange('personal')">Personal info </a> | <a href="#" onclick="driverInfoChange('financial')">Financial info </a></b></td>
+        </tr>
+    @endif
     <input type="hidden" name="type_id" value="{{$type_id}}">
-    <div class="row">
+    <div class="row personal">
         @if($type_id == 1)
             <div class="col-sm-4 col-12">
                 <div class="card">
@@ -394,6 +398,75 @@
                 </div>
             </div>
         </div>
+        <div class="col-sm-4 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="m-0">
+                        <label class="form-label">Driver Iqama <font color="red">*</font></label>
+                        <input type="file" class="form-control" name="Image_Identity" id="Image_Identity" accept=".jpeg, .jpg" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="m-0">
+                        <label class="form-label">Driver Licence <font color="red">*</font></label>
+                        <input type="file" class="form-control" name="Image_DrivingLicence" id="Image_DrivingLicence" accept=".jpeg, .jpg" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row financial" style="display: none">
+        <div class="col-sm-4 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="m-0">
+                        <label class="form-label">Beneficery Bank</label>
+                        <select name="bank_id" id="bank_id" class="form-control" onchange="bankChange()">
+                            <option value=''>Select Bank</option>
+                            @foreach($lkp_bank as $bank)
+                                <option value="{{$bank->id}}">{{$bank->bank_name_en}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="m-0">
+                        <label class="form-label">Beneficery Name</label>
+                        <input type="text" class="form-control" name="benName" id="benName" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="m-0">
+                        <label class="form-label">Beneficery IBAN</label>
+                        <input type="text" class="form-control" name="benIBAN" id="benIBAN" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="m-0">
+                        <label class="form-label">Beneficery ID/Iqama</label>
+                        <input type="text" class="form-control" name="benIqama" id="benIqama" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <button type="submit" class="btn btn-primary">{{__('drivers.Add')}}</button>
     </div>
         <span id="Termination_Reason" style="display:none;">

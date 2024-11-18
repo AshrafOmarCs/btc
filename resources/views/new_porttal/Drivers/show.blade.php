@@ -90,6 +90,14 @@
                             <TH>Interview_Date</TH>
                             <td>{{$Drivers->interview_date}}</td>
                         </tr>
+                        <tr>
+                            <TH>Ben Name</TH>
+                            <td>{{$Drivers->benName}}</td>
+                        </tr>
+                        <tr>
+                            <TH>Ben Iqama</TH>
+                            <td>{{$Drivers->benIqama}}</td>
+                        </tr>
 
                     </table>
                 </td>
@@ -155,6 +163,10 @@
                             <TH>Update At</TH>
                             <td>{{$Drivers->updated_at}}</td>
                         </tr>
+                        <tr>
+                            <TH>Ben IBAN</TH>
+                            <td>{{$Drivers->benIBAN}}</td>
+                        </tr>
 
 
                     </table>
@@ -185,6 +197,6 @@
         </table>
     </div>
 </div>
-<div class="modal-footer">
+{{-- <div class="modal-footer">
     <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-</div>
+</div> --}}
