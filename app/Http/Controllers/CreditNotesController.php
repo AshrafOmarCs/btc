@@ -289,17 +289,16 @@ class CreditNotesController extends Controller
      */
     public function show($id)
     {
-
         $CreditNotes = DB::table('creditnotes')
-            ->select('creditnotes.id as id', 'invoice_number', 'driverId', 'fullName', 'fullName_ar', 'journal_date',
+            ->select('creditnotes.id as id', 'invoice_number', 'driverId', 'fullName', 'fullName_ar', 'journal_date', 'lkp_fleetCreditNotes.name as fleetCredit',
                 'amount', 'note', 'creditnotes.updatedby_id', 'user_created.name as name_created','user_updated.name as name_updated',
                 'creditnotes.created_at as created_at', 'creditnotes.updated_at as updated_at')
+            ->leftJoin('lkp_fleetCreditNotes', 'creditnotes.type', '=', 'lkp_fleetCreditNotes.id')
             ->leftJoin('drivers', 'creditnotes.driverId', '=', 'drivers.id')
             ->leftJoin('users as user_created', 'creditnotes.createdby_id', '=', 'user_created.id')
             ->leftJoin('users as user_updated', 'creditnotes.updatedby_id', '=', 'user_updated.id')
             ->where('creditnotes.id', $id)
             ->first();
-
         return view('new_porttal.CreditNotes.show')->with('CreditNotes', $CreditNotes);
     }
 

@@ -311,12 +311,20 @@ class DriversController extends Controller
         elseif (request()->ajax()) {
 
             $Select_db = DB::table('drivers')
-                ->select('benName', 'benIqama', 'benIBAN', 'lkp_company.id as companyId', 'notificationEnabled', 'driver_data', 'drivers.id as id', 'companyName', 'warehouseId', 'warehouseName', 'lkp_city.name_en',
+                ->select('benName', 'benIqama', 'benIBAN', 'lkp_company.id as companyId', 'notificationEnabled', 'driver_data', 'drivers.id as id', 'companyName', 'warehouseId', 'warehouseName', 'lkp_city.name_en', 'company_logo',
                 'fullName', 'fullName_ar', 'actualName', 'mobileNumber', 'mobileNumber_someone_else','car_plateNumber' ,'nationality_id', 'lkp_country.country_ar', 'iqama', 'iqamaExpireyDate', 'email_id', 'job_id',
                 'dob', 'status_id', 'lkp_driver_status.driver_status_en', 'termination_reason_id', 'reason_en', 'interview_date', 'start_date', 'licenseExpireyDate', 'passportNo', 'passportExpireyDate', 'bank_id',
                 'bank_name_en', 'accountNumber', 'account_owner_iqama', 'a.yes_no AS under_sopnsorship', 'b.yes_no AS ajeer','bander_car.yes_no AS bander_car', 'collectionAmount', 'openBalance', 'onhold_date',
                 DB::raw("DATE_FORMAT(drivers.created_at, '%Y-%m-%d') as created_at"), 'drivers.updated_at as updated_at',
                 'driver_type_id', 'driver_type');
+            // $Select_db->selectRaw("
+            //     (
+            //         SELECT ROUND(SUM(credit) - SUM(debit), 2)
+            //         FROM journal
+            //         INNER JOIN drivers AS d2 ON journal.driverId = d2.id
+            //         WHERE d2.iqama = drivers.iqama
+            //         AND journal.driverId != drivers.id
+            //     ) AS overall");
             if ($request->filter_screenId == 'Jahiz') {
                 $Select_db->selectRaw("NULLIF(IFNULL(Monthly_Salary.p_month,0)+IFNULL(Per_Shipment.p_month,0),0) as per_priod,
                                                 NULLIF(IFNULL(Monthly_Salary.c_month,0)+IFNULL(Per_Shipment.c_month,0),0) as cur_priod,
@@ -1819,7 +1827,7 @@ class DriversController extends Controller
         }
         if (count($whereIn_array) == 0) $whereIn_array[] = 0;
         //$Select_db->whereIn('warehouseId', $whereIn_array);
-//----------------------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------------------------------
         $IDs = "";
         $IDs_array = array();
         for ($i = 1; $i <= 500; $i++) {
@@ -1859,10 +1867,177 @@ class DriversController extends Controller
                 }
             }
         }
-//----------------------------------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------------------------------
 
 
         return $this->DriversAttend($request)->with('success', 'Done successfully');
+    }
+
+    public function tempContract($id)
+    {
+        $user_id = AUTH::user()->id;
+        $driver = DB::select("SELECT * FROM tbl_tmp_drivers WHERE driver_id = '$id'");
+        if (count($driver) > 0) {
+
+        } else {
+            DB::insert("INSERT INTO tbl_tmp_drivers (driver_id, created_by, created_at) VALUES ('$id', '$user_id', NOW())");
+            $driver = DB::select("SELECT * FROM tbl_tmp_drivers WHERE driver_id = '$id'");
+        }
+        $Driver = DB::select('SELECT id, fullName from drivers where id=' . $id)[0];
+        return view('new_porttal.Drivers.tempContractInfo')->with(compact('Driver', 'driver'));
+    }
+    public function tempContractSave(Request $request)
+    {
+        $driverId = $request->id;
+        $name = $request->name;
+        $iqama = $request->iqama;
+        $date = $request->date;
+        $project = $request->project;
+        $nationality = $request->nationality;
+        $region = $request->region;
+        $user_id = AUTH::user()->id;
+        DB::update("
+            UPDATE tbl_tmp_drivers
+            SET
+                name = ?,
+                iqama = ?,
+                project = ?,
+                nationality = ?,
+                region = ?,
+                date = ?,
+                updated_by = ?,
+                updated_at = NOW()
+            WHERE
+                driver_id = ?
+        ", [$name, $iqama, $project, $nationality, $region, $date, $user_id, $driverId]);
+
+        return back()->with('success', 'Data save successfully');
+    }
+    public function driverTempContract($id)
+    {
+        // $user_id = AUTH::user()->id;
+        $id = base64_decode($id);
+        $driver = DB::select("SELECT * FROM tbl_tmp_drivers WHERE driver_id = '$id'");
+        if (count($driver) > 0) {
+            $driver = $driver[0];
+            return view('new_porttal.Drivers.driverTempContract')->with(compact('driver'));
+        } else {
+            return "Driver Not Found";
+        }
+    }
+
+    public function tContract($id) {
+        $liabilities = DB::select("SELECT driver_liabilities.*, users.name as userName FROM driver_liabilities join users on driver_liabilities.created_by = users.id WHERE driver_liabilities.driverId = '$id' ORDER BY driver_liabilities.id DESC");
+        foreach($liabilities as $liability) {
+            $user_id = $liability->vehicle_done_by;
+            if ($user_id != NULL) {
+                $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+                $liability->vehicle_done_by = $user[0]->name;
+            }
+            $user_id = $liability->finance_done_by;
+            if ($user_id != NULL) {
+                $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+                $liability->finance_done_by = $user[0]->name;
+            }
+            $user_id = $liability->manager_done_by;
+            if ($user_id != NULL) {
+                $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+                $liability->manager_done_by = $user[0]->name;
+            }
+        }
+        return view('new_porttal.Drivers.tContract')->with(compact('id', 'liabilities'));
+    }
+    public function tRequest($id) {
+        $driver = HelperFunctionsController::getDriverData($id);
+        return view('new_porttal.Drivers.tRequest')->with(compact('id', 'driver'));
+    }
+    public function tRequestSave(Request $request) {
+        $user_id = AUTH::user()->id;
+        $id = $request->id;
+        $iqama = $request->iqama;
+        $job_title = $request->job_title;
+        $mobileNumber = $request->mobileNumber;
+        $nationality = $request->nationality;
+        $date = $request->date;
+        $note = $request->note;
+
+        $req_id = DB::table('driver_liabilities')->insertGetId([
+                    'driverId' => $id,
+                    'note' => $note,
+                    'iqama' => $iqama,
+                    'job_title' => $job_title,
+                    'mobileNumber' => $mobileNumber,
+                    'nationality' => $nationality,
+                    'date' => $date,
+                    'created_by' => $user_id,
+                    'created_at' => DB::raw('NOW()'),
+                ]);
+        $ref_no = 'LR' . date('Ymd') . $req_id;
+        DB::table('driver_liabilities')->where('id', $req_id)->update(['reference_no' => $ref_no]);
+
+        DB::table('tbl_actions')->insertGetId([
+            'table_name' => 'driver_liabilities',
+            'ids' => $req_id,
+            'jahiz_ids' => $req_id,
+            'period' => $date,
+            'module' => 'Driver Liability Clearance',
+            'status' => 0,
+            'created_by' => $user_id,
+            'created_at' => DB::raw('NOW()'),
+        ]);
+        $liabilities = DB::select("SELECT driver_liabilities.*, users.name as userName FROM driver_liabilities join users on driver_liabilities.created_by = users.id WHERE driver_liabilities.driverId = '$id' ORDER BY driver_liabilities.id DESC");
+        foreach($liabilities as $liability) {
+            $user_id = $liability->vehicle_done_by;
+            if ($user_id != NULL) {
+                $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+                $liability->vehicle_done_by = $user[0]->name;
+            }
+            $user_id = $liability->finance_done_by;
+            if ($user_id != NULL) {
+                $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+                $liability->finance_done_by = $user[0]->name;
+            }
+            $user_id = $liability->manager_done_by;
+            if ($user_id != NULL) {
+                $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+                $liability->manager_done_by = $user[0]->name;
+            }
+        }
+        return view('new_porttal.Drivers.tContract')->with(compact('id', 'liabilities'))->with('success', 'Request created successfully');
+    }
+    public function liabilityCert($id, $type) {
+        $liability = DB::select("SELECT driver_liabilities.*, users.name as userName FROM driver_liabilities join users on driver_liabilities.created_by = users.id WHERE driver_liabilities.id = '$id'")[0];
+        $user_id = $liability->vehicle_done_by;
+        if ($user_id != NULL) {
+            $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+            $liability->vehicle_done_by = $user[0]->name;
+        }
+        $user_id = $liability->finance_done_by;
+        if ($user_id != NULL) {
+            $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+            $liability->finance_done_by = $user[0]->name;
+        }
+        $user_id = $liability->manager_done_by;
+        if ($user_id != NULL) {
+            $user = DB::select("SELECT name from users WHERE id = '$user_id'");
+            $liability->manager_done_by = $user[0]->name;
+        }
+        $driver_id = $liability->driverId;
+        $driver = HelperFunctionsController::getDriverData($driver_id);
+        $liability->driverName = $driver->fullName;
+
+        return view('new_porttal.Drivers.liabilityCert')->with(compact('type', 'liability'));
+    }
+
+
+    public function overAllBalanceInfo(Request $request) {
+        $driverId = $request->driverId;
+        $iqama = $request->iqama;
+        $results = DB::select("SELECT sum(credit) AS t_credit,sum(debit) AS t_debit,drivers.fullName,drivers.job_id,drivers.status_id,warehouse.warehouseName,lkp_company.companyName,
+        drivers.mobileNumber,drivers.iqama,drivers.driver_data,drivers.notificationEnabled,drivers.id FROM journal INNER JOIN drivers ON journal.driverId=drivers.id
+        INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE iqama='$iqama' AND driverId <> '$driverId'
+        GROUP BY fullName,job_id,drivers.status_id,warehouse.warehouseName,lkp_company.companyName,drivers.mobileNumber,drivers.iqama,driver_data,notificationEnabled,drivers.id");
+        return view('new_porttal.Drivers.overAllBalanceInfo')->with(compact('results'));
     }
 }
 function add_creditNote($driver, $request) {

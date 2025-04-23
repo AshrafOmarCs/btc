@@ -53,6 +53,7 @@
         <link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5.css')}}" />
         <link rel="stylesheet" href="{{asset('assets/vendor/datatables/dataTables.bs5-custom.css')}}" />
         <link rel="stylesheet" href="https://btcdmins.com/AdminLTE/plugins/iCheck/all.css">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 	</head>
     @php
@@ -309,8 +310,11 @@
                                 </li>
                             @endif
                             @if(session('Read_16')==1 || Auth::user()->id == 127 || Auth::user()->id == 125)
-                                <li class="sidebar-dropdown">
-                                    <a href="#">
+                            <li class="sidebar-dropdown {{ (request()->is('New-Portal/delegatedVehicles')
+                                || request()->is('New-Portal/Vehicles/Vehicles-Requests')
+                                || request()->is('New-Portal/Vehicles*')
+                                || request()->is('New-Portal/FleetCreditNotes')) ? 'active' : '' }}">
+                                <a href="#">
                                         <i>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-car-front" viewBox="0 0 16 16">
                                             <path d="M4 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0m10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2zM4.862 4.276 3.906 6.19a.51.51 0 0 0 .497.731c.91-.073 2.35-.17 3.597-.17s2.688.097 3.597.17a.51.51 0 0 0 .497-.731l-.956-1.913A.5.5 0 0 0 10.691 4H5.309a.5.5 0 0 0-.447.276"/>
@@ -354,7 +358,7 @@
                                                     {{__('nav.vehicles_list')}}
                                                 </a>
                                             </li>
-                                            {{-- <li>
+                                            <li>
                                                 <a href="{{URL("New-Portal/Vehicles/Report")}}">
                                                     <i>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-car-front" viewBox="0 0 16 16">
@@ -364,7 +368,7 @@
                                                     </i>
                                                     {{__('nav.vehicles_report')}}
                                                 </a>
-                                            </li> --}}
+                                            </li>
                                             <li>
                                                 <a href="{{URL("New-Portal/Vehicles/VehicleFuelSave")}}">
                                                     <i>
@@ -376,6 +380,16 @@
                                                 </a>
                                             </li>
                                             <li>
+                                                <a href="{{route("FleetCreditNotes.index")}}">
+                                                    <i>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ev-front-fill" viewBox="0 0 16 16">
+                                                            <path d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679q.05.242.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.8.8 0 0 0 .381-.404l.792-1.848Zm6.75.51a.186.186 0 0 0-.23.034L6.05 7.246a.188.188 0 0 0 .137.316h1.241l-.673 2.195a.19.19 0 0 0 .085.218c.075.043.17.03.23-.034l2.88-3.187a.188.188 0 0 0-.137-.316H8.572l.782-2.195a.19.19 0 0 0-.085-.218Z"/>
+                                                        </svg>
+                                                    </i>
+                                                    Vehicle Deduction
+                                                </a>
+                                            </li>
+                                            {{-- <li>
                                                 <a href="{{URL("New-Portal/Vehicles/VehicleOilSave")}}">
                                                     <i>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ev-front-fill" viewBox="0 0 16 16">
@@ -384,7 +398,7 @@
                                                     </i>
                                                     {{__('nav.vehicle_oil_save')}}
                                                 </a>
-                                            </li>
+                                            </li> --}}
                                         </ul>
                                     </div>
                                 </li>
@@ -397,7 +411,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(session('Read_17')==1 || Auth::user()->id == 20 || Auth::user()->id == 90)
+                            @if(session('Read_17') == 1 || Auth::user()->id == 20 || Auth::user()->id == 90)
                                 <li class="sidebar-dropdown">
                                     <a href="#">
                                         <i class="bi bi-check2-circle"></i>
@@ -755,11 +769,14 @@
 		<!-- *************
 			************ Vendor Js Files *************
 		************* -->
+        {{-- carousel cdn --}}
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 		<!-- Overlay Scroll JS -->
 		<script src="{{asset('assets/vendor/overlay-scroll/jquery.overlayScrollbars.min.js')}}"></script>
 		<script src="{{asset('assets/vendor/overlay-scroll/custom-scrollbar.js')}}"></script>
-
+        {{-- select2 --}}
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 		<!-- Date Range JS -->
 		<script src="{{asset('assets/vendor/daterange/daterange.js')}}"></script>
 		<script src="{{asset('assets/vendor/daterange/custom-daterange.js')}}"></script>

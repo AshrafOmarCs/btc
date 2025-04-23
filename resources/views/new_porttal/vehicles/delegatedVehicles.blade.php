@@ -21,122 +21,110 @@
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
                                             <label for="country" class="form-label">{{__('loans.CompanyName')}} </label>
-                                            <select name="filter_companyId[]" id="filter_companyId" onchange="WarehouseName()" class="form-control" required multiple>
-                                                <option value=""></option>
-
+                                            <select name="filter_companyId[]" id="filter_companyId" onchange="WarehouseName()" class="form-control" required>
+                                                <option value="">Select Company</option>
+                                                @foreach($companies as $company)
+                                                    <option value="{{$company->id}}">{{$company->companyName}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
                                             <label for="country" class="form-label">{{__('loans.WarehouseName')}} </label>
-                                            <select id="filter_warehouseId" name="filter_warehouseId[]" class="form-control" multiple>
+                                            <select id="filter_warehouseId" name="filter_warehouseId[]" class="form-control">
                                                 <option value=""></option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.EMPID')}} </label>
-                                            <input type="text" class="form-control" name="filter_job_id" id="filter_job_id">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.LoanType')}} </label>
-                                            <select id="filter_Loan_type" name="filter_Loan_type" class="form-control">
-                                                <option value="0"></option>
-                                                <option value="PL">{{__('loans.PersonalLoan')}}</option>
-                                                <option value="FL">{{__('loans.FuelExpense')}}</option>
+                                            <label for="country" class="form-label">Vehicle Manufecturer </label>
+                                            <select name="filter_vehicle_manufecturerId[]" id="filter_vehicle_manufecturerId"
+                                                    class="form-control" style="width:200px;" onchange="loadModels()" required>
+                                                <option value="">Select Manufecturer</option>
+                                                @foreach($manufacturers as $manufacturer)
+                                                    <option value="{{$manufacturer->id}}">{{$manufacturer->name_en}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.Driver')}} </label>
-                                            <span style="display: flex">
-                                                <input name="filter_driverId" id="filter_driverId" type="hidden" value="">
-                                                <input class="form-control" name="filter_driverId_input"
-                                                id="filter_driverId_input" type="text" value=""
-                                                readonly>
-                                               <button onclick="driver_window();" type="button" class="btn btn-primary btn-xs">
-                                                {{__('loans.Select')}}
-                                                </button>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.Amount')}} </label>
-                                            <input type="text" class="form-control" name="filter_amount" id="filter_amount" value="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.status')}} </label>
-                                            <select id="filter_status_id" name="filter_status_id" class="form-control">
-                                                <option value=""></option>
-
+                                            <label for="country" class="form-label">Vehicle Model </label>
+                                            @php $options = ""; @endphp
+                                            <select name="filter_modelId[]" id="filter_modelId"
+                                                    class="form-control" style="width:200px;" required>
+                                                <option value="">Select Model</option>
+                                                @foreach($models as $model)
+                                                    <option value="{{$model->id}}">{{$model->name_en}} {{$model->manufacturer_date}}</option>
+                                                    @php
+                                                    $options .= '<option value="'.$model->id.'">'.$model->name_en . $model->manufacturer_date . '</option>';
+                                                    @endphp
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.Note')}} </label>
-                                            <input type="text" class="form-control" name="filter_note" id="filter_note" value="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.UpdatedBy')}} </label>
-                                            <select id="filter_updatedby_id" name="filter_updatedby_id" class="form-control">
-                                                <option value=""></option>
-
+                                            <label for="country" class="form-label">City </label>
+                                            <select name="filter_cityId" id="filter_cityId"
+                                                    class="form-control" required>
+                                                <option value="">Select City</option>
+                                                @foreach($cities as $city)
+                                                <option value="{{$city->id}}">{{$city->name_en}}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.UpdateUserType')}} </label>
-                                            <select id="filter_updated_usertypeid" name="filter_updated_usertypeid"
-                                                class="form-control">
-                                                <option value=""></option>
-
+                                            <label for="country" class="form-label">Delegation Status </label>
+                                            <select id="delegation_status" name="delegation_status" class="form-control" >
+                                                <option value="">Select Status</option>
+                                                <option value="valid">Valid</option>
+                                                <option value="expired">Expired</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-xl-4 col-sm-6 col-12">
                                         <div class="mb-3">
-                                            <label for="country" class="form-label">{{__('loans.RequestDate')}} </label>
-                                            <div class="input-group">
-                                                <span class="input-group-text">
-                                                    <i class="bi bi-calendar4"></i>
-                                                </span>
-                                                <input type="text" class="form-control datepicker-range" id="filter_journal_date" name="filter_journal_date">
+                                            <label for="country" class="form-label">Vehicle Operator </label>
+                                            <select name="filter_vehicle_opreaterId" id="filter_vehicle_opreaterId"
+                                                    class="form-control" required>
+                                                <option value="">Select Vehicle Operator</option>
+                                                @foreach($operators as $operator)
+                                                <option value="{{$operator->id}}">{{$operator->name_en}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-4 col-sm-6 col-12">
+                                        <div class="mb-3">
+                                            <label for="country" class="form-label">Vehicle Otometer </label>
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                  <select class="custom-select" id="filter_otometer" name="filter_otometer">
+                                                    <option value="">Select Otometer</option>
+                                                    <option value="=">=</option>
+                                                    <option value=">">></option>
+                                                    <option value="<"><</option>
+                                                </select>
+                                                </div>
+                                                <input type="text" class="form-control" name="filter_otometer_val" id="filter_otometer_val">
                                             </div>
+
+
+
                                         </div>
                                     </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <label for="country" class="form-label">{{__('drivers.Created_At')}}</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="bi bi-calendar4"></i>
-                                            </span>
-                                            <input type="text" class="form-control datepicker-range" id="filter_created_at" name="filter_created_at">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-4 col-sm-6 col-12">
-                                        <label for="country" class="form-label">{{__('drivers.Updated_At')}}</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">
-                                                <i class="bi bi-calendar4"></i>
-                                            </span>
-                                            <input type="text" class="form-control datepicker-range" id="filter_updated_at" name="filter_updated_at">
+                                    <div class="col-xl-12 col-sm-12 col-12">
+                                        <div class="mb-3">
+                                            <span id="reminder" style="color: red; display: none">The following vehicles are delegated vehicles because you have selected the company</span>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- Row end -->
-
                             </div>
                         </div>
                         <!-- Card end -->
@@ -144,7 +132,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Reset')}}</button>
+                <button type="button" id="reset" class="btn btn-dark" data-bs-dismiss="modal" onclick="reset_records()">{{__('drivers.Reset')}}</button>
                 <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="filter">{{__('drivers.Search')}}</button>
             </div>
         </div>
@@ -204,7 +192,7 @@ $module = "Loan";
                    </span>
                </div>
                <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                  <button type="submit" class="btn btn-primary">Save changes</button>
                </div>
             </form>
@@ -220,7 +208,7 @@ $module = "Loan";
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="CreateCheckupModalLabel">Create New vehicle Checkup</h5>
-          <button type="button" style="margin-bottom: 16px;"  class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" style="margin-bottom: 16px;"  class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -285,7 +273,7 @@ $module = "Loan";
                 </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               <input type="submit" value="Confirm" class="btn btn-primary">
             </div>
         </form>
@@ -437,7 +425,7 @@ $module = "Loan";
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               </div>
         </div>
     </div>
@@ -460,6 +448,48 @@ $module = "Loan";
               <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
 
               {{-- <button type="submit" class="btn btn-primary">Save changes</button> --}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="images_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Vehicle Delegation Drivers Info</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-left: 20px; width:100%;clear:both;" id="imgData">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h6>Vehicle Images</h6>
+                        </div>
+                    </div>
+                    <div id="imgTable"></div>
+                    <table style="width: 95%;  margin: 0 auto;" id="" class="table table-image" >
+                        <thead>
+                            <th>
+                                Desc
+                            </th>
+                            <th>
+                                Image
+                            </th>
+                            <th>
+                                Desc
+                            </th>
+                            <th>
+                                Image
+                            </th>
+                        </thead>
+                        <tbody id="imgTbody" style="text-align: center">
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
             </div>
         </div>
     </div>
@@ -515,6 +545,9 @@ $module = "Loan";
         </div>
     </div>
 </div>
+<div class="row">
+    @include('new_porttal.partials.edit_btn')
+</div>
     <div class="row">
         <div class="col-sm-12 col-12">
             <div id="message"></div>
@@ -531,6 +564,7 @@ $module = "Loan";
                             <div class="col-12">
                                 <div class="custom-btn-group">
                                     <button type="button" class="btn btn-sm btn-info" onclick="sync()"><i class="bi bi-arrow-repeat"></i> Sync</button>
+                                    <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
                                 </div>
                             </div>
                         </div>
@@ -608,6 +642,29 @@ $module = "Loan";
         <!-- Main Js Required -->
         <script src="{{asset('assets/js/main.js')}}"></script>
         <script>
+            let sOption = `@php echo $options @endphp`;
+            function loadModels() {
+                var selectElement = document.getElementById('filter_vehicle_manufecturerId');
+                // Get the selected options
+                var selectedOptions = [];
+                for (var i = 0; i < selectElement.options.length; i++) {
+                    var option = selectElement.options[i];
+                    if (option.selected) {
+                        selectedOptions.push(option.value);
+                    }
+                }
+                var filter_vehicle_manufecturerId = document.getElementById('filter_vehicle_manufecturerId').value;
+                if (filter_vehicle_manufecturerId == "")
+                    $('#filter_modelId').html(sOption);
+                else {
+                    $.getJSON("{{URL("/getMultipleVehicleModels")}}" + "/" + selectedOptions, function (json) {
+                        $('#filter_modelId').empty();
+                        $.each(json, function (i, obj) {
+                            $('#filter_modelId').append($('<option>').text(obj.name_en).attr('value', obj.id));
+                        });
+                    });
+                }
+            }
             function imageModal(the) {
                 console.log(the.src);
                 $('#edit_modal').modal('show');
@@ -618,34 +675,30 @@ $module = "Loan";
                 $('#edit_modal').modal('show');
                 let html = `<div style="padding-left: 10px;" class="row">
                     <div class="col-lg-6">
-                        <h4>Sync Data</h4>
+                        <h6>Sync Data</h6>
                     </div>
                 </div>
                 <form id="contact_form" method="POST" action="{{url('automation/upload')}}" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="READ" value="vehicles">
                     <div class="row" style="padding-left: 10px;">
-                        <div class="col-lg-6">
+                        <div class="col-lg-8">
                             <b>Excel File</b>
-                            <input type="file" class="form-control" style="width:200px;" name="select_file" accept=".xls, .xlsx" required>
+                            <input type="file" class="form-control" name="select_file" accept=".xls, .xlsx" required>
                         </div>
                     </div>
-                    <div class="w3-row">
-                        <button class="w3-btn-block w3-indigo w3-section w3-padding" id="submitForm" type="submit">Update</button>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </form>
-                <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
-                    <button
-                        onclick="document.getElementById('response').innerHTML='';document.getElementById('edit_modal').style.display='none'"
-                        type="button" class="w3-btn w3-red">Cancel
-                    </button>
-                </div>`;
+                `;
                  document.getElementById('response').innerHTML = html;
             }
             function WarehouseName() {
                 var filter_companyId = document.getElementById('filter_companyId').value;
                 $('#filter_warehouseId').empty();
-                $.getJSON("getWarehouseName" + "/" + filter_companyId, function (json) {
+                $.getJSON("/getWarehouseName" + "/" + filter_companyId, function (json) {
                     $('#filter_warehouseId').empty();
                     $('#filter_warehouseId').append($('<option>').text("Select ....").attr('value', ''));
                     $.each(json, function (i, obj) {
@@ -664,7 +717,6 @@ $module = "Loan";
             function openImagesModal(id) {
                 $('#images_modal').modal('show');
                 $('.table-image').hide();
-                document.getElementById('imgTable').innerHTML = loader;
                 $.ajax({
                     type: 'POST',
                     url: "{{url('Vehicles/getImages')}}",
@@ -720,7 +772,7 @@ $module = "Loan";
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-lg-6">
-                                <h4>Edit Delegation</h4>
+                                <h6>Edit Delegation</h6>
                             </div>
                         </div>
                             <input type="hidden" name="id" value="`+id+`">
@@ -746,7 +798,7 @@ $module = "Loan";
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save changes</button>
                         </div>
                     </form>`;
@@ -801,7 +853,7 @@ $module = "Loan";
                         columns: [
                             {
                                 // orderable: false,
-                                name: 'no',
+                                name: 'delegations.id',
                                 data: 'no',
                             },
                             {
@@ -950,6 +1002,27 @@ $module = "Loan";
                             },
                         ]
                     });
+                    let html = '';
+                    if ($('#filter_companyId').val() > 0)
+                        html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_companyId option:selected').text()+'</button>';
+                    if ($('#filter_warehouseId').val() > 0)
+                        html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_warehouseId option:selected').text()+'</button>';
+                    if ($('#filter_cityId').val() > 0)
+                        html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_cityId option:selected').text()+'</button>';
+                    if ($('#delegation_status').val() != '')
+                        html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#delegation_status option:selected').text()+'</button>';
+                    if ($('#filter_vehicle_opreaterId').val() > 0)
+                        html += '<button type="button" class="btn btn-outline-info btn-rounded">'+$('#filter_vehicle_opreaterId option:selected').text()+'</button>';
+                    if ($('#filter_vehicle_manufecturerId').val() > 0)
+                        html += '<button type="button" class="btn btn-outline-light btn-rounded">'+$('#filter_vehicle_manufecturerId option:selected').text()+'</button>';
+                    if ($('#filter_modelId').val() > 0)
+                        html += '<button type="button" class="btn btn-outline-dark btn-rounded">'+$('#filter_modelId option:selected').text()+'</button>';
+                    if(html != '') {
+                        $('#edit_btn').show();
+                        $('#selectedCriteria').html(html);
+                    } else {
+                        $('#edit_btn').hide();
+                    }
                 }
                 $('#filter').click(function () {
                     var filter_companyId = filter_warehouseId = filter_cityId = filter_status = delegation_status = filter_vehicle_opreaterId = filter_vehicle_manufecturerId = filter_modelId = filter_otometer = filter_otometer_val = '';

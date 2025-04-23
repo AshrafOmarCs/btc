@@ -1,6 +1,6 @@
 <div class="row" style="padding: 10px;">
     <div class="col-lg-6">
-        <h4>Vehicle History</h4>
+        <h6>Vehicle History</h6>
     </div>
 </div>
     <div class="row" style="padding: 10px;">
@@ -34,7 +34,9 @@
 
         </div>
     </div>
-
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
 
 
 

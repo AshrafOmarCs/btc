@@ -95,24 +95,49 @@ class HelperFunctionsController extends Controller
         $toMonth = ltrim($pieces[1], '0');
         $toDay = ltrim($pieces[2], '0');
         $response = array();
-        $total = 0;
-        $data = DB::select("SELECT * FROM vehicles_fuel
-              WHERE driver_id = '$job_id' AND ((year = '$fromYear' AND month = '$fromMonth' AND day >= '$fromDay')
-              OR (year = '$toYear' AND month = '$toMonth' AND day <= '$toDay'))");
+        $response[0] = $response[1] = $response[2] = $response[3] = $response[4] = $fuelPrice = $gap = $total = 0;
+        $data = DB::select("SELECT fuel_price, allowed_fuel_price, daily_fuel FROM vehicles_fuel join vehicles ON vehicles.id = vehicles_fuel.vehicle_id join vehicle_models ON vehicle_models.id = vehicles.vehicle_model_id
+              WHERE vehicles_fuel.driver_id = '$job_id' AND ((vehicles_fuel.year = '$fromYear' AND vehicles_fuel.month = '$fromMonth' AND vehicles_fuel.day >= '$fromDay')
+              OR (vehicles_fuel.year = '$toYear' AND vehicles_fuel.month = '$toMonth' AND vehicles_fuel.day <= '$toDay'))");
         if (count($data) > 0) {
             $response[0] = count($data);
+            $days = 0;
             foreach ($data as $row) {
                 $total += $row->fuel_price;
+                if ($row->allowed_fuel_price > 0) {
+                    // $consumption = $row->allowed_fuel_price - $row->fuel_price;
+                    // $gap += $consumption;
+                    $fuelPrice = $row->allowed_fuel_price;
+                } else if ($row->daily_fuel > 0) {
+                    // $consumption = $row->daily_fuel - $row->fuel_price;
+                    // $gap += $consumption;
+                    $fuelPrice = $row->daily_fuel;
+                }
             }
+            $daycount = DB::select("SELECT sum(IF(journal_date BETWEEN '" . $from . "' AND '" . $to . "' AND journal_type_id=6 ,1,0))as daycount from journal join drivers on journal.driverId = drivers.id WHERE job_id = '$job_id'");
+            $daycount = $daycount[0]->daycount;
+            $gap = round(($daycount * $fuelPrice) - $total, 2);
             $response[1] = $total;
-            $data = DB::select("SELECT fuel_per_day from drivers WHERE job_id = '$job_id'");
-            if (count($data) > 0)
-                $response[2] = $data[0]->fuel_per_day;
+            $response[2] = $gap;
+
+            $kms = DB::select("SELECT sum(km) as km, sum(engin_up_time) as engin_up_time FROM drivers_attendance WHERE job_id = '$job_id' AND date BETWEEN '" . $from . "' AND '" . $to . "'");
+            if (count($kms) > 0) {
+                if ($kms[0]->km > 0)
+                    $response[3] = round($kms[0]->km);
+                if ($kms[0]->engin_up_time > 0)
+                    $response[4] = round($kms[0]->engin_up_time);
+            }
+
+            // $data = DB::select("SELECT fuel_per_day from drivers WHERE job_id = '$job_id'");
+            // if (count($data) > 0)
+            //     $response[2] = $data[0]->fuel_per_day;
         }
         return $response;
     }
+
+
     public static function getDriverData($driverId) {
-        $driver = DB::select("SELECT drivers.*,warehouse.warehouseName,lkp_bank.bank_code FROM drivers left JOIN lkp_bank ON drivers.bank_id=lkp_bank.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id WHERE drivers.id = '$driverId'");
+        $driver = DB::select("SELECT drivers.*,warehouse.warehouseName,warehouse.companyId,lkp_bank.bank_code FROM drivers left JOIN lkp_bank ON drivers.bank_id=lkp_bank.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id WHERE drivers.id = '$driverId'");
         return $driver[0];
     }
     public static function getInfo($table, $column = '', $id = '') {

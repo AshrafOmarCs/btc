@@ -241,17 +241,12 @@ $module = "Ticket";
                                                             $total = 0;
                                                             foreach ($actions as $action) {
                                                                 $total++;
-                                                                $assigns = '';
+                                                                $assigns = array();
                                                                 if($action->assign_ids != '') {
                                                                     $assign_ids = explode(',', $action->assign_ids);
-                                                                    $j = 0;
                                                                     foreach ($employees as $emp) {
                                                                         if(in_array($emp->id, $assign_ids)) {
-                                                                            if($j != 0) {
-                                                                                $assigns .= ", ";
-                                                                            }
-                                                                            $j++;
-                                                                            $assigns .= $emp->name;
+                                                                            $assigns[] = $emp->name;
                                                                         }
                                                                     }
                                                                 }
@@ -286,7 +281,7 @@ $module = "Ticket";
                                                                     <td>
                                                                         <span class="badge shade-{{$priority}} min-70">{{$action->priority}}</span>
                                                                     </td>
-                                                                    <td>{{$assigns}}</td>
+                                                                    <td>{{implode(',', $assigns)}}</td>
                                                                     <td>{{$action->created_at}}</td>
                                                                     <td>
                                                                         <div class="btn-group">
@@ -345,17 +340,12 @@ $module = "Ticket";
                                                                     continue;
                                                                 }
                                                                 $new_total++;
-                                                                $assigns = '';
+                                                                $assigns = [];
                                                                 if($action->assign_ids != '') {
                                                                     $assign_ids = explode(',', $action->assign_ids);
-                                                                    $j = 0;
                                                                     foreach ($employees as $emp) {
                                                                         if(in_array($emp->id, $assign_ids)) {
-                                                                            if($j != 0) {
-                                                                                $assigns .= ", ";
-                                                                            }
-                                                                            $j++;
-                                                                            $assigns .= $emp->name;
+                                                                            $assigns[] = $emp->name;
                                                                         }
                                                                     }
                                                                 }
@@ -390,7 +380,7 @@ $module = "Ticket";
                                                                     <td>
                                                                         <span class="badge shade-{{$priority}} min-70">{{$action->priority}}</span>
                                                                     </td>
-                                                                    <td>{{$assigns}}</td>
+                                                                    <td>{{implode(',', $assigns)}}</td>
                                                                     <td>{{$action->created_at}}</td>
                                                                     <td>
                                                                         <div class="btn-group">
@@ -447,17 +437,12 @@ $module = "Ticket";
                                                                     continue;
                                                                 }
                                                                 $closed_total++;
-                                                                $assigns = '';
+                                                                $assigns = array();
                                                                 if($action->assign_ids != '') {
                                                                     $assign_ids = explode(',', $action->assign_ids);
-                                                                    $j = 0;
                                                                     foreach ($employees as $emp) {
                                                                         if(in_array($emp->id, $assign_ids)) {
-                                                                            if($j != 0) {
-                                                                                $assigns .= ", ";
-                                                                            }
-                                                                            $j++;
-                                                                            $assigns .= $emp->name;
+                                                                            $assigns[] = $emp->name;
                                                                         }
                                                                     }
                                                                 }
@@ -492,7 +477,7 @@ $module = "Ticket";
                                                                     <td>
                                                                         <span class="badge shade-{{$priority}} min-70">{{$action->priority}}</span>
                                                                     </td>
-                                                                    <td>{{$assigns}}</td>
+                                                                    <td>{{implode(', ', $assigns)}}</td>
                                                                     <td>{{$action->created_at}}</td>
                                                                     <td>
                                                                         <div class="btn-group">

@@ -18,6 +18,12 @@
             <TH>Invoice Number</TH>
             <td>{{$CreditNotes->invoice_number}}</td>
         </tr>
+        @if(isset($CreditNotes->fleetCredit) AND $CreditNotes->fleetCredit != null)
+            <tr>
+                <TH>Type</TH>
+                <td>{{$CreditNotes->fleetCredit}}</td>
+            </tr>
+        @endif
         <tr>
             <TH>Note</TH>
             <td>{{$CreditNotes->note}}</td>
@@ -39,6 +45,6 @@
         </tr>
     </table>
 </div>
-{{-- <div class="modal-footer">
+<div class="modal-footer">
     <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
-</div> --}}
+</div>

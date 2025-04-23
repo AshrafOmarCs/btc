@@ -200,18 +200,16 @@
                     <input type="number" class="form-control" style="width:200px;" name="allowed_fuel_price" id="allowed_fuel_price"
                     value="{{$vehicle[0]->allowed_fuel_price}}">
             </div>
-        </div>
-        @endif
-        <div class="row">
             <div class="col-lg-6">
-                    <b>Fuel Tag</b>
-                    <input type="text" class="form-control" style="width:200px;" name="fuel_tag" id="fuel_tag"
-                    value="{{$vehicle[0]->fuel_tag}}">
+                <b>Fuel Tag</b>
+                <input type="text" class="form-control" style="width:200px;" name="fuel_tag" id="fuel_tag"
+                value="{{$vehicle[0]->fuel_tag}}">
             </div>
         </div>
+        @endif
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary">Save</button>
     </div>
 </form>

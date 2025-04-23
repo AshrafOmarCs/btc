@@ -40,7 +40,6 @@ class VehiclesController extends Controller
         $toDay = date("Y-m-d");
 
         $cities = DB::select("SELECT DISTINCT city_id, lkp_city.name_en  FROM vehicles JOIN lkp_city on vehicles.city_id = lkp_city.id");
-        $rowCount = 2;
         $total_avl = $total_mnt = $total_dam = $total_del = 0;
         $html = '';
         if ($date == $toDay) {
@@ -158,7 +157,7 @@ class VehiclesController extends Controller
             $count_vehicles = DB::select("SELECT count(id) as veh_count from $table WHERE city_id = '$city_id' AND $column = 'damaged' $checkup_clause $date_clause");
             $dam_count = !empty($count_vehicles) ? $count_vehicles[0]->veh_count : 0;
             if ($date == $toDay) {
-                $delg_vehicles = DB::select("SELECT count(vehicles.id) AS veh_count FROM vehicles INNER JOIN delegations ON vehicles.checkup_id=delegations.checkup_id WHERE current_status NOT IN ('damaged', 'maintenance') AND delegations.status = 'valid' AND city_id = '$city_id'");
+                $delg_vehicles = DB::select("SELECT count(vehicles.id) AS veh_count FROM vehicles INNER JOIN delegations ON vehicles.checkup_id=delegations.checkup_id WHERE current_status NOT IN ('damaged','maintenance') AND delegations.status = 'valid' AND city_id = '$city_id'");
                 $delg_count = !empty($delg_vehicles) ? $delg_vehicles[0]->veh_count : 0;
 
                 $count_vehicles = DB::select("SELECT count(id) as veh_count from $table WHERE city_id = '$city_id' AND $column NOT IN ('maintenance', 'damaged')");
@@ -208,142 +207,81 @@ class VehiclesController extends Controller
         $objWriter->save('php://output');
         exit;
     }
-    public function download_vehicles_report_old(Request $request)
-    {
-        error_reporting(E_ALL);
-        ini_set('display_errors', TRUE);
-        ini_set('display_startup_errors', TRUE);
-        require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
-        $objPHPExcel = new PHPExcel();
-
-        $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValueExplicit('A1', 'Available')
-            ->setCellValueExplicit('H1', 'Maintenance')
-            ->setCellValueExplicit('Q1', 'Delegated')
-            ->setCellValueExplicit('A2', 'City')
-            ->setCellValueExplicit('B2', 'Count')
-
-            ->setCellValueExplicit('H2', 'City')
-            ->setCellValueExplicit('I2', 'Count')
-
-            ->setCellValueExplicit('P2', 'City')
-            ->setCellValueExplicit('Q2', 'Warehouse')
-            ->setCellValueExplicit('R2', 'Count')
-            ;
-
-        $objPHPExcel->getActiveSheet()->getColumnDimension('Q')->setWidth(37.89);
-        $objPHPExcel->getActiveSheet()->getRowDimension(1)->setRowHeight(24);
-
-
-        DB::statement('SET SESSION group_concat_max_len = 5555555');
-        $Select_db = DB::select("SELECT lkp_city.name_en,COUNT(vehicles.id) as vehicles_count FROM vehicles INNER JOIN lkp_city ON vehicles.city_id=lkp_city.id WHERE current_status='availabe' GROUP BY lkp_city.name_en");
-        $rowCount = 3;
-        foreach ($Select_db as $Select_dbdb) {
-            $objPHPExcel->setActiveSheetIndex(0)
-                ->SetCellValue('A' . $rowCount, $Select_dbdb->name_en)
-                ->SetCellValue('B' . $rowCount, $Select_dbdb->vehicles_count);
-            $rowCount++;
-        }
-        $Select_db = DB::select("SELECT lkp_city.name_en,COUNT(vehicles.id) as vehicles_count FROM vehicles INNER JOIN lkp_city ON vehicles.city_id=lkp_city.id WHERE current_status='maintenance' or maintenance_status = 1 GROUP BY lkp_city.name_en");
-        $rowCount = 3;
-        foreach ($Select_db as $Select_dbdb) {
-            $objPHPExcel->setActiveSheetIndex(0)
-                ->SetCellValue('H' . $rowCount, $Select_dbdb->name_en)
-                ->SetCellValue('I' . $rowCount, $Select_dbdb->vehicles_count);
-            $rowCount++;
-        }
-        $Select_db = DB::select("SELECT * from warehouse order by warehouseName");
-        $rowCount = 3;
-        foreach ($Select_db as $Select_dbdb) {
-            $warehouse_id = $Select_dbdb->id;
-            $result = DB::select("SELECT lkp_city.name_en,warehouse.warehouseName,count(drivers.vehicle_id) AS vehicles_count FROM lkp_city INNER JOIN warehouse ON lkp_city.id=warehouse.cityId INNER JOIN drivers ON drivers.warehouseId=warehouse.id INNER JOIN vehicles ON drivers.vehicle_id=vehicles.id WHERE warehouse.id='$warehouse_id' AND maintenance_status IS NULL");
-            if ($result[0]->vehicles_count > 0) {
-                $objPHPExcel->setActiveSheetIndex(0)
-                    ->SetCellValue('P' . $rowCount, $result[0]->name_en)
-                    ->SetCellValue('Q' . $rowCount, $result[0]->warehouseName)
-                    ->SetCellValue('R' . $rowCount, $result[0]->vehicles_count);
-                $rowCount++;
-            }
-        }
-        $objPHPExcel->setActiveSheetIndex(0);
-        $date = date("Y-m-d H-i-s");
-        $fileName = 'Vehicle Report_' . $date . '-' . Auth::user()->id . '.xlsx';
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $fileName . '"');
-        header('Cache-Control: max-age=0');
-        header('Cache-Control: max-age=1');
-
-        // If you're serving to IE over SSL, then the following may be needed
-        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
-        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-        header('Pragma: public'); // HTTP/1.0
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
-        exit;
-
-    }
 
 
     public function report_index()
     {
-        $user_id = Auth::user()->id;
-        if (Auth::user()->user_type_id <> 1) {
-            $lkp_company  = DB::select("SELECT distinct lkp_company.id,lkp_company.companyName FROM `users_privilege` JOIN warehouse ON warehouse.id = users_privilege.warehouseId JOIN lkp_company ON lkp_company.id = warehouse.companyId WHERE users_privilege.user_id = '$user_id' AND lkp_company.id <> 6 AND lkp_company.status = 'active'");
-        } else {
-            $lkp_company  = DB::select("SELECT id, companyName FROM `lkp_company` WHERE lkp_company.id <> 6 AND lkp_company.status = 'active'");
-        }
+        $manufacturers = DB::select("SELECT * FROM vehicle_manufacturers");
+        $models = DB::select("SELECT * FROM vehicle_models order by manufacturer_date, name_en");
+        $operators = DB::select("SELECT * FROM vehicle_opreators");
         $lkp_city  = DB::select("SELECT * FROM `lkp_city`");
 
         $vehicles  = DB::select("SELECT id, plate FROM `vehicles` order by plate");
-        return view('vehicles.report')->with('lkp_company', $lkp_company)->with('lkp_city', $lkp_city)->with('vehicles', $vehicles);
+        return view('new_porttal.vehicles.report')->with('lkp_city', $lkp_city)->with('vehicles', $vehicles)->
+        with('manufacturers', $manufacturers)->with('models', $models)->with('operators', $operators);
 
     }
-    function report_search(Request $request) {
-        $company_id = $request->filter_companyId;
-        $warehouse_id = $request->filter_warehouseId;
+    public function report_search(Request $request) {
+        $filter_vehicle_opreaterId = $request->filter_vehicle_opreaterId;
+        $filter_vehicle_manufecturerId = $request->filter_vehicle_manufecturerId;
+        $filter_modelId = $request->filter_modelId;
         $city_id = $request->filter_cityId;
-
-        $type = $request->filter_type;
         $vehicle_id = $request->filter_vehicleId;
         $current_status = $request->filter_status;
-        $str = explode("/", $request->filter_date); //just to split start date and end date from string
+        $str = explode(" - ", $request->filter_date); //just to split start date and end date from string
         $start_date = $str[0];
         $end_date = $str[1];
-        $dateArray = array();
-        $currentDate = strtotime($start_date);
-        $endDate = strtotime($end_date);
-        while ($currentDate <= $endDate) {
-            $dateArray[] = date('Y-m-d', $currentDate);
-            $currentDate = strtotime('+1 day', $currentDate);
-        }
-        $response = make_header($dateArray);
-        $response .= ':::';
-        $body_response = make_body($dateArray, $city_id, $company_id, $warehouse_id, $type, $vehicle_id, $current_status, $type);
-        $response .= $body_response[0];
-        $response .= ':::';
-        $response .= $body_response[1];
 
+        $response = getVehicleReportData($city_id, $filter_vehicle_opreaterId, $filter_vehicle_manufecturerId, $filter_modelId, $vehicle_id, $current_status, $start_date, $end_date);
+
+        return $response;
+    }
+    public function reportData(Request $request) {
+        $str = explode(" - ", $request->period); //just to split start date and end date from string
+        $start_date = $str[0];
+        $end_date = $str[1];
+        $status = $request->status;
+        $vehicle_id = $request->vehicle_id;
+        $vehicle = DB::select("SELECT plate from vehicles where id = '$vehicle_id'");
+        $plate = $vehicle[0]->plate;
+        $status = $request->status;
+        if ($status == 'delegeted')
+            $status = "`status` IN ('absent with no excuse','absent with excuse', 'missed attendance', 'present')";
+        else
+            $status = "`status` = '$status'";
+        $data = DB::select("WITH ConsecutiveGroups AS (
+        SELECT date,STATUS,DATE_ADD(date,INTERVAL-ROW_NUMBER() OVER (ORDER BY date) DAY) AS group_id FROM drivers_attendance WHERE $status AND `vehicle_id`='$vehicle_id' AND
+        date BETWEEN STR_TO_DATE('$start_date', '%d/%m/%Y') AND STR_TO_DATE('$end_date', '%d/%m/%Y')
+        ),GroupedCounts AS (
+        SELECT MIN(date) AS start_date,MAX(date) AS end_date FROM ConsecutiveGroups GROUP BY group_id)
+        SELECT start_date,end_date,DATEDIFF(end_date,start_date)+1 AS days_in_range FROM GroupedCounts");
+        $response = "";
+        foreach($data as $row) {
+            $response .= "<tr>";
+            $response .= "<td>".$plate."</td>";
+            $response .= "<td>".$request->status."</td>";
+            $response .= "<td>".$row->start_date."</td>";
+            $response .= "<td>".$row->end_date."</td>";
+            $response .= "<td>".$row->days_in_range."</td>";
+            $response .= "</tr>";
+        }
         return $response;
     }
 
     public function edit_vehicle(Request $request)
     {
-
         $vehicle = DB::select("SELECT * FROM vehicles where `id` = '$request->vehicle_id'");
         $vehicle_models = DB::select("SELECT * FROM vehicle_models");
         if($vehicle[0]->current_status == 'availabe')
             $vehicle_opreators = DB::select("SELECT * FROM vehicle_opreators");
         else
             $vehicle_opreators = DB::select("SELECT * FROM vehicle_opreators WHERE id <> '5'");
-
         $cities = DB::select("SELECT * FROM lkp_city");
         $maintenance_statuses = DB::select("SELECT * FROM lkp_vehicles_maintenance");
         $companies = DB::select("SELECT * FROM lkp_company WHERE rent_check = 1 AND status = 'active'");
 
         return view('new_porttal.vehicles.vehicle_edit')->with('vehicle', $vehicle)->with('vehicle_models', $vehicle_models)->with('vehicle_opreators', $vehicle_opreators)
         ->with('cities', $cities)->with('maintenance_statuses', $maintenance_statuses)->with('companies', $companies);
-
     }
     public function update_vehicle(Request $request)
     {
@@ -386,10 +324,9 @@ class VehiclesController extends Controller
         $vehicle_expiry_date = '';
         if (!empty($request->vehicle_expiry_date))
             $vehicle_expiry_date = ",vehicle_expiry_date = '$request->vehicle_expiry_date'";
-        if ($request->current_status == 'availabe' || $request->current_status == 'damaged')
-            $maintenance_location_clause = "maintenance_location = ''";
-
-
+        // if ($request->current_status == 'availabe' || $request->current_status == 'damaged')
+            $maintenance_location_clause = "maintenance_location = '$request->maintenance_location'";
+        // dd($maintenance_location_clause);
         DB::update("UPDATE vehicles set fuel_tag = '$request->fuel_tag', rent_type = '$request->rent_type', rent_individual = '$request->rent_individual', rent_company_id = '$request->rent_company_id', plate = '$request->plate' $columns,registertion_type = '$request->registertion_type', vehicle_model_id = '$request->vehicle_model_id',
         vehicle_opreater_id = '$request->vehicle_opreater_id',SNno = '$request->SNno', city_id = '$request->city_id',
         body_number = '$request->body_number',color = '$request->color',insurance_type = '$request->insurance_type', feulType = '$request->feulType',
@@ -401,7 +338,6 @@ class VehiclesController extends Controller
         $cities = DB::select("SELECT * FROM lkp_city");
         $maintenance_statuses = DB::select("SELECT * FROM lkp_vehicles_maintenance");
         $companies = DB::select("SELECT * FROM lkp_company WHERE rent_check = 1 AND status = 'active'");
-
 
         return view('new_porttal.vehicles.vehicle_edit')->with('vehicle', $vehicle)->with('vehicle_models', $vehicle_models)->with('vehicle_opreators', $vehicle_opreators)
         ->with('cities', $cities)->with('maintenance_statuses', $maintenance_statuses)->with('companies', $companies)->with('success', 'Updated successfully');
@@ -493,7 +429,7 @@ class VehiclesController extends Controller
                         $html = $html." <li>".$item2->name_en."| <span style='color: #0017ff;font-weight: bold;'>".$item2->utlity_condition."</span></li>";
                     }
                 }
-                $html = $html. ' <button class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"  onclick="editAccessories('.$item->vehicle_id.')">Edit <i class="fa fa-pencil"></i> </button>';
+                $html = $html. ' <button class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"  onclick="editAccessories('.$item->vehicle_id.')">Edit <i class="bi bi-pencil"></i> </button>';
                 $item->vehicle_utilities = $query;
                 $item->vehicle_utilities_html = $html;
             }else{
@@ -514,6 +450,7 @@ class VehiclesController extends Controller
                         $suppervisor =  $suppervisor[0]->name.'<br> <span style="font-size: 10px; font-weight: bold;"> (Suppervisor) <span>';
                         $sql[0]->uploadedBy = $suppervisor;
                     }
+
                 }else{
                     $driver = "SELECT * FROM `drivers` where id =".$sql[0]->created_by." ";
                     $driver = DB::select($driver);
@@ -550,9 +487,9 @@ class VehiclesController extends Controller
             if (count($check_oil) == 0)
                 $item->oil_data = '';
             else if (count($check_oil) > 1 && $item->oil_check != 1)
-                $item->oil_data = '<button style="color: black !important; background-color: red;" class="btnaction btn menu-icon vd_bd-red vd_red" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="fa fa-eye"></i></button>';
+                $item->oil_data = '<button style="color: black !important; background-color: red;" class="btnaction btn menu-icon vd_bd-red vd_red" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="bi bi-eye"></i></button>';
             else
-                $item->oil_data = '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="fa fa-eye"></i></button>';
+                $item->oil_data = '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="bi bi-eye"></i></button>';
         }
         // $vehicle = Vehicle::where('','')->get();
         if(count($vehicles) > 0 OR $city_name != '')
@@ -560,12 +497,19 @@ class VehiclesController extends Controller
         else
             return view('new_porttal.vehicles.index',compact('payload','utilities', 'cities', 'operators', 'manufacturers', 'models', 'operators', 'companies'));
     }
-    // public function utilities(Request $request)
-    // {
-    //     dd($request);
-    // }
+
     public function search(Request $request)
     {
+        if (!request()->ajax()) {
+            $utilities = "SELECT * FROM `utilities`";
+            $cities = DB::select("SELECT * FROM lkp_city");
+            $manufacturers = DB::select("SELECT * FROM vehicle_manufacturers");
+            $models = DB::select("SELECT * FROM vehicle_models order by manufacturer_date, name_en");
+            $operators = DB::select("SELECT * FROM vehicle_opreators");
+            $companies = DB::select("SELECT * FROM lkp_company WHERE status = 'active'");
+            return view('new_porttal.vehicles.index',compact('utilities', 'cities', 'operators', 'manufacturers', 'models', 'operators', 'companies'));
+        }
+
         $toDay = date("Y-m-d");
         $today = new DateTime(); // Current date
         $city_id = $request->filter_cityId;
@@ -602,10 +546,13 @@ class VehiclesController extends Controller
             $status_clause = "AND vehicles.current_status = '$status'";
         $delegation_clause = "";
         if ($delegation_status == '1')
-            $delegation_clause = "AND delegations.status = 'valid'";
+            $delegation_clause = "AND delegations.status = 'valid' AND vehicles.current_status != 'damaged'";
         else if ($delegation_status == '0') {
-            $IDs = DB::select("SELECT GROUP_CONCAT(vehicle_id) as vehicles FROM `delegations` WHERE `status` = 'valid'");
-            $delegation_clause = "AND vehicles.id NOT IN (".$IDs[0]->vehicles.")";
+            $IDs = DB::select("SELECT vehicle_id as vehicles FROM `delegations` WHERE `status` = 'valid'");
+            $IDs = array_column($IDs, 'vehicles');
+            // comma seprated string
+            $commaSeparatedIds = implode(',', $IDs);
+            $delegation_clause = "AND vehicles.id NOT IN (".$commaSeparatedIds.")";
         }
         $operator_clause = "";
         if ($vehicle_opreater_id > 0)
@@ -660,7 +607,7 @@ class VehiclesController extends Controller
             $AND = " AND vehicles.id in(" . implode(",", $vehicleIds) . ")";
         }
         if ($company_id > 0) {
-            $sql = "SELECT delegations.`status` AS delegation_status,ending_date,vehicles.oil_check,vehicles.allowed_fuel_price,vehicles.fuel_check,vehicles.vehicle_expiry_date,
+            $sql = "SELECT delegations.id as delegation_id, delegations.`status` AS delegation_status,ending_date,vehicles.oil_check,vehicles.allowed_fuel_price,vehicles.fuel_check,vehicles.vehicle_expiry_date,
             vehicles.maintenance_location,vehicle_models.name_en AS vehicle_model,vehicle_models.manufacturer_date,vehicle_manufacturers.name_en AS vehicle_manufacturer,
             vehicles.plate,vehicles.checkup_id,vehicles.id AS vehicle_id,vehicles.freeExtraOtometer,vehicles.SNno,vehicles.body_number,vehicles.current_status,vehicles.otometer,
             vehicles.vehicle_registration_expire_date,vehicles.recive_date,vehicles.registertion_type,vehicles.extraOtometerCharge,vehicles.color,lkp_city.name_en,
@@ -670,7 +617,7 @@ class VehiclesController extends Controller
             JOIN drivers ON delegations.driverId=drivers.id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id
                 WHERE 1 = 1 $company_clause $warehouse_clause $city_clause $AND $status_clause $delegation_clause $operator_clause $manufecturer_clause $model_clause $otometer_clause";
         } else {
-            $sql = "SELECT delegations.status as delegation_status, ending_date, vehicles.oil_check, vehicles.allowed_fuel_price, vehicles.fuel_check, vehicles.vehicle_expiry_date,
+            $sql = "SELECT delegations.id as delegation_id, delegations.status as delegation_status, ending_date, vehicles.oil_check, vehicles.allowed_fuel_price, vehicles.fuel_check, vehicles.vehicle_expiry_date,
             vehicles.maintenance_location, vehicle_models.name_en as 'vehicle_model',vehicle_models.manufacturer_date,vehicle_manufacturers.name_en as 'vehicle_manufacturer',vehicles.plate,
             vehicles.checkup_id,vehicles.id as 'vehicle_id',vehicles.freeExtraOtometer,vehicles.SNno,vehicles.body_number,vehicles.current_status,vehicles.otometer,vehicles.vehicle_registration_expire_date,
             vehicles.recive_date,vehicles.registertion_type,vehicles.extraOtometerCharge,vehicles.color,lkp_city.name_en,vehicle_opreators.name_en as 'vehicle_opreator' FROM `vehicles`
@@ -684,7 +631,6 @@ class VehiclesController extends Controller
         $payload = DB::select($sql);
         $totalData = count($payload);
 
-        // $columns = ['no', 'plate', 'fuel_data', 'oil_data', 'vehicle_expiry_date', 'name_en', 'vehicle_manufacturer', 'vehicle_model', 'vehicle_opreator', 'color', 'vehicle_registration_expire_date', 'vehicle_utilities_html', 'otometer', 'registertion_type', 'current_status', 'delegation_status', 'maintenance_location', 'response1', 'response2'];
         $columns = ['no', 'plate', 'name_en', 'vehicle_manufacturer', 'vehicle_model', 'vehicle_opreator', 'color', 'otometer', 'registertion_type', 'current_status', 'delegation_status', 'response1', 'response2'];
 
         $limit = $request->input('length');
@@ -696,9 +642,11 @@ class VehiclesController extends Controller
         $search = $request->input('search.value');
         if (!empty($search)) {
             $sql .= " AND delegations.status LIKE '%$search%' OR plate LIKE '%$search%' OR vehicle_expiry_date LIKE '%$search%' OR vehicle_manufacturers.name_en LIKE '%$search%' OR vehicle_models.name_en LIKE '%$search%' OR vehicle_opreators.name_en LIKE '%$search%'
-            OR color LIKE '%$search%' OR vehicle_registration_expire_date LIKE '%$search%' OR otometer LIKE '%$search%' OR registertion_type LIKE '%$search%' OR current_status LIKE '%$search%' OR maintenance_location LIKE '%$search%' ORDER BY vehicles.id $dir LIMIT $start, $limit";
+            OR color LIKE '%$search%' OR vehicle_registration_expire_date LIKE '%$search%' OR otometer LIKE '%$search%' OR registertion_type LIKE '%$search%' OR current_status LIKE '%$search%' OR maintenance_location LIKE '%$search%' ORDER BY vehicles.id $dir";
             $payload = DB::select($sql);
             $totalFiltered = count($payload);
+            $sql .= " LIMIT $start, $limit";
+            $payload = DB::select($sql);
         } else {
             $totalFiltered = $totalData;
             $sql .= " ORDER BY $order $dir LIMIT $start, $limit";
@@ -733,17 +681,7 @@ class VehiclesController extends Controller
             }
             $delegation_info = get_vehicle_info($item->vehicle_id);
             $item->delegation_info = $delegation_info;
-            $fuel_data = get_fuel_details($item->vehicle_id, $item->allowed_fuel_price, $item->fuel_check);
-            $item->fuel_data = $fuel_data;
-            $check_oil = DB::select("select * from vehicles_oil where status is null AND vehicle_id = ".$item->vehicle_id);
-            $item->oil_data = '';
-            if (count($check_oil) == 0)
-                $item->oil_data = '';
-            else if (count($check_oil) > 1 && $item->oil_check != 1) {
-                $item->oil_data = '<button style="color: black !important; background-color: red;" class="btnaction btn menu-icon vd_bd-red vd_red" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="fa fa-eye"></i></button></ul>';
-            } else {
-                $item->oil_data = '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="fa fa-eye"></i></button></ul>';
-            }
+
             if ($item->delegation_status == 'valid' AND $toDay < $item->ending_date) {
             } else {
                 $underProcess = DB::select("SELECT requests.vehicle_id FROM assign_vehicles INNER JOIN requests ON assign_vehicles.checkup_id=requests.vehicle_check_id WHERE assign_vehicles.`status` NOT IN ('done','finished') AND requests.vehicle_id = " . $item->vehicle_id);
@@ -765,7 +703,62 @@ class VehiclesController extends Controller
 
         return response()->json($jsonResponse);
     }
+    public function forceAssign(Request $request) {
+        $IDs = DB::select("SELECT vehicle_id FROM `delegations` WHERE `status` = 'valid'");
+        $IDs1 = array_column($IDs, 'vehicle_id');
+        $IDs = DB::select("SELECT vehicle_id FROM `assign_vehicles` WHERE `status` NOT IN ('done', 'finished')");
+        $IDs2 = array_column($IDs, 'vehicle_id');
+        $mergedArray = array_merge($IDs1, $IDs2);
+        $commaSeparatedIds = implode(',', $mergedArray);
 
+        $drivers = DB::select("SELECT id, job_id, iqama from drivers WHERE status_id = 1 AND iqama is not null");
+        $vehicles = DB::select("SELECT vehicles.plate, vehicles.id FROM `vehicles`
+        Left Join delegations on delegations.checkup_id = vehicles.checkup_id WHERE vehicles.id NOT IN (".$commaSeparatedIds.") AND vehicles.current_status = 'availabe' ORDER BY plate asc");
+
+        $pVehicles = DB::select("SELECT vehicles.plate,drivers.fullName,drivers.job_id,assign_vehicles.`id`,assign_vehicles.`status` FROM assign_vehicles INNER JOIN vehicles ON assign_vehicles.vehicle_id=vehicles.id
+        INNER JOIN drivers ON assign_vehicles.driver_id=drivers.id WHERE `status`='pending'");
+
+        return view('new_porttal.vehicles.forceAssign', compact('vehicles', 'drivers', 'pVehicles'));
+    }
+    public function forceAssignSave(Request $request) {
+        $driver_id = $request->driver_id;
+        $vehicle_id = $request->vehicle_id;
+        $check = DB::select("SELECT id FROM assign_vehicles WHERE vehicle_id = '$vehicle_id' AND driver_id = '$driver_id' AND status = 'pending'");
+        if (count($check) > 0) {
+
+        } else {
+            $user_id = Auth::user()->id;
+            DB::insert("INSERT INTO assign_vehicles (vehicle_id, driver_id, status, pushed_by, created_by, created_at, updated_at) VALUES ('$vehicle_id', '$driver_id', 'pending', 'Users', '$user_id', NOW(), NOW())");
+        }
+        return redirect()->back()->with('success', 'Vehicle assigned successfully');
+    }
+    public function deleteVehicleAssignment($id) {
+        $chk = DB::delete("DELETE from assign_vehicles WHERE id = '$id'");
+        if ($chk)
+            return 'good';
+        else
+            return 'bad';
+    }
+    public function updateVehicleDriver(Request $request) {
+        $delegation_id = $request->delegation_id;
+        $driver = DB::select("SELECT iqama, drivers.id from drivers join delegations on delegations.driverId = drivers.id WHERE delegations.id = '$delegation_id'");
+        $iqama = $driver[0]->iqama;
+        $id = $driver[0]->id;
+        $vehicle_id = $request->vehicle_id;
+        $vehicle = DB::select("SELECT plate from vehicles WHERE id = '$vehicle_id'");
+        $plate = $vehicle[0]->plate;
+        $drivers = DB::select("SELECT id, job_id, iqama from drivers WHERE iqama = '$iqama' AND id != '$id'");
+        return view('new_porttal.vehicles.updateVehicleDriver', compact('drivers', 'plate', 'vehicle_id', 'delegation_id'));
+    }
+    public function updateVehicleDriverSave(Request $request) {
+        $delegation_id = $request->delegation_id;
+        $driver_id = $request->driver_id;
+        $vehicle_id = $request->vehicle_id;
+        $user_id = Auth::user()->id;
+        $transferRequestBy = $request->transferRequestBy;
+        DB::update("UPDATE delegations set driverId = '$driver_id', updated_by = '$user_id', updated_at = NOW(), transferRequestBy = '$transferRequestBy' WHERE id = '$delegation_id'");
+        return redirect()->back()->with('success', 'Vehicle transferred successfully');
+    }
     public function vehicleInfo(Request $request) {
         $plate = $request->plate;
         $vehile = DB::select("SELECT ending_date from vehicles join delegations ON delegations.vehicle_id = vehicles.id where plate = '$plate' and delegations.status = 'valid'");
@@ -790,13 +783,122 @@ class VehiclesController extends Controller
         if (count($vehile) > 0)
             $total_utility = count($vehile);
         echo $total_utility . ':::';
+        $vehile = DB::select("SELECT others from vehicles where plate = '$plate'");
+        $divs = '';
+        if ($vehile[0]->others != '') {
+            $files = explode(',', $vehile[0]->others);
 
+            foreach ($files as $file) {
+                $safeFile = htmlspecialchars($file, ENT_QUOTES, 'UTF-8');
+                $plate = htmlspecialchars($plate, ENT_QUOTES, 'UTF-8');
+                $ext = pathinfo($safeFile, PATHINFO_EXTENSION);
 
+                if ($ext == 'pdf') {
+                    $divs .= '<div class="col-md-4 remDiv">
+                        <div class="attachment-card" style="height: 135px">
+                            <embed src="/storage/Vehicles/vehicleRegistrationCards/' . $safeFile . '" type="application/pdf">
+                            <p><a href="/storage/Vehicles/vehicleRegistrationCards/' . $safeFile . '" target="_blank" style="position: absolute;top: -5px;left: -5px;cursor: pointer;">
+                                <i class="bi fs-3 bi-eye"></i>
+                            </a>
+                            ' . substr($safeFile, 0, 20) . '
+                            <i class="bi fs-3 bi-x" style="position: absolute;top: -20px;right: -13px;cursor: pointer;" title="Delete" onclick="deleteImage(\'' . $plate . '\', \'' . $safeFile . '\')"></i>
+                            </p>
+                        </div>
+                    </div>';
+                } else {
+                    $divs .= '<div class="col-md-4 remDiv">
+                        <div class="attachment-card">
+                            <a href="#"><img onclick="imageModal(this)" id="" src="/storage/Vehicles/vehicleRegistrationCards/' . $safeFile . '" alt="other"></a>
+                            ' . substr($safeFile, 0, 20) . '
+                            <i class="bi fs-3 bi-x" style="position: absolute;top: -20px;right: -13px;cursor: pointer;" title="Delete" onclick="deleteImage(\'' . $plate . '\', \'' . $safeFile . '\')"></i>
+                        </div>
+                    </div>';
+                }
+            }
+        }
+        if ($divs == '')
+            echo '0:::';
+        else
+            echo $divs . ':::';
+        $vehicle = DB::select("SELECT * FROM vehicles where plate = '$plate'");
+        if ($vehicle[0]->current_status == 'damaged')
+            echo 'damaged';
+        else if ($vehicle[0]->current_status == 'maintenance')
+            echo 'maintenance';
+        else {
+            $today = date("Y-m-d");
+            $vehicle = DB::select("SELECT ending_date, delegations.status as delegation_status from vehicles join delegations ON delegations.vehicle_id = vehicles.id where plate = '$plate' order by delegations.id DESC");
+            if (count($vehicle) == 0)
+                echo 'available';
+            else if($vehicle[0]->delegation_status == 'valid' AND $today < $vehicle[0]->ending_date) {
+                echo 'valid';
+            } else if($vehicle[0]->delegation_status == 'valid' AND $today > $vehicle[0]->ending_date) {
+                echo 'expired';
+            } else if($vehicle[0]->delegation_status == 'cancelled') {
+                echo 'cancelled';
+            } else if($vehicle[0]->delegation_status == 'completed') {
+                echo 'completed';
+            }  else if($vehicle[0]->delegation_status == 'completedAfterExpiry') {
+                echo "CompletedAfterExpiry";
+            }
+        }
+
+    }
+    public function registrationCard(Request $request) {
+        if ($request->hasFile('vehicle_reg_card')) {
+            $plate = $request->plate;
+            $directory = storage_path('app/public/Vehicles/vehicleRegistrationCards');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            $file = $request->file('vehicle_reg_card');
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $file->move($directory, $filename);
+            DB::update("UPDATE vehicles set vehicle_reg_card = '$filename' WHERE plate = '$plate'");
+            return back()->with('success', 'Data updated successfully');
+        } else if ($request->hasFile('others')) {
+            $plate = $request->plate;
+            $files = array();
+            $directory = storage_path('app/public/Vehicles/vehicleRegistrationCards');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            foreach ($request->file('others') as $file) {
+                $filename = time() . '-' . $file->getClientOriginalName();
+                $file->move($directory, $filename);
+                $files[] = $filename;
+            }
+            $files = implode(',', $files);
+            $others = DB::select("SELECT others FROM vehicles WHERE plate = '$plate'");
+            $others = $others[0]->others;
+            if ($others != '' || $others != null)
+                $files = $others . "," . $files;
+            DB::update("UPDATE vehicles set others = '$files' WHERE plate = '$plate'");
+            return 'Done successfully';
+        }
+        return 'Something went wrong';
+    }
+    public function deleteVehicleFile(Request $request) {
+        $plate = $request->plate;
+        $fileName = $request->fileName;
+        $files = DB::select("SELECT others FROM vehicles WHERE plate = '$plate'");
+        if (count($files) > 0) {
+            $newFiles = array();
+            $files = explode(',', $files[0]->others);
+            foreach($files as $file) {
+                if ($fileName != $file) {
+                    $newFiles[] = $file;
+                }
+            }
+            $newFiles = implode(',', $newFiles);
+            DB::update("UPDATE vehicles set others = '$newFiles' WHERE plate = '$plate'");
+            return 'Deleted successfully!';
+        }
+        return 'Record not exist!';
     }
     public function historyVehicle(Request $request) {
         $vehicle_id = $request->vehicle_id;
         $delegations = DB::select("SELECT DATE_FORMAT(starting_date, '%Y-%m') AS `year_month`, COUNT(*) AS del_count FROM delegations WHERE vehicle_id = ? GROUP BY `year_month` ORDER BY `year_month` ", [$vehicle_id]);
-
         foreach ($delegations as $delegation) {
             $date = $delegation->year_month;
             $drivers = DB::select("SELECT COUNT(DISTINCT driverId) AS driver_count FROM delegations WHERE vehicle_id = ? AND DATE_FORMAT(starting_date, '%Y-%m') = ?", [$vehicle_id, $date]);
@@ -820,7 +922,7 @@ class VehiclesController extends Controller
         foreach ($delegations as $delegation) {
             $star = '';
             if($check == true)
-                $star = '<i title="current delegation" class="fa fa-star" style="color: green;"></i>';
+                $star = '<i title="current delegation" class="bi bi-star" style="color: green;"></i>';
             $check = false;
             $html .= "<tr>";
             $html .= "<td>$star $delegation->fullName</td>";
@@ -832,7 +934,6 @@ class VehiclesController extends Controller
         $html .= "</tbody></table>";
         return $html;
     }
-
 
     public function delegatedVehicles(Request $request)
     {
@@ -855,7 +956,7 @@ class VehiclesController extends Controller
         ->join('drivers', 'delegations.driverId', '=', 'drivers.id')
         ->join('warehouse', 'drivers.warehouseId', '=', 'warehouse.id')
         ->join('lkp_company', 'lkp_company.id', '=', 'warehouse.companyId')
-        ->join('lkp_city', 'warehouse.cityId', '=', 'lkp_city.id');
+        ->join('lkp_city', 'vehicles.city_id', '=', 'lkp_city.id');
         // $Select_db->whereRaw("ending_date >= '$toDay'");
         $Select_db->whereRaw("delegations.status = 'valid'");
 
@@ -961,7 +1062,6 @@ class VehiclesController extends Controller
         } else
             return back()->with('error', 'Something went wrong');
     }
-
     public function getImages(Request $request) {
         $check_id = $request->id;
         $rear_image = $left_image = $right_image = $drivingWheel_image = $front_image = asset('images/no_imag.jpg');
@@ -977,13 +1077,13 @@ class VehiclesController extends Controller
             <td>
                 Front-side
             </td>
-             <td>
+            <td>
                 <img style='cursor: pointer; width: 200px' onclick='imageModal(this)' src=".url($front_image).">
             </td>
             <td>
                 Back-side
             </td>
-             <td>
+            <td>
                 <img style='cursor: pointer; width: 200px' onclick='imageModal(this)' src=".url($rear_image).">
             </td>
         </tr>
@@ -991,13 +1091,13 @@ class VehiclesController extends Controller
             <td>
                 Left-side
             </td>
-             <td>
+            <td>
                 <img style='cursor: pointer; width: 200px' onclick='imageModal(this)' src=".url($left_image).">
             </td>
             <td>
                 Right-side
             </td>
-             <td>
+            <td>
                 <img style='cursor: pointer; width: 200px' onclick='imageModal(this)' src=".url($right_image).">
             </td>
         </tr>
@@ -1005,186 +1105,12 @@ class VehiclesController extends Controller
             <td>
                 Interior Image
             </td>
-             <td>
+            <td>
                 <img style='cursor: pointer; width: 200px' onclick='imageModal(this)' src=".url($drivingWheel_image).">
             </td>
         </tr>";
     }
 
-    // public function search_old(Request $request)
-    // {
-    //     $toDay = date("Y-m-d");
-    //     $today = new DateTime(); // Current date
-    //     $city_id = $request->filter_cityId;
-    //     $company_id = $request->filter_companyId;
-    //     $warehouse_id = $request->filter_warehouseId;
-    //     $type = $request->type;
-    //     $status = $request->filter_status;
-    //     $vehicle_opreater_id = $request->filter_vehicle_opreaterId;
-    //     $filter_vehicle_manufecturerId = $request->filter_vehicle_manufecturerId;
-    //     $filter_modelId = $request->filter_modelId;
-    //     $filter_otometer = $request->filter_otometer;
-    //     $filter_otometer_value = $request->filter_otometer_value;
-
-    //     $city_name = $request->city_name;
-    //     $type = $request->type;
-
-    //     $company_clause = "";
-    //     if ($company_id > 0)
-    //         $company_clause = "AND lkp_company.id = $company_id";
-    //     $warehouse_clause = "";
-    //     if ($warehouse_id > 0)
-    //         $warehouse_clause = "AND warehouse.id = $warehouse_id";
-
-    //     $city_clause = "";
-    //     if ($city_id > 0)
-    //         $city_clause = "AND vehicles.city_id = $city_id";
-    //     $status_clause = "";
-    //     if ($status != '')
-    //         $status_clause = "AND vehicles.current_status = '$status'";
-    //     if ($status == 'maintenance')
-    //         $status_clause = "AND (vehicles.current_status = '$status' OR vehicles.maintenance_status = '1')";
-    //     $operator_clause = "";
-    //     if ($vehicle_opreater_id > 0)
-    //         $operator_clause = "AND vehicles.vehicle_opreater_id = $vehicle_opreater_id";
-
-
-    //     $manufecturer_clause = "";
-    //     if ($filter_vehicle_manufecturerId > 0)
-    //         $manufecturer_clause = "AND vehicle_models.vehicle_manufacturer_id = $filter_vehicle_manufecturerId";
-    //     $model_clause = "";
-    //     if ($filter_modelId > 0)
-    //         $model_clause = "AND vehicles.vehicle_model_id = $filter_modelId";
-    //     $otometer_clause = "";
-    //     if ($filter_otometer != '' AND $filter_otometer_value != '')
-    //         $otometer_clause = "AND vehicles.otometer $filter_otometer $filter_otometer_value";
-
-
-    //     $vehicleIds = $vehicles = array();
-    //     $AND = "";
-    //     if ($type == 'available') {
-    //         $vehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id WHERE vehicles.current_status = 'availabe' AND lkp_city.name_en = '$city_name'");
-
-    //     } else if ($type == 'done_attendance') {
-    //         $vehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON vehicles.id=drivers_attendance.vehicle_id WHERE drivers_attendance.date='$toDay' AND lkp_city.name_en = '$city_name'");
-
-    //     } else if ($type == 'pending_attendance') {
-    //         $vehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id WHERE lkp_city.name_en = '$city_name' AND vehicles.id NOT IN (SELECT vehicle_id FROM drivers_attendance WHERE date = '$toDay')");
-
-    //     } else if ($type == 'present') {
-    //         $vehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON vehicles.id=drivers_attendance.vehicle_id WHERE drivers_attendance.date='$toDay' and drivers_attendance.`status` = 'present'");
-
-    //     } else if ($type == 'absent_ex') {
-    //         $vehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON vehicles.id=drivers_attendance.vehicle_id WHERE drivers_attendance.date='$toDay' and drivers_attendance.`status` = 'absent with excuse' AND lkp_city.name_en = '$city_name'");
-
-    //     } else if ($type == 'absent_no_ex') {
-    //         $vehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN drivers_attendance ON vehicles.id=drivers_attendance.vehicle_id WHERE drivers_attendance.date='$toDay' and drivers_attendance.`status` = 'absent with no excuse' AND lkp_city.name_en = '$city_name'");
-
-    //     } else if ($type == 'maintenance') {
-    //         $vehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id WHERE vehicles.current_status = 'maintenance' AND lkp_city.name_en = '$city_name'");
-
-    //     } else if ($type == 'damaged') {
-    //         $vehicles = DB::select("SELECT vehicles.id FROM lkp_city JOIN vehicles ON lkp_city.id=vehicles.city_id WHERE vehicles.current_status = 'damaged' AND lkp_city.name_en = '$city_name'");
-
-    //     }
-    //     if(count($vehicles) > 0) {
-    //         foreach ($vehicles as $vehicle) {
-    //             $vehicleIds[] = $vehicle->id;
-    //         }
-    //         $AND = " AND vehicles.id in(" . implode(",", $vehicleIds) . ")";
-    //     }
-    //     if ($company_id > 0) {
-    //         $sql = "SELECT vehicles.oil_check, vehicles.allowed_fuel_price, vehicles.fuel_check, vehicles.vehicle_expiry_date,vehicles.maintenance_location,vehicle_models.name_en AS vehicle_model,vehicle_models.manufacturer_date,vehicle_manufacturers.name_en AS vehicle_manufacturer,vehicles.plate,vehicles.checkup_id,vehicles.id AS vehicle_id,vehicles.freeExtraOtometer,vehicles.SNno,vehicles.body_number,vehicles.current_status,vehicles.otometer,
-            // vehicles.vehicle_registration_expire_date,vehicles.recive_date,vehicles.registertion_type,vehicles.extraOtometerCharge,vehicles.color,lkp_city.name_en,vehicle_opreators.name_en AS vehicle_opreator FROM vehicles
-            // JOIN vehicle_models ON vehicle_models.id=vehicles.vehicle_model_id JOIN vehicle_manufacturers ON vehicle_manufacturers.id=vehicle_models.vehicle_manufacturer_id JOIN lkp_city ON lkp_city.id=vehicles.city_id JOIN vehicle_opreators ON vehicle_opreators.id=vehicles.vehicle_opreater_id INNER JOIN drivers ON vehicles.id=drivers.vehicle_id INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id
-    //             WHERE 1 = 1 $company_clause $warehouse_clause $city_clause $AND $status_clause $operator_clause $manufecturer_clause $model_clause $otometer_clause";
-    //     } else {
-    //         $sql = "SELECT vehicles.oil_check, vehicles.allowed_fuel_price, vehicles.fuel_check, vehicles.vehicle_expiry_date, vehicles.maintenance_location, vehicle_models.name_en as 'vehicle_model',vehicle_models.manufacturer_date,vehicle_manufacturers.name_en as 'vehicle_manufacturer',vehicles.plate,vehicles.checkup_id,vehicles.id as 'vehicle_id',vehicles.freeExtraOtometer,vehicles.SNno,vehicles.body_number,vehicles.current_status,vehicles.otometer,
-                // vehicles.vehicle_registration_expire_date,vehicles.recive_date,vehicles.registertion_type,vehicles.extraOtometerCharge,vehicles.color,lkp_city.name_en,vehicle_opreators.name_en as 'vehicle_opreator' FROM `vehicles`
-    //                 JOIN vehicle_models ON vehicle_models.id = vehicles.vehicle_model_id
-    //                 JOIN vehicle_manufacturers ON vehicle_manufacturers.id = vehicle_models.vehicle_manufacturer_id
-    //                 JOIN lkp_city ON lkp_city.id = vehicles.city_id
-    //                 JOIN vehicle_opreators ON vehicle_opreators.id = vehicles.vehicle_opreater_id
-    //                 WHERE 1 = 1 $city_clause $AND $status_clause $operator_clause $manufecturer_clause $model_clause $otometer_clause order by vehicles.id";
-    //     }
-    //     $payload = DB::select($sql);
-    //     foreach ($payload as $key => $item) {
-    //         $item->CheckUpStatus = '';
-    //         $query = "SELECT vehicle_utilities.id as 'vehicles_urility_id',vehicle_utilities.vehicle_id,vehicle_utilities.utlity_condition,utilities.name_en FROM `vehicle_utilities` JOIN utilities on utilities.id = vehicle_utilities.utlity_id WHERE vehicle_utilities.vehicle_id =".$item->vehicle_id." ";
-    //         $query = DB::select($query);
-    //         $html ='';
-    //         if(count($query)>0){
-    //             foreach($query as $item2){
-    //                 if(!empty($item2->name_en)){
-    //                     $html = $html." <li>".$item2->name_en."| <span style='color: #0017ff;font-weight: bold;'>".$item2->utlity_condition."</span></li>";
-    //                 }
-    //             }
-    //             $html = $html. ' <button class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"  onclick="editAccessories('.$item->vehicle_id.')">Edit <i class="fa fa-pencil"></i> </button>';
-    //             $item->vehicle_utilities = $query;
-    //             $item->vehicle_utilities_html = $html;
-    //         }else{
-    //             $html = $html. ' <button class="btnaction btn menu-icon vd_bd-blue vd_blue" onclick="editAccessories('.$item->vehicle_id.')">Add Accessories </button>';
-    //             $item->vehicle_utilities = NULL;
-    //             $item->vehicle_utilities_html = $html;
-    //         }
-    //         if($item->checkup_id == ''){
-    //             $item->images = '';
-    //         }else{
-    //             $sql = "SELECT vehicle_checks.*,users.name as 'uploadedBy' FROM `vehicle_checks` JOIN users ON users.id = vehicle_checks.created_by WHERE vehicle_id =".$item->vehicle_id." ORDER BY `vehicle_checks`.`created_at` DESC ";
-    //             $sql = DB::select($sql);
-
-    //             if($sql[0]->created_by_type == 'suppervisor'){
-    //                 $suppervisor = DB::select("select * from users where id=".$sql[0]->created_by."");
-    //                 if(count($suppervisor)>0){
-    //                     $suppervisor =  $suppervisor[0]->name.'<br> <span style="font-size: 10px; font-weight: bold;"> (Suppervisor) <span>';
-    //                     $sql[0]->uploadedBy = $suppervisor;
-    //                 }
-    //             }else{
-    //                 $driver = "SELECT * FROM `drivers` where id =".$sql[0]->created_by." ";
-    //                 $driver = DB::select($driver);
-    //                 if(count($driver)>0){
-    //                     $driver =  'DA: '.$driver[0]->fullName;
-    //                     $sql[0]->uploadedBy = $driver;
-    //                 }
-    //             }
-    //             if($sql[0]->admin_approve_by != ''){
-    //                 $approvedBy = DB::select("select * from users where id =".$sql[0]->admin_approve_by." ");
-    //                 if(count($approvedBy)>0){
-    //                     $sql[0]->ApprovedBy = 'BTC-S: '.$approvedBy[0]->name;
-    //                 }else{
-    //                     $sql[0]->ApprovedBy = 'Pending';
-    //                 }
-    //             }else{
-    //                 $sql[0]->ApprovedBy = 'Pending';
-    //             }
-    //             $sql[0]->created_by;
-    //             $item->images = $sql[0];
-    //         }
-    //         if ($item->vehicle_expiry_date != '') {
-    //         $date1 = new DateTime($item->vehicle_expiry_date);
-    //         $interval = $date1->diff($today);
-    //         $days = $interval->format('%a');
-    //         $item->expiry_days = $days;
-    //         } else {
-    //             $item->expiry_days = 0;
-    //         }
-    //         $delegation_info = get_vehicle_info($item->vehicle_id);
-    //         $item->delegation_info = $delegation_info;
-    //         $fuel_data = get_fuel_details($item->vehicle_id, $item->allowed_fuel_price, $item->fuel_check);
-    //         $item->fuel_data = $fuel_data;
-    //         $check_oil = DB::select("select * from vehicles_oil where status is null AND vehicle_id = ".$item->vehicle_id);
-    //         $item->oil_data = '';
-    //         if (count($check_oil) == 0)
-    //             $item->oil_data = '';
-    //         else if (count($check_oil) > 1 && $item->oil_check != 1) {
-    //             $item->oil_data = '<button style="color: black !important; background-color: red;" class="btnaction btn menu-icon vd_bd-red vd_red" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="fa fa-eye"></i></button></ul>';
-    //         } else {
-    //             $item->oil_data = '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="fa fa-eye"></i></button></ul>';
-    //         }
-    //     }
-    //     $response = get_vehicle_table_body_old($payload, $city_name);
-    //     return $response;
-    // }
     public function utilitiesUpdate(Request $request) {
         $user_id = Auth::user()->id;
         $vehicleId = $request->vehicle_id;
@@ -1204,9 +1130,6 @@ class VehiclesController extends Controller
     }
     public function utilities(Request $request)
     {
-        # code...
-        // dd($request->all());
-        // get all utlities and v.utlities
         $payload = array();
         $vehicleId = $request->vehcile_id;
         $utilities = DB::select("SELECT * From utilities");
@@ -1223,7 +1146,7 @@ class VehiclesController extends Controller
                                 if(isset($vehicle_utility[0]->utlity_condition) AND $category == $vehicle_utility[0]->utlity_condition)
                                     $checked = 'checked';
                                 $response .= '<label class="radio-inline">
-                                  <input type="radio" name="'.$utility->id.'" '.$checked.' value="'.$category.'">'.$category.'
+                                <input type="radio" name="'.$utility->id.'" '.$checked.' value="'.$category.'">'.$category.'
                                 </label>';
                             }
                             $response .= '
@@ -1275,8 +1198,6 @@ class VehiclesController extends Controller
     }
     public function vaildate_checkup(Request $request)
     {
-        # code...
-        // dd($request->all());
         $images_array = [
             'front'=>'',
             'rear'=>'',
@@ -1326,23 +1247,22 @@ class VehiclesController extends Controller
         $vehicle =$vehicle->first();
         $vehicle->checkup_id = $Vehicle_checks->id;
         $vehicle->save();
-        return redirect('Vehicles/vehicle-checkup-utilities/'.$Vehicle_checks->id);
+        return redirect('New-Portal/Vehicles/vehicle-checkup-utilities/'.$Vehicle_checks->id);
     }
     public function handleImages($data,$serialNumber,$side)
     {
         # code...
-            $file = $data;
-            $tep = new Temporary();
-            $safeName = 'vehicle_'.$serialNumber.'_'.$side.'_'.date("Y-m-d").'.'.$data->extension();
-            $fileSaved = \Storage::put('public/vehicales/'.$serialNumber.'/'.$safeName,\File::get($file));
-            if($fileSaved == true){
-                $tep->path ='/storage/vehicales/'.$serialNumber.'/'.$safeName;
-                $tep->journal_date = date("Y-m-d"); // '2022-03-20';;
-                // $tep->journal_period = $request->journal_period; // '2022-03-20';;
-                $tep->save();
-                return $tep->path;
-            }else{
-            }
+        $file = $data;
+        $tep = new Temporary();
+        $safeName = 'vehicle_'.$serialNumber.'_'.$side.'_'.date("Y-m-d").'.'.$data->extension();
+        $fileSaved = \Storage::put('public/vehicales/'.$serialNumber.'/'.$safeName,\File::get($file));
+        if($fileSaved == true){
+            $tep->path ='/storage/vehicales/'.$serialNumber.'/'.$safeName;
+            $tep->journal_date = date("Y-m-d"); // '2022-03-20';;
+            // $tep->journal_period = $request->journal_period; // '2022-03-20';;
+            $tep->save();
+            return $tep->path;
+        }else{}
     }
     public function vehicle_checkup_utilities($vehicle_id)
     {
@@ -1359,8 +1279,7 @@ class VehiclesController extends Controller
         }else{
             $vehicle = NULL;
         }
-        return view('vehicles.vehicleCheckupUtility',compact('response','vehicle','VehicleCheckup'));
-
+        return view('new_porttal.vehicles.vehicleCheckupUtility',compact('response','vehicle','VehicleCheckup'));
     }
     public function ValidateUtlity(Request $request)
     {
@@ -1412,7 +1331,7 @@ class VehiclesController extends Controller
             $query = "INSERT INTO `vehicle_utilities`( `vehicle_id`, `utlity_id`, `utlity_condition`,created_by) VALUES (".$request->vehicle_id.",".$utlity_id.",'".$condition."',".Auth::user()->id.")";
             $query = DB::select($query);
         }
-        return redirect('Vehicles');
+        return redirect('New-Portal/Vehicles');
     }
     public function vehicle_requests()
     {
@@ -1457,7 +1376,7 @@ class VehiclesController extends Controller
                 else
                     $item->createdCompanyId = 1;
                 $item->vehicleExtraInfo = '<a onclick="vehicleExtraInfo('."'".$images."'".",'".$item->plate."','".$item->name_en."','".$item->vehicle_manufacturer_name."','".$item->manufacturer_date."','".$item->vName."','".$item->opreatoers."','".$item->SNno."','".$item->body_number."','".$item->freeExtraOtometer."','','".$item->extraOtometerCharge."','".$item->otometer."','".$item->registertion_type."','".$item->current_status."','".$item->color."','".$item->vehicle_registration_expire_date."')".'"
-                data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>';
+                class="view"> <i class="bi bi-eye"></i> </a>';
 
                 if($item->supporvisor_identity_approve == 0){
                 } else {
@@ -1478,7 +1397,7 @@ class VehiclesController extends Controller
             }
         }
         // dd($payload);
-        return view('vehicles.requestCentral',compact('payload', 'companies', 'rTypes', 'cities'));
+        return view('new_porttal.vehicles.requestCentral',compact('payload', 'companies', 'rTypes', 'cities'));
     }
     public function searchRequest(Request $request) {
         $company_clause = "";
@@ -1522,8 +1441,8 @@ class VehiclesController extends Controller
             join lkp_city on lkp_city.id = vehicles.city_id
             JOIN vehicle_opreators on vehicle_opreators.id = vehicles.vehicle_opreater_id
             JOIN drivers on drivers.id = requests.driverId
-			JOIN warehouse on drivers.warehouseId = warehouse.id
-			JOIN lkp_company on warehouse.companyId = lkp_company.id
+            JOIN warehouse on drivers.warehouseId = warehouse.id
+            JOIN lkp_company on warehouse.companyId = lkp_company.id
             JOIN assign_vehicles ON assign_vehicles.checkup_id = requests.vehicle_check_id
             WHERE 1 = 1 $company_clause $warehouse_clause $city_clause $jobId_clause $status_clause $request_clause";
         $payload = DB::select($sql);
@@ -1583,22 +1502,12 @@ class VehiclesController extends Controller
     }
     public function getCheckUp($checkUp_id){
         $vehicle_utlity_preview = array();
-        // get current condition
-
-        // get check-up condition
-
-        // make array
-        // vheicle check and utlities
         $checkUp = "SELECT vehicle_checks.* FROM `vehicle_checks` WHERE id=".$checkUp_id." ";
         $checkUp = DB::select($checkUp);
-
         $checkup_utlities = "SELECT vehicle_check_utlities.*,vehicle_check_utlities.vehicle_utlity_id as 'utlity_id',utilities.name,utilities.name_en FROM `vehicle_check_utlities` JOIN utilities ON utilities.id = vehicle_check_utlities.vehicle_utlity_id WHERE vehicle_check_utlities.vehicle_check_id = ".$checkUp_id." ";
-        // dd($checkup_utlities);
         $checkup_utlities = DB::select($checkup_utlities);
-        //  dd($checkup_utlities);
         $accssorieTable = '';
         foreach($checkup_utlities as $k=>$checkup_utlitiy){
-
             $prive_checkUp = "SELECT * FROM `vehicle_utilities` WHERE vehicle_id=".$checkUp[0]->vehicle_id." and utlity_id=".$checkup_utlitiy->vehicle_utlity_id." ";
             // dd($prive_checkUp);
             $prive_checkUp = DB::select($prive_checkUp);
@@ -1617,9 +1526,7 @@ class VehiclesController extends Controller
                  'actionBtn'=>''
                  );
         }
-
         foreach($vehicle_utlity_preview as $k=>$vehicle_utlity_previewItem){
-
             if($vehicle_utlity_previewItem['checkup_status'] == $vehicle_utlity_previewItem['current_status']){
                 $html = "
             <tr>
@@ -1642,7 +1549,6 @@ class VehiclesController extends Controller
             </tr>
             ";
             }else{
-                // dd($vehicle_utlity_previewItem);
                 $options = '';
                 $utility = DB::select("SELECT * FROM utilities WHERE id = " . $vehicle_utlity_previewItem['utlity_id']);
                 foreach(json_decode($utility[0]->category) as $category) {
@@ -1651,8 +1557,6 @@ class VehiclesController extends Controller
                         $selected = 'selected';
                     $options .= "<option value='$category' $selected>$category</option>";
                 }
-
-                // ".$vehicle_utlity_previewItem['checkup_status']."
                 $html = "
             <tr>
                 <td>".$vehicle_utlity_previewItem['name_en']."</td>
@@ -1675,14 +1579,8 @@ class VehiclesController extends Controller
             }
             $accssorieTable = $accssorieTable.' '.$html;
         }
-
-        // dd($accssorieTable);
-
-
         $prive_checkUp = DB::select("SELECT * FROM `vehicles` WHERE checkup_id is not null AND id=".$checkUp[0]->vehicle_id);
-
         $prive_checkup_utlities = '';
-
         if(count($prive_checkUp)>0) {
             $prive_checkUp = $prive_checkUp[0]->checkup_id;
             $checkUpPrev = DB::select("SELECT vehicle_checks.* FROM `vehicle_checks` WHERE id='$prive_checkUp'");
@@ -1710,13 +1608,10 @@ class VehiclesController extends Controller
             echo 'bad';
     }
     function accessoriesHandler(Request $request) {
-        // dd($request->payload['action']);
-
         if($request->payload['action'] == 'approve') {
             $payload = Assign_vehicle::where(
                 'checkup_id',$request->payload['check_id']
                 )->get();
-
             if(count($payload)>0) {
                 $payload = $payload[0];
                 $RequestModal = RequestModal::where('vehicle_check_id',$request->payload['check_id'])->get();
@@ -1736,7 +1631,6 @@ class VehiclesController extends Controller
             onesignal($supervisor_id, $msg, $msg_arr);
             $driver_id = $payload->driver_id;
             onesignal($driver_id, $msg, $msg_arr);
-
             $payload = Vehicle_checkUp_utlitie::where('vehicle_check_id',$request->payload['check_id'])->get();
             foreach($payload as $k=>$item){
                 // $payload
@@ -1746,8 +1640,6 @@ class VehiclesController extends Controller
                 $utl_id = $item->vehicle_utlity_id;
                 $utl_cond = $item->utlity_condition;
                 DB::update("UPDATE vehicle_utilities set utlity_condition = '$utl_cond', updated_at = NOW(), updated_by = ".AUTH::user()->id." WHERE vehicle_id = '$vehicle_id' AND utlity_id = '$utl_id'");
-
-                // return response()->json(['status'=>true,"payload"=>$item],200);
             }
         } else {
             $RequestModal = RequestModal::where('vehicle_check_id',$request->payload['check_id'])->get();
@@ -1755,7 +1647,6 @@ class VehiclesController extends Controller
             $RequestModal->status = 'rejected';
             $RequestModal->save();
             $vehicle_checkUp_utlities = Vehicle_checkUp_utlitie::where('vehicle_check_id',$request->payload['check_id'])->get();
-            // dd($vehicle_checkUp_utlities);
             foreach($vehicle_checkUp_utlities as $k=>$vehicle_checkUp_utlitie){
                 $vehicle_checkUp_utlitie;
                 foreach($request->payload['items'] as $k=>$items){
@@ -1778,8 +1669,6 @@ class VehiclesController extends Controller
 
                 $assign_vehicle[0]->save();
             }
-            // $request->payload['check_id']
-
             $supervisor_id = $RequestModal->created_by;
             $vehicle_id = $RequestModal->vehicle_id;
             $vehicleObject = DB::select("SELECT plate from vehicles WHERE id = '$vehicle_id'");
@@ -1794,7 +1683,6 @@ class VehiclesController extends Controller
     function checkUpImageHandler(Request $request){
         $check_id = $request->payload['check_id'];
         $vehicleCheckup = VehicleCheckup::find($check_id);
-
         $images_status = [
             'front'=>true,
             'rear'=>true,
@@ -1803,7 +1691,6 @@ class VehiclesController extends Controller
             'interior'=>true
             ];
         if($request->payload['action'] == 'reject'){
-            // rejected check-up
             $rejected_images = $request->payload['items'];
             foreach($rejected_images as $k=>$rejected_image){
 
@@ -1834,7 +1721,6 @@ class VehiclesController extends Controller
                     echo('interior');
                     break;
                 }
-                // echo $rejected_image."<br>";
             }
         }else{
             // approved  check-up
@@ -1871,13 +1757,10 @@ class VehiclesController extends Controller
             $vehicleCheckup->save();
             $otomter = $request->payload['Otometer_Read'];
             $vehicle_id = $request->payload['vehicle_id'];
-
-
             $assign_vehicle = Assign_vehicle::where('checkup_id',$request->payload['check_id'])->get();
             $vehicle_id = $assign_vehicle[0]->vehicle_id;
             $driver_id = $assign_vehicle[0]->driver_id;
             $supervisor_id = $assign_vehicle[0]->created_by;
-
             $vehicleObject = DB::select("SELECT plate from vehicles WHERE id = '$vehicle_id'");
             $plate = $vehicleObject[0]->plate;
             if(count($assign_vehicle)>0){
@@ -1962,10 +1845,7 @@ class VehiclesController extends Controller
                     $assign_vehicle[0]->rejection_reason = $request->payload['rejction_reason'];
                 else
                     $assign_vehicle[0]->rejection_reason = null;
-
                 $assign_vehicle[0]->save();
-
-                // dd($assign_vehicle);
             }
         }
         // dd($vehicleCheckup);
@@ -1978,64 +1858,6 @@ class VehiclesController extends Controller
     {
         return view('vehicles.oil_save');
     }
-
-    // public function VehicleOilSave(Request $request)
-    // { //Import drivers
-    //     $note = "half salary till 15-11-2023";
-    //     $status = 5;
-    //     $date =  "2023-11-19";
-    //     $createdby_id = $updatedby_id = 75;
-
-    //     require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
-    //     $tmpfname = $request->file('select_file');
-
-    //     $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
-    //     $excelObj = $excelReader->load($tmpfname);
-    //     $worksheet = $excelObj->getSheet(0);
-    //     $lastRow = $worksheet->getHighestRow();
-    //     for ($row = 1; $row <= $lastRow; $row++) {
-    //         $job_id = $worksheet->getCell('B' . $row)->getValue();
-    //         $warehouse = $worksheet->getCell('A' . $row)->getValue();
-    //         $driver = DB::select("SELECT drivers.id from drivers where job_id = '$job_id'");
-    //         if(count($driver) > 0) {
-
-    //         } else {
-    //             $warehouse = DB::select("SELECT id from warehouse where warehouseName = '$warehouse'");
-    //             $warehouseId = $warehouse[0]->id;
-    //             if($warehouseId > 0)
-    //                 DB::insert("INSERT INTO drivers (fullName, job_id, warehouseId, status_id, created_by_id, updated_by_id, created_at, updated_at) VALUES ('NoName', '$job_id', '$warehouseId', '1', '$createdby_id', '$createdby_id', NOW(), NOW())");
-    //         }
-    //     }
-    //     return redirect()->back()->with('success', 'Vehicles Oil added successfully');
-    // }
-
-    // public function VehicleOilSave(Request $request)
-    // { //Import loans
-    //     $note = "half salary till 15-11-2023";
-    //     $status = 5;
-    //     $date =  "2023-11-19";
-    //     $createdby_id = $updatedby_id = 75;
-
-    //     require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
-    //     $tmpfname = $request->file('select_file');
-
-    //     $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
-    //     $excelObj = $excelReader->load($tmpfname);
-    //     $worksheet = $excelObj->getSheet(0);
-    //     $lastRow = $worksheet->getHighestRow();
-    //     for ($row = 1; $row <= $lastRow; $row++) {
-    //         $job_id = $worksheet->getCell('A' . $row)->getValue();
-    //         $amount = $worksheet->getCell('B' . $row)->getValue();
-    //         if($amount > 0) {
-    //             $driver = DB::select("SELECT drivers.id from drivers where job_id = '$job_id'");
-    //                 if(count($driver) > 0) {
-    //                     $driverId = $driver[0]->id;
-    //                     DB::insert("INSERT INTO loan (driverId, journal_date, amount, status_id, note, createdby_id, updatedby_id, created_at, updated_at) VALUES ('$driverId', '$date', '$amount', '5', '$note', '$createdby_id', '$createdby_id', NOW(), NOW())");
-    //                 }
-    //         }
-    //     }
-    //     return redirect()->back()->with('success', 'Vehicles Oil added successfully');
-    // }
 
 
     public function VehicleOilSave(Request $request)
@@ -2120,15 +1942,25 @@ class VehiclesController extends Controller
     public function Vehicles(Request $request)
     {
         $date = $request->date;
+        $type = $request->filter_type;
         $date = explode("-",$date);
         $month = $date[0];
         $year = $date[1];
         $vehicle_id = $request->filter_vehicleId;
         $table = $request->ACTION;
+        $check = DB::select("SELECT sum(fuel_price) as total from vehicles_fuel WHERE `month` = '$month' AND `year` = '$year'");
+        if ($check[0]->total > 0)
+            $response = $check[0]->total . ':::';
+        else
+            $response = "N/A:::";
+
+        if ($type == 'filled')
+            $clause = "vehicles_fuel.driver_id IS NOT NULL OR vehicles_fuel.driver_id != ''";
+        else
+            $clause = "vehicles_fuel.driver_id IS NULL OR vehicles_fuel.driver_id = ''";
         if ($table == 'table') {
-            $response = "";
-            $vehicles = DB::select("SELECT vehicles.plate,vehicles.fuel_tag, vehicles_fuel.id, vehicles_fuel.fuel_price, vehicles_fuel.day, vehicles_fuel.month, vehicles_fuel.year FROM vehicles_fuel INNER JOIN vehicles ON
-            vehicles_fuel.vehicle_id=vehicles.id WHERE vehicles_fuel.driver_id IS NULL AND `month` = '$month' AND `year` = '$year' AND vehicles.id = '$vehicle_id'");
+            $vehicles = DB::select("SELECT vehicles.plate,vehicles.fuel_tag, vehicles_fuel.id, vehicles_fuel.driver_id, vehicles_fuel.fuel_price, vehicles_fuel.day, vehicles_fuel.month, vehicles_fuel.year FROM vehicles_fuel INNER JOIN vehicles ON
+            vehicles_fuel.vehicle_id=vehicles.id WHERE ($clause) AND `month` = '$month' AND `year` = '$year' AND vehicles.id = '$vehicle_id'");
             if (count($vehicles) > 0) {
                 $i = 0;
                 foreach ($vehicles as $vehicle) {
@@ -2138,13 +1970,16 @@ class VehiclesController extends Controller
                     $response .= "<td>".$vehicle->fuel_tag."</td>";
                     $response .= "<td>".$vehicle->fuel_price."</td>";
                     $response .= "<td>".$vehicle->day."-".$vehicle->month."-".$vehicle->year."</td>";
-                    $response .= "<td><input type='text' name='jobId_".$vehicle->id."'></td>";
+                    if ($vehicle->driver_id == '')
+                        $response .= "<td><input type='text' name='jobId_".$vehicle->id."'></td>";
+                    else
+                        $response .= "<td><input type='text' readonly value='".$vehicle->driver_id."'></td>";
                     $response .= "</tr>";
                 }
             }
         } else {
-            $vehicles = DB::select("SELECT DISTINCT vehicles.plate,vehicles.id FROM vehicles_fuel INNER JOIN vehicles ON vehicles_fuel.vehicle_id=vehicles.id WHERE vehicles_fuel.driver_id IS NULL AND `month` = '$month' AND `year` = '$year'");
-            $response = "<option value=''>Select Vehicle</option>";
+            $vehicles = DB::select("SELECT DISTINCT vehicles.plate,vehicles.id FROM vehicles_fuel INNER JOIN vehicles ON vehicles_fuel.vehicle_id=vehicles.id WHERE ($clause) AND `month` = '$month' AND `year` = '$year'");
+            $response .= "<option value=''>Select Vehicle</option>";
             if (count($vehicles) > 0) {
                 foreach ($vehicles as $vehicle)
                     $response .= "<option value=".$vehicle->id.">".$vehicle->plate."</option>";
@@ -2155,13 +1990,21 @@ class VehiclesController extends Controller
 
     public function fuelLink(Request $request) {
         $user_id = Auth::user()->id;
-        $vehicle_id = $request->filter_vehicleId;
-        $date = $request->filter_month;
+        $page = $request->page;
+        if ($page == 'salary') {
+            $vehicle_id = $request->filter_vehicleId;
+            $vehicle_ids = implode(',', $vehicle_id);
+        }
+        else
+            $vehicle_id = $request->filter_vehicleId;
         $date = $request->filter_month;
         $date = explode("-",$date);
         $month = $date[0];
         $year = $date[1];
-        $vehicles = DB::select("SELECT vehicles_fuel.id FROM vehicles_fuel INNER JOIN vehicles ON vehicles_fuel.vehicle_id=vehicles.id WHERE vehicles_fuel.driver_id IS NULL AND `month` = '$month' AND `year` = '$year' AND vehicles.id = '$vehicle_id'");
+        if ($page == 'salary')
+            $vehicles = DB::select("SELECT vehicles_fuel.id FROM vehicles_fuel INNER JOIN vehicles ON vehicles_fuel.vehicle_id=vehicles.id WHERE `month` = '$month' AND `year` = '$year' AND vehicles.id IN ($vehicle_ids)");
+        else
+            $vehicles = DB::select("SELECT vehicles_fuel.id FROM vehicles_fuel INNER JOIN vehicles ON vehicles_fuel.vehicle_id=vehicles.id WHERE `month` = '$month' AND `year` = '$year' AND vehicles.id = '$vehicle_id'");
         if (count($vehicles) > 0) {
             $i = 0;
             foreach ($vehicles as $vehicle) {
@@ -2169,176 +2012,121 @@ class VehiclesController extends Controller
                     $job_id = $request->{"jobId_" . $vehicle->id};
                     $driver = DB::select("SELECT id FROM drivers WHERE job_id = '$job_id'");
                     if (count($driver) > 0) {
-                        DB::update("UPDATE vehicles_fuel set driver_id = '$job_id', updated_by = '$user_id', updated_at = NOW() WHERE id = ".$vehicle->id);
+                        $checkFuel = DB::select("SELECT id, driver_id from vehicles_fuel WHERE id = ".$vehicle->id);
+                        if ($checkFuel[0]->driver_id != $job_id)
+                            DB::update("UPDATE vehicles_fuel set driver_id = '$job_id', updated_by = '$user_id', updated_at = NOW() WHERE id = '".$vehicle->id."'");
                     }
                 }
             }
         }
-        return redirect()->back()->with('success', 'Driver Ids linked successfully');
+        if ($page == 'salary')
+            return 'good';
+        else
+            return redirect()->back()->with('success', 'Driver Ids linked successfully');
     }
 
     public function VehicleFuelSave(Request $request)
     {
         $user_id = Auth::user()->id;
-        $createdby_id = $updatedby_id = 75;
-
-        if(isset($request->action)) {
-            $month = $request->month;
-            $year = $request->year;
-            for ($i = 0; $i < count($request->job_ids); $i++) {
-                // print_r($request->days_array[$i]);
-                $vehicle_id = $request->vehicle_ids[$i];
-                $days = json_decode($request->days_array[$i]);
-                $fuels = json_decode($request->fuel_array[$i]);
-                for ($k = 0; $k < count($days); $k++)
-                {
-                    $day = $days[$k];
-                    $fuel = $fuels[$k];
-                    DB::insert("INSERT INTO vehicles_fuel (vehicle_id, fuel_price, day, month, year, added_at) VALUES ('$vehicle_id', '$fuel', '$day', '$month', '$year', NOW())");
-
-                }
-                $price = $request->prices[$i];
-                $driverId = $request->driverIds[$i];
-                $note = $request->notes[$i];
-                DB::insert("INSERT INTO creditnotes (driverId, amount, note, journal_date, createdby_id, updatedby_id, created_at, updated_at) VALUES ('$driverId', '$price', '$note', NOW(), '$createdby_id', '$createdby_id', NOW(), NOW())");
-            }
-
-            dd('dd');
-            return redirect()->back()->with('success', 'Credit Notes added successfully');
-        }
         $this->validate($request, [
             'select_file' => 'required|mimes:xls,xlsx'
         ]);
-        // $date = date("Y-m-d H:i:s");
-
-        require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
-        $tmpfname = $request->file('select_file');
-        $originalName = $tmpfname->getClientOriginalName();
-        $originalName = explode(".",$originalName);
-        $originalName = explode("-",$originalName[0]);
-        $month = (int)$originalName[1];
-        $year = (int)$originalName[0];
-        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-
+        try {
+            require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
+            $tmpfname = $request->file('select_file');
+            $originalName = $tmpfname->getClientOriginalName();
+            $originalName = explode(".", $originalName);
+            $originalName = explode("-", $originalName[0]);
+            $month = (int)$originalName[1];
+            $year = (int)$originalName[0];
+            $check = DB::select("SELECT id from vehicles_fuel WHERE month = '$month' AND year = '$year'");
+            if ($month > 12 OR $month < 1) {
+                return back()->with('error', 'File name is not correct!');
+                exit();
+            }
+            if (count($check) > 0) {
+                return back()->with('error', 'Fuel data for month '.$month.' already imported!');
+                exit();
+            }
+        } catch (Exception $e) {
+            echo 'Caught exception: ',  $e->getMessage(), "\n";
+        }
         $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
         $excelObj = $excelReader->load($tmpfname);
         $worksheet = $excelObj->getSheet(0);
         $lastRow = $worksheet->getHighestRow();
-        $week_days = $response = array();
-
-        $week_days[] = $day1 = $worksheet->getCell('C1')->getValue();
-        $week_days[] = $worksheet->getCell('D1')->getValue();
-        $week_days[] = $worksheet->getCell('E1')->getValue();
-        $week_days[] = $worksheet->getCell('F1')->getValue();
-        $week_days[] = $worksheet->getCell('G1')->getValue();
-        $week_days[] = $worksheet->getCell('H1')->getValue();
-        $week_days[] = $day7 = $worksheet->getCell('I1')->getValue();
-
-        $index = 0;
+        // insert data into fuel table
+        echo "<h3>Inserting the fuels ...</h3><br>";
         for ($row = 2; $row <= $lastRow; $row++) {
             $fuel_price = 0;
             $days_fuel_array = array();
-            $days_fuel_array[] = $worksheet->getCellByColumnAndRow(2, $row)->getValue();
-            $days_fuel_array[] = $worksheet->getCellByColumnAndRow(3, $row)->getValue();
-            $days_fuel_array[] = $worksheet->getCellByColumnAndRow(4, $row)->getValue();
-            $days_fuel_array[] = $worksheet->getCellByColumnAndRow(5, $row)->getValue();
-            $days_fuel_array[] = $worksheet->getCellByColumnAndRow(6, $row)->getValue();
-            $days_fuel_array[] = $worksheet->getCellByColumnAndRow(7, $row)->getValue();
-            $days_fuel_array[] = $worksheet->getCellByColumnAndRow(8, $row)->getValue();
+            $days_fuel_array[] = 0;
+            for ($j = 1; $j <= 31; $j++) {
+                $days_fuel_array[] = $worksheet->getCellByColumnAndRow($j, $row)->getValue();
+            }
             if (array_sum($days_fuel_array) > 0) {
-                $plate = $worksheet->getCell('B' . $row)->getValue();
-                $plate = substr($plate, 0, 4);
-                $vehicle = DB::select("SELECT vehicles.id, vehicles.plate,vehicle_models.daily_fuel FROM vehicles INNER JOIN vehicle_models ON vehicles.vehicle_model_id=vehicle_models.id where plate LIKE '%$plate%'");
-                if(count($vehicle) > 0) {
-                    $vehicle_id = $vehicle[0]->id;
-                    $checks = DB::select("SELECT DISTINCT drivers_attendance.job_id,drivers.fullName, drivers.id, count(drivers_attendance.job_id) as days FROM drivers_attendance INNER JOIN drivers ON drivers_attendance.job_id=drivers.job_id WHERE drivers_attendance.date BETWEEN '$year-$month-$day1' AND '$year-$month-$day7' AND drivers_attendance.vehicle_id='$vehicle_id' GROUP BY drivers_attendance.job_id,drivers.fullName,drivers.id");
-                    $fuel_array = $days_array = array();
-                    foreach($checks as $check) {
-
-                        $job_id = $check->job_id;
-                        $data = DB::select("(SELECT date FROM drivers_attendance WHERE date BETWEEN '$year-$month-$day1' AND '$year-$month-$day7' AND vehicle_id='$vehicle_id' AND job_id='$job_id' ORDER BY date LIMIT 1) UNION (
-                                            SELECT date FROM drivers_attendance WHERE date BETWEEN '$year-$month-$day1' AND '$year-$month-$day7' AND vehicle_id='$vehicle_id' AND job_id='$job_id' ORDER BY date DESC LIMIT 1)");
-
-                        if (count($data) == 1) {
-                            $day = ltrim(date('d', strtotime($data[0]->date)), '0');
-                            $exist = DB::select("SELECT id from vehicles_fuel where vehicle_id = '$vehicle_id' and day = '$day' and month = '$month' and year = '$year'");
-                            if(count($exist) > 0) {
-                                continue;
-                            }
-                            $fuel_price = 0;
-                            $dayOfWeek = ltrim(date('d', strtotime($data[0]->date)), '0') % 7;
-                            if ($dayOfWeek == 0)
-                            {
-                                if ($days_fuel_array[6] == 0)
-                                    continue;
-                                $fuel_price = $days_fuel_array[6];
-                                $fuel_array[] = round($days_fuel_array[6]);
-                                $days_array[] = $week_days[6];
-                            } else {
-                                if ($days_fuel_array[$dayOfWeek - 1] == 0)
-                                    continue;
-                                $fuel_price = $days_fuel_array[$dayOfWeek - 1];
-                                $fuel_array[] = round($days_fuel_array[$dayOfWeek - 1]);
-                                $days_array[] = $week_days[$dayOfWeek - 1];
-                            }
-                        } else if(count($data) > 1) {
-                            $fuel_price = 0;
-                            $dayOfWeek_1 = ltrim(date('d', strtotime($data[0]->date)), '0');
-                            $dayOfWeek_2 = ltrim(date('d', strtotime($data[1]->date)), '0');
-                            for ($z = $dayOfWeek_1; $z <= $dayOfWeek_2; $z++) {
-                                $exist = DB::select("SELECT id from vehicles_fuel where vehicle_id = '$vehicle_id' and day = '$z' and month = '$month' and year = '$year'");
-                                if(count($exist) > 0) {
-                                    continue;
-
-                                }
-                                $dayOfWeek = $z % 7;
-                                if ($dayOfWeek == 0) {
-                                    if ($days_fuel_array[6] == 0)
-                                        continue;
-                                    $fuel_price += $days_fuel_array[6];
-                                    $fuel_array[] = round($days_fuel_array[6]);
-                                    $days_array[] = $week_days[6];
-                                }
-                                else {
-                                    if ($days_fuel_array[$dayOfWeek - 1] == 0)
-                                        continue;
-                                    $fuel_price += $days_fuel_array[$dayOfWeek - 1];
-                                    $fuel_array[] = round($days_fuel_array[$dayOfWeek - 1]);
-                                    $days_array[] = $week_days[$dayOfWeek - 1];
-                                }
-                            }
-                        } else {
-                            $fuel_price = 0;
-                            $k = 0;
-                            foreach($days_fuel_array as $fuel) {
-                                if ($fuel > 0) {
-                                    $fuel_price += $fuel;
-                                    $fuel_array[] = round($fuel);
-                                    $days_array[] = $week_days[$k];
-                                }
-                                $k++;
+                $tag_reference = $worksheet->getCellByColumnAndRow(0, $row)->getValue();
+                $vehicles = DB::select("select * from vehicles where fuel_tag = '$tag_reference'");
+                if(count($vehicles) > 0) {
+                    for($i = 1; $i <= 31; $i++){
+                        if(isset($days_fuel_array[$i])) {
+                            if($days_fuel_array[$i] > 0) {
+                                DB::table('vehicles_fuel')->insert([
+                                    'vehicle_id' => $vehicles[0]->id,
+                                    'fuel_price' => $days_fuel_array[$i],
+                                    'year'       => $year,
+                                    'month'      => $month,
+                                    'day'        => $i,
+                                    'added_at'   => now(),
+                                ]);
                             }
                         }
-
-                        $index++;
-                        $response[$index]['vehicle_id'] = $vehicle_id;
-                        $response[$index]['plate'] = $vehicle[0]->plate;
-                        $response[$index]['daily_fuel'] = $vehicle[0]->daily_fuel;
-                        $response[$index]['fullName'] = $check->fullName;
-                        $response[$index]['job_id'] = $job_id;
-                        $response[$index]['actual_price'] = $fuel_price;
-                        $response[$index]['driverId'] = $check->id;
-                        $response[$index]['days'] = $check->days;
-                        $response[$index]['days_array'] = $days_array;
-                        $response[$index]['fuel_array'] = $fuel_array;
                     }
+                } else {
+                    echo "No vehicle found against fuel Tag($tag_reference) <br>";
                 }
             }
         }
-        // dd($response);
-        $start_date = $year.'-'.$month.'-'.$day1;
-        $last_date = $year.'-'.$month.'-'.$day7;
-        return view('vehicles.fuel_save')->with('response', $response)->with('start_date', $start_date)->with('last_date', $last_date)->with('month', $month)->with('year', $year);
+        echo "<h3>Now linking the fuel with vehicle</h3><br>";
+        // now link the drivers
+        $fuel_expenses = DB::select("SELECT vehicles_fuel.id, vehicles_fuel.vehicle_id, year, month, day FROM `vehicles_fuel` JOIN vehicles ON vehicles.id = vehicles_fuel.vehicle_id WHERE vehicles_fuel.driver_id IS NULL and month = '$month' and year = '$year'");
+        foreach ($fuel_expenses as $loop_counter => $fuel_expense) {
+            $vehicle_id = $fuel_expense->vehicle_id;
+            // for month
+            if($fuel_expense->month<10){
+                $fuel_expense->month = '0'.$fuel_expense->month;
+            }
+            // for day
+            if($fuel_expense->day<10){
+                $fuel_expense->day = '0'.$fuel_expense->day;
+            }
+            $date = $fuel_expense->year.'-'.$fuel_expense->month.'-'.$fuel_expense->day;
+
+            $delegation = DB::select("SELECT * FROM `drivers_attendance` WHERE `vehicle_id` = ".$vehicle_id." and date ='".$date."' ORDER BY `drivers_attendance`.`id` DESC;");
+            $delegation_1 = DB::select("SELECT drivers.job_id FROM delegations INNER JOIN drivers ON delegations.driverId=drivers.id WHERE delegations.vehicle_id = '$vehicle_id' AND starting_date <= '$date' AND ending_date >= '$date' AND return_otometer_read_timesamp is NULL");
+            $delegation_2 = DB::select("SELECT drivers.job_id FROM delegations INNER JOIN drivers ON delegations.driverId=drivers.id WHERE delegations.vehicle_id = '$vehicle_id' AND starting_date <= '$date' AND return_otometer_read_timesamp >= '$date'");
+            if(count($delegation) > 0) {
+                $delegation = $delegation[0];
+                $job_id = $delegation->job_id;
+                $id = $fuel_expense->id;
+                DB::update("UPDATE vehicles_fuel set driver_id = '$job_id' WHERE id = '$id'");
+                echo "vehicles_fuel ($id) Linked with job_id($job_id)<br>";
+            } else if(count($delegation_1) > 0) {
+                $delegation_1 = $delegation_1[0];
+                $job_id = $delegation_1->job_id;
+                $id = $fuel_expense->id;
+                DB::update("UPDATE vehicles_fuel set driver_id = '$job_id' WHERE id = '$id'");
+                echo "vehicles_fuel ($id) Linked with job_id($job_id)<br>";
+            } else if(count($delegation_2) > 0) {
+                $delegation_2 = $delegation_2[0];
+                $job_id = $delegation_2->job_id;
+                $id = $fuel_expense->id;
+                DB::update("UPDATE vehicles_fuel set driver_id = '$job_id' WHERE id = '$id'");
+                echo "vehicles_fuel ($id) Linked with job_id($job_id)<br>";
+            }
+        }
+        dd('Done');
+        return back()->with('success', 'Fuel data imported successfully');
     }
 }
 
@@ -2387,70 +2175,80 @@ function get_vehicle_table_body($payload, $city_name = null)
         $resp = '<center style="color: '.$color.'">'.$expiry_days.' '.$days.'</center>';
         $response1 = '<span style="color: #F79013;">'.$item->delegation_info["job_id"].'</span><br>'.$item->delegation_info["driver_name"].' <br> '.$item->delegation_info["city_name"].' <br> '.$item->delegation_info["company_name"].' <br> '.$item->delegation_info["warehouse_name"];
         $response2 = '<div class="btn-group">
-                    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</button>
+                    <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Actions
+                    </button>
                     <ul class="dropdown-menu">
                         <li>
-                            <a onclick="vehicleExtraInfo('."'".$item->images."'".",'".$item->plate."','".$item->name_en."','".$item->vehicle_manufacturer."','".$item->manufacturer_date."','".$item->vehicle_model."','".$item->vehicle_opreator."','".$item->SNno."','".$item->body_number."','".$item->freeExtraOtometer."','','".$item->extraOtometerCharge."','".$item->otometer."','".$item->registertion_type."','".$item->current_status."','".$item->color."','".$item->vehicle_registration_expire_date."')".'"
-                            data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> View </a>
+                            <a href="#" onclick="vehicleExtraInfo('."'".$item->images."'".",'".$item->plate."','".$item->name_en."','".$item->vehicle_manufacturer."','".$item->manufacturer_date."','".$item->vehicle_model."','".$item->vehicle_opreator."','".$item->SNno."','".$item->body_number."','".$item->freeExtraOtometer."','','".$item->extraOtometerCharge."','".$item->otometer."','".$item->registertion_type."','".$item->current_status."','".$item->color."','".$item->vehicle_registration_expire_date."')".'" class="view"> Vehicle Info</i> </a>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a onclick="vehicleEdit('. $item->vehicle_id .')" data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit">Edit</a>
+                            <a href="#" onclick="vehicleEdit('. $item->vehicle_id .')" class="edit">Edit</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a href="#" class="edit"  onclick="editAccessories('.$item->vehicle_id.')">Accessories</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a href="#" onclick="vehicleHistory('."'".$item->vehicle_id."'".')" title="Delegation history" class="history">Delegation History </a>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         ';
-        if($item->checkup_id == '') {
-            $response2 .= '
-            <li>
-                <a onclick="addVehicleCheckup('."'".$item->vehicle_id."'".', '."'".$item->vehicle_manufacturer."'".', '."'".$item->vehicle_model."'".', '."'".$item->manufacturer_date."'".', '."'".$item->plate."'".', '."'".$item->SNno."'".')" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view">Add Vehicle Checkup </a>
-            </li>
-            <li>
-                <hr class="dropdown-divider">
-            </li>
-                ';
-        }
-        $response2 .= '
-        <li>
-            <a onclick="vehicleHistory('."'".$item->vehicle_id."'".')" title="Delegation history" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow history">Delegation history</a>
-        </li>
-        <li>
-            <hr class="dropdown-divider">
-        </li>
-        <li>
-        <button class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"  onclick="editAccessories('.$item->vehicle_id.')">Accessories</button>
-        </li>
-        <li>
-            <hr class="dropdown-divider">
-        </li>';
+                        if ($item->delegation_info["job_id"] != '') {
+                            $response2 .= '
+                            <li>
+                                <a href="#" onclick="updateVehicleDriver('."'".$item->vehicle_id."'".', '."'".$item->delegation_id."'".')" title="Update driver" class="">Transfer Vehicle </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>';
+                        }
+                        if($item->checkup_id == '') {
+                            $response2 .= '<li>
+                            <a href="#" onclick="addVehicleCheckup('."'".$item->vehicle_id."'".', '."'".$item->vehicle_manufacturer."'".', '."'".$item->vehicle_model."'".', '."'".$item->manufacturer_date."'".', '."'".$item->plate."'".', '."'".$item->SNno."'".')" class="view">Vehicle Checkup </a>
+                            </li>';
+                        }
+
+                        $response2 .= '
+                    </ul>
+                </div>';
+
+
         $today = date("Y-m-d");
         $delegation_status = '';
         if($item->delegation_status == 'Under Process') {
-            $delegation_status = '<span class="badge badge-primary">Under Process</span>';
+            $delegation_status = '<span class="label label-primary">Under Process</span>';
             $response1 = '';
         } else if($item->delegation_status == 'valid' AND $today < $item->ending_date) {
-            $delegation_status = '<span class="badge badge-success">Valid</span>';
+            $delegation_status = '<span class="label label-success">Valid</span>';
         } else if($item->delegation_status == 'valid' AND $today > $item->ending_date) {
-            $delegation_status = '<span class="badge badge-warning">Valid Expired</span>';
+            $delegation_status = '<span class="label label-warning">Valid Expired</span>';
         } else if($item->delegation_status == 'cancelled') {
-            $delegation_status = '<span class="badge badge-danger">Cancelled</span>';
+            $delegation_status = '<span class="label label-danger">Cancelled</span>';
             $response1 = '';
         } else if($item->delegation_status == 'completed') {
-            $delegation_status = '<span class="badge badge-success">Completed</span>';
+            $delegation_status = '<span class="label label-success">Completed</span>';
             $response1 = '';
         }  else if($item->delegation_status == 'completedAfterExpiry') {
-            $delegation_status = '<span class="badge badge-info">Completed After Expiry</span>';
+            $delegation_status = '<span class="label label-info">Completed After Expiry</span>';
             $response1 = '';
         }
-
         $data[] = [
             'no' => ++$no,
             'plate' => $item->plate,
-            'fuel_data' => $item->fuel_data,
-            'oil_data' => $item->oil_data,
+            // 'fuel_data' => $item->fuel_data,
+            'oil_data' => '',
             'vehicle_expiry_date' => $resp,
             'name_en' => $item->name_en,
             'vehicle_manufacturer' => $item->vehicle_manufacturer,
@@ -2571,13 +2369,63 @@ function get_fuel_details($vehicle_id, $allowed_fuel_price, $fuel_check) {
         $fuel .= '<li>' . $result[0]->fuel . ' for (' . $year . '/' . $month . ')</li>';
     }
     if($fuel != '<ul>' && $fuel_price > $allowed_fuel_price && $fuel_check != 1)
-        $fuel .= '<button class="btnaction btn menu-icon vd_bd-red vd_red " onclick="fuel_info('.$vehicle_id.')">Info <i class="fa fa-eye"></i></button></ul>';
+        $fuel .= '<button class="btnaction btn menu-icon vd_bd-red vd_red " onclick="fuel_info('.$vehicle_id.')">Info <i class="bi bi-eye"></i></button></ul>';
     else if($fuel != '<ul>')
-        $fuel .= '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow " onclick="fuel_info('.$vehicle_id.')">Info <i class="fa fa-eye"></i></button></ul>';
+        $fuel .= '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow " onclick="fuel_info('.$vehicle_id.')">Info <i class="bi bi-eye"></i></button></ul>';
 
     return $fuel;
 }
+function getVehicleReportData($city_id, $filter_vehicle_opreaterId, $filter_vehicle_manufecturerId, $filter_modelId, $vehicle_id, $current_status, $start_date, $end_date) {
+    $operatorClause = $manufacturerClause = $modelClause = $vehicleClause = $response = "";
+    if ($filter_vehicle_opreaterId != '')
+        $operatorClause = " AND vehicle_opreators.id= '$filter_vehicle_opreaterId'";
+    if ($filter_vehicle_manufecturerId != '')
+        $manufacturerClause = " AND vehicle_manufacturers.id= '$filter_vehicle_manufecturerId'";
+    if ($filter_modelId != '')
+        $modelClause = " AND vehicle_models.id= '$filter_modelId'";
+    if ($vehicle_id != '')
+        $vehicleClause = " AND vehicles.id= '$vehicle_id'";
 
+    $objects = DB::select("SELECT manufacturer_date, vehicles.id,vehicles.plate,lkp_city.name_en AS city_name,vehicle_models.`name` AS model_name,vehicle_opreators.`name` AS operator_name,vehicle_manufacturers.`name` AS manufecture_name FROM
+    vehicles INNER JOIN lkp_city ON vehicles.city_id=lkp_city.id INNER JOIN vehicle_models ON vehicles.vehicle_model_id=vehicle_models.id INNER JOIN vehicle_opreators ON vehicles.vehicle_opreater_id=vehicle_opreators.id
+    INNER JOIN vehicle_manufacturers ON vehicle_models.vehicle_manufacturer_id=vehicle_manufacturers.id WHERE lkp_city.id = '$city_id' $operatorClause $manufacturerClause $modelClause $vehicleClause");
+    foreach($objects as $k => $object) {
+        $vehicle_id = $object->id;
+        if ($current_status == 'delegeted')
+            $status = "AND `status` IN ('absent with no excuse','absent with excuse', 'missed attendance', 'present')";
+        else
+            $status = "AND `status` = '$current_status'";
+        $consectiveCount = DB::select("WITH ConsecutiveGroups AS (
+            SELECT date,STATUS,DATE_ADD(date,INTERVAL-ROW_NUMBER() OVER (ORDER BY date) DAY) AS group_id FROM drivers_attendance WHERE vehicle_id = '$vehicle_id' $status AND
+            date BETWEEN STR_TO_DATE('$start_date', '%d/%m/%Y') AND STR_TO_DATE('$end_date', '%d/%m/%Y')
+            ),GroupedCounts AS (
+            SELECT MIN(date) AS start_date,MAX(date) AS end_date FROM ConsecutiveGroups GROUP BY group_id)
+            SELECT COUNT(*) AS consecutive_present_periods FROM GroupedCounts");
+        $consectiveCount = $consectiveCount[0]->consecutive_present_periods;
+        $days = DB::select("SELECT count(id) as days FROM drivers_attendance WHERE vehicle_id = '$vehicle_id' $status AND date BETWEEN STR_TO_DATE('$start_date', '%d/%m/%Y') AND STR_TO_DATE('$end_date', '%d/%m/%Y')");
+        if (count($days) > 0)
+            $days = $days[0]->days;
+        else
+            $days = 0;
+        $k++;
+        $response .= "<tr>";
+        $response .= "<td>".$k."</td>";
+        $response .= "<td>".$object->city_name."</td>";
+        $response .= "<td>".$object->plate."</td>";
+        $response .= "<td>".$object->model_name . ' ' . $object->manufacturer_date."</td>";
+        $response .= "<td>".$object->manufecture_name."</td>";
+        $response .= "<td>".$object->operator_name."</td>";
+        $response .= "<td>".ucfirst($current_status)."</td>";
+        $response .= "<td>".$start_date."</td>";
+        $response .= "<td>".$end_date."</td>";
+        $response .= "<td><button type'button' class='btn btn-sm btn-info' onclick='showInfo(".$vehicle_id.")'>$consectiveCount</button></td>";
+        $response .= "<td>".$days."</td>";
+
+        $response .= "</tr>";
+    }
+    return $response;
+
+}
 function make_header($dateArray) {
     $response = '<tr><th rowspan=2>Vehicle</th>';
     foreach($dateArray as $date) {
@@ -2670,9 +2518,9 @@ function make_body($dateArray, $city_id, $company_id, $warehouse_id, $type, $veh
                 // }
             }
             if($status == 'N/A' || $status == 'M' || $status == 'D'  || $status == 'Stop') {
-                $response .= '<td style="text-align: center"><button disabled class="btn btn-info btn-sm">'.$status.'</button> <i onclick="show_info()" style="cursor: pointer" title="Show Info" class="fa fa-info-circle fa-lg"></i><br></td>';
+                $response .= '<td style="text-align: center"><button disabled class="btn btn-info btn-sm">'.$status.'</button> <i onclick="show_info()" style="cursor: pointer" title="Show Info" class="bi bi-info-circle fa-lg"></i><br></td>';
             } else {
-                $response .= '<td style="text-align: center"><button disabled class="btn btn-info btn-sm">'.$status.'</button> <i onclick="show_info()" style="cursor: pointer" title="Show Info" class="fa fa-info-circle fa-lg"></i><br>
+                $response .= '<td style="text-align: center"><button disabled class="btn btn-info btn-sm">'.$status.'</button> <i onclick="show_info()" style="cursor: pointer" title="Show Info" class="bi bi-info-circle fa-lg"></i><br>
                 '.$driver_name.' <br>
                 '.$city_name.' <br>
                 '.$company_name.' <br>
@@ -2723,14 +2571,14 @@ function get_vRequest_tblBody($payload) {
             <td>'.++$k.'</td>
             <td>'.$item->city_name.'</td>
             <td>
-                <table><tbody><tr><td style="border: 1px solid;">'.$numberPart.'</td><td style="border: 1px solid;">'.$characterPart.'</td></tr></tbody></table>
+                <table style="width: max-content;"><tbody><tr><td style="border: 1px solid;">'.$numberPart.'</td><td style="border: 1px solid;">'.$characterPart.'</td></tr></tbody></table>
             </td>
             <td>
                 '.$item->color.', '.$item->vehicle_manufacturer_name.', '.$item->vName.', '.$item->manufacturer_date.'
-                <span> <button data-toggle="modal" data-target="#ViewVehicleModal"> <a href="#"><i class="fa fa-eye"></i></a></button></span>
+                <span> <a href="#" data-bs-toggle="modal" data-bs-target="#ViewVehicleModal"><i class="bi bi-eye"></i></a></span>
             </td>
             <td> '.$item->opreatoers.'</td>
-            <td>'.$item->fullName.',  <span style="color:red">'.$item->job_id.'</span> <span> <button > <a href="javascript:driver('.$item->driver_id.')"><i class="fa fa-eye"></i></a></button></span></td>
+            <td>'.$item->fullName.',  <span style="color:red">'.$item->job_id.'</span> <span> <a href="javascript:driver('.$item->driver_id.')"><i class="bi bi-eye"></i></a></span></td>
             <td style="text-align: center;">';
                 if($item->driver_data == 'pending')
                     $html .= '<button disabled>Waiting DA Confrime Data</button>';
@@ -2907,4 +2755,3 @@ function onesignal($user_id, $msg, $arMsg = '') {
     //   return true;
     // }
 }
-

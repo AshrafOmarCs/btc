@@ -836,7 +836,7 @@ $module = "Driver";
                         $('[data-toggle="tooltip"]').tooltip();
                     },
                     ajax: {
-                        url: "{{ URL('New-Portal/DriversJahiz') }}",
+                        url: "{{ route('Drivers.index') }}",
                         data: {
                             filter_screenId: 'Jahiz',
                             filter_companyId: filter_companyId,

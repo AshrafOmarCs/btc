@@ -37,21 +37,23 @@
                 <TH>Brought_Down</TH>
             </tr>
 
-            <?php $t_days = $t_credit = $t_debit = $carried_down = $no_of_touch_point = 0;?>
+            @php $t_days = $t_credit = $t_debit = $carried_down = $no_of_touch_point = 0;@endphp
             @foreach($qq as $q)
-                <?php $carried_down+=$q->Carried_Down;
+                @php $carried_down+=$q->Carried_Down;
                     $no_of_touch_point+=$q->no_of_touch_point;
                     $note = '';
                     $t_credit += round($q->credit, 2);
                     $t_debit += round($q->debit, 2);
                     if($q->journal_type == 'Daily Load') {
                         $t_days++;
+                    } else if($q->journal_type == 'Salary Balance' || $q->journal_type == 'Salary') {
+                        $note = " (".$q->note.")";
                     } else if($q->journal_type != '' AND $q->note != '') {
                         $note = " (".$q->note.")
                         <a onclick=\"show_record('".$q->post_id."', '".$q->journal_type."')\" id='".$q->post_id."' data-original-title='view' data-toggle='tooltip' data-placement='top' class='btnaction btn menu-icon vd_bd-green vd_green view'> <i class='bi bi-eye-fill'></i> </a>
                         ";
                     }
-                ?>
+                @endphp
                 <tr>
                     <td>{{$q->date}}</td>
                     <td>{{$q->dayname}}</td>
@@ -67,9 +69,9 @@
                     @if ($company->calculation_method_id==1)
                     <td>{{$q->no_of_touch_point}}</td>
                     @endif
-                    <td><?php if (isset($q->unit_cost)) echo floatval($q->unit_cost);else echo ""; ?></td>
-                    <td><?php if (isset($q->credit)) echo floatval($q->credit);else echo ""; ?></td>
-                    <td><?php if (isset($q->debit)) echo floatval($q->debit);else echo ""; ?></td>
+                    <td>@php if (isset($q->unit_cost)) echo floatval($q->unit_cost);else echo ""; @endphp</td>
+                    <td>@php if (isset($q->credit)) echo floatval($q->credit);else echo ""; @endphp</td>
+                    <td>@php if (isset($q->debit)) echo floatval($q->debit);else echo ""; @endphp</td>
                     <td>{{$carried_down +0}}</td>
                 </tr>
             @endforeach

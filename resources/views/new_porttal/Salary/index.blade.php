@@ -235,6 +235,71 @@ $array = [
                     <button name="STC_Report" id="STC_Report" class="btn btn-sm btn-info">Excel</button>
                     <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
                 </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="fuel_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Fuel Info</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="fuelForm" method="POST">
+                @csrf
+                <input type="hidden" name="page" value="salary">
+                <div class="modal-body">
+                    <table id="" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="vertical-align: top !important;">Vehicle</th>
+                                <th style="vertical-align: top !important;">Day</th>
+                                <th style="vertical-align: top !important;">Month</th>
+                                <th style="vertical-align: top !important;">Year</th>
+                                <th style="vertical-align: top !important;">Fuel</th>
+                                <th style="vertical-align: top !important;">Job ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fuelBody">
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-info">Update</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="password_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="w3-container" action="{{ URL('/GoToReady')}}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="ready_statuss" id="ready_statuss">
+                    <input type="hidden" name="from_to" id="from_to_ready">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <b>Please Enter Your Password</b>
+                            <input type="password" class="form-control" name="password" id="password" required value="" >
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-info">Submit</button>
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{__('drivers.Close')}}</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -294,30 +359,42 @@ $array = [
                     <input type="hidden" name="Period" id="Period" value="">
                     <div class="table-responsive">
 
-                        <table id="customer_data" class="table table-bordered">
+                        <table id="customer_data" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <!--<TH style="display:none;">City</TH>-->
                                     <TH>Whouse</TH>
                                     <TH>Driver</TH>
                                     <TH>ID</TH>
                                     <TH>Did</TH>
                                     <TH>Days</TH>
+                                    <TH>Fuel Count</TH>
+                                    <TH>Fuel Consume</TH>
+                                    <TH>Kms</TH>
+                                    <TH>Engine Up Time</TH>
                                     <TH>Carried Down</TH>
                                     <TH>Day Loaded</TH>
                                     <TH>Credit</TH>
                                     <TH>Debit</TH>
                                     <TH><input class="" onclick="selectall_status()" type="checkbox" name="select-all-status" id="select-all-status"/> Status</TH>
+                                    <TH>Exportable</TH>
                                     <TH>Attempt</TH>
                                     <TH>Loan</TH>
                                     <TH>CN</TH>
+                                    <TH>Fuel Gap</TH>
+                                    <TH>OverAll Balance</TH>
+                                    <!--<TH>IND</TH>-->
                                     <TH>Expected Salary</TH>
                                     <TH><input class="flat-red" onclick="selectall()" type="checkbox" name="select-all" id="select-all"/> Paid Salary</TH>
+                                    <!--<TH>T</TH>-->
                                     <TH>Brought Down</TH>
                                     <TH>Action</TH>
                                     <TH style="display:none;">Bank Name</TH>
                                     <TH style="display:none;">AccountNumber</TH>
                                     <TH style="display:none;">DriverId</TH>
                                     <TH style="display:none;">Account Owner Iqama</TH>
+                                    <TH style="display:none;">Ben Iqama</TH>
+                                    <TH style="display:none;">Ben IBAN</TH>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -326,14 +403,21 @@ $array = [
                                     <TH colspan='3'>Total</TH>
                                     <TH id="pack_total"></TH>
                                     <TH id="days_total"></TH>
+                                    <th></th>
+                                    <th id="fuel_consume_total"></th>
+                                    <th></th>
+                                    <th></th>
                                     <TH id="c_down_total"></TH>
-                                    <TH id="day_load_total" class="Font-Green"></TH>
-                                    <TH id="credit_total" class="Font-Green"></TH>
-                                    <TH id="debit_total" class="Font-Red"></TH>
+                                    <TH id="day_load_total" class="text-success"></TH>
+                                    <TH id="credit_total" class="text-success"></TH>
+                                    <TH id="debit_total" class="text-danger"></TH>
                                     <TH><button id="status_button" style="display: none" type="button" class="btn btn-primary btn-small" onclick="go_to_ready()" title="Revert status to Ready">Rev.Status</button></TH>
+                                    <TH></TH>
                                     <TH></TH>
                                     <TH id="loan_total"></TH>
                                     <TH id="cn_total"></TH>
+                                    <TH id="totalFuelGap" class="text-danger"></TH>
+                                    <TH></TH>
                                     <TH id="exp_salary_total"></TH>
                                     <TH id="paid_salary_total"></TH>
                                     <TH id="brought_total"></TH>
@@ -342,9 +426,12 @@ $array = [
                                     <TH style="display:none;"></TH>
                                     <TH style="display:none;"></TH>
                                     <TH style="display:none;"></TH>
+                                    <TH style="display:none;"></TH>
+                                    <TH style="display:none;"></TH>
                                 </tr>
                             </tfoot>
                         </table>
+
                     </div>
 
                 </div>
@@ -417,23 +504,72 @@ $array = [
             }
         }
         $(document).ready(function() {
+            function loadTable() {
+                $.ajax({
+                    url:"/Salary_she",
+                    data:{
+                        filter_companyId: $('#filter_companyId').val(),
+                        filter_cityId: $('#filter_cityId').val(),
+                        filter_warehouseId: $('#filter_warehouseId').val(),
+                        filter_Period: $('#filter_Period').val(),
+                        filter_paid_id:$('#filter_paid_id').val(),
+                    }, success:function(data) {
+                        data = data.split(":::");
+                        $('#customer_data').DataTable().clear();
+                        $('#customer_data').DataTable().rows.add($(data[0])).draw();
+                        $('#pack_total').html(data[1]);
+                        $('#final_pack_total').html(data[2]);
+                        $('#match_total').html(data[3]);
+                        $('#gap_total').html(data[4]);
+                        $('#days_total').html(data[5]);
+                        $('#c_down_total').html(data[6]);
+                        $('#day_load_total').html(data[7]);
+                        $('#credit_total').html(data[8]);
+                        $('#debit_total').html(data[9]);
+                        $('#loan_total').html(data[10]);
+                        $('#cn_total').html(data[11]);
+                        $('#ind_total').html(data[12]);
+                        $('#exp_salary_total').html(data[13]);
+                        $('#paid_salary_total').html(data[14]);
+                        $('#t_total').html(data[15]);
+                        $('#brought_total').html(data[16]);
+                        $('#salary_range').html(data[17]);
+                        $('#Period').val(data[18]);
+                        $('#companyId').val(data[19]);
+                        $('#SQL_stc').val(data[20]);
+                        $('#from_to').val(data[17]);
+                        $('#fuel_consume_total').html(data[21]);
+                        $('#ApprovalModalBtn').attr('disabled', false);
+                        $("#ApprovalModalBtn").attr("data-target", "#ApprovalModal");
+                        $("#status_button").hide();
+                        if (data[22] == 0) {
+                            $('#ApprovalModalBtn').attr('disabled', true);
+                            $("#ApprovalModalBtn").removeAttr("data-target");
+                        }
+                        if (data[23] == 1) {
+                            $("#status_button").show();
+                        }
+                        $('#totalFuelGap').html(data[24]);
+                    }
+                });
+            }
 
     	    $('#customer_data').DataTable({
-    	    	lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 dom: 'lBfrtip',
                 bAutoWidth: false,
-                aoColumnDefs: [
-                  {
-                     bSortable: false,
-                     aTargets: [ -1, -4, -9 ]
-                  }
-                ],
+                // aoColumnDefs: [
+                //   {
+                //      bSortable: false,
+                //      aTargets: [ -1, -4, -9 ]
+                //   }
+                // ],
                 "buttons": [
                     {
                         extend: 'excel',
                         text: 'Export to Excel',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 13],
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 18],
 
                             modifier: {
                                 search: 'applied',
@@ -447,13 +583,13 @@ $array = [
                             } else if (exportType === 'positive') {
                                 config.exportOptions = {
                                     rows: function (idx, data, node) {
-                                        return parseFloat(data[13]) > 0;
+                                        return parseFloat(data[18]) > 0;
                                     }
                                 };
                             } else if (exportType === 'negative') {
                                 config.exportOptions = {
                                     rows: function (idx, data, node) {
-                                        return parseFloat(data[13]) < 0;
+                                        return parseFloat(data[18]) < 0;
                                     }
                                 };
                             }
@@ -467,7 +603,8 @@ $array = [
                 processing: true,
                 "pagingType": "full_numbers",
                 "autoWidth": false,
-    	    });
+            });
+
 
             $('#customer_data tbody').on('click', '.view', function (e) {
                 e.preventDefault();
@@ -502,81 +639,7 @@ $array = [
 
             $('#filter').click(function () {
                 if ($('#filter_companyId').val() != '' && $('#filter_Period').val() != '') {
-                    $('#pre_loader_build').show();
-                    // $('#customer_data').DataTable().destroy();
-                    $.ajax({
-                        url:"{{ route('Salary_she.index') }}",
-                        data:{
-                            filter_companyId: $('#filter_companyId').val(),
-                            filter_cityId: $('#filter_cityId').val(),
-                            filter_warehouseId: $('#filter_warehouseId').val(),
-                            filter_Period: $('#filter_Period').val(),
-                            filter_paid_id:$('#filter_paid_id').val(),
-                        }, success:function(data){
-                            data = data.split(":::");
-                            $('#customer_data').DataTable().clear();
-                            $('#customer_data').DataTable().rows.add($(data[0])).draw();
-                            $('#pack_total').html(data[1]);
-                            $('#final_pack_total').html(data[2]);
-                            $('#match_total').html(data[3]);
-                            $('#gap_total').html(data[4]);
-                            $('#days_total').html(data[5]);
-                            $('#c_down_total').html(data[6]);
-                            $('#day_load_total').html(data[7]);
-                            $('#credit_total').html(data[8]);
-                            $('#debit_total').html(data[9]);
-                            $('#loan_total').html(data[10]);
-                            $('#cn_total').html(data[11]);
-                            $('#ind_total').html(data[12]);
-                            $('#exp_salary_total').html(data[13]);
-                            $('#paid_salary_total').html(data[14]);
-                            $('#t_total').html(data[15]);
-                            $('#brought_total').html(data[16]);
-                            $('#salary_range').html("<b><font color='red'>" + data[17] + "</font></b>");
-                            $('#Period').val(data[18]);
-                            $('#companyId').val(data[19]);
-                            $('#SQL_stc').val(data[20]);
-                            $('#from_to').val(data[17]);
-                            // $('#from_to').val($('#filter_Period').val());
-                            $('#ApprovalModalBtn').attr('disabled', false);
-                            $("#ApprovalModalBtn").attr("data-target", "#ApprovalModal");
-                            $("#status_button").hide();
-                            if (data[21] == 0) {
-                                $('#ApprovalModalBtn').attr('disabled', true);
-                                $("#ApprovalModalBtn").removeAttr("data-target");
-                            }
-                            if (data[22] == 1) {
-                               $("#status_button").show();
-                            }
-                            $('#pre_loader_build').hide();
-
-                            let html = '';
-                            if ($('#filter_companyId').val() != '')
-                                html += '<button type="button" class="btn btn-outline-primary btn-rounded">'+$('#filter_companyId option:selected').text()+'</button>';
-                            if ($('#filter_cityId').val() != '')
-                                html += '<button type="button" class="btn btn-outline-secondary btn-rounded">'+$('#filter_cityId option:selected').text()+'</button>';
-                            let selectedTexts = [];
-                            $('#filter_warehouseId option:selected').each(function() {
-                                selectedTexts.push($(this).text());
-                            });
-                            let selectedWarehouse = selectedTexts.join(', ');
-                            if (selectedWarehouse != '') {
-                                html += '<button type="button" class="btn btn-outline-warning btn-rounded">'+selectedWarehouse+'</button>';
-                            }
-                            if ($('#filter_Period').val() != '')
-                                html += '<button type="button" class="btn btn-outline-success btn-rounded">'+$('#filter_Period').val()+'</button>';
-                            if ($('#filter_paid_id').val() != '')
-                                html += '<button type="button" class="btn btn-outline-danger btn-rounded">'+$('#filter_paid_id option:selected').text()+'</button>';
-
-                            if(html != '') {
-                                $('#edit_btn').show();
-                                $('#selectedCriteria').html(html);
-                            } else {
-                                $('#edit_btn').hide();
-                            }
-                        }
-
-                    });
+                    loadTable();
 
                     $.ajax({
                         type:'POST',
@@ -780,14 +843,49 @@ $array = [
             return true;
 
         }
+        function overAllBalanceModal(driverId, iqama) {
+            $('#edit_modal').modal('toggle');
+            let url = '{{url('Drivers/overAllBalanceInfo')}}';
+            var postData = {
+                driverId: driverId,
+                iqama: iqama,
+                _token: "{{ csrf_token() }}",
+            };
+            $.ajax({
+                url: url,
+                type: "POST",
+                cache: false,
+                data: postData,
+                success: function (data) {
+                    document.getElementById('response').innerHTML = data;
+                },
+                error: function (jqXHR, status, error) {
+                    alert(status + ": " + error);
+                }
+            });
+        }
+        function loadStatement(id) {
+            $.ajax({
+                type: 'GET',
+                url: "/statement" + "/" + id,
+                contentType: "html",
+                dataType: 'html',
+                success: function (data) {
+                    document.getElementById('response').innerHTML = data;
+                }
+            });
+
+        }
         function show_record(id, type) {
             document.getElementById('responsee').innerHTML = "Loading...";
             $('#view_modal').modal('toggle');
             let urls = '';
             if(type == 'Loan')
                 urls = "/Loans" + "/" + id;
-            if(type == 'Credit Note')
+            else if(type == 'Credit Note')
                 urls = "/CreditNotes" + "/" + id;
+            else if(type == 'Settlements')
+                urls = "/Settlements" + "/" + id;
             $.ajax({
                 type: 'GET',
                 url: urls,
@@ -818,6 +916,46 @@ $array = [
             $('#typeModal').modal('show');
 
         }
+        function loadFuelInfo(object) {
+            let job_id = object.id;
+            let dates = $('#salary_range').html();
+            document.getElementById('fuelBody').innerHTML = loader;
+            $('#fuel_modal').modal('show');
+            $.ajax({
+                type: 'POST',
+                url:"{{ route('loadFuelInfo') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    dates: $('#salary_range').html(),
+                    job_id: object.id,
+                },
+                success: function (data) {
+                    document.getElementById('fuelBody').innerHTML = data;
+                }
+            });
+        }
+        $('#fuelForm').on('submit', function (e) {
+            e.preventDefault();
+            let formData = $(this).serialize();
+            $.ajax({
+                url: "{{ url('vehicles/fuel/link') }}",
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                },
+                success: function (response) {
+                    loadTable();
+                    alert('Driver Ids linked successfully!');
+                    document.getElementById('fuel_modal').style.display = 'none';
+                },
+                error: function (xhr) {
+                    // Handle error
+                    alert('An error occurred.');
+                    console.error(xhr.responseText);
+                }
+            });
+        });
     </script>
 @stop
 @endsection

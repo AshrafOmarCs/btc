@@ -17,26 +17,38 @@ use PHPExcel_IOFactory;
 use App\Page_privilege;
 use DateTime;
 
+function overAllBalaceReverse($driver_id, $from, $to) {
+    $journals = DB::select("SELECT post_id from journal where post_id is not null AND journal_type_id = '12' AND driverId = '$driver_id' AND journal_date BETWEEN '$from' AND '$to'");
+    if (count($journals) > 0) {
+        foreach($journals as $journal) {
+            $post_id = $journal->post_id;
+            DB::delete("DELETE from journal WHERE id = '$post_id'");
+        }
+        DB::delete("DELETE from journal WHERE journal_type_id = '12' AND driverId = '$driver_id' AND journal_date BETWEEN '$from' AND '$to'");
+    }
+}
+
 function get_daily_load($driverId, $from, $to) {
     $daily_load = DB::select("SELECT SUM(credit) as daily_load FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '6' AND `journal_date` BETWEEN '$from' AND '$to'");
     return $daily_load[0]->daily_load;
 }
+
 function get_journal_status($driverId, $from, $to) {
     $response = array('', '');
     $journal_status = DB::select("SELECT status, exported_by, export_attempt FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '6' AND `journal_date` BETWEEN '$from' AND '$to'");
-    if(count($journal_status) > 0){
+    if(count($journal_status) > 0) {
         $response[0] = $journal_status[0]->status;
         $response[1] = $journal_status[0]->exported_by;
         $response[2] = $journal_status[0]->export_attempt;
     }
-    else {
-        $journal_status = DB::select("SELECT status, exported_by, export_attempt FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '7' AND `journal_date` BETWEEN '$from' AND '$to' LIMIT 0,1");
-        if(count($journal_status) > 0) {
-            $response[0] = $journal_status[0]->status;
-            $response[1] = $journal_status[0]->exported_by;
-            $response[2] = $journal_status[0]->export_attempt;
-        }
-    }
+    // else {
+    //     $journal_status = DB::select("SELECT status, exported_by, export_attempt FROM `journal` WHERE `driverId` = '$driverId' AND `journal_type_id` = '7' AND `journal_date` BETWEEN '$from' AND '$to' LIMIT 0,1");
+    //     if(count($journal_status) > 0) {
+    //         $response[0] = $journal_status[0]->status;
+    //         $response[1] = $journal_status[0]->exported_by;
+    //         $response[2] = $journal_status[0]->export_attempt;
+    //     }
+    // }
     return $response;
 }
 function get_user_name($user_id)
@@ -47,10 +59,12 @@ function get_user_name($user_id)
 function make_salary_table_body($records) {
     $response = "";
     $check = $btn = 0;
-    $i = $pack_total = $final_pack_total = $match_total = $gap_total = $days_total = $c_down_total = $day_load_total = $credit_total = $debit_total = $loan_total = $cn_total = $ind_total = $exp_salary_total = $paid_salary_total = $t_total = $brought_total = 0;
+    $totalFuelGap = $fuel_consume_total = $i = $pack_total = $final_pack_total = $match_total = $gap_total = $days_total = $c_down_total = $day_load_total = $credit_total = $debit_total = $loan_total = $cn_total = $ind_total = $exp_salary_total = $paid_salary_total = $t_total = $brought_total = 0;
     foreach($records as $record) {
         $exported_by = $record->exported_by;
         $exported_name = '';
+        $driverId = $record->driverId;
+        $iqama = $record->iqama;
         if ($exported_by > 0)
             $exported_name = '(' . get_user_name($exported_by) . ')';
 
@@ -68,7 +82,7 @@ function make_salary_table_body($records) {
             $cn_total += $record->CreditNote;
         if($record->IND != '')
             $ind_total += $record->IND;
-        $exp_salary_total += $record->expected_salary;
+
 
         $day_load_total += $record->day_loaded;
 
@@ -86,27 +100,33 @@ function make_salary_table_body($records) {
         // }
         // $response .= '<td>'.$record->GAP.'</td>';
         $response .= '<td>'.$record->daycount.'</td>';
+
+        $response .= '<td>'.$record->fuelDays.'</td>';
+        $response .= '<td><a href="#" onclick="loadFuelInfo(this)" id="'.$record->job_id.'">'.$record->fuelPrice.'</a></td>';
+        $fuel_consume_total += $record->fuelPrice;
+        $response .= '<td>'.$record->km.'</td>';
+        $response .= '<td>'.$record->engin_up_time.'</td>';
+
         if ($record->carried_down > 0) {
             $c_down_total += $record->carried_down;
-            $response .= '<td><span class="Font-Green">' . $record->carried_down . '</span></td>';
+            $response .= '<td><span class="text-success">' . $record->carried_down . '</span></td>';
         } else if ($record->carried_down < 0)  {
             $c_down_total += $record->carried_down;
-            $response .= '<td><span class="Font-Red">' . $record->carried_down . '</span></td>';
+            $response .= '<td><span class="text-danger">' . $record->carried_down . '</span></td>';
         } else $response .= '<td></td>';
-        $response .= '<td class="Font-Green">'.$record->day_loaded.'</td>';
-        $response .= '<td class="Font-Green">'.$record->credit_now.'</td>';
-        $response .= '<td class="Font-Red">'.$record->debit_now.'</td>';
+        $response .= '<td class="text-success">'.$record->day_loaded.'</td>';
+        $response .= '<td class="text-success">'.$record->credit_now.'</td>';
+        $response .= '<td class="text-danger">'.$record->debit_now.'</td>';
         $disabled = '';
         $color = '';
         $disabled = '';
         $class = '';
-        if($record->journal_status == 'Ready') {
+        if ($record->journal_status == 'Ready') {
             $check = 1;
             $color = 'green';
             $disabled = 'disabled';
             $class = '';
-        }
-        else if($record->journal_status == 'Onhold'){
+        } else if($record->journal_status == 'Onhold') {
             $disabled = 'disabled';
             if($exported_by == Auth::user()->id OR Auth::user()->id == 73 OR Auth::user()->id == 15)
             {
@@ -115,8 +135,7 @@ function make_salary_table_body($records) {
             }
             $color = 'orange';
             $class = 'check-status';
-        }
-        else if($record->journal_status == 'Paid') {
+        } else if($record->journal_status == 'Paid') {
             $color = 'Blue';
             $disabled = 'disabled';
             $class = '';
@@ -125,9 +144,26 @@ function make_salary_table_body($records) {
             $response .= '<td style="color:'.$color.';"><input '.$disabled.' class="'.$class.'" name="ID_' . $i . '" type="checkbox" value="">&nbsp;'.$record->journal_status.'<span style="color: black !important">'.$exported_name.'</span></td>';
         else
             $response .= '<td style="color:'.$color.';"><input '.$disabled.' class="'.$class.'" name="ID_' . $i . '" type="checkbox" value="' . $record->driverId . '">&nbsp;'.$record->journal_status.'<span style="color: black !important">'.$exported_name.'</span></td>';
+        $benIBAN = $record->benIBAN;
+        $companyName = $record->companyName;
+        if ($iqama == '' OR $iqama == null)
+            $response .= '<td><center><span style="display: none;">1</span><div class="circle" title="Driver ID/Iqama is missing"></div></center></td>';
+        else if ($companyName == 'BTC STAFF') {
+            $response .= '<td><center><span style="display: none;">2</span><div class="circle" style="background-color: green;" title="Salary is exportable."></div></center></td>';
+        } else {
+
+            $checkDB = DB::select("SELECT lkp_company.companyName FROM drivers INNER JOIN warehouse ON drivers.warehouseId=warehouse.id INNER JOIN lkp_company ON warehouse.companyId=lkp_company.id WHERE lkp_company.id = '18' AND benIBAN = '$benIBAN' AND drivers.id <> '$driverId'");
+            if ($benIBAN == '' OR $benIBAN == null)
+                $response .= '<td><center><span style="display: none;">1</span><div class="circle" style="background-color: #bbcb67;" title="Driver IBAN is missing"></div></center></td>';
+            else if (count($checkDB) > 0)
+                $response .= '<td><center><span style="display: none;">3</span><div class="circle" style="background-color: yellow;" title="Driver IBAN is duplicated."></div></center></td>';
+            else
+                $response .= '<td><center><span style="display: none;">2</span><div class="circle" style="background-color: green;" title="Salary is exportable."></div></center></td>';
+        }
 
         $response .= '<td><center><div class="circle">'.$record->export_attempt.'</div></center></td>';
         $response .= '<td>'.$record->Loan.'</td>';
+
         $response .= '<td>'.$record->CreditNote.'</td>';
         // if ($record->IND)
         //     $response .= '<td>'. $record->IND.'</td>';
@@ -136,25 +172,55 @@ function make_salary_table_body($records) {
         //         $response .= '<td><input name="IND_' . $i . '" type="hidden" class="form-control" style="width:25px" value=""></td>';
         //     } else $response .= '<td></td>';
         // }
-        $response .= '<td>'.$record->expected_salary.'</td>';
-        if (!$record->paid_salary)
-            $response .= '<td class="dt-nowrap"><input name="paid_salary_' . $i . '" type="text" class="form-control" style="width:50px" value="' . $record->edit_salary . '">' .
-                '&nbsp;<input class="flat-red" name="ID_' . $i . '" type="checkbox" value="' . $record->driverId . '"></td>';
-        else
-            $response .= '<td>'.$record->paid_salary.'</td>';
-        // if ($record->matching_transaction == "Yes") {
-        //     $response .= '<td><span class="label label-success">' . $record->matching_transaction . '</span><b>' . $record->amount . '</b></td>';
-        // } else if ($record->matching_transaction == "No") {
-        //     $response .= '<td><span class="label label-danger">' . $record->matching_transaction . '</span><b>' . $record->amount . '</b></td>';
-        // } else if ($record->matching_transaction == "Null") {
-        //     $response .= '<td><span class="label label-warning">' . $record->matching_transaction . '</span><b>' . $record->amount . '</b></td>';
+
+        if ($record->fuel_gap < 0) {
+            $response .= '<td> <span class="text-danger">'.$record->fuel_gap.'</span></td>';
+            $totalFuelGap += $record->fuel_gap;
+        } else
+            $response .= '<td> <span class="text-success">'.$record->fuel_gap.'</span></td>';
+
+        $overall = DB::select("SELECT sum(credit) AS t_credit,sum(debit) AS t_debit FROM journal INNER JOIN drivers ON journal.driverId=drivers.id WHERE iqama='$iqama' AND driverId !='$driverId'");
+        $overAllBalance = round($overall[0]->t_credit - $overall[0]->t_debit);
+        $html = '<span class="text-success">'.$overAllBalance.'</span>';
+
+        if ($overAllBalance < 0) {
+            $html = "<a class='text-danger' href='#' onclick='overAllBalanceModal($driverId, $iqama)'>".$overAllBalance."</a>";
+        }
+        $response .= '<td>'.$html.'</td>';
+        $expected = $record->expected_salary;
+
+        if ($overAllBalance > 0)
+            $expected = $record->expected_salary;
+        else if ($overAllBalance <= 0) {
+            // $expected = $record->expected_salary + $overAllBalance;
+            $record->brought_down += $overAllBalance;
+        }
+        // else if (!$record->paid_salary) {
+        //     $record->brought_down = $record->brought_down + $overAllBalance;
         // }
+
+        if ($expected < 0)
+            $response .= '<td class="text-danger">'.$expected.'</td>';
+        else
+            $response .= '<td class="text-success">'.$expected.'</td>';
+        // $expected = $record->expected_salary;
+
+        $exp_salary_total += $expected;
+        if (!$record->paid_salary) {
+            if ($overAllBalance < 0)
+                $record->edit_salary += $overAllBalance;
+
+            $response .= '<td class="dt-nowrap"><input name="paid_salary_' . $i . '" type="text" class="form-control" style="width:65px" value="' . $record->edit_salary . '">' .
+                '&nbsp;<input class="flat-red" name="ID_' . $i . '" type="checkbox" value="' . $record->driverId . '"></td>';
+        } else
+            $response .= '<td>'.$record->paid_salary.'</td>';
+
         if ($record->brought_down > 0) {
             $brought_total += $record->brought_down;
-            $response .= '<td><span class="Font-Green">' . $record->brought_down . '</span></td>';
-        } else if ($record->brought_down < 0)  {
+            $response .= '<td><span class="text-success">' . $record->brought_down . '</span></td>';
+        } else if ($record->brought_down < 0) {
             $brought_total += $record->brought_down;
-            $response .= '<td><span class="Font-Red">' . $record->brought_down . '</span></td>';
+            $response .= '<td><span class="text-danger">' . $record->brought_down . '</span></td>';
         } else $response .= '<td></td>';
         $revert = '';
         $response .= '<td>
@@ -181,11 +247,12 @@ function make_salary_table_body($records) {
             </li>
             </ul>
         </div></td>';
-
         $response .= '<td style="display: none;">'.$record->bank_name_en.'</td>';
         $response .= '<td style="display: none;">'.$record->accountNumber.'</td>';
         $response .= '<td style="display: none;">'.$record->driverId.'</td>';
         $response .= '<td style="display: none;">'.$record->iqama.'</td>';
+        $response .= '<td style="display: none;">'.$record->benIqama.'</td>';
+        $response .= '<td style="display: none;">'.$record->benIBAN.'</td>';
 
         $response .= '</tr>';
         $i++;
@@ -210,6 +277,8 @@ function make_salary_table_body($records) {
     $responses['brought_total'] = $brought_total;
     $responses['check'] = $check;
     $responses['btn'] = $btn;
+    $responses['fuel_consume_total'] = $fuel_consume_total;
+    $responses['totalFuelGap'] = $totalFuelGap;
     return $responses;
 }
 function get_settlement_credit_debit($driverId, $from, $to) {
@@ -227,45 +296,81 @@ function make_salary_table_body_supervisors($records) {
         $response .= '<tr>';
         $response .= '<td>'.$record->warehouseName.'</td>';
         $response .= '<td><a href="javascript:driver(' . $record->driverId . ')">'.$record->fullName.'</a></td>';
-        $response .= '<td>'.$record->job_id.'</td>';
+        $span = "";
+        if ($record->iqama == '' AND $record->mobileNumber == '') {
+            $span = '<i style="color: red" class="fa fa-lg fa-exclamation-triangle" title="Iqama and PhoneNumber missing"></i>';
+        } else if ($record->iqama == '') {
+            $span = '<i style="color: red" class="fa fa-lg fa-exclamation-triangle" title="Iqama missing"></i>';
+        } else if ($record->mobileNumber == '') {
+            $span = '<i style="color: yellow" class="fa fa-lg fa-exclamation-triangle" title="Mobile Number missing"></i>';
+        }
+        $response .= '<td>'.$record->job_id . $span .'</td>';
         $response .= '<td>'.$record->total_No_of_TP.'</td>';
         $response .= '<td>'.$record->daycount.'</td>';
 
         if ($record->carried_down > 0) {
-            $response .= '<td><span class="Font-Green">' . $record->carried_down . '</span></td>';
+            $response .= '<td><span class="text-success">' . $record->carried_down . '</span></td>';
         } else if ($record->carried_down < 0)  {
-            $response .= '<td><span class="Font-Red">' . $record->carried_down . '</span></td>';
+            $response .= '<td><span class="text-danger">' . $record->carried_down . '</span></td>';
         } else $response .= '<td></td>';
         $response .= '<td>'.$record->Loan.'</td>';
         $response .= '<td>'.$record->CreditNote.'</td>';
         $response .= '<td>'.$record->set_credit.'</td>';
         $response .= '<td>'.$record->set_debit.'</td>';
-        $response .= '<td class="Font-Green">'.$record->credit_now.'</td>';
-        $response .= '<td class="Font-Red">'.$record->debit_now.'</td>';
-        $response .= '<td>'.$record->expected_salary.'</td>';
+        $driverId = $record->driverId;
+        $iqama = $record->iqama;
+        $overall = DB::select("SELECT sum(credit) AS t_credit,sum(debit) AS t_debit FROM journal INNER JOIN drivers ON journal.driverId=drivers.id WHERE iqama='$iqama' AND driverId !='$driverId'");
+        $overAllBalance = round($overall[0]->t_credit - $overall[0]->t_debit);
 
+        if ($overAllBalance > 0)
+            $expected = $record->expected_salary;
+        else if ($overAllBalance <= 0) {
+            $expected = $record->expected_salary + $overAllBalance;
+        }
 
-        $readonly1 = $readonly = 'readonly style="cursor: not-allowed;"';
-        $style2 = $style3 = $style1 = $style = '';
-        if($record->iqama == '') {
+        $response .= '<td>'.$overAllBalance.'</td>';
+        $response .= '<td>'.$record->fuelPrice.'</td>';
+        $response .= '<td>'.$record->fuel_gap.'</td>';
+        $response .= '<td>'.$expected.'</td>';
+        $response .= $record->salary_status;
+
+        $readonly = 'readonly style="cursor: not-allowed;"';
+        $readonly1 = 'disabled style="cursor: not-allowed;"';
+        $style4 = $style2 = $style3 = $style1 = $style = '';
+        if($record->benIBAN == '') {
             $readonly = '';
             $style = "class='red'";
         }
-        if($record->mobileNumber == '') {
+        if($record->bank_id == '') {
             $readonly1 = '';
             $style1 = "class='red'";
         }
-        if($record->accountNumber == '') {
+        if($record->benIqama == '') {
             $style2 = "class='red'";
         }
-        if($record->account_owner_iqama == '') {
+        if($record->benName == '') {
             $style3 = "class='red'";
         }
-        $response .= '<td><input type="number" pattern="^5\d{9}$" onchange="validateAndSubmit(' . $record->driverId . ', 1, this)" '.$readonly1. $style1 .' name="mobileNumber" value="'.$record->mobileNumber.'"></td>';
-        $response .= '<td><input type="number" onchange="validateAndSubmit(' . $record->driverId . ', 2, this)" '.$readonly. $style .' name="iqama" value="'.$record->iqama.'"></td>';
-        $response .= '<td><input type="number" pattern="^966\d{12}$" onchange="validateAndSubmit(' . $record->driverId . ', 3, this)" '.$style2.' name="accountNumber" value="'.$record->accountNumber.'"></td>';
-        $response .= '<td><input type="number" onchange="validateAndSubmit(' . $record->driverId . ', 4, this)" '.$style3.' name="account_owner_iqama" value="'.$record->account_owner_iqama.'"></td>';
-
+        if($record->iqama == '') {
+            $style4 = "class='red'";
+        }
+        $response .= '<td>
+        <select name="bank_id" '.$readonly1. $style1 .' onchange="validateAndSubmit(' . $record->driverId . ', 1, this)">
+            <option value="">Select Bank</option>';
+            $banks = DB::select("SELECT * FROM lkp_bank WHERE status = 'active'");
+            foreach ($banks as $bank) {
+                $selected = '';
+                if ($bank->id == $record->bank_id)
+                    $selected = 'selected';
+                $response .= '<option '.$selected.' value="'.$bank->id.'">'.$bank->bank_code.'</option>';
+            }
+        $response .= '</select>
+        </td>';
+        $response .= '<td><input type="text" onchange="validateAndSubmit(' . $record->driverId . ', 2, this)" '.$readonly. $style .' name="benIBAN" value="'.$record->benIBAN.'"></td>';
+        $response .= '<td><input type="number" pattern="^966\d{12}$" onchange="validateAndSubmit(' . $record->driverId . ', 3, this)" '.$style2.' name="benIqama" value="'.$record->benIqama.'"></td>';
+        $response .= '<td><input type="text" onchange="validateAndSubmit(' . $record->driverId . ', 4, this)" '.$style3.' name="benName" value="'.$record->benName.'"></td>';
+        $response .= '<td><input type="number" pattern="^966\d{12}$" onchange="validateAndSubmit(' . $record->driverId . ', 5, this)" '.$style4.' name="iqama" value="'.$record->iqama.'"></td>';
+        $response .= '<td><a id="' . $record->driverId . '" data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue statement"> <i class="fa fa-bars"></i> </a></td>';
         $response .= '</tr>';
     }
     $responses = [];
@@ -391,6 +496,9 @@ class SalaryControllerShe extends Controller
                     $journal_ids[] = $journal->id;
                 }
                 DB::update("Update journal set status = 'Ready', exported_by = '0', reverse_by = '$user_id', updatedby_id = '$user_id', updated_at = NOW() where driverId = '$driver_id' AND journal_date BETWEEN '$from' AND '$to'");
+                DB::delete("DELETE FROM journal where journal_type_id = '10' AND driverId = '$driver_id' AND journal_date BETWEEN '$from' AND '$to'");
+                // reverse back overall balance
+                overAllBalaceReverse($driver_id, $from, $to);
             }
             if(count($journal_ids) > 0) {
                 $made_by = Auth::user()->name;
@@ -398,7 +506,6 @@ class SalaryControllerShe extends Controller
                 $msg = "<b>$made_by</b> reversed the journal with driver amp_ids ('$amp_ids') fronm Onhold to Ready";
                 HelperFunctionsController::add_log($msg, '', $journal_ids);
             }
-
             return redirect('/Salary_she')->with('success', "Status updated successfully");
         } else {
             // Password is incorrect
@@ -445,11 +552,13 @@ class SalaryControllerShe extends Controller
         if (is_array($request->filter_warehouseId) > 0) {
             $where[] = 'warehouse.id in(' . implode(",", $request->filter_warehouseId) . ")";
         }
+        // no need
         if (empty($request->filter_PaidType)) {
             $where[] = "(total_No_of_TP >0 or No_of_TouchPoint >0 or credit_now<>0)";
         } else {
             $where[] = "(debit_now<>0 or credit_now<>0 or paid_salary<>0)";
         }
+        // no need end
         if ($request->filter_paid_id <> "") {
             if ($request->filter_paid_id == "1") {
                 $where[] = 'TRIM(ROUND(paid_salary,2))+0 >0';
@@ -464,7 +573,7 @@ class SalaryControllerShe extends Controller
         }
         try {
             $query = "select
-                drivers.id as driverId,companyName,name_en as city_name,warehouseName,fullName,drivers.job_id,IF(account_owner_iqama<>'',account_owner_iqama,iqama) as iqama,TRIM(account_owner_iqama) as account_owner_iqama,under_sopnsorship_id,bank_id,bank_name_en,TRIM(accountNumber) AS accountNumber,
+                drivers.id as driverId,companyName,name_en as city_name,warehouseName,fullName,drivers.job_id,TRIM(iqama) as iqama,TRIM(account_owner_iqama) as account_owner_iqama,under_sopnsorship_id,bank_id,bank_name_en,TRIM(accountNumber) AS accountNumber, benIqama, benIBAN,
                 TRIM(ROUND(credit_now,2))+0 as credit_now,
                 NULLIF(TRIM(debit_now)+0,0) as debit_now,
                 NULLIF(TRIM(ROUND(carried_down,2))+0,0) as carried_down,
@@ -536,9 +645,8 @@ class SalaryControllerShe extends Controller
                         and lkp_journal_period.period_from_dt='" . $from . "' and lkp_journal_period.period_to_dt='" . $to . "'
                         )bank_transaction on bank_transaction.driverId = drivers.id
                  " . $where2;
-
              $query1 = "select
-                drivers.id as driverId,companyName,name_en as city_name,warehouseName,fullName,drivers.job_id, iqama,TRIM(account_owner_iqama) as account_owner_iqama,under_sopnsorship_id,bank_id,bank_name_en,TRIM(accountNumber) AS accountNumber,
+                drivers.id as driverId,companyName,name_en as city_name,warehouseName,fullName,drivers.job_id, iqama,TRIM(account_owner_iqama) as account_owner_iqama,under_sopnsorship_id,bank_id,bank_name_en,TRIM(accountNumber) AS accountNumber, benIqama, benIBAN,
                 TRIM(ROUND(credit_now,2))+0 as credit_now,
                 NULLIF(TRIM(debit_now)+0,0) as debit_now,
                 NULLIF(TRIM(ROUND(carried_down,2))+0,0) as carried_down,
@@ -614,7 +722,7 @@ class SalaryControllerShe extends Controller
             // $Select_db = DB::table(DB::raw("(" . $query . ") as sub"));
 
         } catch (\Illuminate\Database\QueryException $e) {
-            return redirect()->back()->with('error', $from . $to . $e->getPrevious()->getMessage());
+            return redirect('/Salary')->with('error', $from . $to . $e->getPrevious()->getMessage());
         }
         if ($from == 0) {
             return view('new_porttal.Salary.index')->with(compact('lkp_company'));
@@ -652,6 +760,29 @@ class SalaryControllerShe extends Controller
                     $record->export_attempt = $result_arr[2];
                 else
                     $record->export_attempt = 0;
+
+                $fuelInfo = HelperFunctionsController::getFuelInfo($record->job_id, $from, $to);
+                $record->fuelDays = $fuelInfo[0];
+                $record->fuelPrice = $fuelInfo[1];
+                $record->fuel_gap = $fuelInfo[2];
+                $record->km = $fuelInfo[3];
+                $record->engin_up_time = $fuelInfo[4];
+                $chkFuelGap = DB::select("SELECT id from journal WHERE journal_type_id = 10 AND journal_date BETWEEN '$from' AND '$to' AND driverId = ".$record->driverId);
+                if (count($chkFuelGap) == 0 AND $record->fuel_gap < 0) {
+                    DB::table('journal')->insertGetId(
+                        [
+                            'driverId' => $record->driverId,
+                            'journal_date' => $to,
+                            'debit' => abs($record->fuel_gap),
+                            'journal_type_id' => 10,
+                            'createdby_id' => Auth::user()->id,
+                            'updatedby_id' => Auth::user()->id,
+                            'created_at' => date("Y-m-d H:i:s"),
+                            'updated_at' => date("Y-m-d H:i:s")
+                        ]
+                    );
+                }
+
             }
             $responses = [];
             $responses = make_salary_table_body($records);
@@ -699,9 +830,14 @@ class SalaryControllerShe extends Controller
             echo ':::';
             echo $query1;
             echo ':::';
+            echo $responses['fuel_consume_total'];
+            echo ':::';
             echo $responses['check'];
             echo ':::';
             echo $responses['btn'];
+            echo ':::';
+            echo $responses['totalFuelGap'];
+
         }
 
     }
@@ -985,7 +1121,6 @@ class SalaryControllerShe extends Controller
     {
         $from = 0;
         $to = 0;
-
         $P = explode('*', $Period);
         $from = $P[0];
         $to = $P[1];
@@ -998,8 +1133,6 @@ class SalaryControllerShe extends Controller
             $to = $P[1];
         }
 
-        // dd($to);
-
         $company = DB::select("SELECT TRIM(bank_transaction.amount)+0 as amount,period_start,period_end,companyName,warehouseName,fullName,calculation_method_id from drivers
         inner join warehouse on warehouse.id=drivers.warehouseId
         inner join lkp_company on lkp_company.id=warehouse.companyId
@@ -1011,28 +1144,10 @@ class SalaryControllerShe extends Controller
         )bank_transaction  ON upper(bank_transaction.job_id) = upper(drivers.job_id)
         where drivers.id=" . $id)[0];
 
-
-        //if ($company->period_start == "1") {
-        //$from = date('Y-m', strtotime(date('Y-m') . ' -1 MONTH')) . "-01";
-        // $to = date('Y-m-d', strtotime('last day of previous month'));
-        // } else {
-        //if (date('d') < $company->period_start) {
-        //    $from = date('Y-m-d', strtotime(date('Y-m-' . $company->period_start) . ' -2 MONTH'));
-        //    $to = date('Y-m-d', strtotime(date('Y-m-' . ($company->period_start - 1)) . ' -1 MONTH'));
-        //} elseif (date('d') >= $company->period_start) {
-        //   $from = date('Y-m-d', strtotime(date('Y-m-' . $company->period_start) . ' -1 MONTH'));
-        //    $to = date('Y-m-d', strtotime(date('Y-m-' . ($company->period_start - 1))));
-        //}
-        //}
-
-        //$from='2020-03-21';
-        //$to='2020-04-20';
-
         $Carried_Down = DB::select("select
         sum(IFNULL(credit, 0)) as credit,sum(IFNULL(debit, 0)) as debit,sum(IFNULL(credit, 0))- sum(IFNULL(debit, 0)) as carried_down
         from journal
         WHERE journal_date < '" . $from . "' and driverId=" . $id)[0];
-        //   dd($Carried_Down);
 
         $qq = DB::select("SELECT post_id, journal.createdby_id, journal.note,a.date,DAYNAME(a.date) AS dayname,journal_type,No_of_D AS no_of_deliverd,No_of_TP AS no_of_touch_point,unit_cost,credit,debit,IFNULL(credit,0)-IFNULL(debit,0) AS Carried_Down FROM (
             SELECT date_add('" . $from . "', INTERVAL seq DAY) AS date FROM (
@@ -1086,124 +1201,13 @@ class SalaryControllerShe extends Controller
                 $q->created_by = $user[0]->name;
             }
         }
-
         return view('new_porttal.Salary.show')->with(compact('from'))->with(compact('to'))
             ->with(compact('company'))
             ->with(compact('Carried_Down'))
             ->with(compact('qq'));
     }
 
-    public function SalaryShowNew(int $id, $Period)
-    {
-        $from = 0;
-        $to = 0;
 
-        $P = explode('*', $Period);
-        $from = $P[0];
-        $to = $P[1];
-        $to = explode("-",$to);
-        if($to[2] == 30 || $to[2] == 31) {
-            $month = $to[1];
-            $days = cal_days_in_month(CAL_GREGORIAN, $month, $to[0]);
-            $to = $to[0] . "-" . $to[1] . "-" . $days;
-        } else {
-            $to = $P[1];
-        }
-
-        // dd($to);
-
-        $company = DB::select("SELECT TRIM(bank_transaction.amount)+0 as amount,period_start,period_end,companyName,warehouseName,fullName,calculation_method_id from drivers
-        inner join warehouse on warehouse.id=drivers.warehouseId
-        inner join lkp_company on lkp_company.id=warehouse.companyId
-        left JOIN
-        ( select amount,job_id from bank_transaction
-        inner JOIN lkp_journal_period ON lkp_journal_period.id = bank_transaction.period_id
-        AND lkp_journal_period.period_from_dt = '" . $from . "'
-        AND lkp_journal_period.period_to_dt = '" . $to . "'
-        )bank_transaction  ON upper(bank_transaction.job_id) = upper(drivers.job_id)
-        where drivers.id=" . $id)[0];
-
-
-        //if ($company->period_start == "1") {
-        //$from = date('Y-m', strtotime(date('Y-m') . ' -1 MONTH')) . "-01";
-        // $to = date('Y-m-d', strtotime('last day of previous month'));
-        // } else {
-        //if (date('d') < $company->period_start) {
-        //    $from = date('Y-m-d', strtotime(date('Y-m-' . $company->period_start) . ' -2 MONTH'));
-        //    $to = date('Y-m-d', strtotime(date('Y-m-' . ($company->period_start - 1)) . ' -1 MONTH'));
-        //} elseif (date('d') >= $company->period_start) {
-        //   $from = date('Y-m-d', strtotime(date('Y-m-' . $company->period_start) . ' -1 MONTH'));
-        //    $to = date('Y-m-d', strtotime(date('Y-m-' . ($company->period_start - 1))));
-        //}
-        //}
-
-        //$from='2020-03-21';
-        //$to='2020-04-20';
-
-        $Carried_Down = DB::select("select
-        sum(IFNULL(credit, 0)) as credit,sum(IFNULL(debit, 0)) as debit,sum(IFNULL(credit, 0))- sum(IFNULL(debit, 0)) as carried_down
-        from journal
-        WHERE journal_date < '" . $from . "' and driverId=" . $id)[0];
-        //   dd($Carried_Down);
-
-        $qq = DB::select("SELECT post_id, journal.createdby_id, journal.note,a.date,DAYNAME(a.date) AS dayname,journal_type,No_of_D AS no_of_deliverd,No_of_TP AS no_of_touch_point,unit_cost,credit,debit,IFNULL(credit,0)-IFNULL(debit,0) AS Carried_Down FROM (
-            SELECT date_add('" . $from . "', INTERVAL seq DAY) AS date FROM (
-            SELECT @ROW :=@ROW+1 AS seq FROM (
-            SELECT 0 UNION ALL
-            SELECT 1 UNION ALL
-            SELECT 2 UNION ALL
-            SELECT 3 UNION ALL
-            SELECT 4 UNION ALL
-            SELECT 5 UNION ALL
-            SELECT 6 UNION ALL
-            SELECT 7 UNION ALL
-            SELECT 8 UNION ALL
-            SELECT 9) t,(
-            SELECT 0 UNION ALL
-            SELECT 1 UNION ALL
-            SELECT 2 UNION ALL
-            SELECT 3 UNION ALL
-            SELECT 4 UNION ALL
-            SELECT 5 UNION ALL
-            SELECT 6 UNION ALL
-            SELECT 7 UNION ALL
-            SELECT 8 UNION ALL
-            SELECT 9) t2,(
-            SELECT 0 UNION ALL
-            SELECT 1 UNION ALL
-            SELECT 2 UNION ALL
-            SELECT 3 UNION ALL
-            SELECT 4 UNION ALL
-            SELECT 5 UNION ALL
-            SELECT 6 UNION ALL
-            SELECT 7 UNION ALL
-            SELECT 8 UNION ALL
-            SELECT 9) t3,(
-            SELECT 0 UNION ALL
-            SELECT 1 UNION ALL
-            SELECT 2 UNION ALL
-            SELECT 3 UNION ALL
-            SELECT 4 UNION ALL
-            SELECT 5 UNION ALL
-            SELECT 6 UNION ALL
-            SELECT 7 UNION ALL
-            SELECT 8 UNION ALL
-            SELECT 9) t4,(
-            SELECT @ROW :=-1) r ORDER BY seq) sequence WHERE date_add('" . $from . "', INTERVAL seq DAY) <= '" . $to . "') a LEFT JOIN journal ON journal.journal_date=a.date AND journal.driverId=" . $id . " LEFT JOIN lkp_journal_type ON lkp_journal_type.id=journal.journal_type_id LEFT JOIN packages_report ON packages_report.id=journal.post_id
-            AND journal_type_id=6 ORDER BY date,journal_type");
-        foreach($qq as $q) {
-            $q->created_by = "";
-            if($q->createdby_id > 0) {
-                $user = DB::select("SELECT name from users where id = " .$q->createdby_id);
-                $q->created_by = $user[0]->name;
-            }
-        }
-
-        return view('new_porttal.Salary.show_new')->with(compact('from'))->with(compact('to'))
-            ->with(compact('company'))
-            ->with(compact('Carried_Down'))
-            ->with(compact('qq'));
-    }
 
     //****************************************************************************************************************
     //****************************************************************************************************************
@@ -1255,27 +1259,22 @@ class SalaryControllerShe extends Controller
     public function SalaryPaidSave(Request $request)
     {
         $this->validate($request, [
-            'select_file' => 'required|mimes:xls,xlsx'
+            'select_file' => 'required|mimes:xls,xlsx,csv,txt'
         ]);
-
         $user_id = Auth::user()->id;
-
         require(app_path() . '/Libraries/PHPExcel-1.8.2/Classes/PHPExcel/IOFactory.php');
         $tmpfname = $request->file('select_file');
-
         $pieces = explode("_", $request->file('select_file')->getClientOriginalName());
-
         if (!is_numeric($pieces[1])) {
             $Paid_DB = array();
-            return view('Salary.SalaryPaidShe')->with(compact('Paid_DB'))->with('error', 'Not Salary File');
+            return view('new_porttal.Salary.SalaryPaidShe')->with(compact('Paid_DB'))->with('error', 'Not Salary File');
         }
-        //----------------------------------------------------------------------------------------------------------
-
-
+        $paid_type = $pieces[3];
         $Period = explode(' - ', $pieces[2]);
         $from = $Period[0];
         $to = $Period[1];
         $to = explode("-",$to);
+        // check 1 start
         if($to[2] == 30 || $to[2] == 31) {
             $month = $to[1];
             $days = cal_days_in_month(CAL_GREGORIAN, $month, $to[0]);
@@ -1283,46 +1282,51 @@ class SalaryControllerShe extends Controller
         } else {
             $to = $Period[1];
         }
+        // check 1 end
+
+        // check 2 start
         $company = DB::select('SELECT * from lkp_company where id=' . $pieces[1])[0];
         if ($company->period_start == "1") {
             $d = explode('-', $to);
             $last_day = cal_days_in_month(CAL_GREGORIAN, $d[1], $d[0]);
             $last_day = $d[0] . '-' . $d[1] . '-' . $last_day;
-
         } else {
-
             $last_day = $to;
         }
-
-
-        //return $last_day;
-        //----------------------------------------------------------------------------------------------------------
+        // check 2 end
+        // check 1 and check 2 are doing same but check is for future use, if there will be new company whose period can be from 11 to 10, 15 to 14 etc then check 2 will be useful.
 
         $excelReader = PHPExcel_IOFactory::createReaderForFile($tmpfname);
         $excelObj = $excelReader->load($tmpfname);
         $worksheet = $excelObj->getSheet(0);
         $lastRow = $worksheet->getHighestRow();
 
-
         $date = date("Y-m-d H:i:s");
         $id = DB::table('salary_import_paid_master')->insertGetId(
-            ['user_id' => Auth::user()->id,
+                ['user_id' => Auth::user()->id,
                 'fileName' => $request->file('select_file')->getClientOriginalName(),
                 'create_at' => $date]
-
         );
-
         $values = '';
         $journalId = '';
         $journal_ids = $amp_ids = array();
         for ($row = 2; $row <= $lastRow; $row++) {
-
-
-            //$driverIds = explode("*", $worksheet->getCell('L' . $row)->getValue());
-            $AMP_IDs = explode("*", $worksheet->getCell('I' . $row)->getValue());
-            $bank_paid = explode("*", $worksheet->getCell('K' . $row)->getValue());
+            if ($paid_type == 'STCPayExcel') {
+                $AMP_IDs = explode("*", $worksheet->getCell('I' . $row)->getValue());
+                $bank_paid = explode("*", $worksheet->getCell('K' . $row)->getValue());
+            } else {
+                $reference_no = $worksheet->getCell('D' . $row)->getValue();
+                $refObject = DB::SELECT("SELECT * FROM tbl_bank_file_ref WHERE reference_no = '$reference_no'");
+                if (count($refObject) > 0) {
+                    $comment = explode(":::", $refObject[0]->ref_data);
+                    $AMP_IDs = explode("*", $comment[1]);
+                    $bank_paid = explode("*", $comment[3]);
+                } else {
+                    dd("Something went wrong in reference number.");
+                }
+            }
             for ($i = 0; $i < count($AMP_IDs); $i++) {
-                if($AMP_IDs[$i] == '')
+                if($AMP_IDs[$i] == '' OR $bank_paid[$i] < 1)
                     continue;
                 try {
                     $Drivers = DB::select("SELECT id from drivers where job_id='" . $AMP_IDs[$i] . "'")[0];
@@ -1340,7 +1344,6 @@ class SalaryControllerShe extends Controller
                         ->where('journal_date', '=', $last_day)
                         ->where('journal_type_id', '=', 2)
                         ->first();
-
                     if (empty($journal->id)) {
                         $journal_id = DB::table('journal')->insertGetId(
                             [
@@ -1354,28 +1357,51 @@ class SalaryControllerShe extends Controller
                                 'updated_at' => date("Y-m-d H:i:s")
                             ]
                         );
-
-                        $values .= "(" . $id . ",
-                             " . $journal_id . ",
-                             '" . $AMP_IDs[$i] . "',
-                             " . $worksheet->getCell('A' . $row)->getValue() . ",
-                             '" . $worksheet->getCell('B' . $row)->getValue() . "',
-                             " . $worksheet->getCell('C' . $row)->getValue() . ",
-                             " . $worksheet->getCell('H' . $row)->getValue() . ",
-                             " . $bank_paid[$i] . ",
-                              1),";
+                        if ($paid_type == 'STCPayExcel') {
+                            $values .= "(" . $id . ",
+                                 " . $journal_id . ",
+                                 '" . $AMP_IDs[$i] . "',
+                                 " . $worksheet->getCell('A' . $row)->getValue() . ",
+                                 '" . $worksheet->getCell('B' . $row)->getValue() . "',
+                                 " . $worksheet->getCell('C' . $row)->getValue() . ",
+                                 " . $worksheet->getCell('H' . $row)->getValue() . ",
+                                 " . $bank_paid[$i] . ",
+                                  1, 'stc'),";
+                        } else {
+                            $values .= "(" . $id . ",
+                                 " . $journal_id . ",
+                                 '" . $AMP_IDs[$i] . "',
+                                 " . $worksheet->getCell('F' . $row)->getValue() . ",
+                                 '" . $worksheet->getCell('B' . $row)->getValue() . "',
+                                 " . $worksheet->getCell('C' . $row)->getValue() . ",
+                                 " . $comment[0] . ",
+                                 " . $bank_paid[$i] . ",
+                                  1, 'bank'),";
+                        }
 
                         $journalId = $journal_id;
                     } else {
-                        $values .= "(" . $id . ",
-                             " . $journal->id . ",
-                             '" . $AMP_IDs[$i] . "',
-                             " . $worksheet->getCell('A' . $row)->getValue() . ",
-                             '" . $worksheet->getCell('B' . $row)->getValue() . "',
-                             " . $worksheet->getCell('C' . $row)->getValue() . ",
-                             " . $worksheet->getCell('H' . $row)->getValue() . ",
-                             " . $bank_paid[$i] . ",
-                              0),";
+                        if ($paid_type == 'STCPayExcel') {
+                            $values .= "(" . $id . ",
+                                 " . $journal->id . ",
+                                 '" . $AMP_IDs[$i] . "',
+                                 " . $worksheet->getCell('A' . $row)->getValue() . ",
+                                 '" . $worksheet->getCell('B' . $row)->getValue() . "',
+                                 " . $worksheet->getCell('C' . $row)->getValue() . ",
+                                 " . $worksheet->getCell('H' . $row)->getValue() . ",
+                                 " . $bank_paid[$i] . ",
+                                  0, 'stc'),";
+                        } else {
+                            $values .= "(" . $id . ",
+                                 " . $journal->id . ",
+                                 '" . $AMP_IDs[$i] . "',
+                                 " . $worksheet->getCell('F' . $row)->getValue() . ",
+                                 '" . $worksheet->getCell('B' . $row)->getValue() . "',
+                                 " . $worksheet->getCell('C' . $row)->getValue() . ",
+                                 " . $comment[0] . ",
+                                 " . $bank_paid[$i] . ",
+                                  0, 'bank'),";
+                        }
                         $journalId = $journal->id;
                     }
 
@@ -1390,25 +1416,31 @@ class SalaryControllerShe extends Controller
             $amp_ids = implode(',', $amp_ids);
             $msg = "<b>$made_by</b> updated the journal with driver amp_ids ('$amp_ids') to Paid";
             HelperFunctionsController::add_log($msg, '', $journal_ids);
+            $directory = storage_path('app/public/SalaryCorrection');
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            $uploadedFile = $request->file('select_file');
+            $fileName = time() . '_' . $uploadedFile->getClientOriginalName();
+            $uploadedFile->move($directory, $fileName);
         }
         $values = substr($values, 0, strlen($values) - 1);
 
-        //return $values;
         if ($values <> '') {
             try {
-
                 DB::insert("insert  into salary_import_paid_details
                     (paid_master_id, journal_id,
                         AMP_ID, account_owner_iqama, accountNumber, bank_sum, CO,
-                        bank_paid,paid)
+                        bank_paid,paid, paid_type)
                   VALUES
                   " . $values);
             } catch (\Illuminate\Database\QueryException $e) {
-                return view('Salary.SalaryPaidShe')->with('error', $e->getPrevious()->getMessage());
+                return view('new_porttal.Salary.SalaryPaidShe')->with('error', $e->getPrevious()->getMessage());
             }
         }
         return $this->SalaryPaid($request)->with('success', 'Done successfully');
     }
+
     public function CheckPermisions(Request $request)
     {
         # code...
@@ -1488,7 +1520,7 @@ class SalaryControllerShe extends Controller
                 $color = '#d3a45924';
             }
             // dd($E_Signature['ApprovalDate']);
-            if($E_Signature['DidUserApproveThisInvoice'] == true){
+            if ($E_Signature['DidUserApproveThisInvoice'] == true) {
                 // APPROVEED INVOICES
                 // Check who approved it current user
                 if($E_Signature['IsHavePermissionToExport'] == true){
@@ -1498,21 +1530,17 @@ class SalaryControllerShe extends Controller
                         <td > ".$E_Signature['department']." </td>
                         <td> ". $E_Signature['ApprovalDate']."
                         </td>
-                    </tr>
-                ";
-
-                }else{
+                    </tr>";
+                } else {
                     $htmlCode = $htmlCode. "
                         <tr style='max-height: 45px;'>
                             <td> ".$E_Signature['user_name']." </td>
                              <td > ".$E_Signature['department']." </td>
                             <td> ". $E_Signature['ApprovalDate']."
                             </td>
-                        </tr>
-                    ";
+                        </tr>";
                 }
-            }else{
-
+            } else {
                 if($E_Signature['user_id'] == Auth::user()->id){
                     // dd($htmlCode);
                     $htmlCode = $htmlCode."
@@ -1623,12 +1651,40 @@ class SalaryControllerShe extends Controller
                 'DidUserApproveThisInvoice'=>$didApprove,
                 'ApprovalDate'=>$approveDate,
             ];
+
+            // $user = [
+            //     'user_id'=>$user_id,
+            //     'user_name'=>$current_user_privilaged_permisions[0]->user->name,
+            //     'department'=>$current_user_privilaged_permisions[0]->user->department,
+            //     'IsHavePermissionToExport'=>true,
+            //     'IsHavePermissionToApprove'=>true,
+            //     'DidUserApproveThisInvoice'=>true,
+            //     'ApprovalDate'=>$approveDate,
+            // ];
          }
         if(count($user)){
             return $user;
         }
 
         //
+    }
+    public function loadFuelInfo(Request $request) {
+        $job_id = $request->job_id;
+        $date_parts = explode(" - ", $request->dates);
+        $start_date = $date_parts[0];
+        $end_date = $date_parts[1];
+        $pieces = explode("-", $start_date);
+        $fromYear = $pieces[0];
+        $fromMonth = $fromMonth = ltrim($pieces[1], '0');
+        $fromDay = ltrim($pieces[2], '0');
+        $pieces = explode("-", $end_date);
+        $toYear = $pieces[0];
+        $toMonth = ltrim($pieces[1], '0');
+        $toDay = ltrim($pieces[2], '0');
+        $response = DB::select("SELECT vehicles_fuel.id, driver_id, fuel_price, day, month, year, vehicles.plate, vehicles.id as vehicle_id FROM vehicles_fuel join vehicles on vehicles_fuel.vehicle_id = vehicles.id
+              WHERE vehicles_fuel.driver_id = '$job_id' AND ((vehicles_fuel.year = '$fromYear' AND vehicles_fuel.month = '$fromMonth' AND vehicles_fuel.day >= '$fromDay')
+              OR (vehicles_fuel.year = '$toYear' AND vehicles_fuel.month = '$toMonth' AND vehicles_fuel.day <= '$toDay')) order by vehicles_fuel.id");
+        return view('new_porttal.vehicles.loadFuelInfo')->with(compact('response'));
     }
 //****************************************************************************************************************
 //****************************************************************************************************************

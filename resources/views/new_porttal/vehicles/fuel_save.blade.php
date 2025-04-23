@@ -1,6 +1,32 @@
 @extends('layout2')
 @section('content')
 @section('title', 'Vehicles Fuel')
+<div class="modal fade" id="report_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Upload Fuel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url('VehicleFuelSave')}}">
+                @csrf
+               <div class="modal-body">
+                    <div class="row" style="padding: 30px">
+                        <div class="col-lg-12">
+                            <label>File <small>xls, xlsx</small></label>
+                            <input type="file" accept=".xls, .xlsx" name="select_file" id="select_file" class="form-control" required>
+                            <small style="color: red; margin-left: 15px;">File name should be like (YYYY-MM)</small>
+                        </div>
+                    </div>
+               </div>
+               <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+               </div>
+            </form>
+        </div>
+    </div>
+</div>
 <form method="POST" action="{{ url('vehicles/fuel/link')}}">
     @csrf
     <div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -40,6 +66,15 @@
                                         </div>
                                         <div class="col-xl-4 col-sm-6 col-12">
                                             <div class="mb-3">
+                                                <label for="country" class="form-label">Month </label>
+                                                <select name="filter_type" id="filter_type" onchange="loadVehicles(this.value)" class="form-control" required>
+                                                    <option value="blank">Blank</option>
+                                                    <option value="filled">Filled</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-4 col-sm-6 col-12">
+                                            <div class="mb-3">
                                                 <label for="country" class="form-label">Plate </label>
                                                 <select id="filter_vehicleId" name="filter_vehicleId" class="form-control" required>
                                                     <option value="">Select Vehicle</option>
@@ -61,7 +96,6 @@
             </div>
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-12 col-12">
             <div id="message"></div>
@@ -78,7 +112,9 @@
                             <div class="col-12">
                                 <div class="custom-btn-group">
                                     <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
-                                    <button type="button" style="padding: 10px" class="btn btn-sm btn-info" onclick="downloadReport()">Upload Fuel</button>
+                                    @if(AUTH::user()->id == 73 || AUTH::user()->id == 17)
+                                        <button type="button" style="padding: 10px" class="btn btn-sm btn-info" onclick="uploadFuel()">Upload Fuel</button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -151,8 +187,9 @@
                     order: [1, 'asc'],
                 });
                 $('#filter').click(function () {
-                    var date = filter_vehicleId = '';
+                    var filter_type = date = filter_vehicleId = '';
                     date = $('#filter_month').val();
+                    filter_type = $('#filter_type').val();
                     filter_vehicleId = $('#filter_vehicleId').val();
                     if (date == '' || filter_vehicleId == '') {
                         alert("Please select criteria!");
@@ -167,13 +204,16 @@
                             ACTION: 'table',
                             date: date,
                             filter_vehicleId: filter_vehicleId,
+                            filter_type: filter_type,
                             _token: "{{ csrf_token() }}"
                         },
                         success: function (data) {
+                            data = data.split(':::');
+                            $("#total").html(data[0]);
                             $('#pre_loader').hide();
                             $('#customer_data').DataTable().clear().draw();
                             $('#customer_data').DataTable().destroy();
-                            $('#customer_data').DataTable().rows.add($(data)).draw();
+                            $('#customer_data').DataTable().rows.add($(data[1])).draw();
                         }
                     });
                 });
@@ -182,23 +222,32 @@
                 $('#filter_month').val('');
                 $('#filter_vehicleId').empty();
             }
-            function loadVehicles(date) {
+            function loadVehicles() {
+                let date = $('#filter_month').val();
                 if (date != '') {
+                    let filter_type = $('#filter_type').val();
                     $.ajax({
                         type: 'POST',
                         url: "{{url('Vehicles/Vehicles')}}",
                         cache: false,
                         data: {
                             date: date,
+                            filter_type: filter_type,
                             _token: "{{ csrf_token() }}"
                         },
                         success: function (data) {
-                            document.getElementById('filter_vehicleId').innerHTML = data;
+                            data = data.split(':::');
+                            $("#total").html(data[0]);
+                            document.getElementById('filter_vehicleId').innerHTML = data[1];
                         }
                     });
                 }
             }
+            function uploadFuel() {
+                $('#report_modal').modal('toggle');
+            }
         </script>
+
 
     @stop
 @endsection

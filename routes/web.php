@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\DB;
     Route::get("DA_PANDA_Handling",'AshrafController@DA_PANDA_Handling');
 
 Route::group(['prefix' => 'New-Portal'], function() {
-    Route::get('Vehicles','VehiclesController@index');
+    Route::get('Vehicles','VehiclesController@search');
     Route::get('delegatedVehicles','VehiclesController@delegatedVehicles')->name('delegatedVehicles');
     Route::GET('Vehicles/VehicleFuelSave', 'VehiclesController@VehicleFuel');
 
@@ -75,6 +75,9 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('/LoansPaid', 'LoansController@LoansPaid');
     Route::get('/DriverWindow', 'DashoardController@index_drivers');
     Route::get('/DriverJahizWindow', 'DashoardController@index_drivers');
+    Route::get('Vehicles/Report','VehiclesController@report_index');
+    Route::get('Vehicles/Vehicles-Requests','VehiclesController@vehicle_requests');
+    Route::resource('FleetCreditNotes', 'FleetCreditNotesController');
 
 
 
@@ -87,6 +90,39 @@ Route::group(['prefix' => 'New-Portal'], function() {
 
 
 });
+Route::post('/Drivers/overAllBalanceInfo', 'DriversController@overAllBalanceInfo');
+Route::POST('/loadFuelInfo', 'SalaryControllerShe@loadFuelInfo')->name('loadFuelInfo');
+Route::POST('vehicles/fuel/link', 'VehiclesController@fuelLink');
+
+
+Route::get('/tempContract/{id}', 'DriversController@tempContract');
+Route::post('/tempContractSave', 'DriversController@tempContractSave');
+Route::get('/driverTempContract/{jobId}', 'DriversController@driverTempContract');
+
+Route::get('/tContract/{id}', 'DriversController@tContract');
+Route::get('/tRequest/{id}', 'DriversController@tRequest');
+Route::POST('/Drivers/tRequest', 'DriversController@tRequestSave')->name('Drivers.tRequest');
+Route::get('/liabilityCert/{id}/{type}', 'DriversController@liabilityCert');
+
+Route::POST('/fleetCreditNotesPost', 'FleetCreditNotesController@CreditNotesPost');
+Route::get('/smsInfo/{id}', 'FleetCreditNotesController@smsInfo');
+Route::post('resend-sms','ClaimFollowupController@resend_sms');
+Route::get("DA-Conctrats/{contract_id}",'AshrafController@contract_method');
+Route::POST('Vehicles/registration', 'VehiclesController@registrationCard');
+
+Route::post('Vehicles/updateUtility','VehiclesController@updateUtility');
+Route::post('VehicleRequest/searchRequest','VehiclesController@searchRequest')->name('VehicleRequest/searchRequest');
+Route::post('VehicleRequest/saveNote','VehiclesController@saveNote')->name('VehicleRequest/saveNote');
+Route::get('Drivers/Approve/{request_id}/{mobileNumber}/{dob}/{email}/{iqama}','VehiclesController@confirmapproval');
+Route::get('Drivers/Reject/{request_id}','VehiclesController@rejectApproval');
+
+Route::post('Vehicles/ReportSearch','VehiclesController@report_search');
+Route::post('Vehicles/ReportData','VehiclesController@reportData');
+Route::GET('Vehicles/forceAssign', 'VehiclesController@forceAssign');
+Route::POST('vehicles/forceAssignSave', 'VehiclesController@forceAssignSave')->name('vehicles.forceAssignSave');
+Route::GET('Vehicles/deleteVehicleAssignment/{id}', 'VehiclesController@deleteVehicleAssignment');
+Route::post('Vehicles/getImages','VehiclesController@getImages');
+
 Route::POST('Vehicles/VehicleReport', 'VehiclesController@VehicleReport');
 Route::post('Vehicles/historyVehicle','VehiclesController@historyVehicle');
 Route::post('Vehicles/historyVehicleDrivers','VehiclesController@historyVehicleDrivers');
@@ -167,8 +203,6 @@ Route::get('Vehicles/create-delegation','VehiclesController@create_delegation');
 
 // Vehicles
 Route::get('Drivers/approval-review/{driver_id}','VehiclesController@approval_review');
-
-Route::get('Vehicles/Vehicles-Requests','VehiclesController@vehicle_requests');
 
 // Ashraf Code
 Route::post('HandleLandmarkFile','LandmarkController@HandleLandmarkFile');
@@ -493,14 +527,18 @@ Route::get('/contract_expiry_email', 'CronJobController@contract_expiry_email');
 Route::post('Vehicles/EditVehicle','VehiclesController@edit_vehicle');
 Route::post('Vehicles/UpdateVehicle','VehiclesController@update_vehicle');
 
-Route::get('Vehicles/Report','VehiclesController@report_index');
-Route::post('Vehicles/ReportSearch','VehiclesController@report_search');
 Route::post('vehicles/utilities','VehiclesController@utilities');
 Route::post('vehicles/utilities/update','VehiclesController@utilitiesUpdate');
 
 Route::post('Vehicles/Search','VehiclesController@search_old');
 Route::get('Vehicles/Search','VehiclesController@search')->name('Vehicles/Search');
+Route::post('Vehicles/vehicleInfo','VehiclesController@vehicleInfo');
+Route::post('Vehicles/deleteVehicleFile','VehiclesController@deleteVehicleFile');
 Route::post('Vehicles/VehicleInfo','HomeController@vehicles_info');
+Route::POST('Vehicles/registration', 'VehiclesController@registrationCard');
+Route::GET('Vehicles/updateVehicleDriver/{vehicle_id}/{delegation_id}', 'VehiclesController@updateVehicleDriver');
+Route::POST('vehicles/updateVehicleDriverSave', 'VehiclesController@updateVehicleDriverSave')->name('vehicles.updateVehicleDriverSave');
+
 Route::get('Vehicles/{city_name}','VehiclesController@index');
 Route::get('Vehicles/{city_name}/{type}','VehiclesController@index');
 Route::get('Vehicles/{city_name}/{type}/{companyName}/{warehouseName}','VehiclesController@index');
@@ -594,6 +632,8 @@ Route::get('/getWarehouseByCompany/{companyId}', 'AjaxController@getWarehouseByC
 Route::get('/getWarehouseByCityCompany/{cityId}/{companyId}', 'AjaxController@getWarehouseByCityCompany');
 Route::get('/getWarehouseName/{companyId}', 'AjaxController@getWarehouseName');
 Route::get('/getMultipleWarehouseName/{companyId}', 'AjaxController@getMultipleWarehouseName');
+Route::get('/getCityVehicles/{cityId}', 'AjaxController@getCityVehicles');
+Route::get('/getMultipleVehicleModels/{manufecturerId}', 'AjaxController@getMultipleVehicleModels');
 
 Route::get('/getPeriod/{companyId}', 'AjaxController@getPeriod');
 Route::get('/getDays/{Year}/{Month}', 'AjaxController@getDays');

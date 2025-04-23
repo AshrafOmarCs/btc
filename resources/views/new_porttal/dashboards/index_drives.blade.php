@@ -383,7 +383,7 @@ $module = "Driver";
 </div>
 
  <!-- Row start -->
- <div class="row">
+<div class="row">
     <div class="col-xl-3 col-sm-6 col-12">
         <div class="stats-tile">
             <div class="sale-icon shade-green">
@@ -481,19 +481,12 @@ $module = "Driver";
                                         <TH class="text-center" style="vertical-align: middle;">Notifications</TH>
                                         <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Status')}}</TH>
                                         @if(Auth::user()->user_type_id==1)
-                                            {{-- <TH class="text-center" style="vertical-align: middle;">{{__('drivers.OnHold')}} --}}
-                                                {{-- <input class="flat-red" type="checkbox" name="select-all" id="select-all"/>
-                                            </TH> --}}
-
                                             <TH class="text-center" style="vertical-align: middle;">{{__('drivers.BanderCar')}}</TH>
                                             <TH class="text-center" style="vertical-align: middle;">{{__('drivers.total_balance')}}</TH>
-                                            {{-- <TH class="text-center" style="vertical-align: middle;">{{__('drivers.PBalance')}}</TH>
-                                            <TH class="text-center" style="vertical-align: middle;">{{__('drivers.CBalance')}}</TH> --}}
+                                            <TH class="text-center" style="vertical-align: middle;">OverAll</TH>
                                             <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Updated_At')}}</TH>
                                         @endif
                                         <TH class="text-center" style="vertical-align: middle;">{{__('drivers.Action')}}</TH>
-
-
                                         <TH class="text-center" style="vertical-align: middle; display:none;">{{__('drivers.AccountNumber')}}</TH>
                                         <TH class="text-center" style="vertical-align: middle; display:none;">{{__('drivers.Account_Owner_Iqama')}}</TH>
                                         <TH style="display:none;">Ben Name</TH>
@@ -515,7 +508,6 @@ $module = "Driver";
 
     </div>
 </div>
-
 
 <input type="hidden" id="check" value="0">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
@@ -592,24 +584,6 @@ $module = "Driver";
                 serverSide: true,
                 "pagingType": "full_numbers",
                 "autoWidth": false,
-                "fnDrawCallback": function () {
-                    $('[data-toggle="tooltip"]').tooltip();
-                    // $(function () {
-                    //     $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
-                    //         checkboxClass: 'icheckbox_flat-red',
-                    //         radioClass: 'iradio_flat-red'
-                    //     });
-
-
-                    //     $('#select-all').on('ifChecked ifUnchecked', function (event) {
-                    //         if (document.getElementById('select-all').checked) {
-
-                    //             $('.flat-red').iCheck('check')
-                    //         } else
-                    //             $('.flat-red').iCheck('uncheck');
-                    //     });
-                    // });
-                },
                 ajax: {
                     url: "{{ route('Drivers.index') }}",
                     data: {
@@ -661,10 +635,6 @@ $module = "Driver";
                         data: 'driver_type',
                         name: 'lkp_driver_type.driver_type',
                     },
-                    // {
-                        // data: 'vehicle',
-                        // name: 'vehicle',
-                    // },
                     {
                         //className: "dt-nowrap",
                         data: 'fullName',
@@ -743,25 +713,8 @@ $module = "Driver";
                             }
                         }
                     },
-                        @if(Auth::user()->user_type_id==1)
-                    // {
-                    //     "orderable": false,
-                    //     "className": "text-center",
-                    //     "render": function (data, type, row, meta) {
-                    //         var i = '';
-                    //         i = '<input class="flat-red" name="ID_' + meta.row + '" type="checkbox" value="' + row.id + '"';
-                    //         if (row.status_id == "5")
-                    //             i = i + ' checked ';
-                    //         i = i + '>';
-                    //         if (row.status_id == "5")
-                    //             i = i + '&nbsp;' + row.onhold_date;
-                    //         return i;
-
-
-                    //     }
-                    // },
+                    @if(Auth::user()->user_type_id==1)
                     {
-                        //data: 'driver_status_en',
                         name: 'bander_car.yes_no',
                         render: function (data, type, row, meta) {
                             if (row.bander_car == "Yes") {
@@ -778,10 +731,10 @@ $module = "Driver";
                         data: 'per_priod',
                         name: 'balance.per_priod'
                     },
-                    // {
-                    //     data: 'cur_priod',
-                    //     name: 'balance.cur_priod'
-                    // },
+                    {
+                        data: 'per_priod',
+                        name: 'balance.per_priod'
+                    },
                     {
                         data: 'updated_at',
                         name: 'updated_at'
@@ -791,7 +744,6 @@ $module = "Driver";
                         "orderable": false,
                         className: "dt-nowrap",
                         "targets": -1,
-                        //"data": 'id',
                         "render": function (data, type, row, meta) {
                             let action = @json(__('drivers.Action'));
                             let view = @json(__('drivers.view'));
@@ -824,29 +776,40 @@ $module = "Driver";
                                     <li>
                                         <a id=` + row.id + ` class="dropdown-item resetpass" href="#">`+reset_password+` </a>
                                     </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class=" Attachment dropdown-item" href="#">`+attachment+`</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-
-                                <li><a class="dropdown-item" href="#">`+report_driver+`</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a id=` + row.id + ` href="#" data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="dropdown-item statement">`+statement+` </a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                `;
-                                @if(Auth::user()->user_type_id==1)
-                                    html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="delete dropdown-item" href="#"><span style="color:red">`+deletee+`</span></a></li>
                                     <li>
                                         <hr class="dropdown-divider">
-                                    </li>`;
-                                @endif
+                                    </li>
+                                    <li><a id=` + row.id + ` data-original-title="Attachment" data-toggle="tooltip" data-placement="top" class=" Attachment dropdown-item" href="#">`+attachment+`</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+
+                                    <li><a class="dropdown-item" href="#">`+report_driver+`</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a id=` + row.id + ` href="#" data-original-title="Statement" data-toggle="tooltip" data-placement="top" class="dropdown-item statement">`+statement+` </a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    `;
+                                    @if(Auth::user()->user_type_id==1)
+                                        html += `
+                                        <li><a href="#" id="` + row.id + `" data-original-title="" data-toggle="tooltip" data-placement="top" class="dropdown-item tContract"> No Liability Certificate </a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a href="#" target="_blank" id="` + row.id + `" data-original-title="" data-toggle="tooltip" data-placement="top" class="dropdown-item tec"> Temporary E-Contract </a></li>
+
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+
+                                        <li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="delete dropdown-item" href="#"><span style="color:red">`+deletee+`</span></a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>`;
+                                    @endif
                                 html += `</ul>
                                 </div>`;
 
@@ -881,10 +844,37 @@ $module = "Driver";
                 ]
             });
         }
+        $('#customer_data tbody').on('click', '.tec', function (e) {
+            e.preventDefault();
+            $('#edit_modal').modal('toggle');
+            var id = $(this).attr('id');
+            $.ajax({
+                type: 'GET',
+                url: "{{URL('/tempContract')}}" + "/" + id,
+                contentType: "html",
+                dataType: 'html',
+                success: function (data) {
+                    document.getElementById('response').innerHTML = data;
+                }
+            });
+        });
+        $('#customer_data tbody').on('click', '.tContract', function (e) {
+            e.preventDefault();
+            $('#edit_modal').modal('toggle');
+            var id = $(this).attr('id');
+            $.ajax({
+                type: 'GET',
+                url: "{{URL('/tContract')}}" + "/" + id,
+                contentType: "html",
+                dataType: 'html',
+                success: function (data) {
+                    document.getElementById('response').innerHTML = data;
+                }
+            });
+        });
         $('#customer_data tbody').on('click', '.view', function (e) {
             e.preventDefault();
             document.getElementById('response').innerHTML = "loading";
-            // document.getElementById('edit_modal').style.display = 'block';
             $('#edit_modal').modal('toggle');
             var id = $(this).attr('id');
             $.ajax({
@@ -893,14 +883,11 @@ $module = "Driver";
                 contentType: "html",
                 dataType: 'html',
                 success: function (data) {
-
                     document.getElementById('response').innerHTML = data;
-
                 }
             });
         });
         $('#customer_data tbody').on('click', '.edit', function (e) {
-            //e.preventDefault();
             $('#edit_modal').modal('toggle');
             document.getElementById('response').innerHTML = "loading";
 
@@ -947,10 +934,7 @@ $module = "Driver";
                 contentType: "html",
                 dataType: 'html',
                 success: function (data) {
-
                     document.getElementById('statement_response').innerHTML = data;
-
-
                 }
             });
 
@@ -1119,8 +1103,6 @@ $module = "Driver";
     }
     function showSelectBulkOrOne(args){
         var link = document.getElementById('statment');
-
-
         link.style.display = 'none'; //or
         var link = document.getElementById('selectBulkOrOne');
         link.style.display = 'block'; //or
@@ -1140,20 +1122,15 @@ $module = "Driver";
                 dataType: 'html',
                 success: function (data) {
                     document.getElementById('create_da_from').innerHTML = data;
-                    // $('#vehicle_id_create').select2({
-                    //     dropdownParent: $('#edit_modal')
-                    // });
                 }
             });
-
-        }else{
+        } else {
             $('#create_da_bulk').show();
             $('#statment').hide();
             $('#create_da_from').hide();
         }
     }
     function add() {
-        // document.getElementById('response').innerHTML = loader;
         document.getElementById('edit_modal').style.display = 'block';
         $.ajax({
             type: 'GET',
@@ -1212,8 +1189,6 @@ $module = "Driver";
                 document.getElementById('response_sheet').innerHTML = data;
             }
         });
-        // myWindow1 = window.open("{{URL('/SalaryShow')}}" + "/" + id + "/" + Period, "",
-        //     "height=1000,width=750,scrollbars=yes,top=1,left=1,status,resizable");
     }
     function validateForm() {
         if ($("#accountNumber").val() != '' && ($("#accountNumber").val().length != 12 || $("#accountNumber").val().substring(0, 3) != '966')) {
@@ -1224,17 +1199,14 @@ $module = "Driver";
             alert('خطا في هوية صاحب الحساب : يجب ان يبدا ب 1 او 2 ويحتوي علي 10 ارقام');
             return false;
         }
-        // e.preventDefault();
         var postData = $("#contact_form").serializeArray();
         var formURL = $("#contact_form").attr("action");
-        // document.getElementById('response').innerHTML = loader;
         $.ajax({
             url: formURL,
             type: "PUT",
             // cache: false,
             data: postData,
             success: function (data) {
-                // $('#edit_modal').modal('toggle');
                 document.getElementById('response').innerHTML = data;
             },
             error: function (jqXHR, status, error) {
@@ -1390,6 +1362,38 @@ $module = "Driver";
         $('.personal').hide();
         $('.financial').hide();
         $('.'+type).show();
+    }
+    function newRequest(id) {
+        $.ajax({
+            type: 'GET',
+            url: "{{URL('/tRequest')}}" + "/" + id,
+            contentType: "html",
+            dataType: 'html',
+            success: function (data) {
+                document.getElementById('response').innerHTML = data;
+            }
+        });
+    }
+    function validateTRequestForm(id) {
+        var form = document.getElementById('tRequestForm');
+        var formData = new FormData(form);
+        var formURL = $("#tRequestForm").attr("action");
+        $.ajax({
+            url: formURL,
+            type: "POST",
+            cache: false,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                document.getElementById('response').innerHTML = data;
+            },
+            error: function (jqXHR, status, error) {
+                document.getElementById('response').innerHTML = "<br><br><br>" + error + "<br><br><br>";
+                alert(status + ": " + error);
+            }
+        });
+        return false;
     }
 </script>
 
