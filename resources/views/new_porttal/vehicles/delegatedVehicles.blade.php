@@ -183,7 +183,7 @@ $module = "Loan";
                 <h5 class="modal-title" id="staticBackdropLabel">Vehicle Accessories</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="{{ url('vehicles/utilities/update')}}">
+            <form method="POST" action="{{ url('New-Portal/vehicles/utilities/update')}}">
                 @csrf
                <div class="modal-body">
                    <input type="hidden" name="vehicle_id" id="vehicleId" value="">
@@ -212,7 +212,7 @@ $module = "Loan";
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="{{url('vehicles/update-vehicle-checkup')}}" method="post"  enctype="multipart/form-data" >
+        <form action="{{url('New-Portal/vehicles/update-vehicle-checkup')}}" method="post"  enctype="multipart/form-data" >
             <div class="modal-body">
                 @csrf
                 <div class="form-group">
@@ -503,7 +503,7 @@ $module = "Loan";
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{{ url('Vehicles/download_vehicles_report')}}">
+                <form method="POST" action="{{ url('New-Portal/Vehicles/download_vehicles_report')}}">
                     @csrf
                     <div class="row">
                         <div class="col-lg-4">
@@ -678,7 +678,7 @@ $module = "Loan";
                         <h6>Sync Data</h6>
                     </div>
                 </div>
-                <form id="contact_form" method="POST" action="{{url('automation/upload')}}" enctype="multipart/form-data">
+                <form id="contact_form" method="POST" action="{{url('New-Portal/automation/upload')}}" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="READ" value="vehicles">
                     <div class="row" style="padding-left: 10px;">
@@ -719,7 +719,7 @@ $module = "Loan";
                 $('.table-image').hide();
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/getImages')}}",
+                    url: "{{url('New-Portal/Vehicles/getImages')}}",
                     cache: false,
                     data: {
                         id: id,
@@ -736,7 +736,7 @@ $module = "Loan";
                 $('#edit_modal').modal('show');
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/historyVehicle')}}",
+                    url: "{{url('New-Portal/Vehicles/historyVehicle')}}",
                     cache: false,
                     data: {
                         vehicle_id: vehicle_id,
@@ -751,7 +751,7 @@ $module = "Loan";
                 $('#driver_modal').modal('show');
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/historyVehicleDrivers')}}",
+                    url: "{{url('New-Portal/Vehicles/historyVehicleDrivers')}}",
                     cache: false,
                     data: {
                         vehicle_id: vehicle_id,
@@ -767,7 +767,7 @@ $module = "Loan";
             function updateDelegation(id, reference_no, iqama, start_date, end_date) {
                 $('#edit_modal').modal('show');
                 let html = `
-                    <form method="POST" action="{{url('Vehicles/updateDelegation')}}">
+                    <form method="POST" action="{{url('New-Portal/Vehicles/updateDelegation')}}">
                     @csrf
                     <div class="modal-body">
                         <div class="row">
@@ -807,7 +807,7 @@ $module = "Loan";
                 // if (result) {
                 //     $.ajax({
                 //         type: 'POST',
-                //         url: "{{url('Vehicles/updateDelegation')}}",
+                //         url: "{{url('New-Portal/Vehicles/updateDelegation')}}",
                 //         cache: false,
                 //         data: {
                 //             id: id,
@@ -836,7 +836,7 @@ $module = "Loan";
                         // pageLength: 10,
                         order: [1, 'asc'],
                         ajax: {
-                            url: "{{ route('delegatedVehicles') }}",
+                            url: "{{ route('New-Portal/delegatedVehicles') }}",
                             data: {
                                 filter_companyId: filter_companyId,
                                 filter_warehouseId: filter_warehouseId,

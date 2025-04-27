@@ -179,7 +179,7 @@ $module = "Loan";
                 <h5 class="modal-title" id="staticBackdropLabel">Vehicle Accessories</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="{{ url('vehicles/utilities/update')}}">
+            <form method="POST" action="{{ url('New-Portal/vehicles/utilities/update')}}">
                 @csrf
                <div class="modal-body">
                    <input type="hidden" name="vehicle_id" id="vehicleId" value="">
@@ -208,7 +208,7 @@ $module = "Loan";
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="{{url('vehicles/update-vehicle-checkup')}}" method="post"  enctype="multipart/form-data" >
+        <form action="{{url('New-Portal/vehicles/update-vehicle-checkup')}}" method="post"  enctype="multipart/form-data" >
             <div class="modal-body">
                 @csrf
                 <div class="form-group">
@@ -311,7 +311,7 @@ $module = "Loan";
                     <div class="collapse navbar-collapse" id="navbarNav">
                       <ul class="navbar-nav">
                         <li class="nav-item">
-                          <a class="nav-link" onclick="openCity('London')" href="#">Vehicle information</span></a>
+                          <a class="nav-link" onclick="openCity('London')" href="#">Vehicle information</a>
                         </li>
                         <li class="nav-item">
                           <a class="nav-link" onclick="openCity('Tokyo')" href="#">Summery</a>
@@ -483,7 +483,7 @@ $module = "Loan";
                         <div id="others" class="d-flex flex-wrap">
                             <div class="col-md-4" style="display:none;">
                                 <div class="attachment-card" style="height: 135px;">
-                                    <form method="POST" id="others_form" action="{{ url('Vehicles/registration')}}" enctype='multipart/form-data' onsubmit="return validateOthersForm()">
+                                    <form method="POST" id="others_form" action="{{ url('New-Portal/Vehicles/registration')}}" enctype='multipart/form-data' onsubmit="return validateOthersForm()">
                                         @csrf
                                         <input type="file" accept=".jpg,.jpeg,.png,.pdf" name="others[]" id="click_on_submit_dropify" data-height="90" data-width="50" required>
                                         <input type="hidden" name="plate" class="plateCard" value="" required>
@@ -553,7 +553,7 @@ $module = "Loan";
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{{ url('Vehicles/download_vehicles_report')}}">
+                <form method="POST" action="{{ url('New-Portal/Vehicles/download_vehicles_report')}}">
                     @csrf
                     <div class="row">
                         <div class="col-lg-4">
@@ -710,18 +710,18 @@ $module = "Loan";
         <script>
             $(document).ready(function () {
                 $('#myCarousel').carousel({
-                                interval: 2000,
-                                pause: false  // keep sliding even if mouse hovers
-                            });
+                    interval: 2000,
+                    pause: false  // keep sliding even if mouse hovers
+                });
 
-                            // Optional: handle manual click for next/prev
-                            $(".carousel-control-prev").click(function () {
-                                $('#myCarousel').carousel('prev');
-                            });
+                // Optional: handle manual click for next/prev
+                $(".carousel-control-prev").click(function () {
+                    $('#myCarousel').carousel('prev');
+                });
 
-                            $(".carousel-control-next").click(function () {
-                                $('#myCarousel').carousel('next');
-                            });
+                $(".carousel-control-next").click(function () {
+                    $('#myCarousel').carousel('next');
+                });
                 fill_datatable();
                 function fill_datatable(filter_companyId = '', filter_warehouseId = '', filter_cityId = '', filter_status = '', filter_delegation = '', filter_vehicle_opreaterId = '', filter_vehicle_manufecturerId = '', filter_modelId = '', filter_otometer = '', filter_otometer_val = '') {
                     var dataTable = $('#customer_data').DataTable({
@@ -746,7 +746,7 @@ $module = "Loan";
                         // pageLength: 10,
                         order: [1, 'asc'],
                         ajax: {
-                            url: "{{ route('Vehicles/Search') }}",
+                            url: "{{ route('New-Portal/Vehicles/Search') }}",
                             data: {
                                 filter_companyId: filter_companyId,
                                 filter_warehouseId: filter_warehouseId,
@@ -840,7 +840,7 @@ $module = "Loan";
                 $('#edit_modal').modal('show');
                 $.ajax({
                     type: 'GET',
-                    url: "{{url('Vehicles/updateVehicleDriver')}}" + "/" + vehicle_id + "/" + delegation_id,
+                    url: "{{url('New-Portal/Vehicles/updateVehicleDriver')}}" + "/" + vehicle_id + "/" + delegation_id,
                     cache: false,
                     success: function (data) {
                         document.getElementById('response').innerHTML = data;
@@ -862,7 +862,7 @@ $module = "Loan";
                 document.getElementById('report_body').innerHTML = '';
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/VehicleReport')}}",
+                    url: "{{url('New-Portal/Vehicles/VehicleReport')}}",
                     cache: false,
                     data: {
                         date: date,
@@ -879,7 +879,7 @@ $module = "Loan";
                 $('#edit_modal').modal('show');
                 $.ajax({
                     type: 'GET',
-                    url: "{{url('Vehicles/forceAssign')}}",
+                    url: "{{url('New-Portal/Vehicles/forceAssign')}}",
                     cache: false,
                     success: function (data) {
                         document.getElementById('response').innerHTML = data;
@@ -895,7 +895,7 @@ $module = "Loan";
                     document.getElementById('response').innerHTML = loader;
                     $.ajax({
                         type: 'GET',
-                        url: "{{ url('Vehicles/deleteVehicleAssignment') }}/" + id,
+                        url: "{{ url('New-Portal/Vehicles/deleteVehicleAssignment') }}/" + id,
                         cache: false,
                         success: function (data) {
                             if (data == 'good')
@@ -958,7 +958,7 @@ $module = "Loan";
                 $('#edit_modal').modal('show');
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/EditVehicle')}}",
+                    url: "{{url('New-Portal/Vehicles/EditVehicle')}}",
                     cache: false,
                     data: {
                         vehicle_id: vehicle_id,
@@ -985,7 +985,7 @@ $module = "Loan";
                 var postData = $("#contact_form").serializeArray();
                 document.getElementById('response').innerHTML = loader;
                 $.ajax({
-                   url: "{{url('Vehicles/UpdateVehicle')}}",
+                   url: "{{url('New-Portal/Vehicles/UpdateVehicle')}}",
                     type: "POST",
                     cache: false,
                     data: postData,
@@ -1005,7 +1005,7 @@ $module = "Loan";
                 $('#edit_modal').modal('show');
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/historyVehicle')}}",
+                    url: "{{url('New-Portal/Vehicles/historyVehicle')}}",
                     cache: false,
                     data: {
                         vehicle_id: vehicle_id,
@@ -1020,7 +1020,7 @@ $module = "Loan";
                 $('#driver_modal').modal('show');
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/historyVehicleDrivers')}}",
+                    url: "{{url('New-Portal/Vehicles/historyVehicleDrivers')}}",
                     cache: false,
                     data: {
                         vehicle_id: vehicle_id,
@@ -1086,7 +1086,7 @@ $module = "Loan";
                 if (result) {
                     $.ajax({
                         type: 'POST',
-                        url: "{{ url('Vehicles/deleteVehicleFile') }}",
+                        url: "{{ url('New-Portal/Vehicles/deleteVehicleFile') }}",
                         data: {
                             plate: plate,
                             fileName: fileName,
@@ -1120,7 +1120,7 @@ $module = "Loan";
             function sendPostRequest(index){
                 $.ajax({
                     type: 'post',
-                    url: "{{URL('/vehicles/utilities')}}",
+                    url: "{{URL('New-Portal/vehicles/utilities')}}",
                     headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
                     data:{"_token": "{{ csrf_token() }}",'vehcile_id': index},
                     success: function (data) {
@@ -1232,7 +1232,7 @@ $module = "Loan";
             previewImage.src = "https://cdn.pixabay.com/photo/2016/01/03/00/43/upload-1118929_1280.png";
             $.ajax({
                 type: 'POST',
-                url: "{{url('Vehicles/vehicleInfo')}}",
+                url: "{{url('New-Portal/Vehicles/vehicleInfo')}}",
                 cache: false,
                 data: {
                     plate: plate,

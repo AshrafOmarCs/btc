@@ -43,6 +43,9 @@
                         </td>
                     </tr>
                     <tr>
+                        <TH colspan=2></TH>
+                    </tr>
+                    <tr>
                         <TH>Vehicle <font color="red">*</font></TH>
                         <td>
                             <select class="form-control" name="vehicle_name" id="vehicle_name" required>
@@ -50,7 +53,6 @@
                             </select>
                         </td>
                     </tr>
-
                     <tr>
                         <TH colspan=2 id="balance"></TH>
                     </tr>
@@ -67,8 +69,14 @@
                         </td>
                     </tr>
                     <tr>
+                        <TH colspan=2></TH>
+                    </tr>
+                    <tr>
                         <TH>Amount <font color="red">*</font></TH>
                         <td><input type="number" min="0" step=".01" class="form-control" name="amount" value="" required></td>
+                    </tr>
+                    <tr>
+                        <TH colspan=2></TH>
                     </tr>
                     <tr>
                         <TH>Type <font color="red">*</font></TH>
@@ -82,8 +90,14 @@
                         </td>
                     </tr>
                     <tr>
+                        <TH colspan=2></TH>
+                    </tr>
+                    <tr>
                         <th>File(s) </th>
                         <td><input type="file" class="form-control" name="files[]" multiple=""></td>
+                    </tr>
+                    <tr>
+                        <TH colspan=2></TH>
                     </tr>
                     <tr>
                         <TH>Note <font color="red">*</font></TH>

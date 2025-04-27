@@ -4,7 +4,7 @@
         <h4>Transfer Vehicle</h4>
     </div>
 </div>
-<form id="contact_form" method="POST" action="{{ route('vehicles.updateVehicleDriverSave') }}">
+<form id="contact_form" method="POST" action="{{ route('New-Portal.vehicles.updateVehicleDriverSave') }}">
     @csrf
     <input type="hidden" name="delegation_id" value="{{$delegation_id}}">
     <input type="hidden" name="vehicle_id" value="{{$vehicle_id}}">
@@ -33,7 +33,7 @@
                             </select>
                         </td>
                         <td><input type="text" class="form-control" name="transferRequestBy" ></td>
-                        <td><button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button></td>
+                        <td><button type="submit" class="btn btn-primary">Submit</button></td>
                     </tr>
 
                 </tbody>

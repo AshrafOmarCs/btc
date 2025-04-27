@@ -6,7 +6,7 @@
         <h6>Assign Vehicle</h6>
     </div>
 </div>
-<form id="contact_form" method="POST" action="{{ route('vehicles.forceAssignSave') }}">
+<form id="contact_form" method="POST" action="{{ route('New-Portal.vehicles.forceAssignSave') }}">
     @csrf
     <div class="row">
         <div class="col-lg-12">

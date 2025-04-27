@@ -21,10 +21,65 @@ use Illuminate\Support\Facades\DB;
     Route::get("DA_PANDA_Handling",'AshrafController@DA_PANDA_Handling');
 
 Route::group(['prefix' => 'New-Portal'], function() {
-    Route::get('Vehicles','VehiclesController@search');
-    Route::get('delegatedVehicles','VehiclesController@delegatedVehicles')->name('delegatedVehicles');
-    Route::GET('Vehicles/VehicleFuelSave', 'VehiclesController@VehicleFuel');
+    // Vehicle Start
+    Route::post('Vehicles/CheckUp-Accessories-Handler','VehiclesController@accessoriesHandler');
+    Route::post('Vehicles/CheckUpImageHandler','VehiclesController@checkUpImageHandler');
+    Route::get('Vehicles/Check-up/{checkUp_id}','VehiclesController@getCheckUp');
+    Route::get('delegatedVehicles','VehiclesController@delegatedVehicles')->name('New-Portal/delegatedVehicles');
+    Route::get('vehiclesMaintenance','VehiclesController@vehiclesMaintenance')->name('New-Portal/vehiclesMaintenance');
+    Route::get('Vehicles/create-delegation','VehiclesController@create_delegation');
+    Route::post('Vehicles/updateDelegation','VehiclesController@updateDelegation');
+    Route::post('Vehicles/vehicleInfo','VehiclesController@vehicleInfo');
+    Route::post('Vehicles/updateUtility','VehiclesController@updateUtility');
+    Route::post('Vehicles/deleteVehicleFile','VehiclesController@deleteVehicleFile');
+    Route::post('Vehicles/maintenanceInfo','VehiclesController@maintenanceInfo');
+    Route::post('Vehicles/maintenanceRemovePart','VehiclesController@maintenanceRemovePart');
+    Route::post('Vehicles/maintenanceRemoveRequest','VehiclesController@maintenanceRemoveRequest');
+    Route::post('Vehicles/maintenanceApproveRequest','VehiclesController@maintenanceApproveRequest');
+    Route::post('Vehicles/maintenanceFiles','VehiclesController@maintenanceFiles');
+    Route::post('Vehicles/deleteFile','VehiclesController@deleteMaintenanceFile');
+    Route::get('Drivers/approval-review/{driver_id}','VehiclesController@approval_review');
+    Route::get('Drivers/Approve/{request_id}/{mobileNumber}/{dob}/{email}/{iqama}','VehiclesController@confirmapproval');
+    Route::get('Drivers/Reject/{request_id}','VehiclesController@rejectApproval');
+    Route::get('Vehicles/Vehicles-Requests','VehiclesController@vehicle_requests');
+    Route::post('VehicleRequest/saveNote','VehiclesController@saveNote')->name('New-Portal/VehicleRequest/saveNote');
+    Route::post('VehicleRequest/searchRequest','VehiclesController@searchRequest')->name('New-Portal/VehicleRequest/searchRequest');
 
+    Route::GET('Vehicles/VehicleFuelSave', 'VehiclesController@VehicleFuel');
+    Route::POST('/VehicleFuelSave', 'VehiclesController@VehicleFuelSave')->name('New-Portal.VehicleFuelSave');
+    Route::POST('Vehicles/FuelInfo', 'VehiclesController@fuel_info');
+    Route::POST('Vehicles/FuelInfoDone', 'VehiclesController@FuelInfoDone');
+
+    Route::post('Vehicles/EditVehicle','VehiclesController@edit_vehicle');
+    Route::post('Vehicles/UpdateVehicle','VehiclesController@update_vehicle');
+    Route::post('Vehicles/historyVehicle','VehiclesController@historyVehicle');
+    Route::post('Vehicles/historyVehicleDrivers','VehiclesController@historyVehicleDrivers');
+    Route::post('Vehicles/getImages','VehiclesController@getImages');
+    Route::get('Vehicles/Report','VehiclesController@report_index');
+    Route::post('Vehicles/ReportSearch','VehiclesController@report_search');
+    Route::post('Vehicles/ReportData','VehiclesController@reportData');
+    Route::POST('Vehicles/VehicleReport', 'VehiclesController@VehicleReport');
+    Route::POST('Vehicles/download_vehicles_report', 'VehiclesController@download_vehicles_report');
+    Route::POST('Vehicles/Vehicles', 'VehiclesController@Vehicles');
+    Route::POST('vehicles/fuel/link', 'VehiclesController@fuelLink');
+    Route::POST('Vehicles/registration', 'VehiclesController@registrationCard');
+    Route::GET('Vehicles/forceAssign', 'VehiclesController@forceAssign');
+    Route::POST('vehicles/forceAssignSave', 'VehiclesController@forceAssignSave')->name('New-Portal.vehicles.forceAssignSave');
+    Route::GET('Vehicles/deleteVehicleAssignment/{id}', 'VehiclesController@deleteVehicleAssignment');
+    Route::GET('Vehicles/updateVehicleDriver/{vehicle_id}/{delegation_id}', 'VehiclesController@updateVehicleDriver');
+    Route::POST('vehicles/updateVehicleDriverSave', 'VehiclesController@updateVehicleDriverSave')->name('New-Portal.vehicles.updateVehicleDriverSave');
+    Route::post('vehicles/utilities','VehiclesController@utilities');
+    Route::post('vehicles/utilities/update','VehiclesController@utilitiesUpdate');
+    Route::post('Vehicles/Search','VehiclesController@search_old');
+    Route::get('Vehicles/Search','VehiclesController@search')->name('New-Portal/Vehicles/Search');
+    Route::get('Vehicles','VehiclesController@search');
+    Route::post('Vehicles/VehicleInfo','HomeController@vehicles_info');
+    Route::get('Vehicles/{city_name}','VehiclesController@index');
+    Route::get('Vehicles/{city_name}/{type}','VehiclesController@index');
+    Route::get('Vehicles/{city_name}/{type}/{companyName}/{warehouseName}','VehiclesController@index');
+    Route::post('/automation/upload','AutomationController@upload_file')->name('automation/upload');
+
+    // Vehicle End
     Route::post('BulkDriversUpdate', 'DriversController@BulkDriversUpdate')->name('BulkDriversUpdate');
 
     Route::post("/updateProfilePic",'UsersController@updateProfilePic')->name('updateProfilePic');
@@ -75,11 +130,7 @@ Route::group(['prefix' => 'New-Portal'], function() {
     Route::get('/LoansPaid', 'LoansController@LoansPaid');
     Route::get('/DriverWindow', 'DashoardController@index_drivers');
     Route::get('/DriverJahizWindow', 'DashoardController@index_drivers');
-    Route::get('Vehicles/Report','VehiclesController@report_index');
-    Route::get('Vehicles/Vehicles-Requests','VehiclesController@vehicle_requests');
     Route::resource('FleetCreditNotes', 'FleetCreditNotesController');
-
-
 
 
     // Route::resource('/Drivers', 'DriversController');
@@ -109,20 +160,17 @@ Route::get('/smsInfo/{id}', 'FleetCreditNotesController@smsInfo');
 Route::post('resend-sms','ClaimFollowupController@resend_sms');
 Route::get("DA-Conctrats/{contract_id}",'AshrafController@contract_method');
 Route::POST('Vehicles/registration', 'VehiclesController@registrationCard');
-
 Route::post('Vehicles/updateUtility','VehiclesController@updateUtility');
 Route::post('VehicleRequest/searchRequest','VehiclesController@searchRequest')->name('VehicleRequest/searchRequest');
 Route::post('VehicleRequest/saveNote','VehiclesController@saveNote')->name('VehicleRequest/saveNote');
 Route::get('Drivers/Approve/{request_id}/{mobileNumber}/{dob}/{email}/{iqama}','VehiclesController@confirmapproval');
 Route::get('Drivers/Reject/{request_id}','VehiclesController@rejectApproval');
-
 Route::post('Vehicles/ReportSearch','VehiclesController@report_search');
 Route::post('Vehicles/ReportData','VehiclesController@reportData');
 Route::GET('Vehicles/forceAssign', 'VehiclesController@forceAssign');
 Route::POST('vehicles/forceAssignSave', 'VehiclesController@forceAssignSave')->name('vehicles.forceAssignSave');
 Route::GET('Vehicles/deleteVehicleAssignment/{id}', 'VehiclesController@deleteVehicleAssignment');
 Route::post('Vehicles/getImages','VehiclesController@getImages');
-
 Route::POST('Vehicles/VehicleReport', 'VehiclesController@VehicleReport');
 Route::post('Vehicles/historyVehicle','VehiclesController@historyVehicle');
 Route::post('Vehicles/historyVehicleDrivers','VehiclesController@historyVehicleDrivers');
@@ -200,6 +248,12 @@ Route::get('Vehicles/Check-up/{checkUp_id}','VehiclesController@getCheckUp');
 Route::get('Vehicles','VehiclesController@index');
 Route::get('Vehicles/create-delegation','VehiclesController@create_delegation');
 
+Route::post('Vehicles/maintenanceInfo','VehiclesController@maintenanceInfo');
+Route::post('Vehicles/maintenanceRemovePart','VehiclesController@maintenanceRemovePart');
+Route::post('Vehicles/maintenanceRemoveRequest','VehiclesController@maintenanceRemoveRequest');
+Route::post('Vehicles/maintenanceApproveRequest','VehiclesController@maintenanceApproveRequest');
+Route::post('Vehicles/maintenanceFiles','VehiclesController@maintenanceFiles');
+Route::post('Vehicles/deleteFile','VehiclesController@deleteMaintenanceFile');
 
 // Vehicles
 Route::get('Drivers/approval-review/{driver_id}','VehiclesController@approval_review');

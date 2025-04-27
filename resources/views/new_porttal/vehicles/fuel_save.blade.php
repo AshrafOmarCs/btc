@@ -8,7 +8,7 @@
                 <h5 class="modal-title" id="staticBackdropLabel">Upload Fuel</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="{{ url('VehicleFuelSave')}}">
+            <form method="POST" action="{{ url('New-Portal.VehicleFuelSave')}}">
                 @csrf
                <div class="modal-body">
                     <div class="row" style="padding: 30px">
@@ -27,7 +27,7 @@
         </div>
     </div>
 </div>
-<form method="POST" action="{{ url('vehicles/fuel/link')}}">
+<form method="POST" action="{{ url('New-Portal/vehicles/fuel/link')}}">
     @csrf
     <div class="modal fade" id="FillterButton" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -198,7 +198,7 @@
                     $('#pre_loader').show();
                     $.ajax({
                         type: 'POST',
-                        url: "{{url('Vehicles/Vehicles')}}",
+                        url: "{{url('New-Portal/Vehicles/Vehicles')}}",
                         cache: false,
                         data: {
                             ACTION: 'table',
@@ -218,6 +218,9 @@
                     });
                 });
             });
+            function uploadFuel() {
+                $('#report_modal').modal('toggle');
+            }
             function reset_records() {
                 $('#filter_month').val('');
                 $('#filter_vehicleId').empty();
@@ -228,7 +231,7 @@
                     let filter_type = $('#filter_type').val();
                     $.ajax({
                         type: 'POST',
-                        url: "{{url('Vehicles/Vehicles')}}",
+                        url: "{{url('New-Portal/Vehicles/Vehicles')}}",
                         cache: false,
                         data: {
                             date: date,
@@ -243,9 +246,7 @@
                     });
                 }
             }
-            function uploadFuel() {
-                $('#report_modal').modal('toggle');
-            }
+
         </script>
 
 

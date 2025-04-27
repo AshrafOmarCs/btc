@@ -220,14 +220,28 @@ $module = "Vehicle";
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">Vehicle Information</h5>
-                <div class="w3-bar w3-black">
-                    <button class="w3-bar-item w3-button" onclick="openCity('London')">Vehicle information</button>
-                    <button class="w3-bar-item w3-button" onclick="openCity('Paris')" style="border-left: #ffffff 1px solid;">Vehicle Images </button>
-                    <button class="w3-bar-item w3-button" onclick="openCity('Tokyo')" style="border-left: #ffffff 1px solid;">Summery</button>
-                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                      <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                      <ul class="navbar-nav">
+                        <li class="nav-item">
+                          <a class="nav-link" onclick="openCity('London')" href="#">Vehicle information</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="openCity('Paris')" href="#">Vehicle Images</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" onclick="openCity('Tokyo')" href="#">Summery</a>
+                        </li>
+
+                      </ul>
+                    </div>
+                </nav>
                 <div id="London" class="city">
                     <table class="table table-striped">
                         <tbody>
@@ -661,6 +675,42 @@ $module = "Vehicle";
         </div>
     </div>
 </div>
+<div class="modal fade" id="maintenanceRequest" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="DAIdentityApproveModalLabel">Maintenance Request Spare Parts </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                  <ul class="navbar-nav">
+                    <li class="nav-item">
+                      <a class="nav-link" onclick="showHide('requestData')" id="requestDataNav" href="#">Request Data</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" onclick="showHide('attachmentsData')" href="#" id="attachmentsCount" href="#"></a>
+                    </li>
+
+                  </ul>
+                </div>
+            </nav>
+            <span id="maintenanceRequestBody">
+
+            </span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
     <div class="row">
         <div class="col-sm-12 col-12">
             <div id="message"></div>
@@ -701,156 +751,199 @@ $module = "Vehicle";
                                     <th scope="col">Request type </th>
                                     <th scope="col">Request Date </th>
                                     <th scope="col">Status</th>
+                                    <th scope="col">Additional Data</th>
                                     <th scope="col">Note</th>
                                     <th scope="col">Procedures</th>
                                 </thead>
                                 <tbody id="tbl_body">
-                                    @if(sizeof($payload) > 0)
-                                        @foreach($payload as $k=>$item)
-                                            <tr>
-                                                <td>{{$k+1}}</td>
-                                                <td>{{$item->city_name}}</td>
-                                                <td>
-                                                    @php
-                                                    preg_match_all('/\d+/', $item->plate, $matches);
-                                                    $numbersPart = implode('', $matches[0]);
-                                                    $remainingPart = trim(preg_replace('/\d+/', '', $item->plate));
-                                                    @endphp
-                                                    <table style="width: max-content;"><tbody><tr><td style="border: 1px solid;">{{$numbersPart}}</td><td style="border: 1px solid;">{{$remainingPart}}</td></tr></tbody></table>
-                                                </td>
-                                                <td>
-                                                    {{$item->color}}, {{$item->vehicle_manufacturer_name}}, {{$item->vName}}, {{$item->manufacturer_date}}
-                                                    <span>@php echo $item->vehicleExtraInfo; @endphp</span>
-                                                </td>
-                                                <td> {{$item->opreatoers}}</td>
-                                                <td>{{$item->fullName}},  <span style="color:red">{{$item->job_id}}</span> <span> <button > <a href="javascript:driver('{{$item->driver_id}}')"><i class="bi bi-eye"></i></a></button></span></td>
-                                                <td style="text-align: center;">
-                                                    @if($item->driver_data == 'pending')
-                                                        <button disabled>Waiting DA Confrime Data</button>
+                                    @php if (count($payload) == 0) $k = -1; @endphp
+                                    @foreach($payload as $k=>$item)
+                                        <tr>
+                                            <td>{{$k+1}}</td>
+                                            <td>{{$item->city_name}}</td>
+                                            <td>
+                                                @php
+                                                preg_match_all('/\d+/', $item->plate, $matches);
+                                                $numbersPart = implode('', $matches[0]);
+                                                $remainingPart = trim(preg_replace('/\d+/', '', $item->plate));
+                                                @endphp
+                                                <table style="width: max-content;"><tbody><tr><td style="border: 1px solid;">{{$numbersPart}}</td><td style="border: 1px solid;">{{$remainingPart}}</td></tr></tbody></table>
+                                            </td>
+                                            <td>
+                                                {{$item->color}}, {{$item->vehicle_manufacturer_name}}, {{$item->vName}}, {{$item->manufacturer_date}}
+                                                <span>@php echo $item->vehicleExtraInfo; @endphp</span>
+                                            </td>
+                                            <td> {{$item->opreatoers}}</td>
+                                            <td>{{$item->fullName}},  <span style="color:red">{{$item->job_id}}</span> <span> <a href="javascript:driver('{{$item->driver_id}}')"><i class="bi bi-eye"></i></a></span></td>
+                                            <td style="text-align: center;">
+                                                @if($item->driver_data == 'pending')
+                                                    <button disabled>Waiting DA Confrime Data</button>
+                                                @endif
+
+                                                @if($item->driver_data == 'applied')
+                                                    @if($item->supporvisor_identity_approve == 0)
+                                                    <button class="btn btn-light" onclick="setRequestIdAndOpenModal('{{$item->requests_id}}','{{$item->driver_id}}','{{$item->supporvisor_identity_approve}}')">Approve</button>
+                                                    @endif
+                                                @endif
+
+                                                @if($item->driver_data == 'approved')
+                                                    <img style="width: 38px; margin: 0 auto;" src="{{url('/images/check.png')}}" alt="driver approved check">
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-warning">
+                                                    {{$item->name_en}}
+                                                </span>
+                                            </td>
+                                            <td> {{ \Carbon\Carbon::parse($item->request_issue_date)->format('j F, Y') }} </td>
+                                            <td>
+                                                @if($item->assiment_status == 'Pending')
+                                                    {{'Waiting Driver to update data'}}
+                                                @endif
+                                                @if($item->assiment_status == 'sent')
+                                                {{'Please Confirm Checkup data'}}
+                                                @endif
+
+                                                @if($item->assiment_status == 'utlity_rejected')
+                                                {{'One or more Accessory have been Rejected'}}
+                                                @endif
+                                                @if($item->assiment_status == 'utlity_accepted')
+                                                {{'Please approve Checkup images'}}
+                                                @endif
+                                                @if($item->assiment_status == 'image_rejected' )
+                                                    {{'One or more Checkup Image have been Rejected'}}
+                                                @endif
+                                                @if($item->assiment_status == 'image_accepted' )
+                                                    {{'Please Fill & confirm Delegation'}}
+                                                @endif
+                                                @if($item->assiment_status == 'Rejected')
+                                                {{'Rejected & Waiting driver to re-upload Vehicle images'}}
+                                                @endif
+
+
+                                                @if($item->assiment_status == 'done')
+                                                {{'Done & Waiting to return'}}
+                                                @endif
+
+                                                @if($item->assiment_status == 'finished')
+                                                {{'Completed'}}
+                                                @endif
+
+                                            </td>
+                                            <td>N/A</td>
+                                            <td>
+                                                <textarea name="note" id="note_{{$item->assignId}}" rows="5" value="{{$item->note}}">{{$item->note}}</textarea>
+                                                <center><button class="btn btn-primary btn-sm" onclick="saveNote({{$item->assignId}})">Save</button></center>
+                                            </td>
+                                            <td>
+                                                <ul style="text-align: left;">
+                                                    @if($item->assiment_status == 'pending')
+                                                        <li>
+                                                            <a href="#" >Waiting driver to update data</a>
+                                                        </li>
                                                     @endif
 
-                                                    @if($item->driver_data == 'applied')
-                                                        @if($item->supporvisor_identity_approve == 0)
-                                                        <button class="btn btn-light" onclick="setRequestIdAndOpenModal('{{$item->requests_id}}','{{$item->driver_id}}','{{$item->supporvisor_identity_approve}}')">Approve</button>
-                                                        @endif
-                                                    @endif
-
-                                                    @if($item->driver_data == 'approved')
-                                                        <img style="width: 38px; margin: 0 auto;" src="{{url('/images/check.png')}}" alt="driver approved check">
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <span class="badge badge-warning">
-                                                        {{$item->name_en}}
-                                                    </span>
-                                                </td>
-                                                <td> {{ \Carbon\Carbon::parse($item->request_issue_date)->format('j F, Y') }} </td>
-                                                <td>
-                                                    @if($item->assiment_status == 'Pending')
-                                                        {{'Waiting Driver to update data'}}
-                                                    @endif
                                                     @if($item->assiment_status == 'sent')
-                                                    {{'Please Confirm Checkup data'}}
+                                                        <li>
+                                                            <a href="#" onclick="PreviewAccessoriesCheckUp('{{$item->vehicle_check_id}}', '{{$item->plate}}')" >Preview Accessories</a>
+                                                        </li>
+                                                    @endif
+
+                                                    @if($item->assiment_status == 'utlity_accepted')
+                                                        <li>
+                                                            <a href="#" disabled style="text-decoration: line-through;">Preview Accessories</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="#" onclick="PreviewCheckUp('{{$item->vehicle_check_id}}', '{{$item->plate}}',  '{{$item->createdCompanyId}}')" >Preview Check-up</a>
+                                                        </li>
+                                                    @endif
+
+                                                    @if($item->assiment_status == 'image_accepted')
+
+                                                        <li>
+                                                            <a href="#" disabled style="text-decoration: line-through;">Preview Accessories</a>
+                                                        </li>
+
+                                                        <li>
+                                                            <a href="#" disabled  style="text-decoration: line-through;">Preview Check-up</a>
+                                                        </li>
+
+                                                        <li>
+                                                            <a href="#" onclick="setRequestIdAndCreate('{{$item->requests_id}}','{{$item->driver_id}}','{{$item->supporvisor_identity_approve}}','{{$k}}')" > <span  >Issue new delegation</span> </a>
+                                                        </li>
+
                                                     @endif
 
                                                     @if($item->assiment_status == 'utlity_rejected')
-                                                    {{'One or more Accessory have been Rejected'}}
-                                                    @endif
-                                                    @if($item->assiment_status == 'utlity_accepted')
-                                                    {{'Please approve Checkup images'}}
-                                                    @endif
-                                                    @if($item->assiment_status == 'image_rejected' )
-                                                        {{'One or more Checkup Image have been Rejected'}}
-                                                    @endif
-                                                    @if($item->assiment_status == 'image_accepted' )
-                                                        {{'Please Fill & confirm Delegation'}}
-                                                    @endif
-                                                    @if($item->assiment_status == 'Rejected')
-                                                    {{'Rejected & Waiting driver to re-upload Vehicle images'}}
+                                                        <li>
+                                                            <a href="#"  style="margin: 5px;">Waiting DA To Accessories</a>
+                                                        </li>
                                                     @endif
 
+                                                    @if($item->assiment_status == 'image_rejected' )
+                                                        <li>
+                                                            <a href="#"  style="margin: 5px;">image rejected, Waiting to reupload Images</a>
+                                                        </li>
+                                                    @endif
 
                                                     @if($item->assiment_status == 'done')
-                                                    {{'Done & Waiting to return'}}
+                                                        <li>
+                                                            <a href="#"  style="margin: 5px;"><button class="btn btn-danger" >Delete</button></a>
+                                                        </li>
                                                     @endif
-
                                                     @if($item->assiment_status == 'finished')
-                                                    {{'Completed'}}
+                                                        <li>
+                                                            <a href="#"  style="margin: 5px;">{{'Completed'}} </a>
+                                                        </li>
                                                     @endif
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    @php $k += 1; @endphp
+                                    @foreach($requests as $item)
+                                        @php $k += 1; @endphp
+                                        <tr>
+                                            <td>{{$k}}</td>
+                                            <td>{{$item->city_name}}</td>
+                                            <td>
+                                                @php
+                                                preg_match_all('/\d+/', $item->plate, $matches);
+                                                $numbersPart = implode('', $matches[0]);
+                                                $remainingPart = trim(preg_replace('/\d+/', '', $item->plate));
+                                                @endphp
+                                                <table><tbody><tr><td style="border: 1px solid;">{{$numbersPart}}</td><td style="border: 1px solid;">{{$remainingPart}}</td></tr></tbody></table>
+                                            </td>
+                                            <td>
+                                                {{$item->color}}, {{$item->vehicle_manufacturer_name}}, {{$item->vName}}, {{$item->manufacturer_date}}
+                                            </td>
+                                            <td> {{$item->opreatoers}}</td>
+                                            <td>{{$item->fullName}},  <span style="color:red">{{$item->job_id}}</span> <span> <a href="javascript:driver('{{$item->driver_id}}')"><i class="bi bi-eye"></i></a></span></td>
+                                            <td style="text-align: center;">
+                                                N/A
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-warning" style="color: #056748;background-color: #ffffff;padding: 8px;margin: 4px;border: 1px solid #dcdcdc;">
+                                                    <img style="width: 30px; margin-bottom: 0px;" src="https://i.ibb.co/6cY31vKb/maintenance-icon-18893.png" alt="maintenance-icon-18893" border="0" />Maintenance Request
+                                                </span>
+                                            </td>
+                                            <td> {{ \Carbon\Carbon::parse($item->request_issue_date)->format('j F, Y') }} </td>
+                                            <td>
+                                                Please approve or reject the request
+                                            </td>
+                                            <td>
+                                                <!--<p>Last Check-Up Date: @if ($item->last_checkUp == 'N/A') N/A @else {{ \Carbon\Carbon::parse($item->last_checkUp)->format('j F, Y') }} @endif</p>-->
+                                                @php echo $item->parts; @endphp
+                                            </td>
+                                            <td>
+                                                <textarea name="note" rows="5" disabled>{{$item->internal_note}}</textarea>
+                                            </td>
+                                            <td>
+                                                <a href="#" onclick="viewParts({{$item->id}})" data-toggle="modal" data-target="#maintenanceRequest">View</a> | <a href="#" onclick="rejectRequest({{$item->id}})">Reject</a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
 
-                                                </td>
-                                                <td>
-                                                    <textarea name="note" id="note_{{$item->assignId}}" rows="5" value="{{$item->note}}">{{$item->note}}</textarea>
-                                                    <center><button class="btn btn-primary btn-sm" onclick="saveNote({{$item->assignId}})">Save</button></center>
-                                                </td>
-                                                <td>
-                                                    <ul style="text-align: left;">
-                                                        @if($item->assiment_status == 'pending')
-                                                            <li>
-                                                                <a href="#" >Waiting driver to update data</a>
-                                                            </li>
-                                                        @endif
-
-                                                        @if($item->assiment_status == 'sent')
-                                                            <li>
-                                                                <a href="#" onclick="PreviewAccessoriesCheckUp('{{$item->vehicle_check_id}}', '{{$item->plate}}')" >Preview Accessories</a>
-                                                            </li>
-                                                        @endif
-
-                                                        @if($item->assiment_status == 'utlity_accepted')
-                                                            <li>
-                                                                <a href="#" disabled style="text-decoration: line-through;">Preview Accessories</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="#" onclick="PreviewCheckUp('{{$item->vehicle_check_id}}', '{{$item->plate}}',  '{{$item->createdCompanyId}}')" >Preview Check-up</a>
-                                                            </li>
-                                                        @endif
-
-                                                        @if($item->assiment_status == 'image_accepted')
-
-                                                            <li>
-                                                                <a href="#" disabled style="text-decoration: line-through;">Preview Accessories</a>
-                                                            </li>
-
-                                                            <li>
-                                                                <a href="#" disabled  style="text-decoration: line-through;">Preview Check-up</a>
-                                                            </li>
-
-                                                            <li>
-                                                                <a href="#" onclick="setRequestIdAndCreate('{{$item->requests_id}}','{{$item->driver_id}}','{{$item->supporvisor_identity_approve}}','{{$k}}')" > <span  >Issue new delegation</span> </a>
-                                                            </li>
-
-                                                        @endif
-
-                                                        @if($item->assiment_status == 'utlity_rejected')
-                                                            <li>
-                                                                <a href="#"  style="margin: 5px;">Waiting DA To Accessories</a>
-                                                            </li>
-                                                        @endif
-
-                                                        @if($item->assiment_status == 'image_rejected' )
-                                                            <li>
-                                                                <a href="#"  style="margin: 5px;">image rejected, Waiting to reupload Images</a>
-                                                            </li>
-                                                        @endif
-
-                                                        @if($item->assiment_status == 'done')
-                                                            <li>
-                                                                <a href="#"  style="margin: 5px;"><button class="btn btn-danger" >Delete</button></a>
-                                                            </li>
-                                                        @endif
-                                                        @if($item->assiment_status == 'finished')
-                                                            <li>
-                                                                <a href="#"  style="margin: 5px;">{{'Completed'}} </a>
-                                                            </li>
-                                                        @endif
-                                                    </ul>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @else
-                                        <tr><td colspan="12"><center>No data found!</center></td></tr>
-                                    @endif
                                 </tbody>
                                 <tfoot>
                                     <tr>
@@ -864,6 +957,7 @@ $module = "Vehicle";
                                         <th scope="col">Request type </th>
                                         <th scope="col">Request Date </th>
                                         <th scope="col">Status</th>
+                                        <th scope="col">Additional Data</th>
                                         <th scope="col">Note</th>
                                         <th scope="col">Procedures </th>
                                     </tr>
@@ -896,7 +990,7 @@ $module = "Vehicle";
             function updateUtility(id, utlity_condition) {
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/updateUtility')}}",
+                    url: "{{url('New-Portal/Vehicles/updateUtility')}}",
                     cache: false,
                     data: {
                         id: id,
@@ -935,6 +1029,31 @@ $module = "Vehicle";
                     });
                 }
             }
+            $(document).ready(function () {
+                fill_datatable();
+            });
+
+            function fill_datatable() {
+                var dataTable = $('#customer_data').DataTable({
+                    lengthMenu: [[10, 25, 50, 100, 10000], [10, 25, 50, 100, "All"]],
+                    processing: true,
+                    dom: 'lBfrtip',
+                    "buttons": [
+                        {
+                            extend: 'excel',
+                            text: 'Export to Excel',
+                            exportOptions: {
+
+                                modifier: {
+                                    search: 'applied',
+                                    order: 'applied'
+                                }
+                            }
+                        }
+                    ],
+                });
+            }
+
             $('#filter').click(function () {
                 var filter_companyId = filter_warehouseId = filter_cityId = filter_job_id = filter_status_id = filter_request_id = filter_created_at = filter_updated_at = '';
                 filter_companyId = $('#filter_companyId').val();
@@ -947,7 +1066,7 @@ $module = "Vehicle";
                 filter_updated_at = $('#filter_updated_at').val();
                 $.ajax({
                     type: 'POST',
-                    url: "{{URL("/VehicleRequest/searchRequest")}}",
+                    url: "{{URL("/New-Portal/VehicleRequest/searchRequest")}}",
                     data: {
                         _token: "{{ csrf_token() }}",
                         filter_companyId: filter_companyId,
@@ -960,10 +1079,11 @@ $module = "Vehicle";
                         filter_updated_at: filter_updated_at,
                     },
                     success: function (data) {
+                        $('#customer_data').DataTable().destroy();
                         $('#tbl_body').html(data);
+                        fill_datatable();
                     }
                 });
-
             });
             function reset_records() {
                 $('#filter_companyId').val('');
@@ -984,7 +1104,7 @@ $module = "Vehicle";
                 else {
                     $.ajax({
                         type: 'POST',
-                        url: "{{URL("/VehicleRequest/saveNote")}}",
+                        url: "{{URL("New-Portal/VehicleRequest/saveNote")}}",
                         data: {
                             _token: "{{ csrf_token() }}",
                             assignId: assignId,
@@ -1050,7 +1170,7 @@ $module = "Vehicle";
 
                 $.ajax({
                     type: 'GET',
-                    url: "{{URL("/Drivers/approval-review")}}" + "/" + driver_id,
+                    url: "{{URL("New-Portal/Drivers/approval-review")}}" + "/" + driver_id,
                     contentType: "html",
                     dataType: 'html',
                     success: function (data) {
@@ -1147,7 +1267,7 @@ $module = "Vehicle";
                 } else {
                     $.ajax({
                         type: 'GET',
-                        url: "{{URL("Drivers/Approve")}}" + "/" + request_id  + "/" + mobileNumber  + "/" + dob  + "/" + email  + "/" + iqama,
+                        url: "{{URL("New-Portal/Drivers/Approve")}}" + "/" + request_id  + "/" + mobileNumber  + "/" + dob  + "/" + email  + "/" + iqama,
                         contentType: "html",
                         dataType: 'html',
                         success: function (data) {
@@ -1166,7 +1286,7 @@ $module = "Vehicle";
                     console.log(request_id);
                     $.ajax({
                         type: 'GET',
-                        url: "{{URL("Drivers/Reject")}}" + "/" + request_id,
+                        url: "{{URL("New-Portal/Drivers/Reject")}}" + "/" + request_id,
                         contentType: "html",
                         dataType: 'html',
                         success: function (data) {
@@ -1190,7 +1310,7 @@ $module = "Vehicle";
                 $('#checkUp_id').val(args);
                 $.ajax({
                     type: 'GET',
-                    url: "{{URL("Vehicles/Check-up")}}" + "/" + args,
+                    url: "{{URL("New-Portal/Vehicles/Check-up")}}" + "/" + args,
                     contentType: "html",
                     dataType: 'html',
                     success: function (data) {
@@ -1270,7 +1390,7 @@ $module = "Vehicle";
                 console.log(args)
                  $.ajax({
                     type: 'GET',
-                    url: "{{URL("Vehicles/Check-up")}}" + "/" + args,
+                    url: "{{URL("New-Portal/Vehicles/Check-up")}}" + "/" + args,
                     contentType: "html",
                     dataType: 'html',
                     success: function (data) {
@@ -1303,7 +1423,7 @@ $module = "Vehicle";
                     }
                     $.ajax({
                         type: 'POST',
-                        url: "{{URL("Vehicles/CheckUp-Accessories-Handler")}}",
+                        url: "{{URL("New-Portal/Vehicles/CheckUp-Accessories-Handler")}}",
                         headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
                         data:{"_token": "{{ csrf_token() }}",payload},
                         success: function (data) {
@@ -1321,7 +1441,7 @@ $module = "Vehicle";
                     }
                     $.ajax({
                         type: 'POST',
-                        url: "{{URL("Vehicles/CheckUp-Accessories-Handler")}}",
+                        url: "{{URL("New-Portal/Vehicles/CheckUp-Accessories-Handler")}}",
                         headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
                         data:{"_token": "{{ csrf_token() }}",payload},
                         success: function (data) {
@@ -1395,7 +1515,7 @@ $module = "Vehicle";
                     }
                     $.ajax({
                         type: 'POST',
-                        url: "{{URL("Vehicles/CheckUpImageHandler")}}",
+                        url: "{{URL("New-Portal/Vehicles/CheckUpImageHandler")}}",
                         headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
                         data:{"_token": "{{ csrf_token() }}",payload},
                         success: function (data) {
@@ -1417,7 +1537,7 @@ $module = "Vehicle";
                     }
                     $.ajax({
                         type: 'POST',
-                        url: "{{URL("Vehicles/CheckUpImageHandler")}}",
+                        url: "{{URL("New-Portal/Vehicles/CheckUpImageHandler")}}",
                         headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
                         data:{"_token": "{{ csrf_token() }}",payload},
                         success: function (data) {
@@ -1454,7 +1574,7 @@ $module = "Vehicle";
             {
                 $.ajax({
                     type: 'POST',
-                    url: "{{url('Vehicles/vehicleInfo')}}",
+                    url: "{{url('New-Portal/Vehicles/vehicleInfo')}}",
                     cache: false,
                     data: {
                         plate: plate,
@@ -1519,6 +1639,179 @@ $module = "Vehicle";
                 }
                 document.getElementById(cityName).style.display = "block";
             }
+
+            function viewParts(request_id) {
+            document.querySelectorAll(".nav.navbar-nav li").forEach((li, index) => {
+                li.classList.toggle("active", index === 0);
+            });
+            $.ajax({
+                type: 'POST',
+                url: "{{url('New-Portal/Vehicles/maintenanceInfo')}}",
+                cache: false,
+                data: {
+                    request_id: request_id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function (data) {
+                    data = data.split(":::");
+                    document.getElementById('maintenanceRequestBody').innerHTML = data[1];
+                    $('#attachmentsCount').html("Attachments ("+data[0]+")");
+                }
+            });
+        }
+        function deletePart(part_id, request_id) {
+            var result = confirm("Are you sure want to reject this spare part?");
+            if (result) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{url('New-Portal/Vehicles/maintenanceRemovePart')}}",
+                    cache: false,
+                    data: {
+                        part_id: part_id,
+                        request_id: request_id,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function (data) {
+                        if (data == 'no') {
+                            alert("The last item cannot be deleted instead delete the request");
+                        }
+                        viewParts(request_id);
+                    }
+                });
+            }
+        }
+        function rejectRequest(request_id) {
+            var result = confirm("Are you sure want to reject this request?");
+            if (result) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{url('New-Portal/Vehicles/maintenanceRemoveRequest')}}",
+                    cache: false,
+                    data: {
+                        request_id: request_id,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function (data) {
+                        alert('Request Rejected successfully!');
+                        location.reload();
+                    }
+                });
+            }
+        }
+        function approveRequest(request_id) {
+            $.ajax({
+                type: 'POST',
+                url: "{{url('New-Portal/Vehicles/maintenanceApproveRequest')}}",
+                cache: false,
+                data: {
+                    request_id: request_id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function (data) {
+                    alert('Request Approved successfully!');
+                    location.reload();
+                }
+            });
+        }
+        function showHide(type) {
+            $('#requestData').hide();
+            $('#attachmentsData').hide();
+            $('#submitBtn').hide();
+
+            setTimeout(function() {
+                $('#'+type).show();
+
+            }, 1000);
+        }
+        function typeChange(id, shop) {
+            $('#msg').hide();
+            if (shop == 1) {
+                $('#claim_id').val('');
+                $('#claim_id').prop('readonly', false);
+                $('#insuranceRadio').show();
+                $('#cashCheck').prop('checked', false);
+            }
+            else {
+                $('#claim_id').val(id);
+                $('#claim_id').attr('readonly','true');
+                $('#cashCheck').prop('checked','true');
+                $('#insuranceRadio').hide();
+            }
+        }
+        function checkChange(type, id) {
+            if (type == 'insurance') {
+                $('#msg').show();
+                $('#claim_id').val('');
+                $('#claim_id').prop('readonly', false);
+            } else {
+                $('#msg').hide();
+                $('#claim_id').val(id);
+                $('#claim_id').attr('readonly','true');
+            }
+        }
+        function click_on_submit_btn() {
+            document.getElementById('click_on_submit_dropify').click();
+        }
+        function click_on_save_btn_dropify() {
+            document.getElementById('save_btn_dropify').click();
+        }
+
+        function validateOthersForm (request_id) {
+            $('#submitBtn').html("Saving...");
+            var form = document.getElementById('others_form');
+            var formData = new FormData(form);
+            var formURL = $("#others_form").attr("action");
+            $.ajax({
+                url: formURL,
+                type: "POST",
+                cache: false,
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    alert(data);
+                    viewParts(request_id);
+                },
+                error: function (jqXHR, status, error) {
+                    document.getElementById('response').innerHTML = "<br><br><br>" + error + "<br><br><br>";
+                    alert(status + ": " + error);
+                }
+            });
+            return false;
+        }
+        function previewImagee(event) {
+            const file = event.target.files[0];
+            $('#submitBtn').hide();
+            const img = document.getElementById("previewImage");
+            img.src = "https://cdn.pixabay.com/photo/2016/01/03/00/43/upload-1118929_1280.png";
+            if (file) {
+                $('#submitBtn').show();
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    img.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        function deleteFile(id, request_id) {
+            var result = confirm("Want to delete?");
+            if (result) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{url('New-Portal/Vehicles/deleteFile')}}",
+                    cache: false,
+                    data: {
+                        id: id,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function (data) {
+                        alert(data);
+                        viewParts(request_id);
+                    }
+                });
+            }
+        }
         </script>
     @stop
 @endsection

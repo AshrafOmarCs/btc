@@ -26,6 +26,9 @@
                                 </table>
                             </td>
                         </tr>
+                        <tr>
+                            <TH colspan=2></TH>
+                        </tr>
 
                         <Tr>
                             <TH colspan=2 id="balance">
@@ -45,6 +48,9 @@
                             </TH>
                         </tr>
                         <tr>
+                            <TH colspan=2></TH>
+                        </tr>
+                        <tr>
                             <TH>journal Date <font color="red">*</font></TH>
                             <td>
                                 <div class="input-group date">
@@ -58,13 +64,22 @@
                             </td>
                         </tr>
                         <tr>
+                            <TH colspan=2></TH>
+                        </tr>
+                        <tr>
                             <TH>Amount <font color="red">*</font></TH>
                             <td><input type="text" class="form-control" name="amount" value="{{$CreditNotes->amount +0}}"
                                     required></td>
                         </tr>
                         <tr>
+                            <TH colspan=2></TH>
+                        </tr>
+                        <tr>
                             <th>File(s) </th>
                             <td><input type="file" class="form-control" name="files[]" multiple=""></td>
+                        </tr>
+                        <tr>
+                            <TH colspan=2></TH>
                         </tr>
                         <tr>
                             <TH>Note <font color="red">*</font></TH>

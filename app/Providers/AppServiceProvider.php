@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Request;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -36,5 +39,14 @@ class AppServiceProvider extends ServiceProvider
         if($this->app->environment('production')) {
             \URL::forceScheme('https');
         }
+
+        $globalEnv = '';
+        if (Request::is('New-Portal/*') || Request::is('New-Portal')) {
+            $globalEnv = 'new_porttal.';
+        }
+        // Share it globally with all views (optional)
+        View::share('globalEnv', $globalEnv);
+        // Also bind it into the app container to use in controllers
+        app()->instance('globalEnv', $globalEnv);
     }
 }

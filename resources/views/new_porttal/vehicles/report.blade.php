@@ -159,9 +159,6 @@
                             <div class="col-12">
                                 <div class="custom-btn-group">
                                     <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
-                                    @if(AUTH::user()->id == 73 || AUTH::user()->id == 17)
-                                        <button type="button" style="padding: 10px" class="btn btn-sm btn-info" onclick="uploadFuel()">Upload Fuel</button>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -296,7 +293,7 @@
 
                     $("#response").show();
                     $("#customer_data").hide();
-                    let url = '{{url('Vehicles/ReportSearch')}}';
+                    let url = '{{url('New-Portal/Vehicles/ReportSearch')}}';
                     var postData = {
                         filter_vehicle_opreaterId: filter_vehicle_opreaterId,
                         filter_vehicle_manufecturerId: filter_vehicle_manufecturerId,
@@ -337,7 +334,7 @@
             }
             function showInfo(vehicle_id) {
                 $('#info_modal').modal('toggle');
-                let url = '{{url('Vehicles/ReportData')}}';
+                let url = '{{url('New-Portal/Vehicles/ReportData')}}';
                 $.ajax({
                     url: url,
                     type: "POST",
