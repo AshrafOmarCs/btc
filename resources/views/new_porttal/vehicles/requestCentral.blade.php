@@ -733,13 +733,21 @@ $module = "Vehicle";
 
                     </div>
                     <div class="card-body">
-                        <div id="loader" style="display:none;">
-                            <div class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
+                        <div id="loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999;">
+                            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                                <lottie-player
+                                    src="https://assets9.lottiefiles.com/packages/lf20_usmfx6bp.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 200px; height: 200px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                                <p style="margin-top:20px; font-size:18px; font-weight:bold; color:#555;">Fetching your data...</p>
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table id="customer_data" class="table table-bordered">
+                            <table id="customer_data" class="table table-bordered" style="table-layout: fixed;">
                                 <thead>
                                     <TH>#</TH>
                                     <TH >City</TH>
@@ -945,23 +953,6 @@ $module = "Vehicle";
                                     @endforeach
 
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th>#</th>
-                                        <TH >City</TH>
-                                        <TH >Plate</TH>
-                                        <th scope="col">Vehicle </th>
-                                        <th scope="col">Opreater Company </th>
-                                        <th scope="col">DA </th>
-                                        <th scope="col">DA Approval </th>
-                                        <th scope="col">Request type </th>
-                                        <th scope="col">Request Date </th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Additional Data</th>
-                                        <th scope="col">Note</th>
-                                        <th scope="col">Procedures </th>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -1038,6 +1029,7 @@ $module = "Vehicle";
                     lengthMenu: [[10, 25, 50, 100, 10000], [10, 25, 50, 100, "All"]],
                     processing: true,
                     dom: 'lBfrtip',
+                    scrollX: true,
                     "buttons": [
                         {
                             extend: 'excel',
@@ -1049,6 +1041,12 @@ $module = "Vehicle";
                                     order: 'applied'
                                 }
                             }
+                        }
+                    ],
+                    columnDefs: [
+                        {
+                            targets: [3,4,5,6,8,9,10],
+                            width: '150px'
                         }
                     ],
                 });

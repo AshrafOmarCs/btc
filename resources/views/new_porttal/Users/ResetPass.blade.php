@@ -3,7 +3,7 @@
     <form id="contact_form" method="POST" onsubmit="return validateForm()" action="{{ URL('/UserSaveResetPass')}}"    >
         @csrf
         <div class="modal-body">
-            <table class="table m-0 show_table">
+            <table class="table table-bordered table-striped">
                 <tr>
                     <th colspan="2">{{$User->name}}</th>
                 </tr>

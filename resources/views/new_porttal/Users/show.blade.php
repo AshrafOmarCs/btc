@@ -1,5 +1,5 @@
 <div class="modal-body">
-    <table class="table">
+    <table class="table table-bordered table-striped">
     <tr><TH>Name</TH> <td>{{$Users->name}}</td>
     <TH>IdentityNo </TH><td>{{$Users->IdentityNo}}</td></tr>
     <tr><TH>Phone </TH><td>{{$Users->phone}}</td>

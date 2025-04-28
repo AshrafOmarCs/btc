@@ -209,7 +209,6 @@ class VehiclesController extends Controller
         exit;
     }
 
-
     public function report_index()
     {
         $manufacturers = DB::select("SELECT * FROM vehicle_manufacturers");
@@ -430,11 +429,11 @@ class VehiclesController extends Controller
                         $html = $html." <li>".$item2->name_en."| <span style='color: #0017ff;font-weight: bold;'>".$item2->utlity_condition."</span></li>";
                     }
                 }
-                $html = $html. ' <button class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"  onclick="editAccessories('.$item->vehicle_id.')">Edit <i class="bi bi-pencil"></i> </button>';
+                $html = $html. ' <button class="dropdown-item edit"  onclick="editAccessories('.$item->vehicle_id.')">Edit <i class="bi bi-pencil"></i> </button>';
                 $item->vehicle_utilities = $query;
                 $item->vehicle_utilities_html = $html;
             }else{
-                $html = $html. ' <button class="btnaction btn menu-icon vd_bd-blue vd_blue" onclick="editAccessories('.$item->vehicle_id.')">Add Accessories </button>';
+                $html = $html. ' <button class="" onclick="editAccessories('.$item->vehicle_id.')">Add Accessories </button>';
                 $item->vehicle_utilities = NULL;
                 $item->vehicle_utilities_html = $html;
             }
@@ -488,9 +487,9 @@ class VehiclesController extends Controller
             if (count($check_oil) == 0)
                 $item->oil_data = '';
             else if (count($check_oil) > 1 && $item->oil_check != 1)
-                $item->oil_data = '<button style="color: black !important; background-color: red;" class="btnaction btn menu-icon vd_bd-red vd_red" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="bi bi-eye"></i></button>';
+                $item->oil_data = '<button style="color: black !important; background-color: red;" class="" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="bi bi-eye"></i></button>';
             else
-                $item->oil_data = '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="bi bi-eye"></i></button>';
+                $item->oil_data = '<button class="dropdown-item" onclick="oil_info('.$item->vehicle_id.')">Oil <i class="bi bi-eye"></i></button>';
         }
         // $vehicle = Vehicle::where('','')->get();
         if(count($vehicles) > 0 OR $city_name != '')
@@ -2319,25 +2318,25 @@ function get_vehicle_table_body($payload, $globalEnv, $city_name = null)
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="#" onclick="vehicleExtraInfo('."'".$item->images."'".",'".$item->plate."','".$item->name_en."','".$item->vehicle_manufacturer."','".$item->manufacturer_date."','".$item->vehicle_model."','".$item->vehicle_opreator."','".$item->SNno."','".$item->body_number."','".$item->freeExtraOtometer."','','".$item->extraOtometerCharge."','".$item->otometer."','".$item->registertion_type."','".$item->current_status."','".$item->color."','".$item->vehicle_registration_expire_date."')".'" class="view"> Vehicle Info</i> </a>
+                        <a href="#" onclick="vehicleExtraInfo('."'".$item->images."'".",'".$item->plate."','".$item->name_en."','".$item->vehicle_manufacturer."','".$item->manufacturer_date."','".$item->vehicle_model."','".$item->vehicle_opreator."','".$item->SNno."','".$item->body_number."','".$item->freeExtraOtometer."','','".$item->extraOtometerCharge."','".$item->otometer."','".$item->registertion_type."','".$item->current_status."','".$item->color."','".$item->vehicle_registration_expire_date."')".'" class="view dropdown-item"> Vehicle Info</i> </a>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <a href="#" onclick="vehicleEdit('. $item->vehicle_id .')" class="edit">Edit</a>
+                        <a href="#" onclick="vehicleEdit('. $item->vehicle_id .')" class="edit dropdown-item">Edit</a>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <a href="#" class="edit"  onclick="editAccessories('.$item->vehicle_id.')">Accessories</a>
+                        <a href="#" class="edit dropdown-item"  onclick="editAccessories('.$item->vehicle_id.')">Accessories</a>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <a href="#" onclick="vehicleHistory('."'".$item->vehicle_id."'".')" title="Delegation history" class="history">Delegation History </a>
+                        <a href="#" onclick="vehicleHistory('."'".$item->vehicle_id."'".')" title="Delegation history" class="history dropdown-item">Delegation History </a>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
@@ -2346,7 +2345,7 @@ function get_vehicle_table_body($payload, $globalEnv, $city_name = null)
                     if ($item->delegation_info["job_id"] != '') {
                         $response2 .= '
                         <li>
-                            <a href="#" onclick="updateVehicleDriver('."'".$item->vehicle_id."'".', '."'".$item->delegation_id."'".')" title="Update driver" class="">Transfer Vehicle </a>
+                            <a href="#" onclick="updateVehicleDriver('."'".$item->vehicle_id."'".', '."'".$item->delegation_id."'".')" title="Update driver" class="dropdown-item">Transfer Vehicle </a>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -2354,7 +2353,7 @@ function get_vehicle_table_body($payload, $globalEnv, $city_name = null)
                     }
                     if($item->checkup_id == '') {
                         $response2 .= '<li>
-                        <a href="#" onclick="addVehicleCheckup('."'".$item->vehicle_id."'".', '."'".$item->vehicle_manufacturer."'".', '."'".$item->vehicle_model."'".', '."'".$item->manufacturer_date."'".', '."'".$item->plate."'".', '."'".$item->SNno."'".')" class="view">Vehicle Checkup </a>
+                        <a href="#" onclick="addVehicleCheckup('."'".$item->vehicle_id."'".', '."'".$item->vehicle_manufacturer."'".', '."'".$item->vehicle_model."'".', '."'".$item->manufacturer_date."'".', '."'".$item->plate."'".', '."'".$item->SNno."'".')" class="view dropdown-item">Vehicle Checkup </a>
                         </li>';
                     }
                     $response2 .= '
@@ -2362,22 +2361,22 @@ function get_vehicle_table_body($payload, $globalEnv, $city_name = null)
             </div>';
         } else {
             $response2 = '<a onclick="vehicleExtraInfo('."'".$item->images."'".",'".$item->plate."','".$item->name_en."','".$item->vehicle_manufacturer."','".$item->manufacturer_date."','".$item->vehicle_model."','".$item->vehicle_opreator."','".$item->SNno."','".$item->body_number."','".$item->freeExtraOtometer."','','".$item->extraOtometerCharge."','".$item->otometer."','".$item->registertion_type."','".$item->current_status."','".$item->color."','".$item->vehicle_registration_expire_date."')".'"
-            data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-green vd_green view"> <i class="fa fa-eye"></i> </a>
-            <a onclick="vehicleEdit('. $item->vehicle_id .')" data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"> <i class="fa fa-pencil"></i> </a>';
-            // <a data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view"><i class="fa fa-history"></i> </a>
+            class="dropdown-item view"> <i class="fa fa-eye"></i> </a>
+            <a onclick="vehicleEdit('. $item->vehicle_id .')" data-original-title="edit" data-toggle="tooltip" data-placement="top" class="dropdown-item edit"> <i class="fa fa-pencil"></i> </a>';
+            // <a class="dropdown-item view"><i class="fa fa-history"></i> </a>
             if($item->checkup_id == '') {
-                $response2 .= '<a onclick="addVehicleCheckup('."'".$item->vehicle_id."'".', '."'".$item->vehicle_manufacturer."'".', '."'".$item->vehicle_model."'".', '."'".$item->manufacturer_date."'".', '."'".$item->plate."'".', '."'".$item->SNno."'".')" data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view"><i class="fa fa-check-square"></i> </a>';
+                $response2 .= '<a onclick="addVehicleCheckup('."'".$item->vehicle_id."'".', '."'".$item->vehicle_manufacturer."'".', '."'".$item->vehicle_model."'".', '."'".$item->manufacturer_date."'".', '."'".$item->plate."'".', '."'".$item->SNno."'".')" class="dropdown-item view"><i class="fa fa-check-square"></i> </a>';
             } else {
                 if($item->vehicle_utilities =='')  {
-                    $response2 .= '<a href="'.url('/Vehicles/vehicle-checkup-utilities/'.$item->checkup_id).'" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view">Set vehicle accessories </a>';
+                    $response2 .= '<a href="'.url('/Vehicles/vehicle-checkup-utilities/'.$item->checkup_id).'" class="dropdown-item view">Set vehicle accessories </a>';
                 }
             }
-            $response2 .= '<a onclick="vehicleHistory('."'".$item->vehicle_id."'".')" title="Delegation history" class="btnaction btn menu-icon vd_bd-yellow vd_yellow history"><i class="fa fa-history"></i> </a>';
+            $response2 .= '<a onclick="vehicleHistory('."'".$item->vehicle_id."'".')" title="Delegation history" class="dropdown-item history"><i class="fa fa-history"></i> </a>';
             // change driver
             if ($item->delegation_info["job_id"] != '')
-                $response2 .= '<a onclick="updateVehicleDriver('."'".$item->vehicle_id."'".', '."'".$item->delegation_id."'".')" title="Update driver" class="btnaction btn menu-icon vd_bd-yellow vd_yellow"><i class="fa fa-exchange"></i> </a>';
+                $response2 .= '<a onclick="updateVehicleDriver('."'".$item->vehicle_id."'".', '."'".$item->delegation_id."'".')" title="Update driver" class="dropdown-item"><i class="fa fa-exchange"></i> </a>';
 
-            $response2 .= '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"  onclick="editAccessories('.$item->vehicle_id.')">Accessories</button>';
+            $response2 .= '<button class="dropdown-item edit"  onclick="editAccessories('.$item->vehicle_id.')">Accessories</button>';
         }
 
         $today = date("Y-m-d");
@@ -2524,9 +2523,9 @@ function get_fuel_details($vehicle_id, $allowed_fuel_price, $fuel_check) {
         $fuel .= '<li>' . $result[0]->fuel . ' for (' . $year . '/' . $month . ')</li>';
     }
     if($fuel != '<ul>' && $fuel_price > $allowed_fuel_price && $fuel_check != 1)
-        $fuel .= '<button class="btnaction btn menu-icon vd_bd-red vd_red " onclick="fuel_info('.$vehicle_id.')">Info <i class="bi bi-eye"></i></button></ul>';
+        $fuel .= '<button class="" onclick="fuel_info('.$vehicle_id.')">Info <i class="bi bi-eye"></i></button></ul>';
     else if($fuel != '<ul>')
-        $fuel .= '<button class="btnaction btn menu-icon vd_bd-yellow vd_yellow " onclick="fuel_info('.$vehicle_id.')">Info <i class="bi bi-eye"></i></button></ul>';
+        $fuel .= '<button class="dropdown-item " onclick="fuel_info('.$vehicle_id.')">Info <i class="bi bi-eye"></i></button></ul>';
 
     return $fuel;
 }

@@ -294,6 +294,14 @@ $module = "Loan";
         justify-content: center;
         align-items: center;
     }
+    .vehicle-model-column {
+        width: 150px;
+        max-width: 150px;
+        min-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 </style>
 <!-- Vehicle extra data Modal -->
 <div class="modal fade" id="VehicleExtraDataModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -555,27 +563,28 @@ $module = "Loan";
             <div class="modal-body">
                 <form method="POST" action="{{ url('New-Portal/Vehicles/download_vehicles_report')}}">
                     @csrf
-                    <div class="row">
-                        <div class="col-lg-4">
-                            Date:
-                            <input type="date" name="date" id="date" class="form-control" value='{{date("Y-m-d")}}' required max="{{date("Y-m-d")}}">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label for="date" class="form-label">Date:</label>
+                            <input type="date" name="date" id="date" class="form-control"
+                                   value='{{date("Y-m-d")}}' required max="{{date("Y-m-d")}}">
                         </div>
-                        <div class="col-lg-4">
-                            Type:
-                            <select id="type" name="type" required class="form-control">
+                        <div class="col-md-4">
+                            <label for="type" class="form-label">Type:</label>
+                            <select id="type" name="type" required class="form-select">
                                 <option value="">Select type</option>
-                                <option value="" selected>abc</option>
+                                <option value="" selected>All</option>
                             </select>
                         </div>
-                        <div class="col-lg-2 mt-4">
-                            <input type="button" class="btn btn-primary" onclick="downloadReport()" value="Show">
+                        <div class="col-md-2 d-grid">
+                            <button type="button" class="btn btn-primary" onclick="downloadReport()">Show</button>
                         </div>
-                        <div class="col-lg-2 mt-4">
-                            <input type="submit" class="btn btn-success" value="Download">
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" class="btn btn-success">Download</button>
                         </div>
                     </div>
                 </form>
-                <table id="" class="table table-bordered">
+                <table id="" class="table table-bordered mt-3">
                     <thead>
                         <tr>
                             <TH>City</TH>
@@ -643,7 +652,7 @@ $module = "Loan";
                         <div class="row">
                             <div class="col-12">
                                 <div class="custom-btn-group">
-                                    <a class="btn btn-sm btn-info " onclick="downloadReport()"><i class="bi bi-download"></i>Download Report</a>
+                                    <a class="btn btn-sm btn-info " onclick="downloadReport()" style="color: white"><i class="bi bi-download"></i>Download Report</a>
                                     <a href="#" class="btn btn-sm btn-info" onclick="forceAssign()"> <i class="bi bi-paperclip"></i> Force Assign</a>
                                     <button type="button" class="btn btn-light" data-bs-toggle="modal" type="button" data-bs-target="#FillterButton"></i>{{__('drivers.Filter')}}</button>
                                 </div>
@@ -652,11 +661,20 @@ $module = "Loan";
 
                     </div>
                     <div class="card-body">
-                        <div id="loader" style="display:none;">
-                            <div class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
+                        <div id="loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999;">
+                            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                                <lottie-player
+                                    src="https://assets9.lottiefiles.com/packages/lf20_usmfx6bp.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 200px; height: 200px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                                <p style="margin-top:20px; font-size:18px; font-weight:bold; color:#555;">Fetching your data...</p>
                             </div>
                         </div>
+
                         <div class="table-responsive">
                             <table id="customer_data" class="table table-bordered">
                                 <thead>
@@ -668,7 +686,7 @@ $module = "Loan";
                                         <th >Vehicle model </th>
                                         <th >Opreater company  </th>
                                         <th >Color </th>
-                                        <th >Vehicle Otometer </th>
+                                        <th >Otometer </th>
                                         <th >Registertion type </th>
                                         <th >Vehicle status </th>
                                         <th >Delegation status </th>
@@ -774,19 +792,25 @@ $module = "Loan";
                             // { data: 'vehicle_expiry_date', name: 'vehicle_expiry_date' },
                             { data: 'name_en', name: 'name_en' },
                             { data: 'vehicle_manufacturer', name: 'vehicle_manufacturer' },
-                            { data: 'vehicle_model', name: 'vehicle_model' },
-                            { data: 'vehicle_opreator', name: 'vehicle_opreator' },
+                            { data: 'vehicle_model', name: 'vehicle_model', className: 'vehicle-model-column' },
+                            { data: 'vehicle_opreator', name: 'vehicle_opreator', className: 'vehicle-model-column' },
                             { data: 'color', name: 'color' },
                             // { data: 'vehicle_registration_expire_date', name: 'vehicle_registration_expire_date' },
                             // { data: 'vehicle_utilities_html', name: 'vehicle_utilities_html', orderable: false },
                             { data: 'otometer', name: 'otometer' },
-                            { data: 'registertion_type', name: 'registertion_type' },
-                            { data: 'current_status', name: 'current_status' },
-                            { data: 'delegation_status', name: 'delegation_status' },
+                            { data: 'registertion_type', name: 'registertion_type', className: 'vehicle-model-column' },
+                            { data: 'current_status', name: 'current_status', className: 'vehicle-model-column' },
+                            { data: 'delegation_status', name: 'delegation_status', className: 'vehicle-model-column' },
 
                             { data: 'response1', name: 'response1', orderable: false },
                             { data: 'response2', name: 'response2', orderable: false },
 
+                        ],
+                        columnDefs: [
+                            {
+                                targets: 4,
+                                width: '300px'
+                            }
                         ],
                     });
                     let html = '';
@@ -871,7 +895,6 @@ $module = "Loan";
                     },
                     success: function (data) {
                         document.getElementById('report_body').innerHTML = data;
-                        document.getElementById('loader').innerHTML = '';
                     }
                 });
             }
@@ -892,7 +915,6 @@ $module = "Loan";
             function deleteVehicleAssignment(id) {
                 var result = confirm("Are you sure to remove this assignment?");
                 if (result) {
-                    document.getElementById('response').innerHTML = loader;
                     $.ajax({
                         type: 'GET',
                         url: "{{ url('New-Portal/Vehicles/deleteVehicleAssignment') }}/" + id,
@@ -983,7 +1005,6 @@ $module = "Loan";
                 $("#edit_city_id").prop("disabled", false);
 
                 var postData = $("#contact_form").serializeArray();
-                document.getElementById('response').innerHTML = loader;
                 $.ajax({
                    url: "{{url('New-Portal/Vehicles/UpdateVehicle')}}",
                     type: "POST",

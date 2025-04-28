@@ -279,11 +279,19 @@ $module = "User";
 
                 </div>
                 <div class="card-body">
-                    <div id="loader" style="display:none;">
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only">Loading...</span>
+                    <div id="loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999;">
+                            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                                <lottie-player
+                                    src="https://assets9.lottiefiles.com/packages/lf20_usmfx6bp.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 200px; height: 200px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                                <p style="margin-top:20px; font-size:18px; font-weight:bold; color:#555;">Fetching your data...</p>
+                            </div>
                         </div>
-                    </div>
                     <div class="table-responsive">
                         <table id="customer_data" class="table table-bordered">
                             <thead>
@@ -411,14 +419,14 @@ $module = "User";
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a id=` + row.id + ` data-original-title="view" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow view dropdown-item" href="#">`+view+`</a>
+                                            <a id=` + row.id + ` class="view dropdown-item" href="#">`+view+`</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
                                             <input type="hidden" id="IDs_all_` + meta.row + `" name="IDs_all_` + meta.row + `" value="` + row.id + `">` + `
-                                            <a id=` + row.id + ` data-original-title="edit" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit dropdown-item" href="#">`+edit+`</a>
+                                            <a id=` + row.id + ` class="edit dropdown-item" href="#">`+edit+`</a>
                                         </li>
                                         <li>
                                             <hr class="dropdown-divider">
@@ -431,7 +439,7 @@ $module = "User";
                                         </li>
                                         `;
                                         @if(Auth::user()->user_type_id==1)
-                                            html += `<li><a id=` + row.id + ` data-original-title="delete" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-red vd_red delete dropdown-item" href="#"><span style="color:red">`+deletee+`</span></a></li>
+                                            html += `<li><a id=` + row.id + ` class="delete dropdown-item" href="#"><span style="color:red">`+deletee+`</span></a></li>
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>

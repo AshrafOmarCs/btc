@@ -231,9 +231,17 @@ $module = "Warehouse";
 
                 </div>
                 <div class="card-body">
-                    <div id="loader" style="display:none;">
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only">Loading...</span>
+                    <div id="loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999;">
+                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                            <lottie-player
+                                src="https://assets9.lottiefiles.com/packages/lf20_usmfx6bp.json"
+                                background="transparent"
+                                speed="1"
+                                style="width: 200px; height: 200px;"
+                                loop
+                                autoplay>
+                            </lottie-player>
+                            <p style="margin-top:20px; font-size:18px; font-weight:bold; color:#555;">Fetching your data...</p>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -483,7 +491,6 @@ $module = "Warehouse";
 
             $('#customer_data tbody').on('click', '.view', function (e) {
                 e.preventDefault();
-                // document.getElementById('response').innerHTML = loader;
                 $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
@@ -499,7 +506,6 @@ $module = "Warehouse";
             });
             $('#customer_data tbody').on('click', '.edit', function (e) {
                 e.preventDefault();
-                // document.getElementById('response').innerHTML = loader;
                 $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
@@ -515,7 +521,6 @@ $module = "Warehouse";
             });
             $('#customer_data tbody').on('click', '.driver', function (e) {
                 e.preventDefault();
-                // document.getElementById('response').innerHTML = loader;
                 $('#edit_modal').modal('toggle');
                 var id = $(this).attr('id');
                 $.ajax({
@@ -615,9 +620,7 @@ $module = "Warehouse";
         });
 
         function add() {
-            // document.getElementById('response').innerHTML = loader;
             $('#edit_modal').modal('toggle');
-
             $.ajax({
                 type: 'GET',
                 url: "{{URL("/Warehouses/create")}}",

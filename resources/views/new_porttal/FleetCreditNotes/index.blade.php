@@ -19,6 +19,14 @@
     .list-group .list-group-item {
 
     }
+    .vehicle-model-column {
+        width: 150px;
+        max-width: 150px;
+        min-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 </style>
 
 
@@ -232,9 +240,17 @@ $module = "Vehicle Deduction";
 
                     </div>
                     <div class="card-body">
-                        <div id="loader" style="display:none;">
-                            <div class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
+                        <div id="loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999;">
+                            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                                <lottie-player
+                                    src="https://assets9.lottiefiles.com/packages/lf20_usmfx6bp.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 200px; height: 200px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                                <p style="margin-top:20px; font-size:18px; font-weight:bold; color:#555;">Fetching your data...</p>
                             </div>
                         </div>
                         @if(Auth::user()->user_type_id==1)
@@ -254,15 +270,13 @@ $module = "Vehicle Deduction";
                                     <TH>Company</TH>
                                     <TH>Warehouse</TH>
                                     <TH>Type</TH>
-                                    <TH>SMS Attempt</TH>
+                                    <TH>Message</TH>
                                     <TH>EMP ID</TH>
                                     <TH>Driver</TH>
                                     <TH>previous Balance</TH>
                                     <TH>Current Balance</TH>
-
                                     <TH>Journal Date</TH>
                                     <TH>Journal Period</TH>
-
                                     <TH>Amount</TH>
                                     <TH>Note</TH>
                                     <TH>Create By</TH>
@@ -404,7 +418,8 @@ $module = "Vehicle Deduction";
                             "className": "text-center",
                             "render": function (data, type, row, meta) {
                                 return 'CN'+row.id;
-                            }
+                            },
+                            "className": 'vehicle-model-column'
                         },
                         {
                             data: 'companyName',
@@ -431,7 +446,7 @@ $module = "Vehicle Deduction";
                                     return '<i style="color: #f0be5c;font-size: 17px;" title="Driver mobile number is missing or incorrect" class="bi bi-exclamation-triangle" aria-hidden="true"></i>';
                                 else
                                     return '<span style="cursor: pointer" onclick="sendSms('+row.id+')" class="badge badge-danger">0</span>';
-                            }
+                            },
                         },
                         {
                             data: 'job_id',
@@ -448,20 +463,24 @@ $module = "Vehicle Deduction";
                         },
                         {
                             data: 'per_priod',
-                            name: 'balance.per_priod'
+                            name: 'balance.per_priod',
+                            "className": 'vehicle-model-column'
                         },
                         {
                             data: 'cur_priod',
-                            name: 'balance.cur_priod'
+                            name: 'balance.cur_priod',
+                            "className": 'vehicle-model-column'
                         },
                         {
                             data: 'journal_date',
-                            name: 'journal_date'
+                            name: 'journal_date',
+                            "className": 'vehicle-model-column'
                         },
                         {
                             data: 'journal_period',
                             name: 'journal_period',
-                            bSearchable: false
+                            bSearchable: false,
+                            "className": 'vehicle-model-column'
                         },
                         {
                             data: 'amount',
@@ -480,15 +499,18 @@ $module = "Vehicle Deduction";
                                         .join(" ");
                                     return `${row.note} ${eye}`;
                                 }
-                            }
+                            },
+                            "className": 'vehicle-model-column'
                         },
                         {
                             data: 'name',
-                            name: 'users.name'
+                            name: 'users.name',
+                            "className": 'vehicle-model-column'
                         },
                         {
                             data: 'created_at',
-                            name: 'created_at'
+                            name: 'created_at',
+                            "className": 'vehicle-model-column'
                         },
                         {
                             data: 'journal_id',

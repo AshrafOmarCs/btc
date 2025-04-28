@@ -91,6 +91,34 @@
 				<div class="sidebar-menu">
 					<div class="sidebarMenuScroll">
 						<ul>
+                            <li class="menu-title">
+								<i class=""> &nbsp;&nbsp;</i>
+								<span data-key="t-components">Operation</span>
+							</li>
+							<li class="sidebar-dropdown {{ (request()->is('New-Portal/Users')
+                                || request()->is('New-Portal/Supervisors')) ? 'active' : '' }}">
+								<a href="#">
+									<i class="bi bi-credit-card-2-front"></i>
+									<span class="menu-text">{{__('nav.accounts')}}</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+                                        @if(session('Read_2')==1)
+                                            <li>
+                                                <a href="{{url('New-Portal/Users')}}"><i class="bi bi-person-circle"></i> {{__('nav.administration')}}</a>
+                                            </li>
+                                        @endif
+                                        @if(session('Read_3')==1)
+                                            <li>
+                                                <a href="{{url('New-Portal/Supervisors')}}"><i class="bi bi-person-video2"></i> {{__('nav.supervisors_areaManager')}}</a>
+                                            </li>
+                                        @endif
+										<li>
+											<a href="widgets.html"><i class="bi bi-person-badge"></i>Employee</a>
+										</li>
+									</ul>
+								</div>
+							</li>
                             @if(session('Read_16')==1 || Auth::user()->id == 127 || Auth::user()->id == 125)
                             <li class="sidebar-dropdown {{ (request()->is('New-Portal/delegatedVehicles')
                                 || request()->is('New-Portal/Vehicles/Vehicles-Requests')
@@ -356,6 +384,8 @@
 		<!-- *************
 			************ Vendor Js Files *************
 		************* -->
+        {{-- Loader cdn --}}
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         {{-- carousel cdn --}}
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 

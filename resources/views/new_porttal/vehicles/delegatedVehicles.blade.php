@@ -571,13 +571,21 @@ $module = "Loan";
 
                     </div>
                     <div class="card-body">
-                        <div id="loader" style="display:none;">
-                            <div class="spinner-border" role="status">
-                                <span class="sr-only">Loading...</span>
+                        <div id="loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999;">
+                            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                                <lottie-player
+                                    src="https://assets9.lottiefiles.com/packages/lf20_usmfx6bp.json"
+                                    background="transparent"
+                                    speed="1"
+                                    style="width: 200px; height: 200px;"
+                                    loop
+                                    autoplay>
+                                </lottie-player>
+                                <p style="margin-top:20px; font-size:18px; font-weight:bold; color:#555;">Fetching your data...</p>
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table id="customer_data" class="table table-bordered">
+                            <table id="customer_data" class="table table-bordered" style="table-layout: fixed;">
                                 <thead>
                                     <tr>
                                         <th rowspan="2" style="vertical-align: middle;">#</th>
@@ -835,6 +843,8 @@ $module = "Loan";
                         // paging: false,
                         // pageLength: 10,
                         order: [1, 'asc'],
+                        dom: 'lBfrtip',
+                        scrollX: true,
                         ajax: {
                             url: "{{ route('New-Portal/delegatedVehicles') }}",
                             data: {
@@ -995,12 +1005,18 @@ $module = "Loan";
                                 "render": function (data, type, row, meta) {
                                     let btn = '';
                                     // if (row.reference_no != row.tm_reference_no && row.tm_reference_no != '') {
-                                        btn = `<a onclick="updateDelegation(${row.id}, ${row.reference_no}, ${row.iqama}, '${row.starting_date}', '${row.ending_date}')" title="Update Delegation" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-yellow vd_yellow edit"><i class="bi bi-pencil"></i></a>`;
+                                        btn = `<a onclick="updateDelegation(${row.id}, ${row.reference_no}, ${row.iqama}, '${row.starting_date}', '${row.ending_date}')" title="Update Delegation" class="edit"><i class="bi bi-pencil"></i></a>`;
                                     // }
-                                    return btn + '<a onclick="vehicleHistory('+row.vehicle_id+')" title="Delegation history" data-toggle="tooltip" data-placement="top" class="btnaction btn menu-icon vd_bd-blue vd_blue history"><i class="bi bi-clock-history"></i> </a>';
+                                    return btn + '<a onclick="vehicleHistory('+row.vehicle_id+')" title="Delegation history" class="history"><i class="bi bi-clock-history"></i> </a>';
                                 }
                             },
-                        ]
+                        ],
+                        columnDefs: [
+                            {
+                                targets: [8,10,11,12,14,15],
+                                width: '120px'
+                            }
+                        ],
                     });
                     let html = '';
                     if ($('#filter_companyId').val() > 0)
