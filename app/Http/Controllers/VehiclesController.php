@@ -2382,20 +2382,20 @@ function get_vehicle_table_body($payload, $globalEnv, $city_name = null)
         $today = date("Y-m-d");
         $delegation_status = '';
         if($item->delegation_status == 'Under Process') {
-            $delegation_status = '<span class="label label-primary">Under Process</span>';
+            $delegation_status = '<span class="badge badge-primary">Under Process</span>';
             $response1 = '';
         } else if($item->delegation_status == 'valid' AND $today < $item->ending_date) {
-            $delegation_status = '<span class="label label-success">Valid</span>';
+            $delegation_status = '<span class="badge badge-success">Valid</span>';
         } else if($item->delegation_status == 'valid' AND $today > $item->ending_date) {
-            $delegation_status = '<span class="label label-warning">Valid Expired</span>';
+            $delegation_status = '<span class="badge badge-warning">Valid Expired</span>';
         } else if($item->delegation_status == 'cancelled') {
-            $delegation_status = '<span class="label label-danger">Cancelled</span>';
+            $delegation_status = '<span class="badge badge-danger">Cancelled</span>';
             $response1 = '';
         } else if($item->delegation_status == 'completed') {
-            $delegation_status = '<span class="label label-success">Completed</span>';
+            $delegation_status = '<span class="badge badge-success">Completed</span>';
             $response1 = '';
         }  else if($item->delegation_status == 'completedAfterExpiry') {
-            $delegation_status = '<span class="label label-info">Completed After Expiry</span>';
+            $delegation_status = '<span class="badge badge-info">Completed After Expiry</span>';
             $response1 = '';
         }
         $data[] = [
